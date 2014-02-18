@@ -1,0 +1,16 @@
+{% extends "home/base.html" %}
+{% load staticfiles i18n %}
+{% block content %}
+	<h1>{% trans "episode list"|title %} {% trans "from" %} {{today|date:"r" }} {% trans "to" %} {{next_date|date:"r" }}</h1>
+		{% for key, dates in programmes_and_dates.items %}
+			<h2>{{key}} {% trans "next week"|title %}</h2>
+			<ul>
+	        {% for date in dates %}
+				<li><span class="label label-default">{{date|date:'r'}}</span></li>
+			{% endfor %}
+			</ul>
+		{% endfor %}
+		<p>No episodes are available.</p>
+		
+		{{string}}
+{% endblock %}

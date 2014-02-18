@@ -1,0 +1,15 @@
+{% extends "home/base.html" %}
+{% load staticfiles i18n %}
+{% block content %}
+	<h1>{{ programme.name }}</h1>
+	<div class="row">
+		<div class="span8">
+			<div class="media">
+				<img src="{{ programme.photo.url }}">
+			</div>
+			<p>{{programme.synopsis|truncatewords:12}}</p>
+		</div>
+	</div>
+	<h2>{% trans "episode"|title %} {{episode.start_date}}</h2>
+	<p>{{episode.summary}}</p>
+{% endblock %}

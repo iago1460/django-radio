@@ -1,0 +1,248 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-02-17 19:20+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: apps/programmes/models.py:9
+#: apps/programmes/templates/programmes/programme_detail.html:14
+#: libs/home/templates/home/base.html:35
+msgid "announcers"
+msgstr "locutores"
+
+#: apps/programmes/models.py:10
+msgid "name"
+msgstr "nombre"
+
+#: apps/programmes/models.py:10
+msgid "please DON'T change this value. It's used to build URL's."
+msgstr "por favor no cambie este valor. Es usado para construir las urls"
+
+#: apps/programmes/models.py:11
+msgid "synopsis"
+msgstr "descripción"
+
+#: apps/programmes/models.py:12
+msgid "photo"
+msgstr "foto"
+
+#: apps/programmes/models.py:18 apps/programmes/models.py:30
+#: apps/schedules/models.py:17
+msgid "programme"
+msgstr "programa"
+
+#: apps/programmes/models.py:19 libs/home/templates/home/base.html:37
+msgid "programmes"
+msgstr "programas"
+
+#: apps/programmes/models.py:31
+msgid "summary"
+msgstr "resumen"
+
+#: apps/programmes/models.py:32
+msgid "published"
+msgstr "publicado"
+
+#: apps/programmes/models.py:36
+#: apps/programmes/templates/programmes/episode_detail.html:13
+msgid "episode"
+msgstr "episodio"
+
+#: apps/programmes/models.py:37
+msgid "episodes"
+msgstr "episodio"
+
+#: apps/programmes/templates/programmes/programme_detail.html:24
+msgid "all programmes"
+msgstr "todos los programas"
+
+#: apps/programmes/templates/programmes/programme_list.html:4
+msgid "programme list"
+msgstr "lista de programas"
+
+#: apps/schedules/models.py:11
+msgid "live"
+msgstr "directo"
+
+#: apps/schedules/models.py:12
+msgid "broadcast"
+msgstr "retransmisión"
+
+#: apps/schedules/models.py:13
+msgid "broadcast syndication"
+msgstr "redifusión"
+
+#: apps/schedules/models.py:18
+msgid "active"
+msgstr "activo"
+
+#: apps/schedules/models.py:19
+msgid "start date"
+msgstr "fecha de inicio"
+
+#: apps/schedules/models.py:20
+msgid "end date"
+msgstr "fecha de fin"
+
+#: apps/schedules/models.py:20
+msgid "The end time must be later than the start time."
+msgstr "La fecha fin debe ser posterior a la de inicio"
+
+#: apps/schedules/models.py:21
+msgid "type"
+msgstr "tipo"
+
+#: apps/schedules/models.py:49 apps/schedules/models.py:159
+msgid "start date must be before end date."
+msgstr "la fecha inicio debe ser anterior a la de fin"
+
+#: apps/schedules/models.py:52
+#, python-format
+msgid "This settings collides with: %(name)s [ %(start_date)s - %(end_date)s ]"
+msgstr "Esta configuración colisiona con: %(name)s [ %(start_date)s - %(end_date)s ]"
+
+#: apps/schedules/models.py:85
+msgid "schedule"
+msgstr "horario"
+
+#: apps/schedules/models.py:86 libs/home/templates/home/base.html:36
+msgid "schedules"
+msgstr "horarios"
+
+#: apps/schedules/models.py:92
+msgid "Repeat?"
+msgstr "¿Repetir?"
+
+#: apps/schedules/models.py:93
+msgid "frequency end date"
+msgstr "fecha final"
+
+#: apps/schedules/models.py:93
+msgid "This field can be null."
+msgstr "Este campo puede ser null"
+
+#: apps/schedules/models.py:94
+msgid "Monday"
+msgstr "Lunes"
+
+#: apps/schedules/models.py:95
+msgid "Tuesday"
+msgstr "Martes"
+
+#: apps/schedules/models.py:96
+msgid "Wednesday"
+msgstr "Miércoles"
+
+#: apps/schedules/models.py:97
+msgid "Thursday"
+msgstr "Jueves"
+
+#: apps/schedules/models.py:98
+msgid "Friday"
+msgstr "Viernes"
+
+#: apps/schedules/models.py:99
+msgid "Saturday"
+msgstr "Sábado"
+
+#: apps/schedules/models.py:100
+msgid "Sunday"
+msgstr "Domingo"
+
+#: apps/schedules/templates/schedules/schedules_list.html:4
+msgid "episode list"
+msgstr "lista de episodios"
+
+#: apps/schedules/templates/schedules/schedules_list.html:4
+msgid "from"
+msgstr "desde"
+
+#: apps/schedules/templates/schedules/schedules_list.html:4
+msgid "to"
+msgstr "hasta"
+
+#: apps/schedules/templates/schedules/schedules_list.html:6
+msgid "next week"
+msgstr "próxima semana"
+
+#: apps/users/models.py:10
+msgid "biography"
+msgstr "biografía"
+
+#: apps/users/models.py:11
+msgid "avatar"
+msgstr "avatar"
+
+#: apps/users/models.py:12
+msgid "display personal page"
+msgstr "mostrar página personal"
+
+#: apps/users/templates/users/userprofile_detail.html:5
+msgid "about"
+msgstr "Acerca de"
+
+#: apps/users/templates/users/userprofile_list.html:4
+msgid "announcers list"
+msgstr "locutores"
+
+#: libs/home/templates/home/base.html:7
+msgid "Django Home"
+msgstr "Django Inicio"
+
+#: libs/home/templates/home/base.html:34
+msgid "home"
+msgstr "inicio"
+
+#: libs/home/templates/home/index.html:6
+msgid "now playing"
+msgstr "esta sonando"
+
+#: libs/home/templates/home/index.html:20
+msgid "playlist"
+msgstr "lista de reproducción"
+
+#~ msgid "description"
+#~ msgstr "descripción"
+
+#~ msgid "emission"
+#~ msgstr "emisión"
+
+#~ msgid "will it be recorded?"
+#~ msgstr "será grabado?"
+
+#~ msgid "broadcasts"
+#~ msgstr "retransmisiones"
+
+#~ msgid "broadcast syndications"
+#~ msgstr "redifusiones"
+
+#~ msgid "lives"
+#~ msgstr "directos"
+
+#~ msgid "show"
+#~ msgstr "programa"
+
+#~ msgid "shows"
+#~ msgstr "programas"
+
+#~ msgid "Announcers"
+#~ msgstr "Locutores"
+
+#~ msgid "Name"
+#~ msgstr "Nombre"
+
+#~ msgid "Date information"
+#~ msgstr "Información de la fecha"

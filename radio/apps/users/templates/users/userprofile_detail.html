@@ -1,0 +1,12 @@
+{% extends "home/base.html" %}
+{% load staticfiles i18n %}
+{% block content %}
+	<div class="row">
+		<h1>{% trans "about"|upper %} {{userprofile.user|upper}}</h1>
+		<div class="media">
+			<img src="{{ userprofile.avatar.url }}">
+		</div>
+		
+		<p>{{userprofile.bio}}</p>
+	</div>
+{% endblock %}

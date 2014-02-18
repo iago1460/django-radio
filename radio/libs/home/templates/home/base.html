@@ -1,0 +1,76 @@
+{% load staticfiles i18n %}
+<!DOCTYPE html>
+<html>
+	<head>
+		{% block meta_tags %}{% endblock %}
+		<title>
+			{% block title %}{% trans "Django Home" %}{% endblock %}
+		</title>
+		{% block stylesheets %}
+			<link rel="stylesheet" href="{% static "radio/css/bootstrap.css" %}" type="text/css" />
+			<link rel="stylesheet" href="{% static "radio/css/jumbotron.css" %}" type="text/css" />
+		{% endblock %}
+		{% block javascript %}
+			<script src="{% static "radio/js/jquery-2.1.0.js" %}" type="text/javascript"></script>
+			<script src="{% static "radio/js/bootstrap.js" %}" type="text/javascript"></script>
+		{% endblock %}
+		{% block extra_head %}{% endblock %}
+	</head>
+	<body>
+		<!-- Fixed navbar -->
+		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="/">{{SITE_NAME}}</a>
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<li class="active"><a href="/">{% trans "home"|title %}</a></li>
+						<li><a href="{% url 'users:list' %}">{% trans "announcers"|title %}</a></li>
+						<li><a href="{% url 'schedules:list' %}">{% trans "schedules"|title %}</a></li>
+						<li><a href="{% url 'programmes:list' %}">{% trans "programmes"|title %}</a></li>
+					</ul>
+				</div>
+				<!--/.nav-collapse -->
+			</div>
+		</div>
+		<!-- Main jumbotron for a primary marketing message or call to action -->
+		<div class="jumbotron">
+			<div class="container">
+				{% block header_content %}{% endblock %}
+			</div>
+		</div>
+		<div class="container">
+			{% block content %}
+				<!-- Example row of columns -->
+				<div class="row">
+					<div class="col-md-4">
+						<h2>Heading</h2>
+						<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+						<p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+					</div>
+					<div class="col-md-4">
+						<h2>Heading</h2>
+						<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+						<p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+					</div>
+					<div class="col-md-4">
+						<h2>Heading</h2>
+						<p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+						<p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+					</div>
+				</div>
+			{% endblock %}
+			<footer>
+				<p>&copy; Company 2014</p>
+			</footer>
+		</div>
+		<!-- /container -->
+	</body>
+</html>

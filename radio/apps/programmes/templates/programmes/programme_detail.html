@@ -1,0 +1,33 @@
+{% extends "home/base.html" %}
+{% load staticfiles i18n %}
+{% block content %}
+	<h1>{{ programme.name }}</h1>
+	<div class="row">
+		<div class="span8">
+			<div class="media">
+				<img src="{{ programme.photo.url }}">
+			</div>
+			<p>{{programme.synopsis}}</p>
+		</div>
+	</div>
+	{% if userprofile_list %}
+		<h2>{% trans "announcers"|title %}</h2>
+		<ul>
+			{% for userprofile in userprofile_list %}
+				<li><a href="{% url 'users:detail' userprofile.slug %}">{{ userprofile.user }}</a></li>
+			{% endfor %}
+		</ul>
+	{% else %}
+		<p>Without announcers.</p>
+	{% endif %}
+	{% if episode_list %}
+		<h2>{% trans "all programmes"|title %}</h2>
+		<ul>
+			{% for episode in episode_list %}
+				<li><a href="{% url 'programmes:episode_detail' programme.slug episode.id %}">{{ episode.published }}</a></li>
+			{% endfor %}
+		</ul>
+	{% else %}
+		<p>Without episodes.</p>
+	{% endif %}
+{% endblock %}
