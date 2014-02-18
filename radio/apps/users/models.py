@@ -11,6 +11,7 @@ class UserProfile(models.Model):
     avatar = models.ImageField(upload_to='avatars/', default='/static/radio/images/default-userprofile-avatar.jpg', verbose_name=_("avatar"))
     display_personal_page = models.BooleanField(default=False, verbose_name=_("display personal page"))
     slug = models.SlugField(max_length=30)
+
     def save(self, *args, **kwargs):
         if not self.pk:
             try:
@@ -20,6 +21,10 @@ class UserProfile(models.Model):
                 pass
         self.slug = slugify(self.user.username)
         super(UserProfile, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = _('user profile')
+        verbose_name_plural = _('user profiles')
 
     def __unicode__(self):
         return "%s's profile" % self.user

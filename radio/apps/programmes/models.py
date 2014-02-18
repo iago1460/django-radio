@@ -11,9 +11,11 @@ class Programme(models.Model):
     synopsis = models.TextField(blank=True, verbose_name=_("synopsis"))
     photo = models.ImageField(upload_to='photos/', default='/static/radio/images/default-programme-photo.jpg', verbose_name=_("photo"))
     slug = models.SlugField(max_length=100, unique=True)
+
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         super(Programme, self).save(*args, **kwargs)
+
     class Meta:
         verbose_name = _('programme')
         verbose_name_plural = _('programmes')
@@ -21,23 +23,28 @@ class Programme(models.Model):
         permissions = (
             ("radio_change_synopsis", "Can change synopsis"),
         )
+
     def get_absolute_url(self):
         return reverse('programmes:detail', args=[self.slug])
 
     def __unicode__(self):
         return self.name
 
+
 class Episode(models.Model):
     programme = models.ForeignKey(Programme, verbose_name=_("programme"))
     summary = models.TextField(blank=True, verbose_name=_("summary"))
     published = models.DateTimeField(verbose_name=_('published'))
+
     def get_absolute_url(self):
         return reverse('programmes:episode_detail', args=[self.programme.slug, str(self.id)])
+
     class Meta:
         verbose_name = _('episode')
         verbose_name_plural = _('episodes')
         permissions = (
             ("radio_change_summary", "Can change summary"),
         )
+
     def __unicode__(self):
         return self.programme.name

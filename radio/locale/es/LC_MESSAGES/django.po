@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-17 19:20+0100\n"
+"POT-Creation-Date: 2014-02-18 16:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,7 +39,7 @@ msgstr "descripción"
 msgid "photo"
 msgstr "foto"
 
-#: apps/programmes/models.py:18 apps/programmes/models.py:30
+#: apps/programmes/models.py:18 apps/programmes/models.py:31
 #: apps/schedules/models.py:17
 msgid "programme"
 msgstr "programa"
@@ -48,20 +48,20 @@ msgstr "programa"
 msgid "programmes"
 msgstr "programas"
 
-#: apps/programmes/models.py:31
+#: apps/programmes/models.py:32
 msgid "summary"
 msgstr "resumen"
 
-#: apps/programmes/models.py:32
+#: apps/programmes/models.py:33
 msgid "published"
 msgstr "publicado"
 
-#: apps/programmes/models.py:36
+#: apps/programmes/models.py:37
 #: apps/programmes/templates/programmes/episode_detail.html:13
 msgid "episode"
 msgstr "episodio"
 
-#: apps/programmes/models.py:37
+#: apps/programmes/models.py:38
 msgid "episodes"
 msgstr "episodio"
 
@@ -105,62 +105,76 @@ msgstr "La fecha fin debe ser posterior a la de inicio"
 msgid "type"
 msgstr "tipo"
 
-#: apps/schedules/models.py:49 apps/schedules/models.py:159
+#: apps/schedules/models.py:49 apps/schedules/models.py:173
 msgid "start date must be before end date."
 msgstr "la fecha inicio debe ser anterior a la de fin"
 
-#: apps/schedules/models.py:52
+#: apps/schedules/models.py:57
 #, python-format
-msgid "This settings collides with: %(name)s [ %(start_date)s - %(end_date)s ]"
-msgstr "Esta configuración colisiona con: %(name)s [ %(start_date)s - %(end_date)s ]"
+msgid ""
+"This settings collides with: %(name)s [%(start_date)s %(start_day)s/"
+"%(start_month)s/%(start_year)s             - %(end_date)s %(end_day)s/"
+"%(end_month)s/%(end_year)s ]"
+msgstr ""
+"Esta configuración colisiona con: %(name)s [%(start_date)s %(start_day)s/"
+"%(start_month)s/%(start_year)s             - %(end_date)s %(end_day)s/"
+"%(end_month)s/%(end_year)s ]"
 
-#: apps/schedules/models.py:85
+#: apps/schedules/models.py:99
 msgid "schedule"
 msgstr "horario"
 
-#: apps/schedules/models.py:86 libs/home/templates/home/base.html:36
+#: apps/schedules/models.py:100 libs/home/templates/home/base.html:36
 msgid "schedules"
 msgstr "horarios"
 
-#: apps/schedules/models.py:92
+#: apps/schedules/models.py:106
 msgid "Repeat?"
 msgstr "¿Repetir?"
 
-#: apps/schedules/models.py:93
+#: apps/schedules/models.py:107
 msgid "frequency end date"
 msgstr "fecha final"
 
-#: apps/schedules/models.py:93
+#: apps/schedules/models.py:107
 msgid "This field can be null."
 msgstr "Este campo puede ser null"
 
-#: apps/schedules/models.py:94
+#: apps/schedules/models.py:108
 msgid "Monday"
 msgstr "Lunes"
 
-#: apps/schedules/models.py:95
+#: apps/schedules/models.py:109
 msgid "Tuesday"
 msgstr "Martes"
 
-#: apps/schedules/models.py:96
+#: apps/schedules/models.py:110
 msgid "Wednesday"
 msgstr "Miércoles"
 
-#: apps/schedules/models.py:97
+#: apps/schedules/models.py:111
 msgid "Thursday"
 msgstr "Jueves"
 
-#: apps/schedules/models.py:98
+#: apps/schedules/models.py:112
 msgid "Friday"
 msgstr "Viernes"
 
-#: apps/schedules/models.py:99
+#: apps/schedules/models.py:113
 msgid "Saturday"
 msgstr "Sábado"
 
-#: apps/schedules/models.py:100
+#: apps/schedules/models.py:114
 msgid "Sunday"
 msgstr "Domingo"
+
+#: apps/schedules/models.py:175
+msgid "recurrence"
+msgstr "repetitividad"
+
+#: apps/schedules/models.py:176
+msgid "recurrences"
+msgstr "repetitividades"
 
 #: apps/schedules/templates/schedules/schedules_list.html:4
 msgid "episode list"
@@ -190,6 +204,14 @@ msgstr "avatar"
 msgid "display personal page"
 msgstr "mostrar página personal"
 
+#: apps/users/models.py:25
+msgid "user profile"
+msgstr "perfil de usuario"
+
+#: apps/users/models.py:26
+msgid "user profiles"
+msgstr "perfiles de usuario"
+
 #: apps/users/templates/users/userprofile_detail.html:5
 msgid "about"
 msgstr "Acerca de"
@@ -208,11 +230,17 @@ msgstr "inicio"
 
 #: libs/home/templates/home/index.html:6
 msgid "now playing"
-msgstr "esta sonando"
+msgstr "está sonando"
 
-#: libs/home/templates/home/index.html:20
+#: libs/home/templates/home/index.html:19
 msgid "playlist"
 msgstr "lista de reproducción"
+
+#~ msgid ""
+#~ "This settings collides with: %(name)s [ %(start_date)s - %(end_date)s ]"
+#~ msgstr ""
+#~ "Esta configuración colisiona con: %(name)s [ %(start_date)s - %(end_date)"
+#~ "s ]"
 
 #~ msgid "description"
 #~ msgstr "descripción"

@@ -9,6 +9,9 @@ class RecurrenceInline(admin.StackedInline):
 
 class ScheduleAdmin(admin.ModelAdmin):
     inlines = (RecurrenceInline,)
+    list_display = ('__unicode__', 'start_date', 'end_date')
+    list_filter = ['start_date', 'programme']
+    search_fields = ['programme__name']
 
 
 admin.site.register(Schedule, ScheduleAdmin)

@@ -43,7 +43,6 @@ class Schedule(models.Model):
         elif self.start_date <= dt:
             return self.start_date
 
-
     def clean(self):
         if self.start_date is None or self.end_date is None or self.start_date >= self.end_date:
             raise ValidationError(_('start date must be before end date.'))
@@ -59,6 +58,7 @@ class Schedule(models.Model):
                                   % {'name': schedule.programme.name, 'start_date': start_date.strftime("%H:%M"), 'start_day': start_date.strftime("%d"),
                                      'start_month': start_date.strftime("%m"), 'start_year': start_date.strftime("%Y"),
                                      'end_date': end_date.strftime("%H:%M"), 'end_day': end_date.strftime("%d"), 'end_month': end_date.strftime("%m"), 'end_year': end_date.strftime("%Y"), })
+
     def runtime(self):
         return self.end_date - self.start_date
 
@@ -92,6 +92,8 @@ class Schedule(models.Model):
             return None, None
         return earlier_schedule, earlier_date
 
+    def __unicode__(self):
+        return self.programme.name
 
     class Meta:
         verbose_name = _('schedule')
@@ -169,6 +171,13 @@ class Recurrence(models.Model):
     def clean(self):
         if self.frequency_end_date is not None and self.frequency_end_date < self.schedule.end_date:
             raise ValidationError(_('start date must be before end date.'))
+
+    class Meta:
+            verbose_name = _('recurrence')
+            verbose_name_plural = _('recurrences')
+
+    def __unicode__(self):
+        return self.schedule.programme.name
 
 class Podcast(models.Model):
     episode = models.OneToOneField(Episode, primary_key=True)
