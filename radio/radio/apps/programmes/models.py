@@ -48,3 +48,7 @@ class Episode(models.Model):
 
     def __unicode__(self):
         return self.programme.name
+
+
+class Podcast(models.Model):
+    episode = models.OneToOneField(Episode, primary_key=True)

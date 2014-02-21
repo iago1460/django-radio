@@ -1,4 +1,5 @@
 import datetime
+
 from dateutil import rrule
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -179,5 +180,3 @@ class Recurrence(models.Model):
     def __unicode__(self):
         return self.schedule.programme.name
 
-class Podcast(models.Model):
-    episode = models.OneToOneField(Episode, primary_key=True)

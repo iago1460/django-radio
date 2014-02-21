@@ -126,7 +126,9 @@ LOCALE_PATHS = ('./radio' + '/locale',)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
-
+STATICFILES_DIRS = (
+    "/home/user/workspace/RadioCo/radio/static",
+)
 MEDIA_ROOT = '/home/user/workspace/RadioCo/radio/resources/web/'
 MEDIA_URL = '/media/'
 
@@ -139,4 +141,3 @@ GRAPH_MODELS = {
 
 # Variables
 SITE_NAME = 'Radio'
-

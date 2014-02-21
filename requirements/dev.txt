@@ -1,2 +1,4 @@
 # requirements/dev.txt
 -r common.txt
+Pillow==2.3.0
+pygraphviz
