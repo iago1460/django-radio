@@ -23,7 +23,6 @@ SECRET_KEY = 'llkjw3(_3i$708vzrvnjff+4cdeedg(w(eq@5rqc+z#ysxw1l3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
@@ -45,6 +44,7 @@ INSTALLED_APPS = (
     'radio.apps.users',
     'radio.apps.programmes',
     'radio.apps.schedules',
+    'debug_toolbar',
 )
 
 MIDDLEWARE_CLASSES = (

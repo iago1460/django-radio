@@ -1,14 +1,14 @@
 {% extends "home/base.html" %}
 {% load staticfiles i18n %}
+
+{% block programmes_class %}class="active"{% endblock %}
 {% block content %}
 	<h1>{% trans "programme list"|title %}</h1>
-	{% if programme_list %}
-		<ul>
-			{% for programme in programme_list %}
-				<li><a href="{% url 'programmes:detail' programme.slug %}">{{ programme.name }}</a></li>
-			{% endfor %}
-		</ul>
-	{% else %}
-		<p>No programmes are available.</p>
-	{% endif %}
+	<ol>
+		{% for programme in programme_list %}
+			<li><a href="{% url 'programmes:detail' programme.slug %}">{{ programme.name }}</a></li>
+		{% empty %}
+			<p>No programmes are available.</p>
+		{% endfor %}
+	</ol>
 {% endblock %}

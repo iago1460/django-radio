@@ -1,5 +1,7 @@
 {% extends "home/base.html" %}
 {% load staticfiles i18n %}
+
+{% block users_class %}class="active"{% endblock %}
 {% block content %}
 	<div class="row">
 		<h1>{% trans "about"|upper %} {{userprofile.user|upper}}</h1>

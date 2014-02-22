@@ -1,4 +1,5 @@
 # requirements/dev.txt
 -r common.txt
-Pillow==2.3.0
 pygraphviz
+django-debug-toolbar
+Pillow==2.3.0

@@ -1,24 +1,22 @@
 {% extends "home/base.html" %}
 {% load staticfiles i18n %}
+
+{% block users_class %}class="active"{% endblock %}
 {% block content %}
 	<h1>{% trans "announcers list"|title %}</h1>
-	{% if userprofile_list %}
-		<ul>
+		<ol>
 			{% for userprofile in userprofile_list %}
-				
-					<div class="media">
-					  <a class="pull-left" href="{% url 'users:detail' userprofile.slug %}">
-					    <img class="media-object" src="{{ userprofile.avatar.url }}" alt="...">
-					  </a>
-					  <div class="media-body">
-					    <h4 class="media-heading"><a href="{% url 'users:detail' userprofile.slug %}">{{ userprofile.user }}</a></h4>
-					    	{{ userprofile.bio|truncatewords:12 }}
-					  </div>
-					</div>
-				
+				<div class="media">
+				  <a class="pull-left" href="{% url 'users:detail' userprofile.slug %}">
+				    <img class="media-object" src="{{ userprofile.avatar.url }}" alt="...">
+				  </a>
+				  <div class="media-body">
+				    <h4 class="media-heading"><a href="{% url 'users:detail' userprofile.slug %}">{{ userprofile.user }}</a></h4>
+				    	{{ userprofile.bio|truncatewords:12 }}
+				  </div>
+				</div>
+			{% empty %}
+				<p>No userprofiles are available.</p>
 			{% endfor %}
-		</ul>
-	{% else %}
-		<p>No userprofiles are available.</p>
-	{% endif %}
+		</ol>
 {% endblock %}

@@ -1,6 +1,7 @@
 {% extends "home/base.html" %}
 {% load staticfiles i18n %}
 
+{% block index_class %}class="active"{% endblock %}
 {% block header_content %}
 	{% if schedule_now %}
 		<h1>{% trans "now playing"|upper %}</h1>

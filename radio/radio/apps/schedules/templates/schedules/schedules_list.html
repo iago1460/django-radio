@@ -1,5 +1,7 @@
 {% extends "home/base.html" %}
 {% load staticfiles i18n %}
+
+{% block schedules_class %}class="active"{% endblock %}
 {% block content %}
 	<h1>{% trans "episode list"|title %} {% trans "from" %} {{today|date:"r" }} {% trans "to" %} {{next_date|date:"r" }}</h1>
 		{% for key, dates in programmes_and_dates.items %}

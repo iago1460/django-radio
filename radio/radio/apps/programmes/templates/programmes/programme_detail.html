@@ -1,5 +1,7 @@
 {% extends "home/base.html" %}
 {% load staticfiles i18n %}
+
+{% block programmes_class %}class="active"{% endblock %}
 {% block content %}
 	<h1>{{ programme.name }}</h1>
 	<div class="row">
