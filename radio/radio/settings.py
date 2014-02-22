@@ -45,7 +45,6 @@ INSTALLED_APPS = (
     'radio.apps.users',
     'radio.apps.programmes',
     'radio.apps.schedules',
-    'debug_toolbar',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -121,7 +120,7 @@ LANGUAGES = (
     ('es', 'Spanish'),
 )
 
-LOCALE_PATHS = ('./radio' + '/locale',)
+LOCALE_PATHS = ('.' + '/locale',)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
