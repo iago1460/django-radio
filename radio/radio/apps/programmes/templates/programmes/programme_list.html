@@ -3,12 +3,20 @@
 
 {% block programmes_class %}class="active"{% endblock %}
 {% block content %}
-	<h1>{% trans "programme list"|title %}</h1>
-	<ol>
-		{% for programme in programme_list %}
-			<li><a href="{% url 'programmes:detail' programme.slug %}">{{ programme.name }}</a></li>
-		{% empty %}
-			<p>No programmes are available.</p>
-		{% endfor %}
-	</ol>
+	<h1>{% trans "Programme list"|upper %}</h1>
+	{% for programme in programme_list %}
+		<div class="media">
+			<div class="col-xs-6 col-md-3">
+				<a href="{% url 'programmes:detail' programme.slug %}" class="thumbnail">
+				<img class="media-object" src="{{ programme.photo.url }}" alt="...">
+				</a>
+			</div>
+			<div class="media-body">
+				<h4 class="media-heading"><a href="{% url 'programmes:detail' programme.slug %}">{{ programme.name }}</a></h4>
+				<p>{{ programme.synopsis|truncatewords:24 }}</p>
+			</div>
+		</div>
+	{% empty %}
+		<p>{% trans "No programmes are available"|upper %}</p>
+	{% endfor %}
 {% endblock %}

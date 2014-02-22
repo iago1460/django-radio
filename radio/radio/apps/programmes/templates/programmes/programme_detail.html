@@ -13,7 +13,7 @@
 		</div>
 	</div>
 	{% if userprofile_list %}
-		<h2>{% trans "announcers"|title %}</h2>
+		<h2>{% trans "Announcers"|upper %}</h2>
 		<ul>
 			{% for userprofile in userprofile_list %}
 				<li><a href="{% url 'users:detail' userprofile.slug %}">{{ userprofile.user }}</a></li>
@@ -23,13 +23,13 @@
 		<p>Without announcers.</p>
 	{% endif %}
 	{% if episode_list %}
-		<h2>{% trans "all programmes"|title %}</h2>
+		<h2>{% trans "All programmes"|upper %}</h2>
 		<ul>
 			{% for episode in episode_list %}
 				<li><a href="{% url 'programmes:episode_detail' programme.slug episode.id %}">{{ episode.published }}</a></li>
 			{% endfor %}
 		</ul>
 	{% else %}
-		<p>Without episodes.</p>
+		<p>{% trans "Without episodes."|upper %}</p>
 	{% endif %}
 {% endblock %}

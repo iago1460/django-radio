@@ -3,22 +3,35 @@
 
 {% block index_class %}class="active"{% endblock %}
 {% block header_content %}
-	{% if schedule_now %}
-		<h1>{% trans "now playing"|upper %}</h1>
-		<a href="{% url 'programmes:detail' schedule_now.programme.slug %}">{{ schedule_now.programme.name }}</a>
-		{{start_time|date:"G:i" }} - {{end_time|date:"G:i" }}
-		
-		<div class="progress">
-		  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{percentage}}" aria-valuemin="0" aria-valuemax="100" style="width: {{percentage}}%">
-		    <span class="sr-only">{{percentage}}% Complete (success)</span>
-		  </div>
+	<div class="jumbotron">
+		<div class="container">
+			{% if schedule_now %}
+				<h1>{% trans "now playing"|upper %}</h1>
+				<a href="{% url 'programmes:detail' schedule_now.programme.slug %}">{{ schedule_now.programme.name }}</a>
+				{{start_time|date:"G:i" }} - {{end_time|date:"G:i" }}
+				
+				<div class="progress">
+				  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{percentage}}" aria-valuemin="0" aria-valuemax="100" style="width: {{percentage}}%">
+				    <span class="sr-only">{{percentage}}% Complete (success)</span>
+				  </div>
+				</div>
+			{% else %}
+				<h1>{% trans "Coming soon"|upper %}</h1>
+			{% endif %}
 		</div>
-	{% endif %}
+	</div>
 {% endblock %}
-
 {% block content %}
 	<h1>{% trans "playlist"|upper %} {{now|date|upper }}</h1>
-	{% for schedule, date in next_events %}
-		<li>{{date|date:"G:i" }} <a href="{% url 'programmes:detail' schedule.programme.slug %}">{{ schedule.programme.name }}</a></li>
-	{% endfor %}
+	
+	<ul class="list-group">
+		{% for schedule, date in next_events %}
+			<li class="list-group-item">
+				<h4><span class="label label-default">{{date|date:"G:i" }}</span>
+				<a href="{% url 'programmes:detail' schedule.programme.slug %}">{{ schedule.programme.name }}</a></h4>
+			</li>
+		{% empty %}
+			<p>{% trans "Coming soon"|upper %}</p>
+		{% endfor %}
+	</ul>
 {% endblock %}

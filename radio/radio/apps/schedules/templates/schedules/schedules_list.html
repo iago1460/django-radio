@@ -3,16 +3,12 @@
 
 {% block schedules_class %}class="active"{% endblock %}
 {% block content %}
-	<h1>{% trans "episode list"|title %} {% trans "from" %} {{today|date:"r" }} {% trans "to" %} {{next_date|date:"r" }}</h1>
-		{% for key, dates in programmes_and_dates.items %}
-			<h2>{{key}} {% trans "next week"|title %}</h2>
-			<ul>
-	        {% for date in dates %}
-				<li><span class="label label-default">{{date|date:'r'}}</span></li>
-			{% endfor %}
-			</ul>
-		{% endfor %}
-		<p>No episodes are available.</p>
-		
-		{{string}}
+	<h1>{% trans "Episode list"|upper %}</h1>
+	<h2>{% trans "from"|upper %} {{today|date:"l j N Y"|upper }} {% trans "to"|upper %} {{next_date|date:"l j N Y"|upper }}</h2>
+	{% for schedule, date in next_events %}
+		<div class="well">
+			<h4><p><span class="label label-default">{{date|date:"G:i - l j N Y" }}</span></p></h4>
+			<a href="{% url 'programmes:detail' schedule.programme.slug %}">{{ schedule.programme.name }}</a>
+		</div>
+	{% endfor %}
 {% endblock %}

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-21 22:26+0100\n"
+"POT-Creation-Date: 2014-02-22 14:36+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,8 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: radio/apps/programmes/models.py:9
-#: radio/apps/programmes/templates/programmes/programme_detail.html:14
-#: radio/libs/home/templates/home/base.html:35
+#: radio/libs/home/templates/home/base.html:37
 msgid "announcers"
 msgstr "locutores"
 
@@ -45,7 +44,7 @@ msgid "programme"
 msgstr "programa"
 
 #: radio/apps/programmes/models.py:21
-#: radio/libs/home/templates/home/base.html:37
+#: radio/libs/home/templates/home/base.html:36
 msgid "programmes"
 msgstr "programas"
 
@@ -58,7 +57,6 @@ msgid "published"
 msgstr "publicado"
 
 #: radio/apps/programmes/models.py:43
-#: radio/apps/programmes/templates/programmes/episode_detail.html:13
 msgid "episode"
 msgstr "episodio"
 
@@ -66,13 +64,29 @@ msgstr "episodio"
 msgid "episodes"
 msgstr "episodio"
 
-#: radio/apps/programmes/templates/programmes/programme_detail.html:24
-msgid "all programmes"
-msgstr "todos los programas"
+#: radio/apps/programmes/templates/programmes/episode_detail.html:15
+msgid "Episode"
+msgstr "Episodio"
 
-#: radio/apps/programmes/templates/programmes/programme_list.html:4
-msgid "programme list"
-msgstr "lista de programas"
+#: radio/apps/programmes/templates/programmes/programme_detail.html:16
+msgid "Announcers"
+msgstr "Locutores"
+
+#: radio/apps/programmes/templates/programmes/programme_detail.html:26
+msgid "All programmes"
+msgstr "Todos los programas"
+
+#: radio/apps/programmes/templates/programmes/programme_detail.html:33
+msgid "Without episodes."
+msgstr "Sin episodios"
+
+#: radio/apps/programmes/templates/programmes/programme_list.html:6
+msgid "Programme list"
+msgstr "Lista de programas"
+
+#: radio/apps/programmes/templates/programmes/programme_list.html:20
+msgid "No programmes are available"
+msgstr "No hay programas disponibles"
 
 #: radio/apps/schedules/models.py:12
 msgid "live"
@@ -126,7 +140,7 @@ msgid "schedule"
 msgstr "horario"
 
 #: radio/apps/schedules/models.py:101
-#: radio/libs/home/templates/home/base.html:36
+#: radio/libs/home/templates/home/base.html:35
 msgid "schedules"
 msgstr "horarios"
 
@@ -178,21 +192,17 @@ msgstr "repetitividad"
 msgid "recurrences"
 msgstr "repetitividades"
 
-#: radio/apps/schedules/templates/schedules/schedules_list.html:4
-msgid "episode list"
-msgstr "lista de episodios"
+#: radio/apps/schedules/templates/schedules/schedules_list.html:6
+msgid "Episode list"
+msgstr "Lista de episodios"
 
-#: radio/apps/schedules/templates/schedules/schedules_list.html:4
+#: radio/apps/schedules/templates/schedules/schedules_list.html:7
 msgid "from"
 msgstr "desde"
 
-#: radio/apps/schedules/templates/schedules/schedules_list.html:4
+#: radio/apps/schedules/templates/schedules/schedules_list.html:7
 msgid "to"
 msgstr "hasta"
-
-#: radio/apps/schedules/templates/schedules/schedules_list.html:6
-msgid "next week"
-msgstr "próxima semana"
 
 #: radio/apps/users/models.py:10
 msgid "biography"
@@ -214,13 +224,21 @@ msgstr "perfil de usuario"
 msgid "user profiles"
 msgstr "perfiles de usuario"
 
-#: radio/apps/users/templates/users/userprofile_detail.html:5
+#: radio/apps/users/templates/users/userprofile_detail.html:8
 msgid "about"
 msgstr "acerca de"
 
-#: radio/apps/users/templates/users/userprofile_list.html:4
+#: radio/apps/users/templates/users/userprofile_detail.html:14
+msgid "No user information available"
+msgstr "No hay información del usuario disponible"
+
+#: radio/apps/users/templates/users/userprofile_list.html:6
 msgid "announcers list"
 msgstr "locutores"
+
+#: radio/apps/users/templates/users/userprofile_list.html:20
+msgid "No userprofiles are available"
+msgstr "No hay perfiles disponibles"
 
 #: radio/libs/home/templates/home/base.html:7
 msgid "Django Home"
@@ -230,13 +248,21 @@ msgstr "Django Inicio"
 msgid "home"
 msgstr "inicio"
 
-#: radio/libs/home/templates/home/index.html:6
+#: radio/libs/home/templates/home/index.html:9
 msgid "now playing"
 msgstr "está sonando"
 
 #: radio/libs/home/templates/home/index.html:19
+#: radio/libs/home/templates/home/index.html:34
+msgid "Coming soon"
+msgstr "Próximamente"
+
+#: radio/libs/home/templates/home/index.html:25
 msgid "playlist"
 msgstr "lista de reproducción"
+
+#~ msgid "next week"
+#~ msgstr "próxima semana"
 
 #~ msgid ""
 #~ "This settings collides with: %(name)s [ %(start_date)s - %(end_date)s ]"
@@ -267,9 +293,6 @@ msgstr "lista de reproducción"
 
 #~ msgid "shows"
 #~ msgstr "programas"
-
-#~ msgid "Announcers"
-#~ msgstr "Locutores"
 
 #~ msgid "Name"
 #~ msgstr "Nombre"

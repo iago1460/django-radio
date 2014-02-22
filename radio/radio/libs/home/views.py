@@ -1,4 +1,5 @@
 import datetime
+
 from dateutil.relativedelta import relativedelta
 from django.shortcuts import render
 from django.utils import timezone
@@ -16,12 +17,17 @@ def index(request):
         end_time = now
         percentage = None
 
-    next_schedules, next_dates = Schedule.between(end_time, end_time + relativedelta(hours=+6))
-    next_events = []
+    next_schedules, next_dates = Schedule.between(end_time, end_time + relativedelta(hours=+16))
+    schedules = []
+    dates = []
     for x in range(len(next_schedules)):
         for y in range(len(next_dates[x])):
-            next_events.append([next_schedules[x], next_dates[x][y]])
+            # next_events.append([next_schedules[x], next_dates[x][y]])
+            schedules.append(next_schedules[x])
+            dates.append(next_dates[x][y])
 
-    context = {'active_home': True, 'schedule_now':schedule_now, 'start_time':start_time, 'percentage':percentage,
+    dates, schedules = (list(t) for t in zip(*sorted(zip(dates, schedules))))
+    next_events = zip(schedules, dates)
+    context = {'schedule_now':schedule_now, 'start_time':start_time, 'percentage':percentage,
                'end_time':end_time, 'now': now, 'next_events':next_events}
     return render(request, 'home/index.html', context)

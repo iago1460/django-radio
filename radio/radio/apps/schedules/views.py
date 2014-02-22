@@ -1,8 +1,9 @@
 import datetime
+import operator
+
 from dateutil.relativedelta import relativedelta
 from django.shortcuts import render
 from django.utils import timezone
-import operator
 
 from radio.apps.schedules.models import Schedule
 
@@ -47,8 +48,6 @@ def schedule_list(request):
     next_date = midnight.astimezone(timezone.utc)
 
 
-
-
     """
     dates = []
     schedules = Schedule.objects.order_by('id')
@@ -58,11 +57,21 @@ def schedule_list(request):
         dates.append(schedule.next_dates(after=today, before=next_date))
         # dates.append(schedule.recurrences.between(after=today, before=next_date))
     """
-    schedules, dates = Schedule.between(after=today, before=next_date)
-    programmes_and_dates = dict(zip([x.programme.name for x in schedules], dates))
+    next_schedules, next_dates = Schedule.between(after=today, before=next_date)
 
-    string = len(programmes_and_dates)
-    # string = [x.start_date for x in Schedule.now()]
-    context = {'today':today, 'next_date':next_date, 'programmes_and_dates':programmes_and_dates, 'string':string}
+    schedules = []
+    dates = []
+    for x in range(len(next_schedules)):
+        for y in range(len(next_dates[x])):
+            # next_events.append([next_schedules[x], next_dates[x][y]])
+            schedules.append(next_schedules[x])
+            dates.append(next_dates[x][y])
+
+    dates, schedules = (list(t) for t in zip(*sorted(zip(dates, schedules))))
+    next_events = zip(schedules, dates)
+
+
+
+    context = {'today':today, 'next_date':next_date, 'next_events':next_events}
 
     return render(request, 'schedules/schedules_list.html', context)

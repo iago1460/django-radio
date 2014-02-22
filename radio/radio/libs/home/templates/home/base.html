@@ -32,20 +32,15 @@
 				<div class="navbar-collapse collapse">
 					<ul class="nav navbar-nav">
 						<li {% block index_class %}{% endblock %}><a href="/">{% trans "home"|title %}</a></li>
-						<li {% block users_class %}{% endblock %}><a href="{% url 'users:list' %}">{% trans "announcers"|title %}</a></li>
 						<li {% block schedules_class %}{% endblock %}><a href="{% url 'schedules:list' %}">{% trans "schedules"|title %}</a></li>
 						<li {% block programmes_class %}{% endblock %}><a href="{% url 'programmes:list' %}">{% trans "programmes"|title %}</a></li>
+						<li {% block users_class %}{% endblock %}><a href="{% url 'users:list' %}">{% trans "announcers"|title %}</a></li>
 					</ul>
 				</div>
 				<!--/.nav-collapse -->
 			</div>
 		</div>
-		<!-- Main jumbotron for a primary marketing message or call to action -->
-		<div class="jumbotron">
-			<div class="container">
-				{% block header_content %}{% endblock %}
-			</div>
-		</div>
+		{% block header_content %}{% endblock %}
 		<div class="container">
 			{% block content %}
 				<!-- Example row of columns -->

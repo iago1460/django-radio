@@ -3,20 +3,22 @@
 
 {% block users_class %}class="active"{% endblock %}
 {% block content %}
-	<h1>{% trans "announcers list"|title %}</h1>
-		<ol>
+	<h1>{% trans "announcers list"|upper %}</h1>
+	<ol>
+		<div class="row">
 			{% for userprofile in userprofile_list %}
-				<div class="media">
-				  <a class="pull-left" href="{% url 'users:detail' userprofile.slug %}">
-				    <img class="media-object" src="{{ userprofile.avatar.url }}" alt="...">
-				  </a>
-				  <div class="media-body">
-				    <h4 class="media-heading"><a href="{% url 'users:detail' userprofile.slug %}">{{ userprofile.user }}</a></h4>
-				    	{{ userprofile.bio|truncatewords:12 }}
-				  </div>
+				<div class="col-sm-6 col-md-4">
+					<div class="thumbnail">
+						<img class="media-object" src="{{ userprofile.avatar.url }}">
+						<div class="caption">
+							<h3><a href="{% url 'users:detail' userprofile.slug %}">{{ userprofile.user }}</a></h3>
+							<p>{{ userprofile.bio|truncatewords:12 }}</p>
+						</div>
+					</div>
 				</div>
 			{% empty %}
-				<p>No userprofiles are available.</p>
+				<p>{% trans "No userprofiles are available"|upper %}</p>
 			{% endfor %}
-		</ol>
+		</div>
+	</ol>
 {% endblock %}

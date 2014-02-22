@@ -4,11 +4,17 @@
 {% block users_class %}class="active"{% endblock %}
 {% block content %}
 	<div class="row">
-		<h1>{% trans "about"|upper %} {{userprofile.user|upper}}</h1>
-		<div class="media">
-			<img src="{{ userprofile.avatar.url }}">
-		</div>
-		
-		<p>{{userprofile.bio}}</p>
+		{% if userprofile %}
+			<h1>{% trans "about"|upper %} {{userprofile.user|upper}}</h1>
+			<div class="media">
+				<img src="{{ userprofile.avatar.url }}">
+			</div>
+			<p>{{userprofile.bio}}</p>
+		{% else %}
+			<h1>{% trans "No user information available"|upper %}</h1>
+			<div class="media">
+				<img src="{% static "radio/images/default-userprofile-avatar.jpg" %}">
+			</div>
+		{% endif %}
 	</div>
 {% endblock %}
