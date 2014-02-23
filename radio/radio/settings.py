@@ -120,16 +120,17 @@ LANGUAGES = (
     ('es', 'Spanish'),
 )
 
-LOCALE_PATHS = ('./radio' + '/locale',)
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.6/howto/static-files/
+
+ABSOLUTE_PATHNAME = '/home/user/git/django-radio'
+
+LOCALE_PATHS = (ABSOLUTE_PATHNAME + '/radio/locale',)
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
-    "/home/user/workspace/RadioCo/radio/static",
+    ABSOLUTE_PATHNAME + '/static',
 )
-MEDIA_ROOT = '/home/user/workspace/RadioCo/radio/resources/web/'
+MEDIA_ROOT = ABSOLUTE_PATHNAME + '/resources/'
 MEDIA_URL = '/media/'
 
 
