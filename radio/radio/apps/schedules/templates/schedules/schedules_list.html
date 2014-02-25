@@ -5,10 +5,21 @@
 {% block content %}
 	<h1>{% trans "Episode list"|upper %}</h1>
 	<h2>{% trans "from"|upper %} {{today|date:"l j N Y"|upper }} {% trans "to"|upper %} {{next_date|date:"l j N Y"|upper }}</h2>
+	
+	
+	<ul class="nav nav-tabs">
+		{% for date in day_list %}
+			{% if date.day ==  today.day%}
+				<li class="active"><a href="#">{{ date|date:"l" }}</a></li>
+			{% else %}
+				<li><a href="{% url 'schedules:daily_schedule' year=date|date:"Y" month=date|date:"m"  day=date|date:"d"%}">{{ date|date:"l" }}</a></li>
+			{% endif %}
+		{% endfor %}
+	</ul>
+	
 	{% for schedule, date in next_events %}
-		<div class="well">
-			<h4><p><span class="label label-default">{{date|date:"G:i - l j N Y" }}</span></p></h4>
-			<a href="{% url 'programmes:detail' schedule.programme.slug %}">{{ schedule.programme.name }}</a>
-		</div>
+		<h4><p><span class="label label-default">{{date|date:"G:i - l j N Y" }}</span></p></h4>
+		<a href="{% url 'programmes:detail' schedule.programme.slug %}">{{ schedule.programme.name }}</a>
+		<HR> 
 	{% endfor %}
 {% endblock %}

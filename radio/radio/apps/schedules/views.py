@@ -1,6 +1,7 @@
 import datetime
 import operator
 
+from dateutil import rrule
 from dateutil.relativedelta import relativedelta
 from django.shortcuts import render
 from django.utils import timezone
@@ -8,56 +9,26 @@ from django.utils import timezone
 from radio.apps.schedules.models import Schedule
 
 
-def schedule_list(request):
-
-    """
-    emission_list = chain(Episode.objects.all() , Broadcast.objects.all() , BroadcastSyndication.objects.all())
-    emission_list = sorted(emission_list, key=operator.attrgetter('start_date'))
-    context = {'episode_list': Episode.objects.order_by('-start_date'),
-               'broadcast_list' :Broadcast.objects.order_by('-start_date'),
-               'broadcastsyndication_list': BroadcastSyndication.objects.order_by('-start_date')}
-    
-    
-    string = list(schedule.recurrences.occurrences(dtstart=schedule.start_date))
-    """
-    # schedule = Schedule.objects.get(id=1)
-
-
-
-    """
-    now = datetime.utcnow().replace(tzinfo=timezone.utc)
-
-    next_date = now + relativedelta(days=+7)
-    next_date = datetime.combine(next_date, datetime.min.time())
-    next_date = next_date.replace(tzinfo=timezone.utc)
-
-    today = datetime.combine(date.today(), datetime.min.time())
-    today = today.replace(tzinfo=timezone.utc)
-    today = today.replace(hour=0, minute=0, second=0, microsecond=0)
-    
-    
-    # today = datetime(today.year, today.month, today.day, 0, 0, 0, tzinfo=utc)
-    """
+def schedule_day(request, year, month, day):
     tz = timezone.get_current_timezone()
+    after = datetime.datetime(int(year), int(month), int(day), 0, 0, 0, tzinfo=timezone.utc)
+    
+    midnight = tz.localize(datetime.datetime.combine(after, datetime.time(23, 59, 59)), is_dst=None)
+    before = midnight.astimezone(timezone.utc)
+    
+    next_events = __get_events(after, before)
 
-    today = datetime.datetime.now(tz).date()
-    midnight = tz.localize(datetime.datetime.combine(today, datetime.time(0, 0, 0)), is_dst=None)
-    today = midnight.astimezone(timezone.utc)
+    context = {'today':after, 'next_date':before, 'next_events':next_events, 'day_list':__get_nextDays()}
 
-    midnight = tz.localize(datetime.datetime.combine(today + relativedelta(days=+7), datetime.time(23, 59, 59)), is_dst=None)
-    next_date = midnight.astimezone(timezone.utc)
+    return render(request, 'schedules/schedules_list.html', context)
+    
+def schedule_list(request):
+    today = datetime.datetime.now().date()
+    return schedule_day(request, today.year, today.month, today.day)
 
 
-    """
-    dates = []
-    schedules = Schedule.objects.order_by('id')
-    programme_name = []
-    for schedule in Schedule:
-        programme_name.append(schedule.programme.name)
-        dates.append(schedule.next_dates(after=today, before=next_date))
-        # dates.append(schedule.recurrences.between(after=today, before=next_date))
-    """
-    next_schedules, next_dates = Schedule.between(after=today, before=next_date)
+def __get_events(after, before):
+    next_schedules, next_dates = Schedule.between(after=after, before=before)
 
     schedules = []
     dates = []
@@ -66,12 +37,23 @@ def schedule_list(request):
             # next_events.append([next_schedules[x], next_dates[x][y]])
             schedules.append(next_schedules[x])
             dates.append(next_dates[x][y])
+    if (schedules):
+        dates, schedules = (list(t) for t in zip(*sorted(zip(dates, schedules))))
+        return zip(schedules, dates)
+    return None
+    
+def __get_nextDays():
+    tz = timezone.get_current_timezone()
 
-    dates, schedules = (list(t) for t in zip(*sorted(zip(dates, schedules))))
-    next_events = zip(schedules, dates)
+    today = datetime.datetime.now(tz).date()
+    midnight = tz.localize(datetime.datetime.combine(today, datetime.time(0, 0, 0)), is_dst=None)
+    today = midnight.astimezone(timezone.utc)
 
-
-
-    context = {'today':today, 'next_date':next_date, 'next_events':next_events}
-
-    return render(request, 'schedules/schedules_list.html', context)
+    midnight = tz.localize(datetime.datetime.combine(today + relativedelta(days=+7), datetime.time(23, 59, 59)), is_dst=None)
+    end_date = midnight.astimezone(timezone.utc)
+    
+    today = timezone.get_current_timezone().normalize(today)
+    end_date = timezone.get_current_timezone().normalize(end_date)
+    return rrule.rrule(rrule.WEEKLY, byweekday=[], dtstart=today, until=end_date)
+    
+    
