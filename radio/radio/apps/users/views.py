@@ -8,7 +8,7 @@ class UsersView(generic.ListView):
     model = UserProfile
 
     def get_queryset(self):
-        return UserProfile.objects.filter(display_personal_page=True)
+        return UserProfile.objects.filter(display_personal_page=True).select_related('user')
 
 class UserProfileDetailView(generic.DetailView):
     model = UserProfile

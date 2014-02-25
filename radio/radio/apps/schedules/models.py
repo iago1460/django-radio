@@ -65,7 +65,7 @@ class Schedule(models.Model):
 
     @classmethod
     def between(cls, after, before):
-        list_schedules = cls.objects.filter(active=True, start_date__lte=before).order_by('-start_date')
+        list_schedules = cls.objects.filter(active=True, start_date__lte=before).order_by('-start_date').select_related('recurrence','programme')
         dates = []
         schedules = []
         for schedule in list_schedules:
@@ -77,7 +77,7 @@ class Schedule(models.Model):
 
     @classmethod
     def schedule(cls, dt):
-        list_schedules = cls.objects.filter(active=True, start_date__lte=dt)
+        list_schedules = cls.objects.filter(active=True, start_date__lte=dt).select_related('recurrence','programme')
         """
         if exclude and exclude in list_schedules:
             list_schedules = list_schedules.remove(exclude)
