@@ -1,5 +1,4 @@
 import datetime
-import operator
 
 from dateutil import rrule
 from dateutil.relativedelta import relativedelta
@@ -18,7 +17,7 @@ def schedule_day(request, year, month, day):
     
     next_events = __get_events(after, before)
 
-    context = {'today':after, 'next_date':before, 'next_events':next_events, 'day_list':__get_nextDays()}
+    context = {'today':after, 'next_events':next_events, 'day_list':__get_nextDays(), 'now':datetime.datetime.now(tz)}
 
     return render(request, 'schedules/schedules_list.html', context)
     

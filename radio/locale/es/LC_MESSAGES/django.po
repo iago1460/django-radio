@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-22 14:36+0100\n"
+"POT-Creation-Date: 2014-03-01 20:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: htmlcov/_home_user_git_django-radio_lib_python2_7_site-packages_django_views_static.html:290
+#: htmlcov/_home_user_git_django-radio_lib_python2_7_site-packages_django_views_static.html:293
+#, python-format
+msgid "Index of %(directory)s"
+msgstr ""
 
 #: radio/apps/programmes/models.py:9
 #: radio/libs/home/templates/home/base.html:37
@@ -196,14 +202,6 @@ msgstr "repetitividades"
 msgid "Episode list"
 msgstr "Lista de episodios"
 
-#: radio/apps/schedules/templates/schedules/schedules_list.html:7
-msgid "from"
-msgstr "desde"
-
-#: radio/apps/schedules/templates/schedules/schedules_list.html:7
-msgid "to"
-msgstr "hasta"
-
 #: radio/apps/users/models.py:10
 msgid "biography"
 msgstr "biografía"
@@ -253,13 +251,23 @@ msgid "now playing"
 msgstr "está sonando"
 
 #: radio/libs/home/templates/home/index.html:19
-#: radio/libs/home/templates/home/index.html:34
+#: radio/libs/home/templates/home/index.html:40
 msgid "Coming soon"
 msgstr "Próximamente"
 
 #: radio/libs/home/templates/home/index.html:25
 msgid "playlist"
 msgstr "lista de reproducción"
+
+#: radio/libs/home/templates/home/index.html:30
+msgid "Now"
+msgstr "Ahora"
+
+#~ msgid "from"
+#~ msgstr "desde"
+
+#~ msgid "to"
+#~ msgstr "hasta"
 
 #~ msgid "next week"
 #~ msgstr "próxima semana"

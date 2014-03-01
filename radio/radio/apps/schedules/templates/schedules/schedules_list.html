@@ -4,8 +4,6 @@
 {% block schedules_class %}class="active"{% endblock %}
 {% block content %}
 	<h1>{% trans "Episode list"|upper %}</h1>
-	<h2>{% trans "from"|upper %} {{today|date:"l j N Y"|upper }} {% trans "to"|upper %} {{next_date|date:"l j N Y"|upper }}</h2>
-	
 	
 	<ul class="nav nav-tabs">
 		{% for date in day_list %}
@@ -18,7 +16,11 @@
 	</ul>
 	
 	{% for schedule, date in next_events %}
-		<h4><p><span class="label label-default">{{date|date:"G:i - l j N Y" }}</span></p></h4>
+		{% if date <  now %}
+			<h4><span class="label label-warning">{{date|date:"G:i" }}</span></h4>
+		{% else %}
+			<h4><span class="label label-success">{{date|date:"G:i" }}</span></h4>
+		{% endif %}
 		<a href="{% url 'programmes:detail' schedule.programme.slug %}">{{ schedule.programme.name }}</a>
 		<HR> 
 	{% endfor %}
