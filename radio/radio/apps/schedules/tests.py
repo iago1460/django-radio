@@ -1,68 +1,81 @@
 import datetime
+
 from dateutil.relativedelta import relativedelta
+from django.core.exceptions import ValidationError
 from django.test import TestCase
-from django.utils import timezone
 
 from radio.apps.programmes.models import Programme
-from radio.apps.schedules.models import Schedule, Recurrence
+from radio.apps.schedules.models import Schedule, MO, TU, WE, TH, FR, SA, SU
 
+
+def to_relativedelta(tdelta):
+    return relativedelta(seconds=int(tdelta.total_seconds()),
+                         microseconds=tdelta.microseconds)
 
 class ProgrammeMethodTests(TestCase):
 
     def setUp(self):
-        midnight_programme = Programme.objects.create(name="Programme 00:00 - 12:00", synopsis="This is a description")
-        start_date = datetime.datetime(2014, 1, 31, 0, 0, 0, 0, tzinfo=timezone.utc)
-        end_date = datetime.datetime(2014, 1, 31, 12, 0, 0, 0, tzinfo=timezone.utc)
-        Schedule.objects.create(programme=midnight_programme, start_date=start_date, end_date=end_date, type='L')
+        midnight_programme = Programme.objects.create(name="Programme 00:00 - 09:00", synopsis="This is a description",
+                                                      start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0),
+                                                      end_date=datetime.datetime(2014, 1, 31, 12, 0, 0, 0), runtime=540)
 
-        every_noon_programme = Programme.objects.create(name="Programme 12:00 - 14:00", synopsis="This is a description")
-        start_date = datetime.datetime(2014, 1, 31, 12, 0, 0, 0, tzinfo=timezone.utc)
-        end_date = datetime.datetime(2014, 1, 31, 14, 0, 0, 0, tzinfo=timezone.utc)
-        every_noon_schedule = Schedule.objects.create(programme=every_noon_programme, start_date=start_date, end_date=end_date, type='L')
-        Recurrence.objects.create(schedule=every_noon_schedule, repeat=True, monday=True, tuesday=True, wednesday=True, thursday=True,
-                                  friday=True, saturday=True, sunday=True)
+        start_hour = datetime.time(0, 0, 0)
+        Schedule.objects.create(programme=midnight_programme, day=MO, start_hour=start_hour, type='L')
+        Schedule.objects.create(programme=midnight_programme, day=TU, start_hour=start_hour, type='L')
+        Schedule.objects.create(programme=midnight_programme, day=WE, start_hour=start_hour, type='L')
+        Schedule.objects.create(programme=midnight_programme, day=TH, start_hour=start_hour, type='L')
+        Schedule.objects.create(programme=midnight_programme, day=FR, start_hour=start_hour, type='L')
+        Schedule.objects.create(programme=midnight_programme, day=SA, start_hour=start_hour, type='L')
+        Schedule.objects.create(programme=midnight_programme, day=SU, start_hour=start_hour, type='L')
+
+        programme = Programme.objects.create(name="Programme 09:00 - 10:00", synopsis="This is a description",
+                                                     start_date=datetime.datetime(2014, 1, 1),
+                                                     end_date=datetime.datetime(2014, 1, 31), runtime=60)
+        Schedule.objects.create(programme=programme, day=MO, start_hour=datetime.time(9, 0, 0), type='L')
+        Schedule.objects.create(programme=programme, day=WE, start_hour=datetime.time(9, 0, 0), type='L')
+        Schedule.objects.create(programme=programme, day=FR, start_hour=datetime.time(9, 0, 0), type='L')
+
+        programme = Programme.objects.create(name="Programme 10:00 - 12:00", synopsis="This is a description",
+                                                     start_date=datetime.datetime(2014, 1, 1),
+                                                     end_date=datetime.datetime(2014, 1, 31), runtime=120)
+        Schedule.objects.create(programme=programme, day=MO, start_hour=datetime.time(10, 0, 0), type='L')
+        Schedule.objects.create(programme=programme, day=WE, start_hour=datetime.time(10, 0, 0), type='L')
+        Schedule.objects.create(programme=programme, day=FR, start_hour=datetime.time(10, 0, 0), type='L')
+
+        for schedule in Schedule.objects.all():
+            schedule.clean(mock_now=datetime.datetime(2014, 1, 1, 0, 0, 0, 0))
 
     def test_runtime(self):
-        programme = Programme.objects.get(name="Programme 00:00 - 12:00")
-        schedule = Schedule.objects.get(programme=programme)
-        self.assertEqual(relativedelta(hours=+12), relativedelta(seconds=schedule.runtime().total_seconds()))
+        programme = Programme.objects.get(name="Programme 00:00 - 09:00")
+        self.assertEqual(relativedelta(hours=+9), to_relativedelta(programme.runtime))
 
-    def test_playing_now(self):
-        mock_now = datetime.datetime(2014, 1, 31, 0, 0, 0, 0, tzinfo=timezone.utc)
-        schedule, date = Schedule.schedule(mock_now)
-        self.assertEqual(schedule.programme, Programme.objects.get(name="Programme 00:00 - 12:00"))
+    def test_day_schedule(self):
+        schedules, dates = Schedule.between(datetime.datetime(2014, 1, 6), datetime.datetime(2014, 1, 7))
+        self.assertEqual(4, len(schedules))
+        schedule_1 = Schedule.objects.get(programme=Programme.objects.get(name="Programme 00:00 - 09:00"), day=MO)
+        schedule_2 = Schedule.objects.get(programme=Programme.objects.get(name="Programme 09:00 - 10:00"), day=MO)
+        schedule_3 = Schedule.objects.get(programme=Programme.objects.get(name="Programme 10:00 - 12:00"), day=MO)
+        schedule_4 = Schedule.objects.get(programme=Programme.objects.get(name="Programme 00:00 - 09:00"), day=TU)
+        self.assertTrue(schedule_1 in schedules)
+        self.assertTrue(schedule_2 in schedules)
+        self.assertTrue(schedule_3 in schedules)
+        self.assertTrue(schedule_4 in schedules)
 
-        mock_now = datetime.datetime(2014, 1, 31, 12, 0, 0, 0, tzinfo=timezone.utc)
-        schedule, date = Schedule.schedule(mock_now)
-        self.assertEqual(schedule.programme, Programme.objects.get(name="Programme 12:00 - 14:00"))
+    def test_now_playing(self):
+        now_mock = datetime.datetime(2014, 1, 6, 0, 0, 0, 0)
+        schedule, date = Schedule.schedule(now_mock)
+        schedule_1 = Schedule.objects.get(programme=Programme.objects.get(name="Programme 00:00 - 09:00"), day=MO)
+        self.assertEqual(schedule_1, schedule)
+        self.assertEqual(datetime.datetime.combine(now_mock, schedule_1.start_hour), date)
 
-    def test_playing_now_recurrence(self):
-        mock_now = datetime.datetime(2014, 2, 1, 12, 0, 0, 0, tzinfo=timezone.utc)
-        schedule, date = Schedule.schedule(mock_now)
-        self.assertEqual(schedule.programme, Programme.objects.get(name="Programme 12:00 - 14:00"))
+        now_mock = datetime.datetime(2014, 1, 7, 0, 0, 0, 0)
+        schedule, date = Schedule.schedule(now_mock)
+        schedule_1 = Schedule.objects.get(programme=Programme.objects.get(name="Programme 00:00 - 09:00"), day=TU)
+        self.assertEqual(schedule_1, schedule)
+        self.assertEqual(datetime.datetime.combine(now_mock, schedule_1.start_hour), date)
 
-        mock_now = datetime.datetime(2014, 2, 1, 13, 59, 59, 0, tzinfo=timezone.utc)
-        schedule, date = Schedule.schedule(mock_now)
-        self.assertEqual(schedule.programme, Programme.objects.get(name="Programme 12:00 - 14:00"))
-
-        mock_now = datetime.datetime(2014, 3, 1, 14, 0, 0, 0, tzinfo=timezone.utc)
-        schedule, date = Schedule.schedule(mock_now)
-        self.assertEqual(schedule.programme, Programme.objects.get(name="Programme 12:00 - 14:00"))
-
-    def test_ocurrences(self):
-        after_date = datetime.datetime(2014, 1, 31, 0, 0, 0, 0, tzinfo=timezone.utc)
-        before_date = datetime.datetime(2014, 1, 31, 12, 0, 0, 0, tzinfo=timezone.utc)
-        schedules, dates = Schedule.between(after_date, before_date)
-        self.assertEquals(2, len(schedules))
-        self.assertTrue(Programme.objects.get(name="Programme 12:00 - 14:00") in [x.programme for x in schedules])
-        self.assertTrue(Programme.objects.get(name="Programme 00:00 - 12:00") in [x.programme for x in schedules])
-
-        after_date = datetime.datetime(2014, 2, 1, 0, 0, 0, 0, tzinfo=timezone.utc)
-        before_date = datetime.datetime(2014, 2, 1, 12, 0, 0, 0, tzinfo=timezone.utc)
-        schedules, dates = Schedule.between(after_date, before_date)
-        self.assertEquals(1, len(schedules))
-        self.assertTrue(Programme.objects.get(name="Programme 12:00 - 14:00") in [x.programme for x in schedules])
-
-
-
-
+    def test_validation_exceptions(self):
+        start_hour = datetime.time(0, 0, 0)
+        mock_now = datetime.datetime(2014, 1, 1, 0, 0, 0, 0)
+        schedule = Schedule.objects.create(programme=Programme.objects.get(name="Programme 00:00 - 09:00"), day=MO, start_hour=start_hour, type='L')
+        self.assertRaises(ValidationError, schedule.clean, mock_now)

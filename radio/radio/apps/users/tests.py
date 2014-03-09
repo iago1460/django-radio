@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 
@@ -17,7 +19,7 @@ class UserProfileMethodTests(TestCase):
         user.save()
         user_profile = UserProfile(user=user, bio='my bio')
         user_profile.save()
-        programme = user.programme_set.create(name="Test programme", synopsis="This is a description")
+        programme = user.programme_set.create(name="Test programme", synopsis="This is a description", _runtime=60, start_date=datetime.date(2014, 1, 31))
 
         self.assertEqual(programme, Programme.objects.get(id=programme.id))
         self.assertEqual(user_profile, UserProfile.objects.get(id=user_profile.id))

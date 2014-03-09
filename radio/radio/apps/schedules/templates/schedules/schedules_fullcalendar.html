@@ -1,0 +1,41 @@
+{% extends "home/base.html" %}
+{% load staticfiles i18n %}
+
+{% block extra_head %}
+	<meta charset='utf-8' />
+	<link rel="stylesheet" href="{% static "fullcalendar/fullcalendar.css" %}" type="text/css" />
+	<link rel="stylesheet" href="{% static "fullcalendar/fullcalendar.print.css" %}" type="text/css"  media='print'/>
+	<link rel="stylesheet" href="{% static "radio/css/calendar.css" %}" type="text/css"/>
+	<script src="{% static "lib/moment.min.js" %}" type="text/javascript"></script>
+	<script src="{% static "lib/jquery.min.js" %}" type="text/javascript"></script>
+	<script src="{% static "lib/jquery-ui.custom.min.js" %}" type="text/javascript"></script>
+	<script src="{% static "fullcalendar/fullcalendar.js" %}" type="text/javascript"></script>
+	<script src="{% static "fullcalendar/lang/all.js" %}" type="text/javascript"></script>
+	<script src="{% static "radio/js/calendar.js" %}" type="text/javascript"></script>
+{% endblock %}
+
+{% block schedules_class %}class="active"{% endblock %}
+
+{% block content %}
+	<h1>{% trans "Schedule Editor"|upper %}</h1>
+	
+	<div id='loading' class="alert alert-warning">Loading...</div>
+	<div id='loading-ok' class="alert alert-success">All changes saved.</div>
+	
+	<div id='wrap'>
+		<div id='external-events'>
+			<h4>Programmes</h4>
+		<input type="radio" name="group1" value="L" checked>live<br>
+		<input type="radio" name="group1" value="B">broadcast<br>
+		<input type="radio" name="group1" value="S">broadcast syndication<br>
+		</div>
+		<div id="delete-events" class="alert alert-danger">
+		  <span class="glyphicon glyphicon-trash">Drop here to delete!</span>
+		</div>
+
+		<div id='calendar'></div>
+
+		<div style='clear:both'></div>
+	</div>
+
+{% endblock %}

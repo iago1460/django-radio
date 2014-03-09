@@ -1,25 +1,20 @@
 import datetime
-from django.contrib.auth.models import User
 from django.test import TestCase
-from django.utils import timezone
 
-from radio.apps.schedules.models import Programme, Episode
+from radio.apps.programmes.models import Programme, Episode
 
 
 class ProgrammeMethodTests(TestCase):
 
     def test_save_programme(self):
-        programme = Programme(name="Test programme", synopsis="This is a description")
-        programme.save()
+        programme = Programme.objects.create(name="Test programme", synopsis="This is a description", _runtime=60, start_date=datetime.date(2014, 1, 31))
         self.assertEqual(programme, Programme.objects.get(id=programme.id))
         self.assertTrue(programme in Programme.objects.all())
 
     def test_save_episode(self):
-        date_published = datetime.datetime(2014, 1, 31, 0, 0, 0, 0, tzinfo=timezone.utc)
-        programme = Programme(name="My programme", synopsis="This is a description")
-        programme.save()
-        episode = Episode(summary='Summary', published=date_published, programme=programme)
-        episode.save()
+        date_published = datetime.datetime(2014, 1, 31, 0, 0, 0, 0)
+        programme = Programme.objects.create(name="Test programme", synopsis="This is a description", _runtime=60, start_date=datetime.date(2014, 1, 31))
+        episode = Episode.objects.create(summary='Summary', published=date_published, programme=programme)
 
         self.assertEqual(episode, Episode.objects.get(id=episode.id))
         self.assertEqual(programme, Programme.objects.get(id=programme.id))
