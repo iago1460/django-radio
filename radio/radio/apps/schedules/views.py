@@ -26,11 +26,11 @@ def ajax_view(f):
             error = None
         except ValidationError, e:
             res = None
-            error = str(e)
+            error = json.dumps('; '.join(e.messages))
         except Exception, e:
             res = None
             if settings.DEBUG:
-                error = str(e)
+                error = json.dumps(str('; '.join(e.messages)))
             else:
                 error = str("Internal error")
 
@@ -45,8 +45,8 @@ def ajax_view(f):
 
 
 def full_calendar(request):
-    # event_url = 'all_events/'
-    return render(request, 'schedules/schedules_fullcalendar.html', {})
+    event_url = 'all_events/'
+    return render(request, 'schedules/schedules_fullcalendar.html', {'event_url': event_url})
 
 
 @ajax_view

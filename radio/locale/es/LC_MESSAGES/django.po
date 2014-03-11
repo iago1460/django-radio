@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-01 20:09+0100\n"
+"POT-Creation-Date: 2014-03-10 21:39+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,50 +23,70 @@ msgstr ""
 msgid "Index of %(directory)s"
 msgstr ""
 
-#: radio/apps/programmes/models.py:9
+#: radio/apps/programmes/models.py:13
+msgid "name"
+msgstr "nombre"
+
+#: radio/apps/programmes/models.py:13
+msgid "please DON'T change this value. It's used to build URL's."
+msgstr "por favor no cambie este valor. Es usado para construir las urls"
+
+#: radio/apps/programmes/models.py:14 radio/apps/schedules/models.py:39
+msgid "start date"
+msgstr "fecha de inicio"
+
+#: radio/apps/programmes/models.py:15
+msgid "end date"
+msgstr "fecha de fin"
+
+#: radio/apps/programmes/models.py:15
+msgid "This camp can be null."
+msgstr "Este campo puede ser null"
+
+#: radio/apps/programmes/models.py:16
 #: radio/libs/home/templates/home/base.html:37
 msgid "announcers"
 msgstr "locutores"
 
-#: radio/apps/programmes/models.py:10
-msgid "name"
-msgstr "nombre"
-
-#: radio/apps/programmes/models.py:10
-msgid "please DON'T change this value. It's used to build URL's."
-msgstr "por favor no cambie este valor. Es usado para construir las urls"
-
-#: radio/apps/programmes/models.py:11
+#: radio/apps/programmes/models.py:17
 msgid "synopsis"
 msgstr "descripción"
 
-#: radio/apps/programmes/models.py:12
+#: radio/apps/programmes/models.py:18
 msgid "photo"
 msgstr "foto"
 
-#: radio/apps/programmes/models.py:20 radio/apps/programmes/models.py:35
-#: radio/apps/schedules/models.py:18
+#: radio/apps/programmes/models.py:33
+msgid "Duration must be greater than 0."
+msgstr "La duración debe ser mayor que 0"
+
+#: radio/apps/programmes/models.py:35
+msgid "start date must be before end date."
+msgstr "la fecha inicio debe ser anterior a la de fin"
+
+#: radio/apps/programmes/models.py:50 radio/apps/programmes/models.py:65
+#: radio/apps/schedules/models.py:37
 msgid "programme"
 msgstr "programa"
 
-#: radio/apps/programmes/models.py:21
+#: radio/apps/programmes/models.py:51
 #: radio/libs/home/templates/home/base.html:36
 msgid "programmes"
 msgstr "programas"
 
-#: radio/apps/programmes/models.py:36
+#: radio/apps/programmes/models.py:66
 msgid "summary"
 msgstr "resumen"
 
-#: radio/apps/programmes/models.py:37
+#: radio/apps/programmes/models.py:67
 msgid "published"
 msgstr "publicado"
 
-#: radio/apps/programmes/models.py:43
+#: radio/apps/programmes/models.py:73
 msgid "episode"
 msgstr "episodio"
 
-#: radio/apps/programmes/models.py:44
+#: radio/apps/programmes/models.py:74
 msgid "episodes"
 msgstr "episodio"
 
@@ -106,97 +126,64 @@ msgstr "retransmisión"
 msgid "broadcast syndication"
 msgstr "redifusión"
 
-#: radio/apps/schedules/models.py:19
-msgid "active"
-msgstr "activo"
+#: radio/apps/schedules/models.py:24
+msgid "Monday"
+msgstr "Lunes"
 
-#: radio/apps/schedules/models.py:20
-msgid "start date"
-msgstr "fecha de inicio"
+#: radio/apps/schedules/models.py:25
+msgid "Tuesday"
+msgstr "Martes"
 
-#: radio/apps/schedules/models.py:21
-msgid "end date"
-msgstr "fecha de fin"
+#: radio/apps/schedules/models.py:26
+msgid "Wednesday"
+msgstr "Miércoles"
 
-#: radio/apps/schedules/models.py:21
-msgid "The end time must be later than the start time."
-msgstr "La fecha fin debe ser posterior a la de inicio"
+#: radio/apps/schedules/models.py:27
+msgid "Thursday"
+msgstr "Jueves"
 
-#: radio/apps/schedules/models.py:22
+#: radio/apps/schedules/models.py:28
+msgid "Friday"
+msgstr "Viernes"
+
+#: radio/apps/schedules/models.py:29
+msgid "Saturday"
+msgstr "Sábado"
+
+#: radio/apps/schedules/models.py:30
+msgid "Sunday"
+msgstr "Domingo"
+
+#: radio/apps/schedules/models.py:40
 msgid "type"
 msgstr "tipo"
 
-#: radio/apps/schedules/models.py:49 radio/apps/schedules/models.py:174
-msgid "start date must be before end date."
-msgstr "la fecha inicio debe ser anterior a la de fin"
-
-#: radio/apps/schedules/models.py:57
-#, python-format
+#: radio/apps/schedules/models.py:91
 msgid ""
 "This settings collides with: %(name)s [%(start_date)s %(start_day)s/"
-"%(start_month)s/%(start_year)s             - %(end_date)s %(end_day)s/"
-"%(end_month)s/%(end_year)s ]"
+"%(start_month)s/%(start_year)s - %(end_date)s %(end_day)s/%(end_month)s/"
+"%(end_year)s ]"
 msgstr ""
 "Esta configuración colisiona con: %(name)s [%(start_date)s %(start_day)s/"
-"%(start_month)s/%(start_year)s             - %(end_date)s %(end_day)s/"
+"%(start_month)s/%(start_year)s - %(end_date)s %(end_day)s/"
 "%(end_month)s/%(end_year)s ]"
 
-#: radio/apps/schedules/models.py:100
+#: radio/apps/schedules/models.py:136
 msgid "schedule"
 msgstr "horario"
 
-#: radio/apps/schedules/models.py:101
+#: radio/apps/schedules/models.py:137
 #: radio/libs/home/templates/home/base.html:35
 msgid "schedules"
 msgstr "horarios"
 
-#: radio/apps/schedules/models.py:107
-msgid "Repeat?"
-msgstr "¿Repetir?"
+#: radio/apps/schedules/views.py:62 radio/apps/schedules/views.py:84
+msgid "Out of programme date range"
+msgstr "Fuera del rango de fechas del programa"
 
-#: radio/apps/schedules/models.py:108
-msgid "frequency end date"
-msgstr "fecha final"
-
-#: radio/apps/schedules/models.py:108
-msgid "This field can be null."
-msgstr "Este campo puede ser null"
-
-#: radio/apps/schedules/models.py:109
-msgid "Monday"
-msgstr "Lunes"
-
-#: radio/apps/schedules/models.py:110
-msgid "Tuesday"
-msgstr "Martes"
-
-#: radio/apps/schedules/models.py:111
-msgid "Wednesday"
-msgstr "Miércoles"
-
-#: radio/apps/schedules/models.py:112
-msgid "Thursday"
-msgstr "Jueves"
-
-#: radio/apps/schedules/models.py:113
-msgid "Friday"
-msgstr "Viernes"
-
-#: radio/apps/schedules/models.py:114
-msgid "Saturday"
-msgstr "Sábado"
-
-#: radio/apps/schedules/models.py:115
-msgid "Sunday"
-msgstr "Domingo"
-
-#: radio/apps/schedules/models.py:177
-msgid "recurrence"
-msgstr "repetitividad"
-
-#: radio/apps/schedules/models.py:178
-msgid "recurrences"
-msgstr "repetitividades"
+#: radio/apps/schedules/templates/schedules/schedules_fullcalendar.html:25
+msgid "Schedule Editor"
+msgstr "Editor de horarios"
 
 #: radio/apps/schedules/templates/schedules/schedules_list.html:6
 msgid "Episode list"
@@ -262,6 +249,24 @@ msgstr "lista de reproducción"
 #: radio/libs/home/templates/home/index.html:30
 msgid "Now"
 msgstr "Ahora"
+
+#~ msgid "active"
+#~ msgstr "activo"
+
+#~ msgid "The end time must be later than the start time."
+#~ msgstr "La fecha fin debe ser posterior a la de inicio"
+
+#~ msgid "Repeat?"
+#~ msgstr "¿Repetir?"
+
+#~ msgid "frequency end date"
+#~ msgstr "fecha final"
+
+#~ msgid "recurrence"
+#~ msgstr "repetitividad"
+
+#~ msgid "recurrences"
+#~ msgstr "repetitividades"
 
 #~ msgid "from"
 #~ msgstr "desde"

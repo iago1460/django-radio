@@ -81,7 +81,7 @@ $(document).ready(function () {
         defaultView: 'agendaWeek',
 
         events: {
-            url: 'all_events/',
+            url: URL_JSON_ALL_EVENTS,
             error: function() {
                 alert('there was an error while fetching events!');
             },

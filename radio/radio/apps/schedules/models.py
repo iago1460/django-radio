@@ -88,8 +88,7 @@ class Schedule(models.Model):
                         schedule = schedules[index]
                         start_date = date
                         end_date = start_date + schedule.runtime()
-                        raise ValidationError(_('This settings collides with: %(name)s [%(start_date)s %(start_day)s/%(start_month)s/%(start_year)s \
-                            - %(end_date)s %(end_day)s/%(end_month)s/%(end_year)s ]')
+                        raise ValidationError(_('This settings collides with: %(name)s [%(start_date)s %(start_day)s/%(start_month)s/%(start_year)s - %(end_date)s %(end_day)s/%(end_month)s/%(end_year)s ]')
                                                   % {'name': schedule.programme.name, 'start_date': start_date.strftime("%H:%M"), 'start_day': start_date.strftime("%d"),
                                                      'start_month': start_date.strftime("%m"), 'start_year': start_date.strftime("%Y"),
                                                      'end_date': end_date.strftime("%H:%M"), 'end_day': end_date.strftime("%d"), 'end_month': end_date.strftime("%m"), 'end_year': end_date.strftime("%Y"), })
