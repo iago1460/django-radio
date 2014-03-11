@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     'radio.apps.programmes',
     'radio.apps.schedules',
     'debug_toolbar',
+    'crispy_forms',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -134,6 +135,7 @@ MEDIA_ROOT = ABSOLUTE_PATHNAME + '/resources/'
 MEDIA_URL = '/media/'
 
 
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 GRAPH_MODELS = {
   'all_applications': True,
@@ -141,4 +143,5 @@ GRAPH_MODELS = {
 }
 
 # Variables
+LOGIN_REDIRECT_URL = '/'
 SITE_NAME = 'Radio'

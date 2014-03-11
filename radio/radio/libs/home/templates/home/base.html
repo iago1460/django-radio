@@ -36,6 +36,13 @@
 						<li {% block programmes_class %}{% endblock %}><a href="{% url 'programmes:list' %}">{% trans "programmes"|title %}</a></li>
 						<li {% block users_class %}{% endblock %}><a href="{% url 'users:list' %}">{% trans "announcers"|title %}</a></li>
 					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						{% if user.is_authenticated %}
+						    <li><a href="{% url 'logout' %}">{% trans "Logout"|title %}</a></li>
+						{% else %}
+						    <li {% block login_class %}{% endblock %}><a href="{% url 'login' %}">{% trans "Log in"|title %}</a></li>
+						{% endif %}
+		            </ul>
 				</div>
 				<!--/.nav-collapse -->
 			</div>
