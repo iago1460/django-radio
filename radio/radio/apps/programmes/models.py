@@ -5,8 +5,11 @@ from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.template.defaultfilters import slugify
-from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+
+
+languages = (("ES", _("Spanish")),
+    ("GA", _("Galician")))
 
 
 class Programme(models.Model):
@@ -16,6 +19,7 @@ class Programme(models.Model):
     announcers = models.ManyToManyField(User, blank=True, null=True, verbose_name=_("announcers"))
     synopsis = models.TextField(blank=True, verbose_name=_("synopsis"))
     photo = models.ImageField(upload_to='photos/', default='/static/radio/images/default-programme-photo.jpg', verbose_name=_("photo"))
+    language = models.CharField(verbose_name=_("language"), choices=languages, max_length=2)
     slug = models.SlugField(max_length=100, unique=True)
     _runtime = models.PositiveIntegerField()
 
@@ -26,7 +30,6 @@ class Programme(models.Model):
     @runtime.setter
     def runtime(self, value):
         self._runtime = value
-
 
     def clean(self):
         if self._runtime <= 0:
