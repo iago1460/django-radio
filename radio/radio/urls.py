@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     url(r'^logout/$', 'radio.libs.home.views.user_logout', name="logout"),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^schedules/', include('radio.apps.schedules.urls', namespace="schedules")),
+    url(r'^dashboard/', include('radio.apps.dashboard.urls', namespace="dashboard")),
     url(r'^programmes/', include('radio.apps.programmes.urls', namespace="programmes")),
     url(r'^users/', include('radio.apps.users.urls', namespace="users")),
 )

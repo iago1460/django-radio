@@ -44,8 +44,10 @@ INSTALLED_APPS = (
     'radio.apps.users',
     'radio.apps.programmes',
     'radio.apps.schedules',
+    'radio.apps.dashboard',
     'debug_toolbar',
-    'crispy_forms',
+    'bootstrap3',
+    'floppyforms',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -143,5 +145,5 @@ GRAPH_MODELS = {
 }
 
 # Variables
-LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = 'login'  # name of url pattern
 SITE_NAME = 'Radio'

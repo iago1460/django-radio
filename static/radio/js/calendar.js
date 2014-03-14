@@ -71,7 +71,7 @@ $(document).ready(function () {
         firstDay: 1,
         axisFormat: 'HH:mm',
         timezone: false,
-        scrollTime: '08:00:00',
+        scrollTime: '07:00:00',
         lazyFetching: false,
         header: {
             left: 'prev,next today',

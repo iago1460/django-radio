@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth import (
     REDIRECT_FIELD_NAME, login, logout, authenticate
 )
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -12,6 +13,7 @@ from django.shortcuts import render
 from radio.apps.schedules.models import Schedule
 from radio.apps.schedules.views import __get_events
 from radio.libs.home.forms import LoginForm
+
 
 
 def index(request):
@@ -31,9 +33,6 @@ def index(request):
     return render(request, 'home/index.html', context)
 
 
-
-
-# User Login View
 def user_login(request):
     if request.user.is_anonymous():
         if request.method == 'POST':
@@ -47,18 +46,16 @@ def user_login(request):
                     if user.is_active:
                         # This logs him in
                         login(request, user)
-                    else:
-                        return HttpResponse("Not active")
-                else:
-                    return HttpResponse("Wrong username/password")
+                        return HttpResponseRedirect(reverse('dashboard:index'))
+                return render(request, "home/login.html", {'form': form, 'error':True})
             else:
                 return render(request, "home/login.html", {'form': form})
         else:
             form = LoginForm()
             return render(request, "home/login.html", {'form': form})
-    return HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)
+    return HttpResponseRedirect(reverse('dashboard:index'))
 
 # User Logout View
 def user_logout(request):
     logout(request)
-    return HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)
+    return HttpResponseRedirect('/')
