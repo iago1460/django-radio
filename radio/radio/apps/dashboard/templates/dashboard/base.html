@@ -35,7 +35,9 @@
 				</div>
 				<div class="navbar-collapse collapse">
 					<ul class="nav navbar-nav navbar-right">
-						<li><a href="#">Settings</a></li>
+						{% if display_settings %}
+							<li><a href="#">Settings</a></li>
+						{% endif %}
 						<li {% block profile_class %}{% endblock %}><a href="{% url 'dashboard:edit_profile' %}">{% trans "Profile" %}</a></li>
 						<li><a href="{% url 'logout' %}">{% trans "Logout"|title %}</a></li>
 					</ul>
@@ -50,10 +52,15 @@
 						<li><a href="#">Analytics</a></li>
 					</ul>
 					<ul class="nav nav-sidebar">
-						<li {% block programmes_class %}{% endblock %}><a href="{% url 'dashboard:programme_list' %}">{% trans "Programmes" %}</a></li>
+						{% if display_programme_list %}
+							<li {% block programmes_class %}{% endblock %}><a href="{% url 'dashboard:programme_list' %}">{% trans "Programmes" %}</a></li>
+						{% endif %}
+						<li {% block my_programmes_class %}{% endblock %}><a href="{% url 'dashboard:my_programme_list' %}">{% trans "My programmes" %}</a></li>
 					</ul>
 					<ul class="nav nav-sidebar">
-						<li {% block schedules_class %}{% endblock %}><a href="{% url 'dashboard:schedule_editor' %}">{% trans "Schedules" %}</a></li>
+						{% if display_schedule_editor %}
+							<li {% block schedules_class %}{% endblock %}><a href="{% url 'dashboard:schedule_editor' %}">{% trans "Schedules" %}</a></li>
+						{% endif %}
 					</ul>
 				</div>
 				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">

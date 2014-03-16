@@ -9,7 +9,8 @@
 	<h1>{% trans "User profile"|upper %}</h1>
 	<form method="post" class="form" enctype="multipart/form-data">
 	{% csrf_token %}
-    {% bootstrap_form form %}
+    {% bootstrap_form uform %}
+    {% bootstrap_form pform %}
     {% buttons %}
         <button type="submit" class="btn btn-primary">
             {% bootstrap_icon "star" %} Submit

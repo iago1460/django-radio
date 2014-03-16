@@ -47,7 +47,6 @@ INSTALLED_APPS = (
     'radio.apps.dashboard',
     'debug_toolbar',
     'bootstrap3',
-    'floppyforms',
 )
 
 MIDDLEWARE_CLASSES = (

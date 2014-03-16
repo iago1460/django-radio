@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-14 20:11+0100\n"
+"POT-Creation-Date: 2014-03-16 20:38+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgstr ""
 msgid "Index of %(directory)s"
 msgstr ""
 
-#: radio/apps/dashboard/views.py:109 radio/apps/dashboard/views.py:129
+#: radio/apps/dashboard/views.py:168 radio/apps/dashboard/views.py:188
 msgid "Out of programme date range"
 msgstr "Fuera del rango de fechas del programa"
 
@@ -36,24 +36,29 @@ msgstr "Django Inicio"
 msgid "Dashboard: "
 msgstr "Panel de control: "
 
-#: radio/apps/dashboard/templates/dashboard/base.html:39
+#: radio/apps/dashboard/templates/dashboard/base.html:41
 msgid "Profile"
 msgstr "Perfil"
 
-#: radio/apps/dashboard/templates/dashboard/base.html:40
+#: radio/apps/dashboard/templates/dashboard/base.html:42
 #: radio/libs/home/templates/home/base.html:41
 msgid "Logout"
 msgstr "Cerrar sesión"
 
-#: radio/apps/dashboard/templates/dashboard/base.html:49
+#: radio/apps/dashboard/templates/dashboard/base.html:51
 msgid "Overview"
 msgstr "Resumen"
 
-#: radio/apps/dashboard/templates/dashboard/base.html:53
+#: radio/apps/dashboard/templates/dashboard/base.html:56
 msgid "Programmes"
 msgstr "Programas"
 
-#: radio/apps/dashboard/templates/dashboard/base.html:56
+#: radio/apps/dashboard/templates/dashboard/base.html:58
+#, fuzzy
+msgid "My programmes"
+msgstr "programas"
+
+#: radio/apps/dashboard/templates/dashboard/base.html:62
 msgid "Schedules"
 msgstr "Horarios"
 
@@ -69,15 +74,25 @@ msgstr "Programa"
 msgid "Schedule Editor"
 msgstr "Editor de horarios"
 
-#: radio/apps/dashboard/templates/dashboard/programme_list.html:6
-#: radio/apps/programmes/templates/programmes/programme_list.html:6
-msgid "Programme list"
+#: radio/apps/dashboard/templates/dashboard/my_programme_list.html:6
+#, fuzzy
+msgid "My programme list"
 msgstr "Lista de programas"
 
-#: radio/apps/dashboard/templates/dashboard/programme_list.html:11
+#: radio/apps/dashboard/templates/dashboard/my_programme_list.html:11
+#: radio/apps/dashboard/templates/dashboard/programme_list.html:14
 #: radio/apps/programmes/templates/programmes/programme_list.html:20
 msgid "No programmes are available"
 msgstr "No hay programas disponibles"
+
+#: radio/apps/dashboard/templates/dashboard/programme_list.html:7
+msgid "Create"
+msgstr ""
+
+#: radio/apps/dashboard/templates/dashboard/programme_list.html:9
+#: radio/apps/programmes/templates/programmes/programme_list.html:6
+msgid "Programme list"
+msgstr "Lista de programas"
 
 #: radio/apps/programmes/models.py:11
 msgid "Spanish"

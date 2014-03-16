@@ -8,50 +8,109 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAll
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import ugettext_lazy as _
 
-from radio.apps.dashboard.forms import ProgrammeForm, UserProfileForm
+from radio.apps.dashboard.forms import ProgrammeForm, ProgrammeMinimumForm, UserProfileForm, UserForm
 from radio.apps.programmes.models import Programme
 from radio.apps.schedules.models import Schedule
 from radio.apps.users.models import UserProfile
 
 
+def __get_context_permissions(request):
+    user = request.user
+    return {'display_schedule_editor': schedule_permissions(user), 'display_settings':False,
+            'display_programme_list':user.has_perm('programmes.change_programme')}
+
 @login_required
 def index(request):
     context = {}
-    return render(request, 'dashboard/index.html', context)
-
-def __get_my_programme_list(user):
-    return Programme.objects.filter(announcers__in=[user])
+    return render(request, 'dashboard/index.html', dict(context.items() + __get_context_permissions(request).items()))
 
 @login_required
+@permission_required('programmes.change_programme', raise_exception=False)
 def programme_list(request):
-    context = {'programme_list':__get_my_programme_list(request.user)}
-    return render(request, 'dashboard/programme_list.html', context)
+    context = {'programme_list': Programme.objects.all().order_by('-start_date')}
+    return render(request, 'dashboard/programme_list.html', dict(context.items() + __get_context_permissions(request).items()))
 
 @login_required
-# @permission_required('polls.can_vote', raise_exception=True)
+@permission_required('programmes.change_programme', raise_exception=False)
 def edit_programme(request, slug):
-    programme = get_object_or_404(Programme, slug=slug, announcers__in=[request.user])
+    user = request.user
+    programme = get_object_or_404(Programme, slug=slug)
     form = ProgrammeForm(instance=programme)
     if request.method == 'POST':
         form = ProgrammeForm(request.POST, request.FILES, instance=programme)
         if form.is_valid():
             form.save()
             return redirect('dashboard:programme_list')
-    return render(request, "dashboard/edit_programme.html", {'form': form})
+    context = {'form': form}
+    return render(request, "dashboard/edit_programme.html", dict(context.items() + __get_context_permissions(request).items()))
+
+@login_required
+@permission_required('programmes.add_programme', raise_exception=False)
+def create_programme(request):
+    user = request.user
+    if request.method == 'GET':
+        form = ProgrammeForm()
+    else:
+        form = ProgrammeForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard:programme_list')
+    context = {'form': form}
+    return render(request, "dashboard/edit_programme.html", dict(context.items() + __get_context_permissions(request).items()))
+
+
+
+
+def __get_my_programme_list(user):
+    return Programme.objects.filter(announcers__in=[user])
+
+@login_required
+def my_programme_list(request):
+    context = {'programme_list': __get_my_programme_list(request.user)}
+    return render(request, 'dashboard/my_programme_list.html', dict(context.items() + __get_context_permissions(request).items()))
+
+def check_edit_programme_permissions(user):
+    return user.has_perm('programmes.change_programme') or user.has_perm('programmes.change_his_programme')
+
+@login_required
+@user_passes_test(check_edit_programme_permissions)
+def edit_my_programme(request, slug):
+    user = request.user
+    programme = get_object_or_404(Programme, slug=slug, announcers__in=[user])
+    form = ProgrammeMinimumForm(instance=programme)
+    if request.method == 'POST':
+        form = ProgrammeMinimumForm(request.POST, request.FILES, instance=programme)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard:my_programme_list')
+    context = {'form': form}
+    return render(request, "dashboard/edit_programme.html", dict(context.items() + __get_context_permissions(request).items()))
+
+
+
+
 
 @login_required
 def edit_profile(request):
+    user = request.user
     try:
         profile = UserProfile.objects.get(user=request.user)
     except UserProfile.DoesNotExist:
         profile = None
-    form = UserProfileForm(instance=profile)
+    pform = UserProfileForm(instance=profile)
+    uform = UserForm(instance=user)
     if request.method == 'POST':
-        form = UserProfileForm(request.POST, request.FILES, instance=profile)
-        if form.is_valid():
-            form.save()
+        uform = UserForm(request.POST, instance=user)
+        pform = UserProfileForm(request.POST, request.FILES, instance=profile)
+        if uform.is_valid() and pform.is_valid():
+            user = uform.save()
+            profile = pform.save()
+            # profile = pform.save(commit=False)
+            # profile.user = user
+            # profile.save()
             return redirect('dashboard:index')
-    return render(request, 'dashboard/edit_profile.html', {'form':form})
+    context = {'uform':uform, 'pform':pform}
+    return render(request, 'dashboard/edit_profile.html', dict(context.items() + __get_context_permissions(request).items()))
 
 
 # FullCalendar
@@ -93,8 +152,8 @@ def schedule_permissions(user):
 @user_passes_test(schedule_permissions)
 @login_required
 def full_calendar(request):
-    event_url = 'all_events/'
-    return render(request, 'dashboard/fullcalendar.html', {'event_url': event_url})
+    context = {'event_url':'all_events/'}
+    return render(request, 'dashboard/fullcalendar.html', dict(context.items() + __get_context_permissions(request).items()))
 
 @ajax_view
 @login_required

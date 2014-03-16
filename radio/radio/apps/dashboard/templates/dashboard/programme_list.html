@@ -3,6 +3,9 @@
 
 {% block programmes_class %}class="active"{% endblock %}
 {% block content %}
+	{% if perms.programmes.add_programme %}
+		<a class="btn btn-default" href="{% url 'dashboard:create_programme' %}" >{% trans "Create" %}</a>
+	{% endif %}
 	<h1>{% trans "Programme list"|upper %}</h1>
 	<ul class="nav nav-sidebar">
 		{% for programme in programme_list %}

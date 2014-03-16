@@ -54,7 +54,7 @@ class Programme(models.Model):
         verbose_name_plural = _('programmes')
         ordering = ['name']
         permissions = (
-            ("radio_change_synopsis", "Can change synopsis"),
+            ("change_his_programme", "Can change some information"),
         )
 
     def get_absolute_url(self):
