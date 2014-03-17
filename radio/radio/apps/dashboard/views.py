@@ -4,12 +4,13 @@ import json
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.core.exceptions import ValidationError
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect, render
+from django.forms.formsets import formset_factory
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed, HttpResponseRedirect, Http404
+from django.shortcuts import get_object_or_404, redirect, render, get_list_or_404
 from django.utils.translation import ugettext_lazy as _
 
-from radio.apps.dashboard.forms import ProgrammeForm, ProgrammeMinimumForm, UserProfileForm, UserForm
-from radio.apps.programmes.models import Programme
+from radio.apps.dashboard.forms import ProgrammeForm, ProgrammeMinimumForm, UserProfileForm, UserForm, RoleForm, RoleMinimumForm
+from radio.apps.programmes.models import Programme, Role
 from radio.apps.schedules.models import Schedule
 from radio.apps.users.models import UserProfile
 
@@ -17,7 +18,8 @@ from radio.apps.users.models import UserProfile
 def __get_context_permissions(request):
     user = request.user
     return {'display_schedule_editor': schedule_permissions(user), 'display_settings':False,
-            'display_programme_list':user.has_perm('programmes.change_programme')}
+            'display_programme_list':user.has_perm('programmes.change_programme'),
+            'display_role_list':user.has_perm('programmes.change_role')}
 
 @login_required
 def index(request):
@@ -60,14 +62,69 @@ def create_programme(request):
 
 
 
+@login_required
+@permission_required('programmes.change_role', raise_exception=False)
+def role_list(request):
+    context = {'role_list': Role.objects.all().order_by('-person').select_related('programme')}
+    return render(request, 'dashboard/role_list.html', dict(context.items() + __get_context_permissions(request).items()))
 
-def __get_my_programme_list(user):
-    return Programme.objects.filter(announcers__in=[user])
+
+@login_required
+@permission_required('programmes.change_role', raise_exception=False)
+def edit_role(request, id):
+    role = get_object_or_404(Role.objects.select_related('programme'), id=id)
+    form = RoleForm(instance=role)
+    if request.method == 'POST':
+        form = RoleForm(request.POST, instance=role)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard:role_list')
+    context = {'form': form, 'programme_name' : role.programme.name}
+    return render(request, "dashboard/edit_role.html", dict(context.items() + __get_context_permissions(request).items()))
+
+@login_required
+@permission_required('programmes.add_role', raise_exception=False)
+def create_role(request):
+    if request.method == 'GET':
+        form = RoleForm()
+    else:
+        form = RoleForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard:role_list')
+    context = {'form': form}
+    return render(request, "dashboard/edit_role.html", dict(context.items() + __get_context_permissions(request).items()))
+
+
 
 @login_required
 def my_programme_list(request):
-    context = {'programme_list': __get_my_programme_list(request.user)}
+    context = {'programme_list': Programme.objects.filter(announcers__in=[request.user]).distinct()}
     return render(request, 'dashboard/my_programme_list.html', dict(context.items() + __get_context_permissions(request).items()))
+
+
+
+@login_required
+def my_role_list(request):
+    context = {'role_list': Role.objects.filter(person=request.user).order_by('-programme').select_related('programme')}
+    return render(request, 'dashboard/my_role_list.html', dict(context.items() + __get_context_permissions(request).items()))
+
+def check_edit_role_permissions(user):
+    return user.has_perm('programmes.change_role') or user.has_perm('programmes.change_his_role')
+
+@login_required
+@user_passes_test(check_edit_role_permissions)
+def edit_my_role(request, id):
+    user = request.user
+    role = get_object_or_404(Role.objects.select_related('programme'), id=id, person=user)
+    form = RoleMinimumForm(instance=role)
+    if request.method == 'POST':
+        form = RoleMinimumForm(request.POST, instance=role)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard:my_role_list')
+    context = {'form': form, 'programme_name' : role.programme.name}
+    return render(request, "dashboard/edit_role.html", dict(context.items() + __get_context_permissions(request).items()))
 
 def check_edit_programme_permissions(user):
     return user.has_perm('programmes.change_programme') or user.has_perm('programmes.change_his_programme')
@@ -76,7 +133,9 @@ def check_edit_programme_permissions(user):
 @user_passes_test(check_edit_programme_permissions)
 def edit_my_programme(request, slug):
     user = request.user
-    programme = get_object_or_404(Programme, slug=slug, announcers__in=[user])
+    programme = get_object_or_404(Programme, slug=slug)
+    if not (user in programme.announcers.all()):
+        raise Http404
     form = ProgrammeMinimumForm(instance=programme)
     if request.method == 'POST':
         form = ProgrammeMinimumForm(request.POST, request.FILES, instance=programme)

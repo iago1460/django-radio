@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.forms.extras import SelectDateWidget
 from django.utils.translation import ugettext_lazy as _
 
-from radio.apps.programmes.models import Programme
+from radio.apps.programmes.models import Programme, Role
 from radio.apps.users.models import UserProfile
 
 
@@ -24,7 +24,17 @@ class ProgrammeForm(forms.ModelForm):
             'start_date': SelectDateWidget(required=True),
             'end_date': SelectDateWidget(required=False),
         }
-        exclude = ('slug',)
+        exclude = ('slug', 'announcers')
+
+class RoleForm(forms.ModelForm):
+    class Meta:
+        model = Role
+
+class RoleMinimumForm(forms.ModelForm):
+    class Meta:
+        model = Role
+        fields = ['role', 'description']
+
 
 class UserForm(forms.ModelForm):
     class Meta:

@@ -6,18 +6,21 @@
 
 {% block login_class %}class="active"{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{% static "radio/css/signin.css" %}" type="text/css" />
+{% endblock %}
+
 {% block content %}
-	<h1>{% trans "Login"|upper %}</h1>
+	<form method="post" class="form-signin">
+	<h2 class="form-signin-heading">{% trans "Please sign in" %}</h2>
 	{% if error %}
 		<div class="alert alert-danger">{% trans "Wrong Username and password combination." %}</div>
 	{% endif %}
-	<form method="post" class="form">
 	{% csrf_token %}
-    {% csrf_token %}
     {% bootstrap_form form %}
     {% buttons %}
-        <button type="submit" class="btn btn-primary">
-            {% bootstrap_icon "star" %} Submit
+        <button type="submit" class="btn btn-lg btn-primary btn-block">
+            Submit
         </button>
     {% endbuttons %}
 	</form>

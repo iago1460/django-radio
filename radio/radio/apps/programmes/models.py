@@ -8,18 +8,27 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 
-languages = (("ES", _("Spanish")),
-    ("GA", _("Galician")))
+SPANISH = "ES"
+GALICIAN = "GA"
+LANGUAGES = ((SPANISH, _("Spanish")),
+    (GALICIAN, _("Galician")))
 
+
+PRESENTER = 'PR'
+INFORMER = 'IN'
+CONTRIBUTOR = 'CO'
+ROLES = ((CONTRIBUTOR, _("Contributor")),
+    (PRESENTER, _("Presenter")),
+    (INFORMER, _("Informer")))
 
 class Programme(models.Model):
     name = models.CharField(max_length=100, unique=True, verbose_name=_("name"), help_text=_("please DON'T change this value. It's used to build URL's."))
     start_date = models.DateField(verbose_name=_('start date'))
     end_date = models.DateField(blank=True, null=True, verbose_name=_('end date'), help_text=_("This camp can be null."))
-    announcers = models.ManyToManyField(User, blank=True, null=True, verbose_name=_("announcers"))
+    announcers = models.ManyToManyField(User, blank=True, null=True, through='Role', verbose_name=_("announcers"))
     synopsis = models.TextField(blank=True, verbose_name=_("synopsis"))
     photo = models.ImageField(upload_to='photos/', default='/static/radio/images/default-programme-photo.jpg', verbose_name=_("photo"))
-    language = models.CharField(verbose_name=_("language"), choices=languages, max_length=2)
+    language = models.CharField(verbose_name=_("language"), choices=LANGUAGES, max_length=2, default=SPANISH)
     slug = models.SlugField(max_length=100, unique=True)
     _runtime = models.PositiveIntegerField()
 
@@ -75,13 +84,27 @@ class Episode(models.Model):
     class Meta:
         verbose_name = _('episode')
         verbose_name_plural = _('episodes')
-        permissions = (
-            ("radio_change_summary", "Can change summary"),
-        )
 
     def __unicode__(self):
         return self.programme.name
 
+
+class Role(models.Model):
+    person = models.ForeignKey(User, verbose_name=_("person"))
+    programme = models.ForeignKey(Programme, verbose_name=_("programme"))
+    role = models.CharField(blank=True, null=True, verbose_name=_("role"), choices=ROLES, max_length=2)
+    description = models.TextField(blank=True, verbose_name=_("description"))
+    date_joined = models.DateField(auto_now_add=True)
+    class Meta:
+        unique_together = ('person', 'programme', 'role')
+        verbose_name = _('role')
+        verbose_name_plural = _('roles')
+        permissions = (
+            ("change_his_role", "Can change his role"),
+        )
+
+    def __unicode__(self):
+        return self.programme.name + ": " + self.person.username
 
 class Podcast(models.Model):
     episode = models.OneToOneField(Episode, primary_key=True)
