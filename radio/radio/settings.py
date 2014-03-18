@@ -22,10 +22,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = 'llkjw3(_3i$708vzrvnjff+4cdeedg(w(eq@5rqc+z#ysxw1l3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-TEMPLATE_DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+TEMPLATE_DEBUG = False
+
+ALLOWED_HOSTS = ['54.213.150.139', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -95,9 +96,9 @@ WSGI_APPLICATION = 'radio.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE':'django.db.backends.mysql',
-        'NAME': 'radio',
-        'USER': 'root',
-        'PASSWORD': '',
+        'NAME': 'djangoRadio',
+        'USER': 'djangoRadio',
+        'PASSWORD': 'v3rySTR0NGp4ssw0rd',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }
@@ -123,17 +124,14 @@ LANGUAGES = (
 
 
 
-ABSOLUTE_PATHNAME = '/home/user/git/django-radio'
+ABSOLUTE_PATHNAME = '/webapps/django-radio'
 
 LOCALE_PATHS = (ABSOLUTE_PATHNAME + '/radio/locale',)
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-    ABSOLUTE_PATHNAME + '/static',
-)
+STATIC_ROOT = (ABSOLUTE_PATHNAME + STATIC_URL)
 MEDIA_ROOT = ABSOLUTE_PATHNAME + '/resources/'
 MEDIA_URL = '/media/'
-
 
 
 
