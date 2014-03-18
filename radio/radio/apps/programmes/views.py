@@ -1,15 +1,14 @@
 from django.shortcuts import render, get_object_or_404
 from django.templatetags.static import static
 
-from radio.apps.programmes.models import Episode, Programme
-from radio.apps.users.models import UserProfile
+from radio.apps.programmes.models import Episode, Programme, Role
 
 
 def programme_detail(request, slug):
     programme = get_object_or_404(Programme, slug=slug)
     url_flag = static('radio/images/' + programme.language + '.png')
     context = {'programme': programme,
-               'userprofile_list' : UserProfile.objects.filter(user__in=programme.announcers.all()),
+               'role_list':Role.objects.filter(programme=programme).select_related('person'),
                'episode_list': Episode.objects.filter(programme=programme), 'url_flag':url_flag}
     return render(request, 'programmes/programme_detail.html', context)
 

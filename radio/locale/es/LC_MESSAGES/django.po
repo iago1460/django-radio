@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-17 22:14+0100\n"
+"POT-Creation-Date: 2014-03-18 11:46+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgstr ""
 msgid "Index of %(directory)s"
 msgstr ""
 
-#: radio/apps/dashboard/views.py:229 radio/apps/dashboard/views.py:249
+#: radio/apps/dashboard/views.py:227 radio/apps/dashboard/views.py:247
 msgid "Out of programme date range"
 msgstr "Fuera del rango de fechas del programa"
 
@@ -233,14 +233,14 @@ msgid "Episode"
 msgstr "Episodio"
 
 #: radio/apps/programmes/templates/programmes/programme_detail.html:16
-msgid "Announcers"
-msgstr "Locutores"
+msgid "Staff"
+msgstr "Personal"
 
-#: radio/apps/programmes/templates/programmes/programme_detail.html:26
+#: radio/apps/programmes/templates/programmes/programme_detail.html:31
 msgid "All programmes"
 msgstr "Todos los programas"
 
-#: radio/apps/programmes/templates/programmes/programme_detail.html:33
+#: radio/apps/programmes/templates/programmes/programme_detail.html:38
 msgid "Without episodes."
 msgstr "Sin episodios"
 
@@ -336,7 +336,11 @@ msgstr "perfiles de usuario"
 msgid "about"
 msgstr "acerca de"
 
-#: radio/apps/users/templates/users/userprofile_detail.html:14
+#: radio/apps/users/templates/users/userprofile_detail.html:13
+msgid "collaborations"
+msgstr "Colaboradores"
+
+#: radio/apps/users/templates/users/userprofile_detail.html:25
 msgid "No user information available"
 msgstr "No hay información del usuario disponible"
 
@@ -388,6 +392,9 @@ msgstr "Por favor identifíquese"
 #: radio/libs/home/templates/home/login.html:17
 msgid "Wrong Username and password combination."
 msgstr "Combinación de usuario y contraseña incorrecta"
+
+#~ msgid "Announcers"
+#~ msgstr "Locutores"
 
 #~ msgid "Role"
 #~ msgstr "Papel"
