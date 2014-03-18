@@ -8,7 +8,7 @@
 			{% if schedule_now %}
 				<h1>{% trans "now playing"|upper %}</h1>
 				<a href="{% url 'programmes:detail' schedule_now.programme.slug %}">{{ schedule_now.programme.name }}</a>
-				{{start_time|date:"G:i" }} - {{end_time|date:"G:i" }}
+				<strong>{{start_time|date:"G:i" }} - {{end_time|date:"G:i" }}</strong>
 				
 				<div class="progress">
 				  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{percentage}}" aria-valuemin="0" aria-valuemax="100" style="width: {{percentage}}%">
@@ -25,9 +25,15 @@
 	<h1>{% trans "playlist"|upper %} {{now|date|upper }}</h1>
 	
 	<ul class="list-group">
+		{% if schedule_now %}
+			<li class="list-group-item list-group-item-info">
+				<h4><span class="label label-danger">{% trans "Now"|upper %}</span>
+				<a href="{% url 'programmes:detail' schedule_now.programme.slug %}">{{ schedule_now.programme.name }}</a></h4>
+			</li>
+		{% endif %}
 		{% for schedule, date in next_events %}
 			<li class="list-group-item">
-				<h4><span class="label label-default">{{date|date:"G:i" }}</span>
+				<h4><span class="label label-success">{{date|date:"G:i" }}</span>
 				<a href="{% url 'programmes:detail' schedule.programme.slug %}">{{ schedule.programme.name }}</a></h4>
 			</li>
 		{% empty %}

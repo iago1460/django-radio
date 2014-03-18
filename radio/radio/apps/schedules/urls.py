@@ -1,11 +1,12 @@
 from django.conf.urls import patterns, url
-from django.views.generic import DetailView, ListView
 
-from radio.apps.schedules import views, models
+from radio.apps.schedules import views
 
 
 urlpatterns = patterns('',
     url(r'^$', views.schedule_list, name='list'),
+
+    url(r'^(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/$', views.schedule_day, name='daily_schedule'),
 )
 
 

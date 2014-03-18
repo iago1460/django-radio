@@ -1,0 +1,18 @@
+{% extends "dashboard/base.html" %}
+{% load staticfiles i18n %}
+
+{% load bootstrap3 %}
+{% bootstrap_messages %}
+
+{% block content %}
+	<h1>{% trans "Programme"|upper %}</h1>
+	<form method="post" class="form" enctype="multipart/form-data">
+	{% csrf_token %}
+    {% bootstrap_form form %}
+    {% buttons %}
+        <button type="submit" class="btn btn-primary">
+            {% bootstrap_icon "star" %} Submit
+        </button>
+    {% endbuttons %}
+	</form>
+{% endblock content %}

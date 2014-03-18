@@ -45,6 +45,8 @@ INSTALLED_APPS = (
     'radio.apps.users',
     'radio.apps.programmes',
     'radio.apps.schedules',
+    'radio.apps.dashboard',
+    'bootstrap3',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -111,8 +113,8 @@ TIME_ZONE = 'Europe/Madrid'
 
 USE_I18N = True
 
-USE_TZ = True
-USE_L10N = True
+USE_TZ = False
+USE_L10N = False
 
 
 LANGUAGES = (
@@ -120,15 +122,17 @@ LANGUAGES = (
     ('es', 'Spanish'),
 )
 
-LOCALE_PATHS = ('.' + '/locale',)
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.6/howto/static-files/
+
+ABSOLUTE_PATHNAME = '/webapps/django-radio/'
+
+LOCALE_PATHS = (ABSOLUTE_PATHNAME + '/radio/locale',)
 
 STATIC_URL = '/static/'
-
-STATIC_ROOT = '/webapps/django-radio/static/'
-MEDIA_ROOT = '/webapps/django-radio/'
+STATICFILES_DIRS = (
+    ABSOLUTE_PATHNAME + '/static',
+)
+MEDIA_ROOT = ABSOLUTE_PATHNAME + '/resources/'
 MEDIA_URL = '/media/'
 
 
@@ -139,4 +143,5 @@ GRAPH_MODELS = {
 }
 
 # Variables
+LOGIN_URL = 'login'  # name of url pattern
 SITE_NAME = 'Radio'

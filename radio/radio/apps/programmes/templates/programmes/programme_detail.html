@@ -3,7 +3,7 @@
 
 {% block programmes_class %}class="active"{% endblock %}
 {% block content %}
-	<h1>{{ programme.name }}</h1>
+	<h1>{{ programme.name }}</h1> <img src="{{ url_flag }}">
 	<div class="row">
 		<div class="span8">
 			<div class="media">
@@ -12,11 +12,16 @@
 			<p>{{programme.synopsis}}</p>
 		</div>
 	</div>
-	{% if userprofile_list %}
-		<h2>{% trans "Announcers"|upper %}</h2>
+	{% if role_list %}
+		<h2>{% trans "Staff"|upper %}</h2>
 		<ul>
-			{% for userprofile in userprofile_list %}
-				<li><a href="{% url 'users:detail' userprofile.slug %}">{{ userprofile.user }}</a></li>
+			{% for role in role_list %}
+				{% if role.get_role_display %}
+					<li><a href="{% url 'users:detail' role.person.userprofile.slug %}">{{ role.person }} ({{ role.get_role_display }})</a></li>
+				{% else %}
+					<li><a href="{% url 'users:detail' role.person.userprofile.slug %}">{{ role.person }}</a></li>
+				{% endif %}
+					<p>{{role.description}}</p>
 			{% endfor %}
 		</ul>
 	{% else %}
