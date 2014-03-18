@@ -136,7 +136,6 @@ MEDIA_ROOT = ABSOLUTE_PATHNAME + '/resources/'
 MEDIA_URL = '/media/'
 
 
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 GRAPH_MODELS = {
   'all_applications': True,
