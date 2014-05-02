@@ -1,4 +1,5 @@
 import datetime
+import json
 
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
@@ -6,14 +7,12 @@ from django.contrib.auth import (
     REDIRECT_FIELD_NAME, login, logout, authenticate
 )
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render
 
 from radio.apps.schedules.models import Schedule
 from radio.apps.schedules.views import __get_events
 from radio.libs.home.forms import LoginForm
-
 
 
 def index(request):
@@ -59,3 +58,23 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return HttpResponseRedirect('/')
+
+
+def recording_schedules(request):
+    if not settings.DEBUG and not request.is_ajax() and not request.GET.get('start'):
+        return HttpResponseBadRequest()
+    start = datetime.datetime.strptime(request.GET.get('start'), '%Y-%m-%d')
+    json_list = []
+    schedules, dates = Schedule.between(start, start + relativedelta(hours=+24), live=True)
+    for x in range(len(schedules)):
+        schedule = schedules[x]
+        for y in range(len(dates[x])):
+            date = dates[x][y]
+            # start = date.strftime("%Y-%m-%dT%H:%M:%S"+utc_str)
+            json_entry = {'id':schedule.id, 'start':str(date), 'duration':str(schedule.runtime().seconds),
+                          'title': schedule.programme.slug}
+            json_list.append(json_entry)
+    return HttpResponse(json.dumps(json_list), content_type='application/json')
+
+
+

@@ -15,6 +15,8 @@ urlpatterns = patterns('',
     url(r'^dashboard/', include('radio.apps.dashboard.urls', namespace="dashboard")),
     url(r'^programmes/', include('radio.apps.programmes.urls', namespace="programmes")),
     url(r'^users/', include('radio.apps.users.urls', namespace="users")),
+
+    url(r'^api/1/recording_schedules/$', 'radio.libs.home.views.recording_schedules', name="recording_schedules"),
 )
 
 urlpatterns += i18n_patterns('',

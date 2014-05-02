@@ -102,8 +102,11 @@ class Schedule(models.Model):
 
 
     @classmethod
-    def between(cls, after, before, exclude=None):
-        list_schedules = cls.objects.filter(programme__start_date__lte=before, programme__end_date__isnull=True).order_by('-programme__start_date').select_related('programme') | cls.objects.filter(programme__start_date__lte=before, programme__end_date__gte=after).order_by('-programme__start_date').select_related('programme')
+    def between(cls, after, before, exclude=None, live=False):
+        if live:
+            list_schedules = cls.objects.filter(programme__start_date__lte=before, programme__end_date__isnull=True, type='L').order_by('-programme__start_date').select_related('programme') | cls.objects.filter(programme__start_date__lte=before, programme__end_date__gte=after, type='L').order_by('-programme__start_date').select_related('programme')
+        else:
+            list_schedules = cls.objects.filter(programme__start_date__lte=before, programme__end_date__isnull=True).order_by('-programme__start_date').select_related('programme') | cls.objects.filter(programme__start_date__lte=before, programme__end_date__gte=after).order_by('-programme__start_date').select_related('programme')
         dates = []
         schedules = []
         for schedule in list_schedules:

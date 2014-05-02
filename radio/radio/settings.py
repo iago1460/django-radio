@@ -144,4 +144,4 @@ GRAPH_MODELS = {
 
 # Variables
 LOGIN_URL = 'login'  # name of url pattern
-SITE_NAME = 'Radio'
+SITE_NAME = 'RadioCo'
