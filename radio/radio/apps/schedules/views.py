@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
-from radio.apps.programmes.models import Programme
+from radio.apps.programmes.models import Programme, Episode
 from radio.apps.schedules.models import Schedule
 
 
@@ -29,14 +29,29 @@ def __get_events(after, before):
     next_schedules, next_dates = Schedule.between(after=after, before=before)
     schedules = []
     dates = []
+    episodes = []
     for x in range(len(next_schedules)):
         for y in range(len(next_dates[x])):
             # next_events.append([next_schedules[x], next_dates[x][y]])
-            schedules.append(next_schedules[x])
-            dates.append(next_dates[x][y])
+
+            schedule = next_schedules[x]
+            schedules.append(schedule)
+            date = next_dates[x][y]
+            dates.append(date)
+
+            episode = None
+            if next_schedules[x].type == 'L':
+                try:
+                    episode = Episode.objects.get(issue_date=date)
+                except Episode.DoesNotExist:
+                    pass
+            episodes.append(episode)
+
+
+
     if (schedules):
-        dates, schedules = (list(t) for t in zip(*sorted(zip(dates, schedules))))
-        return zip(schedules, dates)
+        dates, schedules, episodes = (list(t) for t in zip(*sorted(zip(dates, schedules, episodes))))
+        return zip(schedules, dates, episodes)
     return None
 
 def __get_nextDays():

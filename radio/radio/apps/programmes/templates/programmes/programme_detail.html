@@ -25,13 +25,13 @@
 			{% endfor %}
 		</ul>
 	{% else %}
-		<p>Without announcers.</p>
+		<p>{% trans "Without people."|upper %}</p>
 	{% endif %}
 	{% if episode_list %}
-		<h2>{% trans "All programmes"|upper %}</h2>
+		<h2>{% trans "Recent episodes"|upper %}</h2>
 		<ul>
 			{% for episode in episode_list %}
-				<li><a href="{% url 'programmes:episode_detail' programme.slug episode.id %}">{{ episode.published }}</a></li>
+				<li><a href="{% url 'programmes:episode_detail' programme.slug episode.season episode.number_in_season%}">{{ episode }}</a></li>
 			{% endfor %}
 		</ul>
 	{% else %}

@@ -12,5 +12,5 @@ urlpatterns = patterns('',
             template_name='programmes/programme_list.html'),
         name='list'),
     url(r'^(?P<slug>[-\w]+)/$', views.programme_detail, name='detail'),
-    url(r'^(?P<slug>[-\w]+)/(?P<id>\d+)/$', views.episode_detail, name='episode_detail')
+    url(r'^(?P<slug>[-\w]+)/(?P<season_number>\d+)x(?P<episode_number>\d+)/$', views.episode_detail, name='episode_detail')
 )

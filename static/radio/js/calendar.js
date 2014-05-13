@@ -103,7 +103,8 @@ $(document).ready(function () {
             $.ajax({
                 type: "POST",
                 url: "create_schedule",
-                data: 'programmeId=' + copiedEventObject.programmeId + '&start=' + $.fullCalendar.moment(copiedEventObject.start).add('minutes', moment().zone()) + '&type=' +$("input[name='group1']:checked").val(),
+                //Bug with time  $.fullCalendar.moment(copiedEventObject.start).add('minutes', moment().zone())
+                data: 'programmeId=' + copiedEventObject.programmeId + '&start=' + $.fullCalendar.moment(copiedEventObject.start).add('minutes', -120) + '&type=' +$("input[name='group1']:checked").val(),
                 success: function (res) {
                     if (res.error) {
                         alert("Error en la peticion " + res.error);
@@ -141,7 +142,8 @@ $(document).ready(function () {
             $.ajax({
                 type: "POST",
                 url: "change_event",
-                data: 'id=' + event.id + '&start=' + $.fullCalendar.moment(event.start).add('minutes', moment().zone()),
+                //Bug with time  data: 'id=' + event.id + '&start=' + $.fullCalendar.moment(event.start).add('minutes', moment().zone()),
+                data: 'id=' + event.id + '&start=' + $.fullCalendar.moment(event.start).add('minutes', -120),
                 success: function (res) {
                     if (res.error) {
                         revertFunc();

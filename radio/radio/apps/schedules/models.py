@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from radio.apps.programmes.models import Programme
+from radio.apps.programmes.models import Programme, Episode
 
 
 emission_type = (("L", _("live")),
@@ -50,7 +50,7 @@ class Schedule(models.Model):
 
     def dates_between(self, after, before):
         dates = self.__get_rrule().between(after, before, True)
-        # add programme if this is not finished
+        # add programme if it isn't finished
         start_date = self.date_before(after)
         if start_date and start_date != after:
             if start_date + self.runtime() > after:
@@ -98,8 +98,23 @@ class Schedule(models.Model):
         # convert dates due MySQL
         # if timezone.is_aware(self.start_hour):
         #    self.start_hour = timezone.get_current_timezone().normalize(self.start_hour)
+        if self.type == 'L':
+            self._relocate_next_episodes()
         super(Schedule, self).save(*args, **kwargs)
 
+    def _relocate_next_episodes(self, mock_now=None):
+        now = datetime.datetime.now()
+        if mock_now:
+            now = mock_now
+        next_episodes = Episode.objects.filter(schedule=self, issue_date__gt=now).order_by('issue_date').all()
+        if len(next_episodes) > 0:
+            # get the next emission date
+            first_date_start = self.date_after(now)
+            time_offset = first_date_start - next_episodes[0].issue_date
+
+            for episode in next_episodes:
+                episode.issue_date = episode.issue_date + time_offset
+                episode.save()
 
     @classmethod
     def between(cls, after, before, exclude=None, live=False):
@@ -133,7 +148,7 @@ class Schedule(models.Model):
         return earlier_schedule, earlier_date
 
     def __unicode__(self):
-        return self.programme.name
+        return self.get_day_display() + ' - ' + self.start_hour.strftime('%H:%M')
 
     class Meta:
         verbose_name = _('schedule')

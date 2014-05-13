@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from radio.apps.programmes.models import Programme, Episode, Role
+from radio.apps.programmes.models import Programme, Episode, Role, Participant
 from radio.apps.schedules.models import Schedule
 
 class ScheduleInline(admin.StackedInline):
@@ -15,8 +15,9 @@ class ProgrammeAdmin(admin.ModelAdmin):
     inlines = [ScheduleInline]
 
 class EpisodeAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'published')
-    list_filter = ['published', 'programme']
+    exclude = ('slug',)
+    list_display = ('__unicode__', 'issue_date')
+    list_filter = ['issue_date', 'programme']
     search_fields = ['programme__name']
 
 class RoleAdmin(admin.ModelAdmin):
@@ -24,6 +25,12 @@ class RoleAdmin(admin.ModelAdmin):
     list_filter = ['role', 'programme', 'person']
 
 
+class ParticipantAdmin(admin.ModelAdmin):
+    list_display = ('role', 'episode', 'person')
+    list_filter = ['role', 'episode', 'person']
+
+
 admin.site.register(Programme, ProgrammeAdmin)
 admin.site.register(Episode, EpisodeAdmin)
 admin.site.register(Role, RoleAdmin)
+admin.site.register(Participant, ParticipantAdmin)

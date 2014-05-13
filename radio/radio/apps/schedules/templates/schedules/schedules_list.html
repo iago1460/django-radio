@@ -15,13 +15,18 @@
 		{% endfor %}
 	</ul>
 	
-	{% for schedule, date in next_events %}
+	{% for schedule, date, episode in next_events %}
 		{% if date <  now %}
 			<h4><span class="label label-warning">{{date|date:"G:i" }}</span></h4>
 		{% else %}
 			<h4><span class="label label-success">{{date|date:"G:i" }}</span></h4>
 		{% endif %}
-		<a href="{% url 'programmes:detail' schedule.programme.slug %}">{{ schedule.programme.name }}</a>
+		
+		{% if episode%}
+			<a href="{% url 'programmes:episode_detail' schedule.programme.slug episode.season episode.number_in_season%}">{{ schedule.programme.name }}</a>
+		{% else %}
+			<a href="{% url 'programmes:detail' schedule.programme.slug %}">{{ schedule.programme.name }}</a>
+		{% endif %}
 		<HR> 
 	{% endfor %}
 {% endblock %}

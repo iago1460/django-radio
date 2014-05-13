@@ -4,7 +4,7 @@ from dateutil.relativedelta import relativedelta
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from radio.apps.programmes.models import Programme
+from radio.apps.programmes.models import Programme, Episode
 from radio.apps.schedules.models import Schedule, MO, TU, WE, TH, FR, SA, SU
 
 
@@ -79,3 +79,25 @@ class ProgrammeMethodTests(TestCase):
         mock_now = datetime.datetime(2014, 1, 1, 0, 0, 0, 0)
         schedule = Schedule.objects.create(programme=Programme.objects.get(name="Programme 00:00 - 09:00"), day=MO, start_hour=start_hour, type='L')
         self.assertRaises(ValidationError, schedule.clean, mock_now)
+
+
+    def test_move_schedule(self):
+        mock_now = datetime.datetime(2014, 1, 1, 0, 0, 0, 0)
+        programme = Programme.objects.get(name="Programme 00:00 - 09:00")
+        schedule_1 = Schedule.objects.get(programme=programme, day=MO)
+
+        # first episode at day 06
+        issue_date = datetime.datetime(2014, 1, 6, 0, 0, 0, 0)
+        episode_1 = Episode.objects.create(title='episode 1', summary='Summary', issue_date=issue_date, programme=programme, schedule=schedule_1)
+        episode_2 = Episode.objects.create(title='episode 2', summary='Summary', issue_date=issue_date + relativedelta(days=+7), programme=programme, schedule=schedule_1)
+
+        schedule_1.day = FR
+        schedule_1.start_hour = datetime.time(0, 0, 0)
+        schedule_1._relocate_next_episodes(mock_now=mock_now)
+        episode = Episode.objects.get(title='episode 1')
+        self.assertEqual(episode.issue_date, datetime.datetime(2014, 1, 3, 0, 0, 0, 0))
+
+
+
+
+        pass
