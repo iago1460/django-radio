@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_extensions',
     'radio',
+    'radio.libs.global_settings',
     'radio.libs.home',
     'radio.apps.users',
     'radio.apps.programmes',
@@ -47,6 +48,7 @@ INSTALLED_APPS = (
     'radio.apps.dashboard',
     'debug_toolbar',
     'bootstrap3',
+    'solo'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -144,4 +146,3 @@ GRAPH_MODELS = {
 
 # Variables
 LOGIN_URL = 'login'  # name of url pattern
-SITE_NAME = 'RadioCo'

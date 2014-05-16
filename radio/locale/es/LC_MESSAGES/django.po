@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-13 17:22+0200\n"
+"POT-Creation-Date: 2014-05-16 11:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,45 +27,40 @@ msgstr ""
 msgid "Out of programme date range"
 msgstr "Fuera del rango de fechas del programa"
 
-#: radio/apps/dashboard/templates/dashboard/base.html:9
-#: radio/libs/home/templates/home/base.html:10
-msgid "Django Home"
-msgstr "Django Inicio"
-
-#: radio/apps/dashboard/templates/dashboard/base.html:32
+#: radio/apps/dashboard/templates/dashboard/base.html:34
 msgid "Dashboard: "
 msgstr "Panel de control: "
 
-#: radio/apps/dashboard/templates/dashboard/base.html:39
+#: radio/apps/dashboard/templates/dashboard/base.html:41
 msgid "Profile"
 msgstr "Perfil"
 
-#: radio/apps/dashboard/templates/dashboard/base.html:40
-#: radio/libs/home/templates/home/base.html:44
+#: radio/apps/dashboard/templates/dashboard/base.html:42
+#: radio/libs/home/templates/home/base.html:46
 msgid "Logout"
 msgstr "Cerrar sesión"
 
-#: radio/apps/dashboard/templates/dashboard/base.html:49
+#: radio/apps/dashboard/templates/dashboard/base.html:51
 msgid "Overview"
 msgstr "Resumen"
 
-#: radio/apps/dashboard/templates/dashboard/base.html:53
+#: radio/apps/dashboard/templates/dashboard/base.html:55
 msgid "Programmes"
 msgstr "Programas"
 
-#: radio/apps/dashboard/templates/dashboard/base.html:55
+#: radio/apps/dashboard/templates/dashboard/base.html:57
 msgid "My programmes"
 msgstr "Mis programas"
 
-#: radio/apps/dashboard/templates/dashboard/base.html:59
+#: radio/apps/dashboard/templates/dashboard/base.html:61
 msgid "Roles"
 msgstr "Papeles"
 
-#: radio/apps/dashboard/templates/dashboard/base.html:61
+#: radio/apps/dashboard/templates/dashboard/base.html:63
 msgid "My roles"
 msgstr "Mis papeles"
 
-#: radio/apps/dashboard/templates/dashboard/base.html:65
+#: radio/apps/dashboard/templates/dashboard/base.html:67
 msgid "Schedules"
 msgstr "Horarios"
 
@@ -162,7 +157,7 @@ msgid "This camp can be null."
 msgstr "Este campo puede ser null"
 
 #: radio/apps/programmes/models.py:30
-#: radio/libs/home/templates/home/base.html:40
+#: radio/libs/home/templates/home/base.html:42
 msgid "announcers"
 msgstr "locutores"
 
@@ -192,7 +187,7 @@ msgid "programme"
 msgstr "programa"
 
 #: radio/apps/programmes/models.py:66
-#: radio/libs/home/templates/home/base.html:39
+#: radio/libs/home/templates/home/base.html:41
 msgid "programmes"
 msgstr "programas"
 
@@ -347,7 +342,7 @@ msgstr ""
 "%(end_year)s ]"
 
 #: radio/apps/schedules/models.py:155
-#: radio/libs/home/templates/home/base.html:38
+#: radio/libs/home/templates/home/base.html:40
 msgid "schedules"
 msgstr "horarios"
 
@@ -395,6 +390,16 @@ msgstr "locutores"
 msgid "No userprofiles are available"
 msgstr "No hay perfiles disponibles"
 
+#: radio/libs/global_settings/models.py:7
+msgid "Site Name"
+msgstr "Nombre de la web"
+
+#: radio/libs/global_settings/models.py:10
+#: radio/libs/global_settings/models.py:13
+#: radio/libs/global_settings/models.py:14
+msgid "Global Configuration"
+msgstr "Configuración global"
+
 #: radio/libs/home/forms.py:12
 msgid "username"
 msgstr "nombre"
@@ -403,11 +408,11 @@ msgstr "nombre"
 msgid "password"
 msgstr "contraseña"
 
-#: radio/libs/home/templates/home/base.html:37
+#: radio/libs/home/templates/home/base.html:39
 msgid "home"
 msgstr "inicio"
 
-#: radio/libs/home/templates/home/base.html:46
+#: radio/libs/home/templates/home/base.html:48
 msgid "Log in"
 msgstr "Iniciar sesión"
 
@@ -435,6 +440,9 @@ msgstr "Por favor identifíquese"
 #: radio/libs/home/templates/home/login.html:17
 msgid "Wrong Username and password combination."
 msgstr "Combinación de usuario y contraseña incorrecta"
+
+#~ msgid "Django Home"
+#~ msgstr "Django Inicio"
 
 #~ msgid "published"
 #~ msgstr "publicado"
@@ -504,6 +512,3 @@ msgstr "Combinación de usuario y contraseña incorrecta"
 
 #~ msgid "shows"
 #~ msgstr "programas"
-
-#~ msgid "Name"
-#~ msgstr "Nombre"
