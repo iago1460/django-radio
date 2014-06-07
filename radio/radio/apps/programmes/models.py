@@ -23,15 +23,36 @@ ROLES = ((CONTRIBUTOR, _("Contributor")),
     (PRESENTER, _("Presenter")),
     (INFORMER, _("Informer")))
 
+
 class Programme(models.Model):
-    name = models.CharField(max_length=100, unique=True, verbose_name=_("name"), help_text=_("please DON'T change this value. It's used to build URL's."))
+    CATEGORY_CHOICES = (
+        ('Arts', _('Arts')),
+        ('Business', _('Business')),
+        ('Comedy', _('Comedy')),
+        ('Education', _('Education')),
+        ('Games & Hobbies', _('Games & Hobbies')),
+        ('Government & Organizations', _('Government & Organizations')),
+        ('Health', _('Health')),
+        ('Kids & Family', _('Kids & Family')),
+        ('Music', _('Music')),
+        ('News & Politics', _('News & Politics')),
+        ('Religion & Spirituality', _('Religion & Spirituality')),
+        ('Science & Medicine', _('Science & Medicine')),
+        ('Society & Culture', _('Society & Culture')),
+        ('Sports & Recreation', _('Sports & Recreation')),
+        ('Technology', _('Technology')),
+        ('TV & Film', _('TV & Film')),
+    )
+
+    name = models.CharField(max_length=100, unique=True, verbose_name=_("name"), help_text=_("Please DON'T change this value. It's used to build URL's."))
     start_date = models.DateField(verbose_name=_('start date'))
-    end_date = models.DateField(blank=True, null=True, verbose_name=_('end date'), help_text=_("This camp can be null."))
+    end_date = models.DateField(blank=True, null=True, verbose_name=_('end date'), help_text=_("This field can be null."))
     announcers = models.ManyToManyField(User, blank=True, null=True, through='Role', verbose_name=_("announcers"))
     synopsis = models.TextField(blank=True, verbose_name=_("synopsis"))
     photo = models.ImageField(upload_to='photos/', default='/static/radio/images/default-programme-photo.jpg', verbose_name=_("photo"))
     language = models.CharField(verbose_name=_("language"), choices=LANGUAGES, max_length=2, default=SPANISH)
     current_season = models.PositiveIntegerField(validators=[MinValueValidator(1)])
+    category = models.CharField(blank=True, null=True, max_length=50, choices=CATEGORY_CHOICES)
     slug = models.SlugField(max_length=100, unique=True)
     _runtime = models.PositiveIntegerField(validators=[MinValueValidator(1)])
 
@@ -140,7 +161,7 @@ class Participant(models.Model):
             except:
                 pass
             else:
-                raise ValidationError(_('Already exist '))
+                raise ValidationError(_('Already exist'))
 
     class Meta:
         unique_together = ('person', 'episode', 'role')
@@ -169,7 +190,7 @@ class Role(models.Model):
             except:
                 pass
             else:
-                raise ValidationError(_('Already exist '))
+                raise ValidationError(_('Already exist'))
     class Meta:
         unique_together = ('person', 'programme', 'role')
         verbose_name = _('role')
@@ -181,5 +202,15 @@ class Role(models.Model):
     def __unicode__(self):
         return self.programme.name + ": " + self.person.username
 
+
 class Podcast(models.Model):
+
     episode = models.OneToOneField(Episode, primary_key=True)
+    url = models.CharField(max_length=2048)
+    mime_type = models.CharField(max_length=20)
+    length = models.PositiveIntegerField()  # bytes
+    duration = models.PositiveIntegerField(validators=[MinValueValidator(1)])
+
+
+    def get_absolute_url(self):
+        return self.episode.get_absolute_url()

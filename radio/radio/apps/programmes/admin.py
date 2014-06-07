@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from radio.apps.programmes.models import Programme, Episode, Role, Participant
+from radio.apps.programmes.models import Programme, Podcast, Episode, Role, Participant
 from radio.apps.schedules.models import Schedule
 
 class ScheduleInline(admin.StackedInline):
@@ -14,11 +14,15 @@ class ProgrammeAdmin(admin.ModelAdmin):
     search_fields = ['name']
     inlines = [ScheduleInline]
 
+class PodcastInline(admin.StackedInline):
+    model = Podcast
+
 class EpisodeAdmin(admin.ModelAdmin):
     exclude = ('slug',)
     list_display = ('__unicode__', 'issue_date')
     list_filter = ['issue_date', 'programme']
     search_fields = ['programme__name']
+    inlines = (PodcastInline,)
 
 class RoleAdmin(admin.ModelAdmin):
     list_display = ('role', 'programme', 'person')
