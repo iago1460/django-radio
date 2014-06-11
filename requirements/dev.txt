@@ -2,5 +2,4 @@
 -r common.txt
 pygraphviz
 django-debug-toolbar
-Pillow==2.3.0
 coverage

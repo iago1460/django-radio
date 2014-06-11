@@ -8,3 +8,4 @@ bootstrap-admin
 django-bootstrap3
 django-solo
 djangorestframework
+Pillow==2.4.0
