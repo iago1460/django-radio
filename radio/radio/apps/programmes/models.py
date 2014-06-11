@@ -102,17 +102,32 @@ class Episode(models.Model):
     programme = models.ForeignKey(Programme, verbose_name=_("programme"))
     schedule = models.ForeignKey('schedules.Schedule', blank=True, null=True, on_delete=models.SET_NULL, verbose_name=_("schedule"))
     summary = models.TextField(blank=True, verbose_name=_("summary"))
-    issue_date = models.DateTimeField(verbose_name=_('issue date'))
+    issue_date = models.DateTimeField(unique=True, verbose_name=_('issue date'))
     season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("season"))
     number_in_season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("No. in season"))
     # slug = models.SlugField(max_length=100)
 
     @classmethod
-    def last_episode(cls, programme):
-        try:
-            return cls.objects.filter(programme=programme, season=programme.current_season).order_by('number_in_season').select_related('programme')[0]
-        except:
-            return None
+    def create_episode(cls, date, schedule_id):
+        from radio.apps.schedules.models import Schedule
+        schedule = Schedule.objects.select_related('programme').get(id=schedule_id)
+        programme = schedule.programme
+        last_episode = Episode.get_last_episode(programme)
+        if last_episode:
+            season = last_episode.season
+            number_in_season = last_episode.number_in_season + 1
+        else:
+            season = programme.current_season
+            number_in_season = 1
+        episode = Episode(programme=programme, schedule=schedule, issue_date=date, season=season, number_in_season=number_in_season)
+        episode.save()
+        # participants added in post_save signal
+        return episode
+
+
+    @classmethod
+    def get_last_episode(cls, programme):
+        return cls.objects.filter(programme=programme, season=programme.current_season).order_by('number_in_season').select_related('programme').first()
 
     def clean(self):
         if self.schedule is None and  self.issue_date > datetime.datetime.now():
@@ -169,7 +184,7 @@ class Participant(models.Model):
         verbose_name_plural = _('participants')
 
     def __unicode__(self):
-        return self.episode.title + ": " + self.person.username
+        return str(self.episode) + ": " + self.person.username
 
 
 
@@ -204,13 +219,13 @@ class Role(models.Model):
 
 
 class Podcast(models.Model):
-
     episode = models.OneToOneField(Episode, primary_key=True)
     url = models.CharField(max_length=2048)
     mime_type = models.CharField(max_length=20)
     length = models.PositiveIntegerField()  # bytes
     duration = models.PositiveIntegerField(validators=[MinValueValidator(1)])
 
-
     def get_absolute_url(self):
         return self.episode.get_absolute_url()
+
+
