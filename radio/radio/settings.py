@@ -41,12 +41,16 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_extensions',
     'radio',
+    'radio.libs.global_settings',
     'radio.libs.home',
     'radio.apps.users',
     'radio.apps.programmes',
     'radio.apps.schedules',
     'radio.apps.dashboard',
     'bootstrap3',
+    'solo',
+    'rest_framework',
+    'rest_framework.authtoken'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -124,6 +128,16 @@ LANGUAGES = (
 
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
+
+
+
 ABSOLUTE_PATHNAME = '/webapps/django-radio'
 
 LOCALE_PATHS = (ABSOLUTE_PATHNAME + '/radio/locale',)
@@ -142,4 +156,4 @@ GRAPH_MODELS = {
 
 # Variables
 LOGIN_URL = 'login'  # name of url pattern
-SITE_NAME = 'Radio'
+USERNAME_RADIOCO_RECORDER = 'RadioCo_Recorder'

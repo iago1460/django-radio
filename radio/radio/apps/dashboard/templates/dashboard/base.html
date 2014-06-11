@@ -1,14 +1,14 @@
 {% load staticfiles i18n %}
+{% load solo_tags %}
+{% get_solo 'global_settings.SiteConfiguration' as site_config %}
 <!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta name="description" content="">
-		<meta name="author" content="">
 		<title>
-			{% block title %}{% trans "Django Home" %}{% endblock %}
+			{% block title %}{{ site_config.site_name }}{% endblock %}
 		</title>
 		<!-- Bootstrap core CSS -->
 		{% block stylesheets %}
@@ -31,7 +31,7 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 					</button>
-					<a class="navbar-brand" href="{% url 'dashboard:index' %}">{% trans "Dashboard: "|title %} {{SITE_NAME}}</a>
+					<a class="navbar-brand" href="{% url 'dashboard:index' %}">{% trans "Dashboard: "|title %}{{ site_config.site_name }}</a>
 				</div>
 				<div class="navbar-collapse collapse">
 					<ul class="nav navbar-nav navbar-right">

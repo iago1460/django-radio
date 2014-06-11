@@ -9,7 +9,7 @@ from radio.apps.users.models import UserProfile
 class ProgrammeMinimumForm(forms.ModelForm):
     class Meta:
         model = Programme
-        fields = ['name', 'synopsis', 'photo', 'language']
+        fields = ['name', 'synopsis', 'current_season', 'photo', 'language']
 
 class ProgrammeForm(forms.ModelForm):
     class Meta:

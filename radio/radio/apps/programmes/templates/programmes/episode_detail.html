@@ -12,6 +12,26 @@
 			<p>{{programme.synopsis|truncatewords:12}}</p>
 		</div>
 	</div>
-	<h2>{% trans "Episode"|upper %} {{episode.start_date}}</h2>
-	<p>{{episode.summary}}</p>
+	{% if episode %}
+		<h2>{% trans "Episode"|upper %} {{episode.issue_date}}</h2>
+		<p>{{episode.summary}}</p>
+		
+		{% if role_list %}
+			<h2>{% trans "Staff"|upper %}</h2>
+			<ul>
+				{% for role in role_list %}
+					{% if role.get_role_display %}
+						<li><a href="{% url 'users:detail' role.person.userprofile.slug %}">{{ role.person }} ({{ role.get_role_display }})</a></li>
+					{% else %}
+						<li><a href="{% url 'users:detail' role.person.userprofile.slug %}">{{ role.person }}</a></li>
+					{% endif %}
+						<p>{{role.description}}</p>
+				{% endfor %}
+			</ul>
+		{% else %}
+			<p>{% trans "Without people."|upper %}</p>
+		{% endif %}
+	{% else %}
+		<p>{% trans "Without information."|upper %}</p>
+	{% endif %}
 {% endblock %}
