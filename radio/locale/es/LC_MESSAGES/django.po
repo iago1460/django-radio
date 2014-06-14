@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-06-07 23:46+0200\n"
+"POT-Creation-Date: 2014-06-14 20:41+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -246,7 +246,7 @@ msgid "start date must be before end date."
 msgstr "la fecha inicio debe ser anterior a la de fin"
 
 #: radio/apps/programmes/models.py:86 radio/apps/programmes/models.py:102
-#: radio/apps/programmes/models.py:179 radio/apps/schedules/models.py:37
+#: radio/apps/programmes/models.py:194 radio/apps/schedules/models.py:37
 msgid "programme"
 msgstr "programa"
 
@@ -279,48 +279,48 @@ msgstr "temporada"
 msgid "No. in season"
 msgstr "Número de episodio"
 
-#: radio/apps/programmes/models.py:119
+#: radio/apps/programmes/models.py:134
 msgid "schedule can't be null"
 msgstr "Horario no puede ser null"
 
-#: radio/apps/programmes/models.py:121
+#: radio/apps/programmes/models.py:136
 msgid "This schedule doesn't belong to the same programme"
 msgstr "Este horario no pertenece al mismo programa"
 
-#: radio/apps/programmes/models.py:133 radio/apps/programmes/models.py:151
+#: radio/apps/programmes/models.py:148 radio/apps/programmes/models.py:166
 msgid "episode"
 msgstr "episodio"
 
-#: radio/apps/programmes/models.py:134
+#: radio/apps/programmes/models.py:149
 msgid "episodes"
 msgstr "episodio"
 
-#: radio/apps/programmes/models.py:150 radio/apps/programmes/models.py:178
+#: radio/apps/programmes/models.py:165 radio/apps/programmes/models.py:193
 msgid "person"
 msgstr "persona"
 
-#: radio/apps/programmes/models.py:152 radio/apps/programmes/models.py:180
-#: radio/apps/programmes/models.py:196
+#: radio/apps/programmes/models.py:167 radio/apps/programmes/models.py:195
+#: radio/apps/programmes/models.py:211
 msgid "role"
 msgstr "papel"
 
-#: radio/apps/programmes/models.py:153 radio/apps/programmes/models.py:181
+#: radio/apps/programmes/models.py:168 radio/apps/programmes/models.py:196
 msgid "description"
 msgstr "descripción"
 
-#: radio/apps/programmes/models.py:164 radio/apps/programmes/models.py:193
+#: radio/apps/programmes/models.py:179 radio/apps/programmes/models.py:208
 msgid "Already exist"
 msgstr "Ya existe"
 
-#: radio/apps/programmes/models.py:168
+#: radio/apps/programmes/models.py:183
 msgid "participant"
 msgstr "participante"
 
-#: radio/apps/programmes/models.py:169
+#: radio/apps/programmes/models.py:184
 msgid "participants"
 msgstr "participantes"
 
-#: radio/apps/programmes/models.py:197
+#: radio/apps/programmes/models.py:212
 msgid "roles"
 msgstr "papeles"
 
@@ -454,27 +454,41 @@ msgstr "locutores"
 msgid "No userprofiles are available"
 msgstr "No hay perfiles disponibles"
 
-#: radio/libs/global_settings/models.py:7
+#: radio/libs/global_settings/models.py:10
 msgid "Site Name"
 msgstr "Nombre de la web"
 
-#: radio/libs/global_settings/models.py:10
 #: radio/libs/global_settings/models.py:13
-#: radio/libs/global_settings/models.py:14
+#: radio/libs/global_settings/models.py:16
+#: radio/libs/global_settings/models.py:17
 msgid "Global Configuration"
 msgstr "Configuración global"
 
-#: radio/libs/global_settings/models.py:31
+#: radio/libs/global_settings/models.py:22
 msgid "URL Source"
-msgstr ""
+msgstr "Dirección URL"
 
-#: radio/libs/global_settings/models.py:32
-msgid "mime format"
-msgstr ""
+#: radio/libs/global_settings/models.py:23
+msgid "start delay"
+msgstr "retraso inicial"
 
-#: radio/libs/global_settings/models.py:35
-#: radio/libs/global_settings/models.py:38
-#: radio/libs/global_settings/models.py:39
+#: radio/libs/global_settings/models.py:23
+#: radio/libs/global_settings/models.py:24
+msgid "In seconds."
+msgstr "En segundos."
+
+#: radio/libs/global_settings/models.py:24
+msgid "end delay"
+msgstr "retraso final"
+
+#: radio/libs/global_settings/models.py:34
+#, python-format
+msgid "User %(username)s doesn't exist"
+msgstr "El usuario %(username)s no existe"
+
+#: radio/libs/global_settings/models.py:37
+#: radio/libs/global_settings/models.py:40
+#: radio/libs/global_settings/models.py:41
 msgid "Podcast Configuration"
 msgstr "Configuración del podcast"
 

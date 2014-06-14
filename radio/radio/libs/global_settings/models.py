@@ -19,20 +19,7 @@ class SiteConfiguration(SingletonModel):
 
 
 class PodcastConfiguration(SingletonModel):
-    """
-    iTunes - Compatible Audio File Types:
-        .mp3    audio/mpeg
-        .m4a    audio/x-m4a
-    """
-    MIME_CHOICES = (
-        ("mp3", "audio/mpeg"),
-        ("m4a", "audio/x-m4a"),
-        ("ogg", "audio/ogg"),
-        ("wav", "audio/wav"),
-    )
-
     url_source = models.CharField(blank=True, default="", max_length=500, verbose_name=_("URL Source"))
-    mime = models.CharField(max_length=3, choices=MIME_CHOICES, default="mp3", verbose_name=_("mime format"))
     start_delay = models.PositiveIntegerField(default=0, verbose_name=_("start delay"), help_text=_("In seconds."))
     end_delay = models.PositiveIntegerField(default=0, verbose_name=_("end delay"), help_text=_("In seconds."))
 
