@@ -69,19 +69,31 @@ $(document).ready(function () {
         eventStartEditable: true,
         allDaySlot: false,
         firstDay: 1,
+        defaultDate: '2011-08-01',
         axisFormat: 'HH:mm',
         timezone: false,
         scrollTime: '07:00:00',
         lazyFetching: false,
         header: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'agendaWeek,agendaDay'
+            left: '',
+            center: '',
+            right: ''
+        },
+        columnFormat: {
+            month: 'ddd',    // Mon
+            week: 'dddd',	 // Monday
+            day: 'dddd'     
         },
         defaultView: 'agendaWeek',
 
         events: {
-            url: URL_JSON_ALL_EVENTS,
+            url: 'all_events/',
+            data: function() { // a function that returns an object
+                return {
+                	scheduleBoardId: $( "#select-board" ).val()
+                };
+            },
+            
             error: function() {
                 alert('there was an error while fetching events!');
             },
@@ -104,7 +116,10 @@ $(document).ready(function () {
                 type: "POST",
                 url: "create_schedule",
                 //Bug with time  $.fullCalendar.moment(copiedEventObject.start).add('minutes', moment().zone())
-                data: 'programmeId=' + copiedEventObject.programmeId + '&start=' + $.fullCalendar.moment(copiedEventObject.start).add('minutes', -120) + '&type=' +$("input[name='group1']:checked").val(),
+                data: 'programmeId=' + copiedEventObject.programmeId + '&start=' 
+                + $.fullCalendar.moment(copiedEventObject.start).add('minutes', -120) 
+                + '&type=' +$("input[name='group1']:checked").val()
+                + '&scheduleBoardId=' +$( "#select-board" ).val(),
                 success: function (res) {
                     if (res.error) {
                         alert("Error en la peticion " + res.error);
@@ -159,7 +174,7 @@ $(document).ready(function () {
         
         eventDragStop: function(event, jsEvent, ui, view) { 
             //console.log(event.id);
-             if (isElemOverDiv(ui, $('div#delete-events'))) {
+             if (isElemOverDiv(ui, $('div#external-events'))) {
             	 $.ajax({
                      type: "POST",
                      url: "delete_schedule",
@@ -189,34 +204,58 @@ $(document).ready(function () {
 
 });
 
-window.onload = function () {
-    $.getJSON('programmes', function (data) {
-    	info = data.response
-        for (var numero = 0; numero < info.length; numero++) {
-            var eventObjectFromDB = info[numero];
-            var eventToExternalEvents = {
-                "title": eventObjectFromDB.title,
-                "runtime": eventObjectFromDB.runtime,
-                "programmeId": eventObjectFromDB.programmeId,
-                "editable": true
-            };
+function reloadProgrammes() {
+	console.log("En reloadProgrammes")
+	$('#external-events').empty();
+	 $.ajax({
+         type: "POST",
+         url: "programmes",
+         data: 'scheduleBoardId=' + $( "#select-board" ).val(),
+         success: function (res) {
+             if (res.error) {
+                 alert("Error en la peticion " + res.error);
+             } else {
+             	info =  res.response
+             	for (var numero = 0; numero < info.length; numero++) {
+                    var eventObjectFromDB = info[numero];
+                    var eventToExternalEvents = {
+                        "title": eventObjectFromDB.title,
+                        "runtime": eventObjectFromDB.runtime,
+                        "programmeId": eventObjectFromDB.programmeId,
+                        "editable": true
+                    };
 
-            $('#external-events').append("<div class='external-event' id='mec" + numero + "'>" + eventToExternalEvents.title + "</div>");
-            var eventObject2 = {
-                title: $.trim(eventToExternalEvents.title), // use the element's text as the event title
-                runtime: eventToExternalEvents.runtime,
-                programmeId: eventToExternalEvents.programmeId,
-            };
-            $('#mec' + numero).data('eventObject', eventObject2);
-            
-            $('.external-event').draggable({
-                zIndex: 999,
-                revert: true, // will cause the event to go back to its
-                revertDuration: 0
-            });
-            //$('#calendar').fullCalendar('refetchEvents');
-        }
-    });
+                    $('#external-events').append("<div class='external-event' id='mec" + numero + "'>" + eventToExternalEvents.title + "</div>");
+                    var eventObject2 = {
+                        title: $.trim(eventToExternalEvents.title), // use the element's text as the event title
+                        runtime: eventToExternalEvents.runtime,
+                        programmeId: eventToExternalEvents.programmeId,
+                    };
+                    $('#mec' + numero).data('eventObject', eventObject2);
+                    
+                    $('.external-event').draggable({
+                        zIndex: 999,
+                        revert: true, // will cause the event to go back to its
+                        revertDuration: 0
+                    });
+                    //$('#calendar').fullCalendar('refetchEvents');
+                }
+             }
+         },
+         error: function (data) {
+             revertFunc();
+             alert("Error desconocido. Por favor recarge la pagina");
+         },
+     });
+}
+
+window.onload = function () {
+	reloadProgrammes();
+	$( "#select-board" ).change(function() {
+		$('#calendar').fullCalendar( 'removeEvents')
+		$('#calendar').fullCalendar( 'refetchEvents')
+		reloadProgrammes()
+	});
 }
 
 

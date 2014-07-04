@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from radio.apps.programmes.models import Programme, Episode
-from radio.apps.schedules.models import Schedule, MO, TU, WE, TH, FR, SA, SU
+from radio.apps.schedules.models import ScheduleBoard, Schedule, MO, TU, WE, TH, FR, SA, SU
 
 
 def to_relativedelta(tdelta):
@@ -98,6 +98,22 @@ class ProgrammeMethodTests(TestCase):
         self.assertEqual(episode.issue_date, datetime.datetime(2014, 1, 3, 0, 0, 0, 0))
 
 
+class ScheduleBoardMethodTests(TestCase):
+    def setUp(self):
+        ScheduleBoard.objects.create(name="january", start_date=datetime.datetime(2014, 1, 1), end_date=datetime.datetime(2014, 1, 31))
+        ScheduleBoard.objects.create(name="1_14_february", start_date=datetime.datetime(2014, 2, 1), end_date=datetime.datetime(2014, 2, 14))
+        ScheduleBoard.objects.create(name="after_14_february", start_date=datetime.datetime(2014, 2, 15))
 
+    def test_runtime(self):
+        january_board = ScheduleBoard.objects.get(name="january")
+        february_board = ScheduleBoard.objects.get(name="1_14_february")
+        after_board = ScheduleBoard.objects.get(name="after_14_february")
 
-        pass
+        self.assertEqual(None, ScheduleBoard.get_current(datetime.datetime(2013, 12, 1, 0, 0, 0, 0)))
+        self.assertEqual(january_board, ScheduleBoard.get_current(datetime.datetime(2014, 1, 1, 0, 0, 0, 0)))
+        self.assertEqual(january_board, ScheduleBoard.get_current(datetime.datetime(2014, 1, 31, 0, 0, 0, 0)))
+        self.assertEqual(january_board, ScheduleBoard.get_current(datetime.datetime(2014, 1, 31, 12, 0, 0, 0)))
+        self.assertEqual(february_board, ScheduleBoard.get_current(datetime.datetime(2014, 2, 1, 0, 0, 0, 0)))
+        self.assertEqual(february_board, ScheduleBoard.get_current(datetime.datetime(2014, 2, 14, 0, 0, 0, 0)))
+        self.assertEqual(after_board, ScheduleBoard.get_current(datetime.datetime(2014, 2, 15, 0, 0, 0, 0)))
+        self.assertEqual(after_board, ScheduleBoard.get_current(datetime.datetime(2014, 6, 1, 0, 0, 0, 0)))

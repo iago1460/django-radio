@@ -14,7 +14,7 @@
 	<script src="{% static "radio/js/calendar.js" %}" type="text/javascript"></script>
 	
 	<script> 
-		var URL_JSON_ALL_EVENTS = "{{ event_url }}";
+		var URL_JSON_ALL_EVENTS = "{{ event_url }}"
 	</script>
 {% endblock %}
 
@@ -26,20 +26,40 @@
 	<div id='loading' class="alert alert-warning">Loading...</div>
 	<div id='loading-ok' class="alert alert-success">All changes saved.</div>
 	
-	<div id='wrap'>
-		<div id='external-events'>
-			<h4>Programmes</h4>
-		<input type="radio" name="group1" value="L" checked>live<br>
-		<input type="radio" name="group1" value="B">broadcast<br>
-		<input type="radio" name="group1" value="S">broadcast syndication<br>
+	<div class="row">
+		<div class="col-xs-2">
 		</div>
-		<div id="delete-events" class="alert alert-danger">
-		  <span class="glyphicon glyphicon-trash">Drop here to delete!</span>
+		 <div class="col-xs-8">
+			<select id='select-board' class="form-control">
+				{% for scheduleBoard in scheduleBoards %}
+				<option value="{{scheduleBoard.id}}"
+					{% if scheduleBoard == current_scheduleBoard %}
+						selected="selected"
+					{% endif %}>
+					{{scheduleBoard.name}}
+				</option>
+				{% endfor %}
+			</select>
 		</div>
-
-		<div id='calendar'></div>
-
-		<div style='clear:both'></div>
 	</div>
+	<br >
+	  <div class="row-fluid">
+	    <div class="col-xs-2">
+	      <!--Sidebar content-->
+	      
+			<div id='external-events'></div>
+			<div>
+				<h4>Programmes</h4>
+				<input type="radio" name="group1" value="L" checked>live<br>
+				<input type="radio" name="group1" value="B">broadcast<br>
+				<input type="radio" name="group1" value="S">broadcast syndication<br>
+			</div>
+	      
+	      
+	    </div>
+	    <div class="col-xs-10" id='calendar'></div>
+	  </div>
+	
+	
 
 {% endblock %}

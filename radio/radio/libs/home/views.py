@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -86,7 +86,7 @@ def recording_schedules(request):
         return HttpResponseBadRequest()
     start = datetime.datetime.strptime(request.GET.get('start'), '%Y-%m-%d')
     json_list = []
-    schedules, dates = Schedule.between(start, start + relativedelta(hours=+24), live=True)
+    schedules, dates = Schedule.between(start, start + relativedelta(hours=+48), live=True)
     for x in range(len(schedules)):
         schedule = schedules[x]
         for y in range(len(dates[x])):
@@ -94,7 +94,7 @@ def recording_schedules(request):
             date = date + datetime.timedelta(seconds=PodcastConfiguration.objects.get().start_delay)
             duration = schedule.runtime().seconds - PodcastConfiguration.objects.get().start_delay - PodcastConfiguration.objects.get().end_delay
             # start = date.strftime("%Y-%m-%dT%H:%M:%S"+utc_str)
-            json_entry = {'id':schedule.id, 'start':str(date), 'duration':str(duration),
+            json_entry = {'id':schedule.programme.id, 'start':str(date), 'duration':str(duration),
                           'title': schedule.programme.slug}
             json_list.append(json_entry)
     return HttpResponse(json.dumps(json_list), content_type='application/json')
@@ -108,7 +108,8 @@ def submit_recorder(request):
     if not settings.DEBUG and not request.is_ajax():
         return HttpResponseBadRequest()
 
-    schedule_id = int(request.GET.get('schedule_id'))
+    programme_id = int(request.GET.get('programme_id'))
+    programme = get_object_or_404(Programme, id=programme_id)
     date = datetime.datetime.strptime(request.GET.get('date'), '%Y-%m-%d %H-%M-%S')
     file_name = request.GET.get('file_name')
     mime_type = request.GET.get('mime_type')
@@ -118,10 +119,9 @@ def submit_recorder(request):
     try:
         episode = Episode.objects.select_related('programme').get(issue_date=date)
     except Episode.DoesNotExist:
-        episode = Episode.create_episode(date, schedule_id)
+        episode = Episode.create_episode(date, programme)
 
     duration = episode.programme._runtime
-
     try:
         # can exist but it must have the same values
         # ignore if exist
