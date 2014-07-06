@@ -14,6 +14,7 @@ from radio.apps.programmes.models import Programme, Role, Episode
 from radio.apps.schedules.models import Schedule, ScheduleBoard
 from radio.apps.users.models import UserProfile
 
+from radio.libs.global_settings.models import CalendarConfiguration
 
 def __get_context_permissions(request):
     user = request.user
@@ -210,7 +211,11 @@ def schedule_permissions(user):
 @user_passes_test(schedule_permissions)
 @login_required
 def full_calendar(request):
-    context = {'event_url':'all_events/', 'scheduleBoards' : ScheduleBoard.objects.all().order_by('start_date'), 'current_scheduleBoard':ScheduleBoard.get_current(datetime.datetime.now())}
+    context = {'event_url':'all_events/', 'scheduleBoards' : ScheduleBoard.objects.all().order_by('start_date'),
+               'scroll_time': CalendarConfiguration.objects.get().scroll_time.strftime('%H:%M:%S'),
+               'first_day': CalendarConfiguration.objects.get().first_day + 1,
+               'language' : request.LANGUAGE_CODE,
+               'current_scheduleBoard':ScheduleBoard.get_current(datetime.datetime.now())}
     return render(request, 'dashboard/fullcalendar.html', dict(context.items() + __get_context_permissions(request).items()))
 
 
@@ -296,12 +301,16 @@ def all_events(request):
     if not settings.DEBUG and not request.is_ajax():
         return HttpResponseBadRequest()
     schedule_board_id = int(request.GET.get('scheduleBoardId'))
+    first_day = int(request.GET.get('firstDay'))
     scheduleBoard = get_object_or_404(ScheduleBoard, id=schedule_board_id)
 
     schedules = Schedule.objects.filter(schedule_board=scheduleBoard)
     json_list = []
     for schedule in schedules:
-        date = datetime.datetime.combine(datetime.date(2011, 8, schedule.day + 1), schedule.start_hour)
+        day = schedule.day + 1
+        if day < first_day:
+            day = day + 7
+        date = datetime.datetime.combine(datetime.date(2011, 8, day), schedule.start_hour)
         json_entry = {'id':schedule.id, 'start':str(date), 'end':str(date + schedule.runtime()),
                       'allDay':False, 'title': schedule.programme.name, 'textColor':text_colours[schedule.type], 'backgroundColor':background_colours[schedule.type]}
         json_list.append(json_entry)

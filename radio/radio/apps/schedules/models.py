@@ -33,7 +33,6 @@ WEEKDAY_CHOICES = (
 
 class ScheduleBoard(models.Model):
     name = models.CharField(max_length=255, unique=True, verbose_name=_("name"))
-    in_use = models.BooleanField(default=False, verbose_name=_("in use"))
     start_date = models.DateField(blank=True, null=True, verbose_name=_('start date'))
     end_date = models.DateField(blank=True, null=True, verbose_name=_('end date'))
 
@@ -122,36 +121,37 @@ class Schedule(models.Model):
 
     def clean(self):
         now = datetime.datetime.now()
-        dt = datetime.datetime.combine(self.schedule_board.start_date, datetime.time(0, 0))
-        if now > dt:
-            dt = now
-        # get the next emission date
-        first_date_start = self.date_after(dt)
-        if first_date_start:
-            first_date_end = first_date_start + self.runtime()
-            """
-            last_date = None
-            if self.programme.end_date():
-                last_date = self.date_before(self.programme.end_date())
-    
-            programme_list = Programme.actives(first_date, last_date);
-            for programme in programme_list:
-                pass
-            """
-            schedules, dates_list_list = Schedule.between(after=first_date_start, before=first_date_end, exclude=self, schedule_board=self.schedule_board)
-            index = 0
-            if schedules:
-                for date_list in dates_list_list:
-                    for date in date_list:
-                        if date != first_date_end:
-                            schedule = schedules[index]
-                            start_date = date
-                            end_date = start_date + schedule.runtime()
-                            raise ValidationError(_('This settings collides with: %(name)s [%(start_date)s %(start_day)s/%(start_month)s/%(start_year)s - %(end_date)s %(end_day)s/%(end_month)s/%(end_year)s ]')
-                                                      % {'name': schedule.programme.name, 'start_date': start_date.strftime("%H:%M"), 'start_day': start_date.strftime("%d"),
-                                                         'start_month': start_date.strftime("%m"), 'start_year': start_date.strftime("%Y"),
-                                                         'end_date': end_date.strftime("%H:%M"), 'end_day': end_date.strftime("%d"), 'end_month': end_date.strftime("%m"), 'end_year': end_date.strftime("%Y"), })
-                    index = index + 1
+        if self.schedule_board.start_date:
+            dt = datetime.datetime.combine(self.schedule_board.start_date, datetime.time(0, 0))
+            if now > dt:
+                dt = now
+            # get the next emission date
+            first_date_start = self.date_after(dt)
+            if first_date_start:
+                first_date_end = first_date_start + self.runtime()
+                """
+                last_date = None
+                if self.programme.end_date():
+                    last_date = self.date_before(self.programme.end_date())
+        
+                programme_list = Programme.actives(first_date, last_date);
+                for programme in programme_list:
+                    pass
+                """
+                schedules, dates_list_list = Schedule.between(after=first_date_start, before=first_date_end, exclude=self, schedule_board=self.schedule_board)
+                index = 0
+                if schedules:
+                    for date_list in dates_list_list:
+                        for date in date_list:
+                            if date != first_date_end:
+                                schedule = schedules[index]
+                                start_date = date
+                                end_date = start_date + schedule.runtime()
+                                raise ValidationError(_('This settings collides with: %(name)s [%(start_date)s %(start_day)s/%(start_month)s/%(start_year)s - %(end_date)s %(end_day)s/%(end_month)s/%(end_year)s ]')
+                                                          % {'name': schedule.programme.name, 'start_date': start_date.strftime("%H:%M"), 'start_day': start_date.strftime("%d"),
+                                                             'start_month': start_date.strftime("%m"), 'start_year': start_date.strftime("%Y"),
+                                                             'end_date': end_date.strftime("%H:%M"), 'end_day': end_date.strftime("%d"), 'end_month': end_date.strftime("%m"), 'end_year': end_date.strftime("%Y"), })
+                        index = index + 1
 
     def save(self, *args, **kwargs):
         # convert dates due MySQL
