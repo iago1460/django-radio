@@ -153,7 +153,7 @@ $(document).ready(function () {
         },
 
 
-        eventDrop: function (event, revertFunc) {
+        eventDrop: function (event, delta, revertFunc) {
             $.ajax({
                 type: "POST",
                 url: "change_event",

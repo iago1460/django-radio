@@ -10,12 +10,9 @@
 	<script src="{% static "lib/jquery.min.js" %}" type="text/javascript"></script>
 	<script src="{% static "lib/jquery-ui.custom.min.js" %}" type="text/javascript"></script>
 	<script src="{% static "fullcalendar/fullcalendar.js" %}" type="text/javascript"></script>
-	<script src="{% static "fullcalendar/lang/all.js" %}" type="text/javascript"></script>
+	<script src="{% static "fullcalendar/lang-all.js" %}" type="text/javascript"></script>
 	<script src="{% static "radio/js/calendar.js" %}" type="text/javascript"></script>
 	
-	<script> 
-		var URL_JSON_ALL_EVENTS = "{{ event_url }}"
-	</script>
 {% endblock %}
 
 {% block schedules_class %}class="active"{% endblock %}
