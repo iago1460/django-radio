@@ -88,7 +88,7 @@
 	        firstDay: {{first_day}},
 	        defaultDate: '2011-08-0{{first_day}}',
 	        axisFormat: 'HH:mm',
-	        timezone: false,
+	        timezone: true,
 	        scrollTime: '{{scroll_time}}',
 	        lazyFetching: false,
 	        header: {
@@ -127,15 +127,14 @@
 
 	            // assign it the date that was reported
 	            copiedEventObject.start = date;
-	            copiedEventObject.end = $.fullCalendar.moment(date).add('minutes', copiedEventObject.runtime);
+	            copiedEventObject.end = moment(date).add('minutes', copiedEventObject.runtime);
 
 	            // create the event 
 	            $.ajax({
 	                type: "POST",
 	                url: "create_schedule",
-	                //Bug with time  $.fullCalendar.moment(copiedEventObject.start).add('minutes', moment().zone())
 	                data: 'programmeId=' + copiedEventObject.programmeId + '&start=' 
-	                + $.fullCalendar.moment(copiedEventObject.start).add('minutes', -120) 
+	                + moment(copiedEventObject.start.utc().toString().slice(0, copiedEventObject.start.utc().toString().indexOf("GMT")), 'ddd MMM DD YYYY HH:mm:ss')
 	                + '&type=' +$("input[name='group1']:checked").val()
 	                + '&scheduleBoardId=' +$( "#select-board" ).val(),
 	                success: function (res) {
@@ -175,8 +174,7 @@
 	            $.ajax({
 	                type: "POST",
 	                url: "change_event",
-	                //Bug with time  data: 'id=' + event.id + '&start=' + $.fullCalendar.moment(event.start).add('minutes', moment().zone()),
-	                data: 'id=' + event.id + '&start=' + $.fullCalendar.moment(event.start).add('minutes', -120),
+	                data: 'id=' + event.id + '&start=' + moment(event.start.utc().toString().slice(0, event.start.utc().toString().indexOf("GMT")), 'ddd MMM DD YYYY HH:mm:ss'),
 	                success: function (res) {
 	                    if (res.error) {
 	                        revertFunc();
