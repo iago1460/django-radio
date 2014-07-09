@@ -1,0 +1,25 @@
+{% load staticfiles i18n %}
+
+<div class="modal-dialog modal-lg">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"
+				aria-hidden="true">×</button>
+			<h4 class="modal-title" id="myModalLabel">{{ schedule.programme }} - {{ schedule }}</h4>
+		</div>
+		<div class="modal-body">
+			<p><div class="alert alert-success" role="alert"> {% trans 'Changes saved' %} </div></p>
+			<script>
+				setTimeout(function() {
+					jQuery('#modal').modal('hide');
+				}, 1000);
+				$('body').on('hidden.bs.modal', '.modal', function() {
+					$(this).removeData('bs.modal');
+				});
+			</script>
+		</div>
+		<div class="modal-footer"></div>
+	</div>
+	<!-- /.modal-content -->
+</div>
+<!-- /.modal-dialog -->

@@ -7,14 +7,16 @@ from django.core.exceptions import ValidationError
 from django.forms.formsets import formset_factory
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, redirect, render, get_list_or_404
+from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
+from django.views.generic import UpdateView
 
-from radio.apps.dashboard.forms import ProgrammeForm, ProgrammeMinimumForm, UserProfileForm, UserForm, RoleForm, RoleMinimumForm
+from radio.apps.dashboard.forms import ProgrammeForm, ProgrammeMinimumForm, UserProfileForm, UserForm, RoleForm, RoleMinimumForm, ScheduleForm
 from radio.apps.programmes.models import Programme, Role, Episode
 from radio.apps.schedules.models import Schedule, ScheduleBoard
 from radio.apps.users.models import UserProfile
-
 from radio.libs.global_settings.models import CalendarConfiguration
+
 
 def __get_context_permissions(request):
     user = request.user
@@ -208,6 +210,32 @@ def schedule_permissions(user):
     return user.has_perm('schedules.add_schedule') and user.has_perm('schedules.change_schedule') and user.has_perm('schedules.delete_schedule')
 
 
+@login_required
+@user_passes_test(schedule_permissions)
+def change_broadcast(request, pk):
+    schedule = get_object_or_404(Schedule.objects.select_related('schedule_board', 'programme'), pk=pk)
+    queryset = Schedule.objects.filter(schedule_board=schedule.schedule_board, programme=schedule.programme, type='L').order_by('day', 'start_hour')
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = ScheduleForm(queryset, request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            source = form.cleaned_data['source']
+            schedule.source = source
+            schedule.save()
+            return HttpResponse(render_to_string('dashboard/item_edit_form_success.html', {'schedule': schedule}))
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = ScheduleForm(queryset=queryset)
+        if schedule.source:
+            form = ScheduleForm(queryset=queryset, initial={'source': schedule.source.pk })
+
+    return render(request, 'dashboard/item_edit_form.html', {'form': form, 'schedule':schedule})
+
+
+
 @user_passes_test(schedule_permissions)
 @login_required
 def full_calendar(request):
@@ -273,7 +301,7 @@ def create_schedule(request):
     schedule = Schedule(programme=programme, schedule_board=scheduleBoard, day=start.weekday(), start_hour=start.time(), type=emission_type)
     schedule.clean()
     schedule.save()
-    return {'scheduleId': schedule.id, 'backgroundColor':background_colours[schedule.type], 'textColor':text_colours[schedule.type]}
+    return {'scheduleId': schedule.id, 'backgroundColor':background_colours[schedule.type], 'textColor':text_colours[schedule.type], 'type':schedule.type}
 
 @ajax_view
 @login_required
@@ -312,7 +340,9 @@ def all_events(request):
             day = day + 7
         date = datetime.datetime.combine(datetime.date(2011, 8, day), schedule.start_hour)
         json_entry = {'id':schedule.id, 'start':str(date), 'end':str(date + schedule.runtime()),
-                      'allDay':False, 'title': schedule.programme.name, 'textColor':text_colours[schedule.type], 'backgroundColor':background_colours[schedule.type]}
+                      'allDay':False, 'title': schedule.programme.name, 'type':schedule.type,
+                      'textColor':text_colours[schedule.type],
+                      'backgroundColor':background_colours[schedule.type]}
         json_list.append(json_entry)
 
     return HttpResponse(json.dumps(json_list), content_type='application/json')

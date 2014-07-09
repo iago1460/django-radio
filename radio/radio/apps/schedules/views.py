@@ -46,7 +46,14 @@ def __get_events(after, before):
                     episode = Episode.objects.get(issue_date=date)
                 except Episode.DoesNotExist:
                     pass
-            # TODO: schedule == broadcast
+            # broadcast
+            elif next_schedules[x].source:
+                try:
+                    date = next_schedules[x].source.date_before(date)
+                    if date:
+                        episode = Episode.objects.get(issue_date=date)
+                except Episode.DoesNotExist:
+                    pass
             episodes.append(episode)
 
 

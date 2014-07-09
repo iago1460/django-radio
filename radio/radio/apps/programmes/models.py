@@ -101,7 +101,7 @@ class Episode(models.Model):
     title = models.CharField(max_length=100, blank=True, null=True, verbose_name=_("title"))
     programme = models.ForeignKey(Programme, verbose_name=_("programme"))
     summary = models.TextField(blank=True, verbose_name=_("summary"))
-    issue_date = models.DateTimeField(unique=True, verbose_name=_('issue date'))
+    issue_date = models.DateTimeField(db_index=True, unique=True, verbose_name=_('issue date'))
     season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("season"))
     number_in_season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("No. in season"))
     # slug = models.SlugField(max_length=100)

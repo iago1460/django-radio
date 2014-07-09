@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-06 14:02+0200\n"
+"POT-Creation-Date: 2014-07-09 21:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,6 +22,14 @@ msgstr ""
 #, python-format
 msgid "Index of %(directory)s"
 msgstr ""
+
+#: radio/apps/dashboard/forms.py:49
+msgid "Without reference"
+msgstr "Sin referencias"
+
+#: radio/apps/dashboard/forms.py:49 radio/apps/schedules/models.py:89
+msgid "source"
+msgstr "referencia"
 
 #: radio/apps/dashboard/templates/dashboard/base.html:34
 msgid "Dashboard: "
@@ -72,53 +80,65 @@ msgstr "Programa"
 msgid "Role in "
 msgstr "Papel en "
 
-#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:116
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:120
 msgid "There was an error while fetching programmes"
 msgstr "Ocurrió un error mientras se recuperaban los eventos"
 
-#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:143
-#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:156
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:146
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:160
 msgid "There was an error while creating schedule"
 msgstr "Ocurrió un error mientras se creaba el horario"
 
-#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:183
-#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:188
-#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:209
-#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:233
-#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:264
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:194
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:199
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:220
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:244
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:275
 msgid "There was an error in the request"
 msgstr "Ocurrió un error en la petición"
 
-#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:302
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:313
 msgid "Schedule Editor"
 msgstr "Editor de horarios"
 
-#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:304
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:315
 msgid "Loading"
 msgstr "Cargando"
 
-#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:305
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:316
 msgid "All changes saved"
 msgstr "Todos los cambios guardados"
 
-#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:330
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:341
 msgid "Programme type"
 msgstr "Tipo de programa"
 
-#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:331
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:342
 #: radio/apps/schedules/models.py:12
 msgid "live"
 msgstr "directo"
 
-#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:332
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:343
 #: radio/apps/schedules/models.py:13
 msgid "broadcast"
 msgstr "retransmisión"
 
-#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:333
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:344
 #: radio/apps/schedules/models.py:14
 msgid "broadcast syndication"
 msgstr "redifusión"
+
+#: radio/apps/dashboard/templates/dashboard/item_edit_form.html:32
+msgid "Close"
+msgstr "Cerrar"
+
+#: radio/apps/dashboard/templates/dashboard/item_edit_form.html:33
+msgid "Save changes"
+msgstr "Guardar cambios"
+
+#: radio/apps/dashboard/templates/dashboard/item_edit_form_success.html:11
+msgid "Changes saved"
+msgstr "Cambios guardados"
 
 #: radio/apps/dashboard/templates/dashboard/my_programme_list.html:6
 msgid "My programme list"
@@ -431,7 +451,7 @@ msgstr "hora de inicio"
 msgid "type"
 msgstr "tipo"
 
-#: radio/apps/schedules/models.py:150
+#: radio/apps/schedules/models.py:151
 #, python-format
 msgid ""
 "This settings collides with: %(name)s [%(start_date)s %(start_day)s/"
@@ -442,11 +462,11 @@ msgstr ""
 "%(start_month)s/%(start_year)s - %(end_date)s %(end_day)s/%(end_month)s/"
 "%(end_year)s ]"
 
-#: radio/apps/schedules/models.py:205
+#: radio/apps/schedules/models.py:209
 msgid "schedule"
 msgstr "horario"
 
-#: radio/apps/schedules/models.py:206
+#: radio/apps/schedules/models.py:210
 #: radio/libs/home/templates/home/base.html:40
 msgid "schedules"
 msgstr "horarios"
@@ -591,6 +611,12 @@ msgstr "Por favor identifíquese"
 #: radio/libs/home/templates/home/login.html:17
 msgid "Wrong Username and password combination."
 msgstr "Combinación de usuario y contraseña incorrecta"
+
+#~ msgid "cancel"
+#~ msgstr "cancelar"
+
+#~ msgid "save"
+#~ msgstr "guardar"
 
 #~ msgid "Out of programme date range"
 #~ msgstr "Fuera del rango de fechas del programa"

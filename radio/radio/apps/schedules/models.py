@@ -86,17 +86,18 @@ class Schedule(models.Model):
     start_hour = models.TimeField(verbose_name=_('start time'))
     type = models.CharField(verbose_name=_("type"), choices=emission_type, max_length=1)
     schedule_board = models.ForeignKey(ScheduleBoard, verbose_name=_("schedule board"))
+    source = models.ForeignKey('self', blank=True, null=True, verbose_name=_("source"))
 
     def runtime(self):
         return self.programme.runtime
 
     def __get_rrule(self):
         start_date = self.programme.start_date
-        if start_date < self.schedule_board.start_date:
+        if self.schedule_board.start_date and start_date < self.schedule_board.start_date:
             start_date = self.schedule_board.start_date
-        if self.programme.end_date is not None:
+        if self.programme.end_date:
             end_date = self.programme.end_date
-            if self.schedule_board.end_date is not None and end_date > self.schedule_board.end_date:
+            if self.schedule_board.end_date and end_date > self.schedule_board.end_date:
                 end_date = self.schedule_board.end_date
             # Due to rrule we need to add 1 day
             end_date = end_date + datetime.timedelta(days=1)
@@ -162,7 +163,7 @@ class Schedule(models.Model):
 
     @classmethod
     def between(cls, after, before, exclude=None, live=False, schedule_board=None):
-        list_schedules = cls.objects.filter(programme__start_date__lte=before, programme__end_date__isnull=True).order_by('-programme__start_date').select_related('programme') | cls.objects.filter(programme__start_date__lte=before, programme__end_date__gte=after).order_by('-programme__start_date').select_related('programme')
+        list_schedules = cls.objects.filter(programme__start_date__lte=before, programme__end_date__isnull=True) | cls.objects.filter(programme__start_date__lte=before, programme__end_date__gte=after)
         if live:
             list_schedules = list_schedules.filter(type='L')
         if schedule_board:
@@ -171,6 +172,8 @@ class Schedule(models.Model):
             list_schedules = list_schedules.filter(schedule_board__start_date__lte=before, schedule_board__end_date__isnull=True) | list_schedules.filter(schedule_board__start_date__lte=before, schedule_board__end_date__gte=after)
         if exclude:
             list_schedules = list_schedules.exclude(id=exclude.id)
+        list_schedules = list_schedules.order_by('-programme__start_date').select_related('programme', 'schedule_board', 'source__programme', 'source__schedule_board')
+
         dates = []
         schedules = []
         for schedule in list_schedules:
@@ -183,9 +186,10 @@ class Schedule(models.Model):
 
     @classmethod
     def schedule(cls, dt, exclude=None):
-        list_schedules = cls.objects.filter(programme__start_date__lte=dt, programme__end_date__isnull=True).select_related('programme') | cls.objects.filter(programme__start_date__lte=dt, programme__end_date__gte=dt).select_related('programme')
+        list_schedules = cls.objects.filter(programme__start_date__lte=dt, programme__end_date__isnull=True) | cls.objects.filter(programme__start_date__lte=dt, programme__end_date__gte=dt)
         if exclude:
             list_schedules = list_schedules.exclude(id=exclude.id)
+        list_schedules = list_schedules.select_related('programme', 'schedule_board')
         earlier_date = None
         earlier_schedule = None
         for schedule in list_schedules:

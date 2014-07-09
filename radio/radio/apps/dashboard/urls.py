@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url
-
+from radio.apps.dashboard import views
 urlpatterns = patterns('',
     url(r'^$', 'radio.apps.dashboard.views.index', name="index"),
     url(r'^profile/$', 'radio.apps.dashboard.views.edit_profile', name="edit_profile"),
@@ -20,4 +20,6 @@ urlpatterns = patterns('',
     url(r'^schedule_editor/create_schedule', 'radio.apps.dashboard.views.create_schedule'),
     url(r'^schedule_editor/delete_schedule', 'radio.apps.dashboard.views.delete_schedule'),
     url(r'^schedule_editor/programmes', 'radio.apps.dashboard.views.programmes'),
+
+    url(r'^schedule_editor/change_broadcast/(?P<pk>\d+)/$', 'radio.apps.dashboard.views.change_broadcast', name="change_broadcast"),
 )
