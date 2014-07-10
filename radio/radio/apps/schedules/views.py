@@ -40,9 +40,18 @@ def __get_events(after, before):
             dates.append(date)
 
             episode = None
+            # if schedule == live
             if next_schedules[x].type == 'L':
                 try:
                     episode = Episode.objects.get(issue_date=date)
+                except Episode.DoesNotExist:
+                    pass
+            # broadcast
+            elif next_schedules[x].source:
+                try:
+                    date = next_schedules[x].source.date_before(date)
+                    if date:
+                        episode = Episode.objects.get(issue_date=date)
                 except Episode.DoesNotExist:
                     pass
             episodes.append(episode)

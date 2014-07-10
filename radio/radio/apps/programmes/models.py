@@ -77,10 +77,10 @@ class Programme(models.Model):
 
     @classmethod
     def actives(cls, start_date, end_date=None):
+        programme_list = cls.objects.filter(end_date__isnull=True).order_by('-start_date') | cls.objects.filter(end_date__gte=start_date).order_by('-start_date')
         if end_date:
-            return cls.objects.filter(start_date__lte=end_date, end_date__isnull=True).order_by('-start_date') | cls.objects.filter(start_date__lte=end_date, end_date__gte=start_date).order_by('-start_date')
-        else:
-            return cls.objects.filter(end_date__isnull=True).order_by('-start_date').select_related('programme') | cls.objects.filter(end_date__gte=start_date).order_by('-start_date')
+            programme_list = programme_list.filter(start_date__lte=end_date)
+        return programme_list
 
     class Meta:
         verbose_name = _('programme')
@@ -100,18 +100,14 @@ class Programme(models.Model):
 class Episode(models.Model):
     title = models.CharField(max_length=100, blank=True, null=True, verbose_name=_("title"))
     programme = models.ForeignKey(Programme, verbose_name=_("programme"))
-    schedule = models.ForeignKey('schedules.Schedule', blank=True, null=True, on_delete=models.SET_NULL, verbose_name=_("schedule"))
     summary = models.TextField(blank=True, verbose_name=_("summary"))
-    issue_date = models.DateTimeField(unique=True, verbose_name=_('issue date'))
+    issue_date = models.DateTimeField(db_index=True, unique=True, verbose_name=_('issue date'))
     season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("season"))
     number_in_season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("No. in season"))
     # slug = models.SlugField(max_length=100)
 
     @classmethod
-    def create_episode(cls, date, schedule_id):
-        from radio.apps.schedules.models import Schedule
-        schedule = Schedule.objects.select_related('programme').get(id=schedule_id)
-        programme = schedule.programme
+    def create_episode(cls, date, programme):
         last_episode = Episode.get_last_episode(programme)
         if last_episode:
             season = last_episode.season
@@ -119,21 +115,26 @@ class Episode(models.Model):
         else:
             season = programme.current_season
             number_in_season = 1
-        episode = Episode(programme=programme, schedule=schedule, issue_date=date, season=season, number_in_season=number_in_season)
+        episode = Episode(programme=programme, issue_date=date, season=season, number_in_season=number_in_season)
         episode.save()
         # participants added in post_save signal
         return episode
 
+    @classmethod
+    def next_episodes(cls, programme, hour, after=None):
+        # TODO: improve query
+        if after == None:
+            after = datetime.datetime.now()
+        episodes = Episode.objects.filter(programme=programme, issue_date__gte=after).order_by('issue_date')
+        next_episodes = []
+        for episode in episodes:
+            if episode.issue_date.time() == hour:
+                next_episodes.append(episode)
+        return next_episodes
 
     @classmethod
     def get_last_episode(cls, programme):
         return cls.objects.filter(programme=programme, season=programme.current_season).order_by('number_in_season').select_related('programme').first()
-
-    def clean(self):
-        if self.schedule is None and  self.issue_date > datetime.datetime.now():
-            raise ValidationError(_('schedule can\'t be null'))
-        if self.schedule is not None and self.programme != self.schedule.programme:
-            raise ValidationError(_('This schedule doesn\'t belong to the same programme'))
 
     def get_absolute_url(self):
         return reverse('programmes:episode_detail', args=[self.programme.slug, self.season, self.number_in_season])

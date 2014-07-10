@@ -7,12 +7,15 @@ from django.core.exceptions import ValidationError
 from django.forms.formsets import formset_factory
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, redirect, render, get_list_or_404
+from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
+from django.views.generic import UpdateView
 
-from radio.apps.dashboard.forms import ProgrammeForm, ProgrammeMinimumForm, UserProfileForm, UserForm, RoleForm, RoleMinimumForm
-from radio.apps.programmes.models import Programme, Role
-from radio.apps.schedules.models import Schedule
+from radio.apps.dashboard.forms import ProgrammeForm, ProgrammeMinimumForm, UserProfileForm, UserForm, RoleForm, RoleMinimumForm, ScheduleForm
+from radio.apps.programmes.models import Programme, Role, Episode
+from radio.apps.schedules.models import Schedule, ScheduleBoard
 from radio.apps.users.models import UserProfile
+from radio.libs.global_settings.models import CalendarConfiguration
 
 
 def __get_context_permissions(request):
@@ -187,10 +190,9 @@ def ajax_view(f):
         except Exception, e:
             res = None
             if settings.DEBUG:
-                error = json.dumps(str('; '.join(e.messages)))
+                error = json.dumps(str('; '.join(e)))
             else:
                 error = str("Internal error")
-
         return HttpResponse(
             json.dumps({
                 'error': error,
@@ -208,11 +210,42 @@ def schedule_permissions(user):
     return user.has_perm('schedules.add_schedule') and user.has_perm('schedules.change_schedule') and user.has_perm('schedules.delete_schedule')
 
 
+@login_required
+@user_passes_test(schedule_permissions)
+def change_broadcast(request, pk):
+    schedule = get_object_or_404(Schedule.objects.select_related('schedule_board', 'programme'), pk=pk)
+    queryset = Schedule.objects.filter(schedule_board=schedule.schedule_board, programme=schedule.programme, type='L').order_by('day', 'start_hour')
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = ScheduleForm(queryset, request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            source = form.cleaned_data['source']
+            schedule.source = source
+            schedule.save()
+            return HttpResponse(render_to_string('dashboard/item_edit_form_success.html', {'schedule': schedule}))
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = ScheduleForm(queryset=queryset)
+        if schedule.source:
+            form = ScheduleForm(queryset=queryset, initial={'source': schedule.source.pk })
+
+    return render(request, 'dashboard/item_edit_form.html', {'form': form, 'schedule':schedule})
+
+
+
 @user_passes_test(schedule_permissions)
 @login_required
 def full_calendar(request):
-    context = {'event_url':'all_events/'}
+    context = {'event_url':'all_events/', 'scheduleBoards' : ScheduleBoard.objects.all().order_by('start_date'),
+               'scroll_time': CalendarConfiguration.objects.get().scroll_time.strftime('%H:%M:%S'),
+               'first_day': CalendarConfiguration.objects.get().first_day + 1,
+               'language' : request.LANGUAGE_CODE,
+               'current_scheduleBoard':ScheduleBoard.get_current(datetime.datetime.now())}
     return render(request, 'dashboard/fullcalendar.html', dict(context.items() + __get_context_permissions(request).items()))
+
 
 @ajax_view
 @login_required
@@ -220,15 +253,35 @@ def full_calendar(request):
 def change_event(request):
     start = int(request.POST.get('start'))
     start = datetime.datetime.fromtimestamp(start / 1000.0)
-    id = int(request.POST.get('id'))
-    schedule = get_object_or_404(Schedule, id=id)
-    now = datetime.datetime.now().date()
-    if (schedule.programme.end_date is not None and start.date() >= schedule.programme.end_date) or start.date() < schedule.programme.start_date or start.date() < now:
-        raise ValidationError(_('Out of programme date range'))
+    schedule_id = int(request.POST.get('id'))
+    schedule = get_object_or_404(Schedule.objects.select_related('schedule_board'), id=schedule_id)
+
+    # next episodes from now or when the schedule board starts
+    now = datetime.datetime.now()
+    dt = datetime.datetime.combine(schedule.schedule_board.start_date, datetime.time(0, 0))
+    if now > dt:
+        dt = now
+    next_episodes = Episode.next_episodes(programme=schedule.programme, hour=schedule.start_hour, after=dt)
+
+    # change schedule
     schedule.start_hour = start.time()
     schedule.day = start.weekday()
     schedule.clean()
     schedule.save()
+
+    # modify date of next episodes
+    if len(next_episodes) > 0:
+        # get the next emission date
+        first_date_start = schedule.date_after(dt)
+        time_offset = first_date_start - next_episodes[0].issue_date
+
+        for episode in next_episodes:
+            # if the episode belongs to the same board
+            if ScheduleBoard.get_current(episode.issue_date) == schedule.schedule_board:
+                episode.issue_date = episode.issue_date + time_offset
+                episode.save()
+
+
 
 background_colours = { "L": "#F9AD81", "B": "#C4DF9B", "S": "#8493CA" }
 text_colours = { "L": "black", "B": "black", "S": "black" }
@@ -239,30 +292,32 @@ text_colours = { "L": "black", "B": "black", "S": "black" }
 def create_schedule(request):
     start = int(request.POST.get('start'))
     start = datetime.datetime.fromtimestamp(start / 1000.0)
-    id = int(request.POST.get('programmeId'))
-    type = request.POST.get('type')
-    programme = get_object_or_404(Programme, id=id)
-    now = datetime.datetime.now().date()
-    if (programme.end_date is not None and start.date() >= programme.end_date) or start.date() < programme.start_date or start.date() < now:
-        raise ValidationError(_('Out of programme date range'))
-    schedule = Schedule(programme=programme, day=start.weekday(), start_hour=start.time(), type=type)
+    emission_type = request.POST.get('type')
+    programme_id = int(request.POST.get('programmeId'))
+    programme = get_object_or_404(Programme, id=programme_id)
+    schedule_board_id = int(request.POST.get('scheduleBoardId'))
+    scheduleBoard = get_object_or_404(ScheduleBoard, id=schedule_board_id)
+
+    schedule = Schedule(programme=programme, schedule_board=scheduleBoard, day=start.weekday(), start_hour=start.time(), type=emission_type)
     schedule.clean()
     schedule.save()
-    return {'scheduleId': schedule.id, 'backgroundColor':background_colours[schedule.type], 'textColor':text_colours[schedule.type]}
+    return {'scheduleId': schedule.id, 'backgroundColor':background_colours[schedule.type], 'textColor':text_colours[schedule.type], 'type':schedule.type}
 
 @ajax_view
 @login_required
 @user_passes_test(schedule_permissions)
 def delete_schedule(request):
-    id = int(request.POST.get('scheduleId'))
-    schedule = get_object_or_404(Schedule, id=id)
+    schedule_id = int(request.POST.get('scheduleId'))
+    schedule = get_object_or_404(Schedule, id=schedule_id)
     schedule.delete()
 
 @ajax_view
 @login_required
 @user_passes_test(schedule_permissions)
 def programmes(request):
-    programmes = Programme.actives(datetime.datetime.now().date())
+    schedule_board_id = int(request.POST.get('scheduleBoardId'))
+    scheduleBoard = get_object_or_404(ScheduleBoard, id=schedule_board_id)
+    programmes = Programme.actives(scheduleBoard.start_date, scheduleBoard.end_date)
     response_data = []
     for programme in programmes:
         response_data.append({'title' : programme.name, 'runtime' : programme._runtime, 'programmeId' : programme.id})
@@ -273,29 +328,22 @@ def programmes(request):
 def all_events(request):
     if not settings.DEBUG and not request.is_ajax():
         return HttpResponseBadRequest()
+    schedule_board_id = int(request.GET.get('scheduleBoardId'))
+    first_day = int(request.GET.get('firstDay'))
+    scheduleBoard = get_object_or_404(ScheduleBoard, id=schedule_board_id)
 
-    start = datetime.datetime.strptime(request.GET.get('start'), '%Y-%m-%d')
-    end = datetime.datetime.strptime(request.GET.get('end'), '%Y-%m-%d')
-
-    # Don't show past schedules
-    now = datetime.datetime.now().date()
-    if start.date() < now:
-        start = datetime.datetime.combine(now, datetime.time(0, 0, 0))
-    else:
-        start = datetime.datetime.combine(start.date(), datetime.time(0, 0, 0))
-
-    end = datetime.datetime.combine(end.date(), datetime.time(23, 59, 59))
-
+    schedules = Schedule.objects.filter(schedule_board=scheduleBoard)
     json_list = []
-    if end >= start:
-        schedules, dates = Schedule.between(start, end)
-        for x in range(len(schedules)):
-            schedule = schedules[x]
-            for y in range(len(dates[x])):
-                date = dates[x][y]
-                # start = date.strftime("%Y-%m-%dT%H:%M:%S"+utc_str)
-                json_entry = {'id':schedule.id, 'start':str(date), 'end':str(date + schedule.runtime()),
-                              'allDay':False, 'title': schedule.programme.name, 'textColor':text_colours[schedule.type] , 'backgroundColor':background_colours[schedule.type]}
-                json_list.append(json_entry)
+    for schedule in schedules:
+        day = schedule.day + 1
+        if day < first_day:
+            day = day + 7
+        date = datetime.datetime.combine(datetime.date(2011, 8, day), schedule.start_hour)
+        json_entry = {'id':schedule.id, 'start':str(date), 'end':str(date + schedule.runtime()),
+                      'allDay':False, 'title': schedule.programme.name, 'type':schedule.type,
+                      'textColor':text_colours[schedule.type],
+                      'backgroundColor':background_colours[schedule.type]}
+        json_list.append(json_entry)
+
     return HttpResponse(json.dumps(json_list), content_type='application/json')
 

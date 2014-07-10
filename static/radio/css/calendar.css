@@ -6,12 +6,10 @@
 }
 	
 #wrap {
-	width: 1100px;
-	margin: 0 auto;
+	padding: 10px 0px 0px 0px;
 }
 	
 #external-events {
-	float: left;
 	width: 150px;
 	padding: 0 10px;
 	border: 1px solid #ccc;
@@ -46,6 +44,5 @@
 }
 
 #calendar {
-	float: right;
 	width: 900px;
 }

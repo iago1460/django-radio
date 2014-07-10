@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-06-07 23:46+0200\n"
+"POT-Creation-Date: 2014-07-09 21:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,9 +23,13 @@ msgstr ""
 msgid "Index of %(directory)s"
 msgstr ""
 
-#: radio/apps/dashboard/views.py:227 radio/apps/dashboard/views.py:247
-msgid "Out of programme date range"
-msgstr "Fuera del rango de fechas del programa"
+#: radio/apps/dashboard/forms.py:49
+msgid "Without reference"
+msgstr "Sin referencias"
+
+#: radio/apps/dashboard/forms.py:49 radio/apps/schedules/models.py:89
+msgid "source"
+msgstr "referencia"
 
 #: radio/apps/dashboard/templates/dashboard/base.html:34
 msgid "Dashboard: "
@@ -76,9 +80,65 @@ msgstr "Programa"
 msgid "Role in "
 msgstr "Papel en "
 
-#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:24
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:120
+msgid "There was an error while fetching programmes"
+msgstr "Ocurrió un error mientras se recuperaban los eventos"
+
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:146
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:160
+msgid "There was an error while creating schedule"
+msgstr "Ocurrió un error mientras se creaba el horario"
+
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:194
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:199
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:220
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:244
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:275
+msgid "There was an error in the request"
+msgstr "Ocurrió un error en la petición"
+
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:313
 msgid "Schedule Editor"
 msgstr "Editor de horarios"
+
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:315
+msgid "Loading"
+msgstr "Cargando"
+
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:316
+msgid "All changes saved"
+msgstr "Todos los cambios guardados"
+
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:341
+msgid "Programme type"
+msgstr "Tipo de programa"
+
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:342
+#: radio/apps/schedules/models.py:12
+msgid "live"
+msgstr "directo"
+
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:343
+#: radio/apps/schedules/models.py:13
+msgid "broadcast"
+msgstr "retransmisión"
+
+#: radio/apps/dashboard/templates/dashboard/fullcalendar.html:344
+#: radio/apps/schedules/models.py:14
+msgid "broadcast syndication"
+msgstr "redifusión"
+
+#: radio/apps/dashboard/templates/dashboard/item_edit_form.html:32
+msgid "Close"
+msgstr "Cerrar"
+
+#: radio/apps/dashboard/templates/dashboard/item_edit_form.html:33
+msgid "Save changes"
+msgstr "Guardar cambios"
+
+#: radio/apps/dashboard/templates/dashboard/item_edit_form_success.html:11
+msgid "Changes saved"
+msgstr "Cambios guardados"
 
 #: radio/apps/dashboard/templates/dashboard/my_programme_list.html:6
 msgid "My programme list"
@@ -200,7 +260,7 @@ msgstr "Tecnología"
 msgid "TV & Film"
 msgstr "Cine y televisión"
 
-#: radio/apps/programmes/models.py:47
+#: radio/apps/programmes/models.py:47 radio/apps/schedules/models.py:35
 msgid "name"
 msgstr "nombre"
 
@@ -208,11 +268,11 @@ msgstr "nombre"
 msgid "Please DON'T change this value. It's used to build URL's."
 msgstr "Por favor no cambie este valor. Es usado para construir las urls"
 
-#: radio/apps/programmes/models.py:48 radio/apps/schedules/models.py:39
+#: radio/apps/programmes/models.py:48 radio/apps/schedules/models.py:36
 msgid "start date"
 msgstr "fecha de inicio"
 
-#: radio/apps/programmes/models.py:49
+#: radio/apps/programmes/models.py:49 radio/apps/schedules/models.py:37
 msgid "end date"
 msgstr "fecha de fin"
 
@@ -241,12 +301,12 @@ msgstr "idioma"
 msgid "Duration must be greater than 0."
 msgstr "La duración debe ser mayor que 0"
 
-#: radio/apps/programmes/models.py:71
+#: radio/apps/programmes/models.py:71 radio/apps/schedules/models.py:44
 msgid "start date must be before end date."
 msgstr "la fecha inicio debe ser anterior a la de fin"
 
 #: radio/apps/programmes/models.py:86 radio/apps/programmes/models.py:102
-#: radio/apps/programmes/models.py:179 radio/apps/schedules/models.py:37
+#: radio/apps/programmes/models.py:195 radio/apps/schedules/models.py:84
 msgid "programme"
 msgstr "programa"
 
@@ -259,68 +319,56 @@ msgstr "programas"
 msgid "title"
 msgstr "título"
 
-#: radio/apps/programmes/models.py:103 radio/apps/schedules/models.py:154
-msgid "schedule"
-msgstr "horario"
-
-#: radio/apps/programmes/models.py:104
+#: radio/apps/programmes/models.py:103
 msgid "summary"
 msgstr "resumen"
 
-#: radio/apps/programmes/models.py:105
+#: radio/apps/programmes/models.py:104
 msgid "issue date"
 msgstr "fecha de emisión"
 
-#: radio/apps/programmes/models.py:106
+#: radio/apps/programmes/models.py:105
 msgid "season"
 msgstr "temporada"
 
-#: radio/apps/programmes/models.py:107
+#: radio/apps/programmes/models.py:106
 msgid "No. in season"
 msgstr "Número de episodio"
 
-#: radio/apps/programmes/models.py:119
-msgid "schedule can't be null"
-msgstr "Horario no puede ser null"
-
-#: radio/apps/programmes/models.py:121
-msgid "This schedule doesn't belong to the same programme"
-msgstr "Este horario no pertenece al mismo programa"
-
-#: radio/apps/programmes/models.py:133 radio/apps/programmes/models.py:151
+#: radio/apps/programmes/models.py:149 radio/apps/programmes/models.py:167
 msgid "episode"
 msgstr "episodio"
 
-#: radio/apps/programmes/models.py:134
+#: radio/apps/programmes/models.py:150
 msgid "episodes"
 msgstr "episodio"
 
-#: radio/apps/programmes/models.py:150 radio/apps/programmes/models.py:178
+#: radio/apps/programmes/models.py:166 radio/apps/programmes/models.py:194
 msgid "person"
 msgstr "persona"
 
-#: radio/apps/programmes/models.py:152 radio/apps/programmes/models.py:180
-#: radio/apps/programmes/models.py:196
+#: radio/apps/programmes/models.py:168 radio/apps/programmes/models.py:196
+#: radio/apps/programmes/models.py:212
 msgid "role"
 msgstr "papel"
 
-#: radio/apps/programmes/models.py:153 radio/apps/programmes/models.py:181
+#: radio/apps/programmes/models.py:169 radio/apps/programmes/models.py:197
 msgid "description"
 msgstr "descripción"
 
-#: radio/apps/programmes/models.py:164 radio/apps/programmes/models.py:193
+#: radio/apps/programmes/models.py:180 radio/apps/programmes/models.py:209
 msgid "Already exist"
 msgstr "Ya existe"
 
-#: radio/apps/programmes/models.py:168
+#: radio/apps/programmes/models.py:184
 msgid "participant"
 msgstr "participante"
 
-#: radio/apps/programmes/models.py:169
+#: radio/apps/programmes/models.py:185
 msgid "participants"
 msgstr "participantes"
 
-#: radio/apps/programmes/models.py:197
+#: radio/apps/programmes/models.py:213
 msgid "roles"
 msgstr "papeles"
 
@@ -350,18 +398,6 @@ msgstr "Episodios recientes"
 msgid "Without episodes."
 msgstr "Sin episodios"
 
-#: radio/apps/schedules/models.py:12
-msgid "live"
-msgstr "directo"
-
-#: radio/apps/schedules/models.py:13
-msgid "broadcast"
-msgstr "retransmisión"
-
-#: radio/apps/schedules/models.py:14
-msgid "broadcast syndication"
-msgstr "redifusión"
-
 #: radio/apps/schedules/models.py:24
 msgid "Monday"
 msgstr "Lunes"
@@ -390,11 +426,32 @@ msgstr "Sábado"
 msgid "Sunday"
 msgstr "Domingo"
 
-#: radio/apps/schedules/models.py:40
+#: radio/apps/schedules/models.py:50
+msgid "there is another object between this dates."
+msgstr "hay otro objeto entre esas fechas"
+
+#: radio/apps/schedules/models.py:58
+msgid "there is another object without end_date"
+msgstr "hay otro objeto sin fecha de fin"
+
+#: radio/apps/schedules/models.py:63
+msgid "start date cannot be null if end date exists"
+msgstr "la fecha inicio no puede ser null si existe la fecha de fin"
+
+#: radio/apps/schedules/models.py:74 radio/apps/schedules/models.py:75
+#: radio/apps/schedules/models.py:88
+msgid "schedule board"
+msgstr "parrilla"
+
+#: radio/apps/schedules/models.py:86
+msgid "start time"
+msgstr "hora de inicio"
+
+#: radio/apps/schedules/models.py:87
 msgid "type"
 msgstr "tipo"
 
-#: radio/apps/schedules/models.py:91
+#: radio/apps/schedules/models.py:151
 #, python-format
 msgid ""
 "This settings collides with: %(name)s [%(start_date)s %(start_day)s/"
@@ -405,7 +462,11 @@ msgstr ""
 "%(start_month)s/%(start_year)s - %(end_date)s %(end_day)s/%(end_month)s/"
 "%(end_year)s ]"
 
-#: radio/apps/schedules/models.py:155
+#: radio/apps/schedules/models.py:209
+msgid "schedule"
+msgstr "horario"
+
+#: radio/apps/schedules/models.py:210
 #: radio/libs/home/templates/home/base.html:40
 msgid "schedules"
 msgstr "horarios"
@@ -454,29 +515,61 @@ msgstr "locutores"
 msgid "No userprofiles are available"
 msgstr "No hay perfiles disponibles"
 
-#: radio/libs/global_settings/models.py:7
+#: radio/libs/global_settings/models.py:12
 msgid "Site Name"
 msgstr "Nombre de la web"
 
-#: radio/libs/global_settings/models.py:10
-#: radio/libs/global_settings/models.py:13
-#: radio/libs/global_settings/models.py:14
+#: radio/libs/global_settings/models.py:15
+#: radio/libs/global_settings/models.py:18
+#: radio/libs/global_settings/models.py:19
 msgid "Global Configuration"
 msgstr "Configuración global"
 
-#: radio/libs/global_settings/models.py:31
+#: radio/libs/global_settings/models.py:24
 msgid "URL Source"
-msgstr ""
+msgstr "Dirección URL"
 
-#: radio/libs/global_settings/models.py:32
-msgid "mime format"
-msgstr ""
+#: radio/libs/global_settings/models.py:25
+msgid "start delay"
+msgstr "retraso inicial"
 
-#: radio/libs/global_settings/models.py:35
-#: radio/libs/global_settings/models.py:38
+#: radio/libs/global_settings/models.py:25
+#: radio/libs/global_settings/models.py:26
+msgid "In seconds."
+msgstr "En segundos."
+
+#: radio/libs/global_settings/models.py:26
+msgid "end delay"
+msgstr "retraso final"
+
+#: radio/libs/global_settings/models.py:36
+#, python-format
+msgid "User %(username)s doesn't exist"
+msgstr "El usuario %(username)s no existe"
+
 #: radio/libs/global_settings/models.py:39
+#: radio/libs/global_settings/models.py:42
+#: radio/libs/global_settings/models.py:43
 msgid "Podcast Configuration"
 msgstr "Configuración del podcast"
+
+#: radio/libs/global_settings/models.py:47
+msgid "scroll time"
+msgstr "tiempo de desplazamiento"
+
+#: radio/libs/global_settings/models.py:47
+msgid "Determines how far down the scroll pane is initially scrolled down."
+msgstr "Determina el desplazamiento inicial de la parrilla"
+
+#: radio/libs/global_settings/models.py:48
+msgid "The day that the calendar begins"
+msgstr "El día en el que el calendario empieza"
+
+#: radio/libs/global_settings/models.py:51
+#: radio/libs/global_settings/models.py:54
+#: radio/libs/global_settings/models.py:55
+msgid "Calendar Configuration"
+msgstr "Configuración del calendario"
 
 #: radio/libs/home/forms.py:12
 msgid "username"
@@ -518,6 +611,21 @@ msgstr "Por favor identifíquese"
 #: radio/libs/home/templates/home/login.html:17
 msgid "Wrong Username and password combination."
 msgstr "Combinación de usuario y contraseña incorrecta"
+
+#~ msgid "cancel"
+#~ msgstr "cancelar"
+
+#~ msgid "save"
+#~ msgstr "guardar"
+
+#~ msgid "Out of programme date range"
+#~ msgstr "Fuera del rango de fechas del programa"
+
+#~ msgid "schedule can't be null"
+#~ msgstr "Horario no puede ser null"
+
+#~ msgid "This schedule doesn't belong to the same programme"
+#~ msgstr "Este horario no pertenece al mismo programa"
 
 #~ msgid "Django Home"
 #~ msgstr "Django Inicio"
