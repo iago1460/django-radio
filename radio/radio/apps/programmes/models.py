@@ -67,8 +67,8 @@ class Programme(models.Model):
     def clean(self):
         if self._runtime <= 0:
             raise ValidationError(_('Duration must be greater than 0.'))
-        if self.end_date is not None and self.start_date >= self.end_date:
-            raise ValidationError(_('start date must be before end date.'))
+        if self.end_date is not None and self.start_date > self.end_date:
+            raise ValidationError(_('start date must be greater than or equal to end date.'))
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
