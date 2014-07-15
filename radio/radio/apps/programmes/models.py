@@ -19,9 +19,12 @@ LANGUAGES = ((SPANISH, _("Spanish")),
 PRESENTER = 'PR'
 INFORMER = 'IN'
 CONTRIBUTOR = 'CO'
-ROLES = ((CONTRIBUTOR, _("Contributor")),
+NOT_SPECIFIED = 'NO'
+
+ROLES = ((NOT_SPECIFIED, _("Not specified")),
     (PRESENTER, _("Presenter")),
-    (INFORMER, _("Informer")))
+    (INFORMER, _("Informer")),
+    (CONTRIBUTOR, _("Contributor")))
 
 
 class Programme(models.Model):
@@ -68,7 +71,7 @@ class Programme(models.Model):
         if self._runtime <= 0:
             raise ValidationError(_('Duration must be greater than 0.'))
         if self.end_date is not None and self.start_date > self.end_date:
-            raise ValidationError(_('start date must be greater than or equal to end date.'))
+            raise ValidationError(_('end date must be greater than or equal to start date.'))
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
@@ -165,19 +168,8 @@ post_save.connect(model_created, sender=Episode)
 class Participant(models.Model):
     person = models.ForeignKey(User, verbose_name=_("person"))
     episode = models.ForeignKey(Episode, verbose_name=_("episode"))
-    role = models.CharField(blank=True, null=True, verbose_name=_("role"), choices=ROLES, max_length=2)
+    role = models.CharField(default=NOT_SPECIFIED, verbose_name=_("role"), choices=ROLES, max_length=2)
     description = models.TextField(blank=True, verbose_name=_("description"))
-
-    def clean(self):
-        if self.role is None:
-            try:
-                p = Participant.objects.get(person=self.person, episode=self.episode, role__isnull=True)
-                if p == self:
-                    raise Exception()
-            except:
-                pass
-            else:
-                raise ValidationError(_('Already exist'))
 
     class Meta:
         unique_together = ('person', 'episode', 'role')
@@ -193,20 +185,10 @@ class Participant(models.Model):
 class Role(models.Model):
     person = models.ForeignKey(User, verbose_name=_("person"))
     programme = models.ForeignKey(Programme, verbose_name=_("programme"))
-    role = models.CharField(blank=True, null=True, verbose_name=_("role"), choices=ROLES, max_length=2)
+    role = models.CharField(default=NOT_SPECIFIED, verbose_name=_("role"), choices=ROLES, max_length=2)
     description = models.TextField(blank=True, verbose_name=_("description"))
     date_joined = models.DateField(auto_now_add=True)
 
-    def clean(self):
-        if self.role is None:
-            try:
-                r = Role.objects.get(person=self.person, programme=self.programme, role__isnull=True)
-                if r == self:
-                    raise Exception()
-            except:
-                pass
-            else:
-                raise ValidationError(_('Already exist'))
     class Meta:
         unique_together = ('person', 'programme', 'role')
         verbose_name = _('role')

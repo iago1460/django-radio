@@ -41,7 +41,7 @@ class ScheduleBoard(models.Model):
         if self.start_date:
             if self.end_date:
                 if self.start_date > self.end_date:
-                    raise ValidationError(_('start date must be greater than or equal to end date.'))
+                    raise ValidationError(_('end date must be greater than or equal to start date.'))
                 # check date collision
                 qs = ScheduleBoard.objects.filter(start_date__lte=self.end_date, end_date__isnull=True) | ScheduleBoard.objects.filter(start_date__lte=self.end_date, end_date__gte=self.start_date)
                 if self.pk is not None:
