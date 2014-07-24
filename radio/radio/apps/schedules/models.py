@@ -73,7 +73,6 @@ class ScheduleBoard(models.Model):
     class Meta:
         verbose_name = _('schedule board')
         verbose_name_plural = _('schedule board')
-        ordering = ['start_date']
 
     def __unicode__(self):
         return self.name
@@ -86,7 +85,7 @@ class Schedule(models.Model):
     start_hour = models.TimeField(verbose_name=_('start time'))
     type = models.CharField(verbose_name=_("type"), choices=emission_type, max_length=1)
     schedule_board = models.ForeignKey(ScheduleBoard, verbose_name=_("schedule board"))
-    source = models.ForeignKey('self', blank=True, null=True, verbose_name=_("source"))
+    source = models.ForeignKey('self', blank=True, null=True, on_delete=models.SET_NULL, verbose_name=_("source"), help_text=_("It is used when is a broadcast."))
 
     def runtime(self):
         return self.programme.runtime
@@ -201,6 +200,24 @@ class Schedule(models.Model):
         if earlier_schedule is None or dt > earlier_date + earlier_schedule.runtime():  # Todo: check
             return None, None
         return earlier_schedule, earlier_date
+
+    @classmethod
+    def get_next_date(cls, programme, after):
+        list_schedules = cls.objects.filter(programme=programme, type='L')
+        list_schedules = list_schedules.filter(programme__end_date__isnull=True) | cls.objects.filter(programme__end_date__gte=after)
+        list_schedules = list_schedules.filter(schedule_board__start_date__isnull=False, schedule_board__end_date__isnull=True) | list_schedules.filter(schedule_board__end_date__gte=after)
+        # list_schedules = list_schedules.select_related('programme', 'schedule_board', 'source__programme', 'source__schedule_board')
+        closer_date = None
+        closer_schedule = None
+        for schedule in list_schedules:
+            # if schedule != exclude:
+            date = schedule.date_after(after)
+            if date and (closer_date is None or date < closer_date):
+                closer_date = date
+                closer_schedule = schedule
+        if closer_schedule is None:  # Todo: check
+            return None, None
+        return closer_schedule, closer_date
 
     def __unicode__(self):
         return self.get_day_display() + ' - ' + self.start_hour.strftime('%H:%M')

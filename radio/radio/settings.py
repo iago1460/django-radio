@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
-    'bootstrap_admin',
+    # 'bootstrap_admin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'radio',
     'radio.libs.global_settings',
+    'radio.libs.non_staff_admin',
     'radio.libs.home',
     'radio.apps.users',
     'radio.apps.programmes',
