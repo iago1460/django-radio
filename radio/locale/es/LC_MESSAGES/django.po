@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-25 17:57+0200\n"
+"POT-Creation-Date: 2014-07-31 15:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -112,19 +112,19 @@ msgstr "Guardar cambios"
 msgid "Changes saved"
 msgstr "Cambios guardados"
 
-#: radio/apps/programmes/admin.py:141
+#: radio/apps/programmes/admin.py:144
 msgid "This user has already a role in this programme."
 msgstr "Este usuario ya tiene un papel en este programa"
 
-#: radio/apps/programmes/admin.py:323
+#: radio/apps/programmes/admin.py:340
 msgid "This user has already a role in this episode."
 msgstr "Este usuario ya tiene un papel en este episodio"
 
-#: radio/apps/programmes/admin.py:387 radio/apps/programmes/admin.py:392
+#: radio/apps/programmes/admin.py:410 radio/apps/programmes/admin.py:415
 msgid "There are no available schedules."
 msgstr "No hay horarios disponibles"
 
-#: radio/apps/programmes/admin.py:417 radio/apps/programmes/models.py:90
+#: radio/apps/programmes/admin.py:440 radio/apps/programmes/models.py:90
 #: radio/libs/home/templates/home/base.html:41
 msgid "programmes"
 msgstr "programas"
@@ -274,65 +274,65 @@ msgstr "La duración debe ser mayor que 0"
 msgid "end date must be greater than or equal to start date."
 msgstr "la fecha fin debe ser mayor o igual que la fecha inicio"
 
-#: radio/apps/programmes/models.py:89 radio/apps/programmes/models.py:102
-#: radio/apps/programmes/models.py:230 radio/apps/schedules/models.py:83
+#: radio/apps/programmes/models.py:89 radio/apps/programmes/models.py:105
+#: radio/apps/programmes/models.py:236 radio/apps/schedules/models.py:83
 msgid "programme"
 msgstr "programa"
 
-#: radio/apps/programmes/models.py:100
+#: radio/apps/programmes/models.py:103
 msgid "title"
 msgstr "título"
 
-#: radio/apps/programmes/models.py:101
+#: radio/apps/programmes/models.py:104
 msgid "people"
 msgstr "gente"
 
-#: radio/apps/programmes/models.py:103
+#: radio/apps/programmes/models.py:106
 msgid "summary"
 msgstr "resumen"
 
-#: radio/apps/programmes/models.py:105
+#: radio/apps/programmes/models.py:108
 msgid "issue date"
 msgstr "fecha de emisión"
 
-#: radio/apps/programmes/models.py:106
+#: radio/apps/programmes/models.py:109
 msgid "season"
 msgstr "temporada"
 
-#: radio/apps/programmes/models.py:107
+#: radio/apps/programmes/models.py:110
 msgid "No. in season"
 msgstr "Número de episodio"
 
-#: radio/apps/programmes/models.py:194 radio/apps/programmes/models.py:213
+#: radio/apps/programmes/models.py:197 radio/apps/programmes/models.py:216
 msgid "episode"
 msgstr "episodio"
 
-#: radio/apps/programmes/models.py:195
+#: radio/apps/programmes/models.py:198
 msgid "episodes"
 msgstr "episodio"
 
-#: radio/apps/programmes/models.py:212 radio/apps/programmes/models.py:229
+#: radio/apps/programmes/models.py:215 radio/apps/programmes/models.py:235
 msgid "person"
 msgstr "persona"
 
-#: radio/apps/programmes/models.py:214 radio/apps/programmes/models.py:231
-#: radio/apps/programmes/models.py:237
+#: radio/apps/programmes/models.py:217 radio/apps/programmes/models.py:237
+#: radio/apps/programmes/models.py:243
 msgid "role"
 msgstr "papel"
 
-#: radio/apps/programmes/models.py:215 radio/apps/programmes/models.py:232
+#: radio/apps/programmes/models.py:218 radio/apps/programmes/models.py:238
 msgid "description"
 msgstr "descripción"
 
-#: radio/apps/programmes/models.py:219
+#: radio/apps/programmes/models.py:222
 msgid "contributor"
 msgstr "ayudante"
 
-#: radio/apps/programmes/models.py:220
+#: radio/apps/programmes/models.py:223
 msgid "contributors"
 msgstr "ayudante"
 
-#: radio/apps/programmes/models.py:238
+#: radio/apps/programmes/models.py:244
 msgid "roles"
 msgstr "papeles"
 
@@ -452,9 +452,9 @@ msgstr "horario"
 msgid "schedules"
 msgstr "horarios"
 
-#: radio/apps/schedules/templates/schedules/schedules_list.html:6
-msgid "Episode list"
-msgstr "Lista de episodios"
+#: radio/apps/schedules/templates/schedules/schedules_list.html:67
+msgid "Schedule"
+msgstr "Horarios"
 
 #: radio/apps/users/admin.py:40 radio/libs/home/forms.py:12
 msgid "username"
@@ -585,12 +585,40 @@ msgid "Determines how far down the scroll pane is initially scrolled down."
 msgstr "Determina el desplazamiento inicial de la parrilla"
 
 #: radio/libs/global_settings/models.py:48
+msgid "first day"
+msgstr "Día de inicio"
+
+#: radio/libs/global_settings/models.py:48
 msgid "The day that the calendar begins"
 msgstr "El día en el que el calendario empieza"
 
+#: radio/libs/global_settings/models.py:49
+msgid "min time"
+msgstr "hora mínima"
+
+#: radio/libs/global_settings/models.py:49
+msgid ""
+"Determines the starting time that will be displayed, even when the "
+"scrollbars have been scrolled all the way up."
+msgstr "Determina la hora mínima que se mostrará aunque se haga scroll"
+
+#: radio/libs/global_settings/models.py:50
+msgid "max time"
+msgstr "hora máxima"
+
+#: radio/libs/global_settings/models.py:50
+msgid ""
+"Determines the end time (exclusively) that will be displayed, even when the "
+"scrollbars have been scrolled all the way down."
+msgstr "Determina la hora máxima que se mostrará aunque se haga scroll"
+
 #: radio/libs/global_settings/models.py:51
+msgid "display next weeks"
+msgstr "número de próximas semanas a mostrar"
+
 #: radio/libs/global_settings/models.py:54
-#: radio/libs/global_settings/models.py:55
+#: radio/libs/global_settings/models.py:57
+#: radio/libs/global_settings/models.py:58
 msgid "Calendar Configuration"
 msgstr "Configuración del calendario"
 
@@ -656,6 +684,9 @@ msgstr "Documentación"
 msgid "Log out"
 msgstr "Cerrar sesión"
 
+#~ msgid "Episode list"
+#~ msgstr "Lista de episodios"
+
 #~ msgid "Dashboard: "
 #~ msgstr "Panel de control: "
 
@@ -676,9 +707,6 @@ msgstr "Cerrar sesión"
 
 #~ msgid "My roles"
 #~ msgstr "Mis papeles"
-
-#~ msgid "Schedules"
-#~ msgstr "Horarios"
 
 #~ msgid "User profile"
 #~ msgstr "Perfil de usuario"
@@ -772,9 +800,6 @@ msgstr "Cerrar sesión"
 
 #~ msgid "to"
 #~ msgstr "hasta"
-
-#~ msgid "next week"
-#~ msgstr "próxima semana"
 
 #~ msgid ""
 #~ "This settings collides with: %(name)s [ %(start_date)s - %(end_date)s ]"
