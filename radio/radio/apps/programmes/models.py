@@ -88,6 +88,9 @@ class Programme(models.Model):
     class Meta:
         verbose_name = _('programme')
         verbose_name_plural = _('programmes')
+        permissions = (
+            ("see_all_programmes", "Can see all programmes"),
+        )
 
     def get_absolute_url(self):
         return reverse('programmes:detail', args=[self.slug])
@@ -218,6 +221,9 @@ class Participant(models.Model):
         unique_together = ('person', 'episode', 'role')
         verbose_name = _('contributor')
         verbose_name_plural = _('contributors')
+        permissions = (
+            ("see_all_participants", "Can see all participants"),
+        )
 
     def __unicode__(self):
         return str(self.episode) + ": " + self.person.username
@@ -236,6 +242,9 @@ class Role(models.Model):
         unique_together = ('person', 'programme', 'role')
         verbose_name = _('role')
         verbose_name_plural = _('roles')
+        permissions = (
+            ("see_all_roles", "Can see all roles"),
+        )
 
     def __unicode__(self):
         return self.programme.name + ": " + self.person.username

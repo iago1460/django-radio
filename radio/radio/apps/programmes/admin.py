@@ -131,7 +131,10 @@ class NonStaffRoleInlineForm(forms.ModelForm):
         Check unique together: person, role, programme
         '''
         cleaned_data = super(NonStaffRoleInlineForm, self).clean()
-        person = self.person
+        if 'person' in cleaned_data:
+            person = cleaned_data['person']
+        else:
+            person = self.person
         role = cleaned_data['role']
         programme = cleaned_data['programme']
         qs = Role.objects.filter(role=role, programme=programme, person=person)
@@ -158,11 +161,12 @@ class NonStaffRoleInlineFormset(forms.models.BaseInlineFormSet):
 class NonStaffRoleInline(admin.StackedInline):
     model = Role
     extra = 0
-    fields = ['role', 'description']
+    # fields = ['role', 'description']
     form = NonStaffRoleInlineForm
     formset = NonStaffRoleInlineFormset
     list_select_related = True
     # readonly_fields = ['person']
+
     '''
     def get_form(self, request, obj=None, **kwargs):
         form_class = super(NonStaffRoleInline, self).get_form(request, obj, **kwargs)
@@ -171,6 +175,11 @@ class NonStaffRoleInline(admin.StackedInline):
         # return functools.partial(form_class, person=request.user)
     '''
     def get_formset(self, request, obj=None, **kwargs):
+        kwargs['fields'] = ['person', 'role', 'description']
+        if not request.user.has_perm('programmes.see_all_roles'):
+            self.exclude = ['person']
+        else:
+            self.exclude = []
         formset = super(NonStaffRoleInline, self).get_formset(request, obj, **kwargs)
         formset.person = request.user
         return formset
@@ -185,7 +194,9 @@ class NonStaffRoleInline(admin.StackedInline):
     '''
     def get_queryset(self, request):
         qs = super(NonStaffRoleInline, self).get_queryset(request).select_related('programme', 'person')
-        return qs.filter(person=request.user)
+        if not request.user.has_perm('programmes.see_all_roles'):
+            qs = qs.filter(person=request.user)
+        return qs
 
 
 class NonStaffProgrammeAdmin(admin.ModelAdmin):
@@ -212,14 +223,15 @@ class NonStaffProgrammeAdmin(admin.ModelAdmin):
             self.exclude = ['slug', ]
         else:
             self.exclude = ['slug', 'start_date', 'end_date', '_runtime']
-        return super(NonStaffProgrammeAdmin, self).get_form(request, obj=None, **kwargs)
+        return super(NonStaffProgrammeAdmin, self).get_form(request, obj, **kwargs)
 
     def save_formset(self, request, form, formset, change):
         # if formset.model != InlineModel:
         #   return super(NonStaffProgrammeAdmin, self).save_formset(request, form, formset, change)
         instances = formset.save(commit=False)
         for instance in instances:
-            if not instance.pk:
+            # if no person field is displayed
+            if not instance.pk and not request.user.has_perm('programmes.see_all_roles'):
                 instance.person = request.user
             instance.save()
         formset.save_m2m()
@@ -252,7 +264,9 @@ class NonStaffProgrammeAdmin(admin.ModelAdmin):
     '''
     def get_queryset(self, request):
         qs = super(NonStaffProgrammeAdmin, self).get_queryset(request)
-        return qs.filter(announcers__in=[request.user]).distinct()
+        if not request.user.has_perm('programmes.see_all_programmes'):
+            qs = qs.filter(announcers__in=[request.user]).distinct()
+        return qs
 
 '''
 ########### Participant ###########
@@ -313,7 +327,10 @@ class NonStaffParticipantInlineForm(forms.ModelForm):
         super(NonStaffParticipantInlineForm, self).__init__(*args, **kwargs)
 
     def clean(self):
-        person = self.person
+        if 'person' in self.cleaned_data:
+            person = self.cleaned_data['person']
+        else:
+            person = self.person
         role = self.cleaned_data['role']
         episode = self.cleaned_data['episode']
         qs = Participant.objects.filter(role=role, episode=episode, person=person)
@@ -334,19 +351,25 @@ class NonStaffParticipantInlineFormset(forms.models.BaseInlineFormSet):
 class NonStaffParticipantInline(admin.StackedInline):
     model = Participant
     extra = 0
-    fields = ['role', 'description']
     form = NonStaffParticipantInlineForm
     formset = NonStaffParticipantInlineFormset
 
     def get_formset(self, request, obj=None, **kwargs):
+
+        kwargs['fields'] = ['person', 'role', 'description']
+        if not request.user.has_perm('programmes.see_all_participants'):
+            self.exclude = ['person']
+        else:
+            self.exclude = []
         formset = super(NonStaffParticipantInline, self).get_formset(request, obj, **kwargs)
         formset.person = request.user
         return formset
 
     def get_queryset(self, request):
-        qs = super(NonStaffParticipantInline, self).get_queryset(request)
-        return qs.filter(person=request.user).select_related('episode__programme', 'person')
-
+        qs = super(NonStaffParticipantInline, self).get_queryset(request).select_related('episode__programme', 'person')
+        if not request.user.has_perm('programmes.see_all_participants'):
+            qs = qs.filter(person=request.user)
+        return qs
 
 '''
 class NonStaffEpisodeAdminAddForm(forms.ModelForm):
@@ -510,7 +533,7 @@ class NonStaffEpisodeAdmin(admin.ModelAdmin):
         #   return super(NonStaffProgrammeAdmin, self).save_formset(request, form, formset, change)
         instances = formset.save(commit=False)
         for instance in instances:
-            if not instance.pk:
+            if not instance.pk and not request.user.has_perm('programmes.see_all_participants'):
                 instance.person = request.user
             instance.save()
         formset.save_m2m()
