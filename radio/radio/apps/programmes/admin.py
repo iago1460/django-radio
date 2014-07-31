@@ -1,6 +1,7 @@
 import datetime
 import re
 
+from dateutil.relativedelta import relativedelta
 from django import forms
 from django.conf.urls import url, patterns
 from django.contrib import admin
@@ -16,8 +17,6 @@ from radio.apps.programmes.models import Programme, Podcast, Episode, Role, Part
 from radio.apps.schedules.models import Schedule
 from radio.apps.users.models import UserProfile
 from radio.libs.non_staff_admin.admin import non_staff_admin_site
-
-
 
 
 class RoleInline(admin.StackedInline):
@@ -452,11 +451,36 @@ class OwnEpisodeProgrammeListFilter(admin.SimpleListFilter):
         else:
             return queryset
 
+class OwnEpisodeIssueDateListFilter(admin.SimpleListFilter):
+    title = _('issue date')
+    parameter_name = 'date'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('next', _('next episodes')),
+            ('untilnow', _('until now')),
+            ('lastweek', _('last week')),
+            ('twoweeks', _('since two weeks ago')),
+        )
+
+    def queryset(self, request, queryset):
+        now = datetime.datetime.now()
+        if self.value() == 'next':
+            return queryset.filter(issue_date__gte=now) | queryset.filter(issue_date__isnull=True)
+        elif self.value() == 'lastweek':
+            return queryset.filter(issue_date__gte=(now - relativedelta(days=7)), issue_date__lte=now)
+        elif self.value() == 'twoweeks':
+            return queryset.filter(issue_date__gte=(now - relativedelta(days=14)), issue_date__lte=now)
+        elif self.value() == 'untilnow':
+            return queryset.filter(issue_date__lte=now)
+        else:
+            return queryset
+
 class NonStaffEpisodeAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'issue_date')
     list_select_related = True
     ordering = ['-season', '-number_in_season']
-    list_filter = ['issue_date', OwnEpisodeProgrammeListFilter]
+    list_filter = ['issue_date', OwnEpisodeProgrammeListFilter, OwnEpisodeIssueDateListFilter]
     search_fields = ['programme__name']
     inlines = [NonStaffParticipantInline]
     fields = ['programme', 'title', 'summary', 'issue_date', 'season', 'number_in_season']
