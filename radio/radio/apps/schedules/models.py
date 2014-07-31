@@ -4,6 +4,8 @@ import datetime
 from dateutil import rrule
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 
 from radio.apps.programmes.models import Programme, Episode
@@ -65,6 +67,18 @@ class ScheduleBoard(models.Model):
             # both None = disable
             pass
 
+    def save(self, *args, **kwargs):
+        # rearrange episodes
+        if self.pk is not None:
+            orig = ScheduleBoard.objects.get(pk=self.pk)
+            if orig.start_date != self.start_date or orig.end_date != self.end_date:  # Field has changed
+                super(ScheduleBoard, self).save(*args, **kwargs)
+                Episode.rearrange_episodes(programme=None, after=datetime.datetime.now())
+            else:
+                super(ScheduleBoard, self).save(*args, **kwargs)
+        else:
+            super(ScheduleBoard, self).save(*args, **kwargs)
+
     @classmethod
     def get_current(cls, dt):
         schedule_board = cls.objects.filter(start_date__lte=dt, end_date__isnull=True).order_by('-start_date') | cls.objects.filter(start_date__lte=dt, end_date__gte=dt).order_by('-start_date')
@@ -78,6 +92,9 @@ class ScheduleBoard(models.Model):
         return self.name
 
 
+@receiver(post_delete, sender=ScheduleBoard)
+def delete_ScheduleBoard_handler(sender, **kwargs):
+    Episode.rearrange_episodes(programme=None, after=datetime.datetime.now())
 
 class Schedule(models.Model):
     programme = models.ForeignKey(Programme, verbose_name=_("programme"))
@@ -102,7 +119,13 @@ class Schedule(models.Model):
             end_date = end_date + datetime.timedelta(days=1)
             return rrule.rrule(rrule.WEEKLY, byweekday=[self.day], dtstart=datetime.datetime.combine(start_date, self.start_hour), until=end_date)
         else:
-            return rrule.rrule(rrule.WEEKLY, byweekday=[self.day], dtstart=datetime.datetime.combine(start_date, self.start_hour))
+            end_date = self.schedule_board.end_date
+            if end_date:
+                # Due to rrule we need to add 1 day
+                end_date = end_date + datetime.timedelta(days=1)
+                return rrule.rrule(rrule.WEEKLY, byweekday=[self.day], dtstart=datetime.datetime.combine(start_date, self.start_hour), until=end_date)
+            else:
+                return rrule.rrule(rrule.WEEKLY, byweekday=[self.day], dtstart=datetime.datetime.combine(start_date, self.start_hour))
 
     def dates_between(self, after, before):
         dates = self.__get_rrule().between(after, before, True)
@@ -204,7 +227,7 @@ class Schedule(models.Model):
     @classmethod
     def get_next_date(cls, programme, after):
         list_schedules = cls.objects.filter(programme=programme, type='L')
-        list_schedules = list_schedules.filter(programme__end_date__isnull=True) | cls.objects.filter(programme__end_date__gte=after)
+        list_schedules = list_schedules.filter(programme__end_date__isnull=True) | list_schedules.filter(programme__end_date__gte=after)
         list_schedules = list_schedules.filter(schedule_board__start_date__isnull=False, schedule_board__end_date__isnull=True) | list_schedules.filter(schedule_board__end_date__gte=after)
         # list_schedules = list_schedules.select_related('programme', 'schedule_board', 'source__programme', 'source__schedule_board')
         closer_date = None

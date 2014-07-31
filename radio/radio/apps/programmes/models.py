@@ -5,7 +5,8 @@ from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
+from django.dispatch.dispatcher import receiver
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
@@ -75,7 +76,16 @@ class Programme(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-        super(Programme, self).save(*args, **kwargs)
+        # rearrange episodes if dates has changed
+        if self.pk is not None:
+            orig = Programme.objects.get(pk=self.pk)
+            if orig.start_date != self.start_date or orig.end_date != self.end_date:  # Field has changed
+                super(Programme, self).save(*args, **kwargs)
+                Episode.rearrange_episodes(programme=self, after=datetime.datetime.now())
+            else:
+                super(Programme, self).save(*args, **kwargs)
+        else:
+            super(Programme, self).save(*args, **kwargs)
 
 
     @classmethod
@@ -147,15 +157,24 @@ class Episode(models.Model):
         # TODO: improve
         from radio.apps.schedules.models import Schedule
         next_episodes = Episode.objects.filter(issue_date__gte=after) | Episode.objects.filter(issue_date__isnull=True)
-        next_episodes = next_episodes.filter(programme=programme).order_by('season', 'number_in_season').select_related('programme')
+        if programme:
+            next_episodes = next_episodes.filter(programme=programme)
+        next_episodes = next_episodes.order_by('programme', 'season', 'number_in_season').select_related('programme')
+
+        dt = after
+        current_programme = None
         for episode in next_episodes:
-            if after:
-                schedule, date = Schedule.get_next_date(programme=episode.programme, after=after)
+            if current_programme != episode.programme:
+                # reset dt if programme change
+                current_programme = episode.programme
+                dt = after
+            if dt:
+                schedule, date = Schedule.get_next_date(programme=episode.programme, after=dt)
                 episode.issue_date = date
                 if date:
-                    after = date + episode.runtime
+                    dt = date + episode.runtime
                 else:
-                    after = None
+                    dt = None
             else:
                 episode.issue_date = None
             episode.save()
