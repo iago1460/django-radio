@@ -457,10 +457,10 @@ class OwnEpisodeIssueDateListFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         return (
-            ('next', _('next episodes')),
-            ('untilnow', _('until now')),
-            ('lastweek', _('last week')),
-            ('twoweeks', _('since two weeks ago')),
+            ('next', _('Next episodes')),
+            ('untilnow', _('Until now')),
+            ('lastweek', _('Last week')),
+            ('twoweeks', _('Since two weeks ago')),
         )
 
     def queryset(self, request, queryset):
