@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-01 11:36+0200\n"
+"POT-Creation-Date: 2014-08-01 16:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -386,7 +386,15 @@ msgstr "Lista de programas"
 msgid "No programmes are available"
 msgstr "No hay programas disponibles"
 
-#: radio/apps/schedules/admin.py:126 radio/apps/users/admin.py:129
+#: radio/apps/schedules/admin.py:36
+msgid "Copy of "
+msgstr "Copia de "
+
+#: radio/apps/schedules/admin.py:62
+msgid "Make a Copy of calendar"
+msgstr "Hacer una copia de la parrilla"
+
+#: radio/apps/schedules/admin.py:160 radio/apps/users/admin.py:129
 #, python-format
 msgid "%(obj)s was changed successfully."
 msgstr "%(obj)s cambiado con éxito."

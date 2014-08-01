@@ -1,9 +1,8 @@
-import datetime
-import datetime
-import re
+import copy
 
 from django.conf.urls import url, patterns
 from django.contrib import admin
+from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, redirect
@@ -11,6 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from radio.apps.schedules.models import Schedule, ScheduleBoard
 from radio.libs.non_staff_admin.admin import non_staff_admin_site
+
 
 
 class ScheduleInline(admin.StackedInline):
@@ -26,6 +26,40 @@ class ScheduleBoardAdmin(admin.ModelAdmin):
     search_fields = ['name']
     ordering = ['start_date']
     inlines = [ScheduleInline]
+    actions = ['copy_ScheduleBoard']
+
+    def copy_ScheduleBoard(self, request, queryset):
+        for obj in queryset:
+            obj_copy = copy.copy(obj)
+            obj_copy.id = None
+            obj_copy.pk = None
+            copy_name = _('Copy of ') + obj.name
+            obj_copy.name = copy_name
+            obj_copy.start_date = None
+            obj_copy.end_date = None
+            try:
+                if ScheduleBoard.objects.get(name=copy_name):
+                    pass
+                    # Don't work
+                    # self.message_user(request, _('There is already a calendar with this name \"%s\"') % copy_name, level=messages.ERROR)
+            except ScheduleBoard.DoesNotExist:
+                obj_copy.save()
+                # Live Schedules lives must be created first
+                schedules = []
+                schedules.extend(Schedule.objects.filter(schedule_board=obj, type='L'))
+                schedules.extend(Schedule.objects.filter(schedule_board=obj).exclude(type='L'))
+                for schedule in schedules:
+                    schedule_copy = copy.copy(schedule)
+                    schedule_copy.id = None
+                    schedule_copy.pk = None
+                    schedule_copy.schedule_board = obj_copy
+                    if schedule_copy.source:
+                        source = schedule_copy.source
+                        source_copy = Schedule.objects.get(schedule_board=obj_copy, day=source.day, start_hour=source.start_hour, type=source.type, programme=source.programme)
+                        schedule_copy.source = source_copy
+                    schedule_copy.save()
+
+    copy_ScheduleBoard.short_description = _("Make a Copy of calendar")
 
 
 
@@ -37,12 +71,10 @@ admin.site.register(ScheduleBoard, ScheduleBoardAdmin)
 non_staff_admin_site.register(ScheduleBoard, NonStaffScheduleBoardAdmin)
 
 
-
 try:
     from django.utils.encoding import force_unicode
 except ImportError:
     from django.utils.encoding import force_text as force_unicode
-
 
 
 '''

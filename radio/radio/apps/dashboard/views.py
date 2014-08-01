@@ -170,7 +170,10 @@ def delete_schedule(request):
 def programmes(request):
     schedule_board_id = int(request.POST.get('scheduleBoardId'))
     scheduleBoard = get_object_or_404(ScheduleBoard, id=schedule_board_id)
-    programmes = Programme.actives(scheduleBoard.start_date, scheduleBoard.end_date)
+    start_date = datetime.datetime.now().date()
+    if scheduleBoard.start_date and scheduleBoard.start_date > start_date:
+        start_date = scheduleBoard.start_date
+    programmes = Programme.actives(start_date, scheduleBoard.end_date)
     response_data = []
     for programme in programmes:
         response_data.append({'title' : programme.name, 'runtime' : programme._runtime, 'programmeId' : programme.id})
