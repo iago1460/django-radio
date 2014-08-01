@@ -128,8 +128,11 @@ class Schedule(models.Model):
                 return rrule.rrule(rrule.WEEKLY, byweekday=[self.day], dtstart=datetime.datetime.combine(start_date, self.start_hour))
 
     def dates_between(self, after, before):
+        '''
+            Return a sorted list of dates between after and before
+        '''
         dates = self.__get_rrule().between(after, before, True)
-        # add programme if it hasn't finished
+        # add date if the programme hasn't finished
         start_date = self.date_before(after)
         if start_date and start_date != after:
             if start_date + self.runtime() > after:
@@ -199,7 +202,6 @@ class Schedule(models.Model):
         dates = []
         schedules = []
         for schedule in list_schedules:
-            # if schedule != exclude:
             list_dates = schedule.dates_between(after, before)
             if list_dates:
                 schedules.append(schedule)

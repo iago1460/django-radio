@@ -58,7 +58,7 @@ class Programme(models.Model):
     current_season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("current season"))
     category = models.CharField(blank=True, null=True, max_length=50, choices=CATEGORY_CHOICES, verbose_name=_("category"))
     slug = models.SlugField(max_length=100, unique=True)
-    _runtime = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("runtime"))
+    _runtime = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("runtime"), help_text=_("In minutes."))
 
     @property
     def runtime(self):

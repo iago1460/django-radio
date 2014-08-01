@@ -8,6 +8,7 @@ from rest_framework.authtoken.models import Token
 from solo.models import SingletonModel
 from radio.apps.schedules.models import WEEKDAY_CHOICES
 
+
 class SiteConfiguration(SingletonModel):
     site_name = models.CharField(max_length=255, default='RadioCo', verbose_name=_("Site Name"))
 
@@ -21,9 +22,10 @@ class SiteConfiguration(SingletonModel):
 
 
 class PodcastConfiguration(SingletonModel):
-    url_source = models.CharField(blank=True, default="", max_length=500, verbose_name=_("URL Source"))
-    start_delay = models.PositiveIntegerField(default=0, verbose_name=_("start delay"), help_text=_("In seconds."))
+    url_source = models.CharField(blank=True, default="", max_length=500, verbose_name=_("URL Source"), help_text=_("The source url where the recordings will be available after the upload. For example: \"http://RadioCo.org/recordings/\""))
+    start_delay = models.PositiveIntegerField(default=0, verbose_name=_("start delay"), help_text=_("In seconds. Initial delay of recordings"))
     end_delay = models.PositiveIntegerField(default=0, verbose_name=_("end delay"), help_text=_("In seconds."))
+    next_events = models.PositiveIntegerField(default=32, verbose_name=_("next events"), help_text=_("In hours. The next events supplied to the recorder program"))
 
     @property
     def recorder_token(self):

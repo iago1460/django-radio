@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-01 16:30+0200\n"
+"POT-Creation-Date: 2014-08-02 11:44+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -286,6 +286,10 @@ msgstr "categoría"
 msgid "runtime"
 msgstr "duración"
 
+#: radio/apps/programmes/models.py:61
+msgid "In minutes."
+msgstr "En minutos."
+
 #: radio/apps/programmes/models.py:73
 msgid "Duration must be greater than 0."
 msgstr "La duración debe ser mayor que 0"
@@ -394,7 +398,7 @@ msgstr "Copia de "
 msgid "Make a Copy of calendar"
 msgstr "Hacer una copia de la parrilla"
 
-#: radio/apps/schedules/admin.py:160 radio/apps/users/admin.py:129
+#: radio/apps/schedules/admin.py:158 radio/apps/users/admin.py:129
 #, python-format
 msgid "%(obj)s was changed successfully."
 msgstr "%(obj)s cambiado con éxito."
@@ -456,7 +460,7 @@ msgstr "tipo"
 msgid "It is used when is a broadcast."
 msgstr "Es usado cuando es una retransmisión"
 
-#: radio/apps/schedules/models.py:173
+#: radio/apps/schedules/models.py:176
 #, python-format
 msgid ""
 "This settings collides with: %(name)s [%(start_date)s %(start_day)s/"
@@ -467,11 +471,11 @@ msgstr ""
 "%(start_month)s/%(start_year)s - %(end_date)s %(end_day)s/%(end_month)s/"
 "%(end_year)s ]"
 
-#: radio/apps/schedules/models.py:249
+#: radio/apps/schedules/models.py:251
 msgid "schedule"
 msgstr "horario"
 
-#: radio/apps/schedules/models.py:250
+#: radio/apps/schedules/models.py:252
 #: radio/libs/home/templates/home/base.html:40
 msgid "schedules"
 msgstr "horarios"
@@ -562,93 +566,116 @@ msgstr "lista de locutores"
 msgid "No userprofiles are available"
 msgstr "No hay perfiles disponibles"
 
-#: radio/libs/global_settings/models.py:12
+#: radio/libs/global_settings/models.py:13
 msgid "Site Name"
 msgstr "Nombre de la web"
 
-#: radio/libs/global_settings/models.py:15
-#: radio/libs/global_settings/models.py:18
+#: radio/libs/global_settings/models.py:16
 #: radio/libs/global_settings/models.py:19
+#: radio/libs/global_settings/models.py:20
 msgid "Global Configuration"
 msgstr "Configuración global"
 
-#: radio/libs/global_settings/models.py:24
+#: radio/libs/global_settings/models.py:25
 msgid "URL Source"
 msgstr "Dirección URL"
 
 #: radio/libs/global_settings/models.py:25
+msgid ""
+"The source url where the recordings will be available after the upload. For "
+"example: \"http://RadioCo.org/recordings/\""
+msgstr ""
+"Dirección url fuente donde las grabaciones estarán disponibles tras la "
+"subida. Por ejemplo: \"http://RadioCo.org/recordings/\""
+
+#: radio/libs/global_settings/models.py:26
 msgid "start delay"
 msgstr "retraso inicial"
 
-#: radio/libs/global_settings/models.py:25
 #: radio/libs/global_settings/models.py:26
-msgid "In seconds."
-msgstr "En segundos."
+msgid "In seconds. Initial delay of recordings"
+msgstr "En segundos. Retraso inicial de las grabaciones"
 
-#: radio/libs/global_settings/models.py:26
+#: radio/libs/global_settings/models.py:27
 msgid "end delay"
 msgstr "retraso final"
 
-#: radio/libs/global_settings/models.py:36
+#: radio/libs/global_settings/models.py:27
+msgid "In seconds."
+msgstr "En segundos."
+
+#: radio/libs/global_settings/models.py:28
+msgid "next events"
+msgstr "próximos eventos"
+
+#: radio/libs/global_settings/models.py:28
+msgid "In hours. The next events supplied to the recorder program"
+msgstr "En horas. Los próximos eventos proporcionados al programa grabador"
+
+#: radio/libs/global_settings/models.py:38
 #, python-format
 msgid "User %(username)s doesn't exist"
 msgstr "El usuario %(username)s no existe"
 
-#: radio/libs/global_settings/models.py:39
-#: radio/libs/global_settings/models.py:42
-#: radio/libs/global_settings/models.py:43
+#: radio/libs/global_settings/models.py:41
+#: radio/libs/global_settings/models.py:44
+#: radio/libs/global_settings/models.py:45
 msgid "Podcast Configuration"
 msgstr "Configuración del podcast"
 
-#: radio/libs/global_settings/models.py:47
+#: radio/libs/global_settings/models.py:49
 msgid "scroll time"
 msgstr "tiempo de desplazamiento"
 
-#: radio/libs/global_settings/models.py:47
+#: radio/libs/global_settings/models.py:49
 msgid "Determines how far down the scroll pane is initially scrolled down."
 msgstr "Determina el desplazamiento inicial de la parrilla"
 
-#: radio/libs/global_settings/models.py:48
+#: radio/libs/global_settings/models.py:50
 msgid "first day"
 msgstr "Día de inicio"
 
-#: radio/libs/global_settings/models.py:48
+#: radio/libs/global_settings/models.py:50
 msgid "The day that the calendar begins"
 msgstr "El día en el que el calendario empieza"
 
-#: radio/libs/global_settings/models.py:49
+#: radio/libs/global_settings/models.py:51
 msgid "min time"
 msgstr "hora mínima"
 
-#: radio/libs/global_settings/models.py:49
+#: radio/libs/global_settings/models.py:51
 msgid ""
 "Determines the starting time that will be displayed, even when the "
 "scrollbars have been scrolled all the way up."
 msgstr "Determina la hora mínima que se mostrará aunque se haga scroll"
 
-#: radio/libs/global_settings/models.py:50
+#: radio/libs/global_settings/models.py:52
 msgid "max time"
 msgstr "hora máxima"
 
-#: radio/libs/global_settings/models.py:50
+#: radio/libs/global_settings/models.py:52
 msgid ""
 "Determines the end time (exclusively) that will be displayed, even when the "
 "scrollbars have been scrolled all the way down."
 msgstr "Determina la hora máxima que se mostrará aunque se haga scroll"
 
-#: radio/libs/global_settings/models.py:51
+#: radio/libs/global_settings/models.py:53
 msgid "display next weeks"
 msgstr "número de próximas semanas a mostrar"
 
-#: radio/libs/global_settings/models.py:54
-#: radio/libs/global_settings/models.py:57
-#: radio/libs/global_settings/models.py:58
+#: radio/libs/global_settings/models.py:56
+#: radio/libs/global_settings/models.py:59
+#: radio/libs/global_settings/models.py:60
 msgid "Calendar Configuration"
 msgstr "Configuración del calendario"
 
 #: radio/libs/home/forms.py:13
 msgid "password"
 msgstr "contraseña"
+
+#: radio/libs/home/views.py:115
+msgid "Season"
+msgstr "Temporada"
 
 #: radio/libs/home/templates/home/base.html:39
 msgid "home"
