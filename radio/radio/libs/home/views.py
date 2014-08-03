@@ -121,8 +121,8 @@ def recording_schedules(request):
         start_date = date + datetime.timedelta(seconds=PodcastConfiguration.objects.get().start_delay)
         duration = schedule.runtime().seconds - PodcastConfiguration.objects.get().start_delay - PodcastConfiguration.objects.get().end_delay
         # start = date.strftime("%Y-%m-%dT%H:%M:%S"+utc_str)
-        json_entry = {'id':schedule.programme.id, 'issue_date':str(date), 'start':str(start_date), 'duration':str(duration),
-                      'genre':schedule.programme.get_category_display(),
+        json_entry = {'id':schedule.programme.id, 'issue_date':date.strftime('%Y-%m-%d %H-%M-%S'), 'start':start_date.strftime('%Y-%m-%d %H-%M-%S'), 'duration':str(duration),
+                      'genre':schedule.programme.get_category_display(), 'programme_name': schedule.programme.slug,
                       'title':episode.title, 'author': schedule.programme.name, 'album': _('Season') + ' ' + str(episode.season), 'track': episode.number_in_season}
         json_list.append(json_entry)
 
