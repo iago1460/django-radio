@@ -3,35 +3,40 @@
 
 {% block programmes_class %}class="active"{% endblock %}
 {% block content %}
-	<h1>{{ programme.name }}</h1>
+	<h1><a href="{% url 'programmes:detail' programme.slug %}">{{ programme.name }}</a></h1>
 	<div class="row">
 		<div class="span8">
 			<div class="media">
-				<img src="{{ programme.photo.url }}">
+				<a href="{% url 'programmes:detail' programme.slug %}"><img src="{{ programme.photo.url }}"></a>
 			</div>
 			<p>{{programme.synopsis|truncatewords:12}}</p>
 		</div>
 	</div>
-	{% if episode %}
-		<h2>{% trans "Episode"|upper %} {{episode.issue_date}}</h2>
-		<p>{{episode.summary}}</p>
+		<h2>{% firstof episode.title programme %}: <small>{% if episode.issue_date %} {{episode.issue_date|date:"DATETIME_FORMAT"}} {% else %}{% trans "Schedule pending" %} {% endif %}</small></h2>
+		<p>{{ episode.summary }}</p>
+		
+		<h3>{% trans "Podcast"|upper %}</h3>
+		{% if episode.podcast %}
+			<audio src="{{episode.podcast.url}}"  type="{{episode.podcast.mime_type}}" controls>
+			<p>{% trans "Sorry, HTML5 audio not supported." %}</p>
+			</audio>
+		{% else %}
+			{% if not episode_end_date or now > episode_end_date %}
+				{% trans "Sorry, this podcast isn't available yet" %}
+			{% else %}
+				{% trans "The podcast will be available in" %} {{  episode_end_date|timeuntil }}
+			{% endif %}
+		{% endif %}
 		
 		{% if role_list %}
-			<h2>{% trans "Staff"|upper %}</h2>
-			<ul>
+			<h3>{% trans "Staff"|upper %}</h3>
+			<dl id="tabulate">
 				{% for role in role_list %}
-					{% if role.get_role_display %}
-						<li><a href="{% url 'users:detail' role.person.userprofile.slug %}">{{ role.person }} ({{ role.get_role_display }})</a></li>
-					{% else %}
-						<li><a href="{% url 'users:detail' role.person.userprofile.slug %}">{{ role.person }}</a></li>
-					{% endif %}
-						<p>{{role.description}}</p>
+					<dt><a href="{% url 'users:detail' role.person.userprofile.slug %}">{% firstof role.person.get_full_name role.person %}
+					 {% if unspecified != role.role %}({{ role.get_role_display }}){% endif %}
+					</a></dt>
+					<dd>{% if role.description %}{{role.description}}{% else %}.{% endif %} </dd>
 				{% endfor %}
-			</ul>
-		{% else %}
-			<p>{% trans "Without people."|upper %}</p>
+			</dl>
 		{% endif %}
-	{% else %}
-		<p>{% trans "Without information."|upper %}</p>
-	{% endif %}
 {% endblock %}

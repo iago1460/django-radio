@@ -3,7 +3,7 @@
 
 {% block programmes_class %}class="active"{% endblock %}
 {% block content %}
-	<h1>{{ programme.name }}</h1> <img src="{{ url_flag }}">
+	<h1>{{ programme.name }}</h1> 
 	<div class="row">
 		<div class="span8">
 			<div class="media">
@@ -12,29 +12,50 @@
 			<p>{{programme.synopsis}}</p>
 		</div>
 	</div>
-	{% if role_list %}
-		<h2>{% trans "Staff"|upper %}</h2>
-		<ul>
-			{% for role in role_list %}
-				{% if role.get_role_display %}
-					<li><a href="{% url 'users:detail' role.person.userprofile.slug %}">{{ role.person }} ({{ role.get_role_display }})</a></li>
-				{% else %}
-					<li><a href="{% url 'users:detail' role.person.userprofile.slug %}">{{ role.person }}</a></li>
-				{% endif %}
-					<p>{{role.description}}</p>
-			{% endfor %}
-		</ul>
-	{% else %}
-		<p>{% trans "Without people."|upper %}</p>
-	{% endif %}
+	
+	
+	
 	{% if episode_list %}
-		<h2>{% trans "Recent episodes"|upper %}</h2>
+		<h2>{% trans "Episodes"|upper %}</h2>
 		<ul>
 			{% for episode in episode_list %}
+			{% ifchanged episode.season %}
+	            <h4>{% trans "Season" %} {{episode.season}}</h4>
+	        {% endifchanged %}
 				<li><a href="{% url 'programmes:episode_detail' programme.slug episode.season episode.number_in_season%}">{{ episode }}</a></li>
 			{% endfor %}
 		</ul>
 	{% else %}
 		<p>{% trans "Without episodes."|upper %}</p>
 	{% endif %}
+	
+	{% if role_list %}
+		<h2>{% trans "Staff"|upper %}</h2>
+		<dl id="tabulate">
+			{% for role in role_list %}
+				<dt><a href="{% url 'users:detail' role.person.userprofile.slug %}">{% firstof role.person.get_full_name role.person %}
+				 {% if unspecified != role.role %}({{ role.get_role_display }}){% endif %}
+				</a></dt>
+				<dd>{% if role.description %}{{role.description}}{% else %}.{% endif %} </dd>
+			{% endfor %}
+		</dl>
+	{% endif %}
+	
+	
+	<h2>{% trans "About"|upper %}</h2>
+	<ul class="list-unstyled">
+	<li>
+	{% if programme.end_date %}
+		{% blocktrans with end_date=programme.end_date %}This programme ended in {{ end_date }}{% endblocktrans %}
+	{% else %}
+		{% blocktrans with start_date=programme.start_date %}This programme has been active since {{ start_date }}{% endblocktrans %}
+	{% endif %}
+	</li>
+	<li>
+	{% trans "Language" %}: <img src="{{ url_flag }}" title="{{language}}" />
+	</li>
+	<li>
+	Rss: <a href="{% url 'programmes:rss' programme.slug %}"><img src="{% static "radio/images/rss-icon-28x28.png" %}"></a>
+	</li>
+	</ul>
 {% endblock %}

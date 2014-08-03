@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-02 11:44+0200\n"
+"POT-Creation-Date: 2014-08-04 16:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -125,7 +125,7 @@ msgid "There are no available schedules."
 msgstr "No hay horarios disponibles"
 
 #: radio/apps/programmes/admin.py:439 radio/apps/programmes/models.py:100
-#: radio/libs/home/templates/home/base.html:41
+#: radio/libs/home/templates/home/base.html:43
 msgid "programmes"
 msgstr "programas"
 
@@ -258,7 +258,6 @@ msgid "This field can be null."
 msgstr "Este campo puede ser null."
 
 #: radio/apps/programmes/models.py:54
-#: radio/libs/home/templates/home/base.html:42
 msgid "announcers"
 msgstr "locutores"
 
@@ -299,7 +298,7 @@ msgid "end date must be greater than or equal to start date."
 msgstr "la fecha fin debe ser mayor o igual que la fecha inicio"
 
 #: radio/apps/programmes/models.py:99 radio/apps/programmes/models.py:115
-#: radio/apps/programmes/models.py:255 radio/apps/schedules/models.py:100
+#: radio/apps/programmes/models.py:254 radio/apps/schedules/models.py:100
 msgid "programme"
 msgstr "programa"
 
@@ -308,8 +307,10 @@ msgid "title"
 msgstr "título"
 
 #: radio/apps/programmes/models.py:114
+#: radio/apps/users/templates/users/userprofile_list.html:6
+#: radio/libs/home/templates/home/base.html:44
 msgid "people"
-msgstr "gente"
+msgstr "personas"
 
 #: radio/apps/programmes/models.py:116
 msgid "summary"
@@ -323,64 +324,94 @@ msgstr "temporada"
 msgid "No. in season"
 msgstr "Número de episodio"
 
-#: radio/apps/programmes/models.py:216 radio/apps/programmes/models.py:235
+#: radio/apps/programmes/models.py:215 radio/apps/programmes/models.py:234
 msgid "episode"
 msgstr "episodio"
 
-#: radio/apps/programmes/models.py:217
+#: radio/apps/programmes/models.py:216
 msgid "episodes"
 msgstr "episodio"
 
-#: radio/apps/programmes/models.py:234 radio/apps/programmes/models.py:254
+#: radio/apps/programmes/models.py:233 radio/apps/programmes/models.py:253
 msgid "person"
 msgstr "persona"
 
-#: radio/apps/programmes/models.py:236 radio/apps/programmes/models.py:256
-#: radio/apps/programmes/models.py:262
+#: radio/apps/programmes/models.py:235 radio/apps/programmes/models.py:255
+#: radio/apps/programmes/models.py:261
 msgid "role"
 msgstr "papel"
 
-#: radio/apps/programmes/models.py:237 radio/apps/programmes/models.py:257
+#: radio/apps/programmes/models.py:236 radio/apps/programmes/models.py:256
 msgid "description"
 msgstr "descripción"
 
-#: radio/apps/programmes/models.py:241
+#: radio/apps/programmes/models.py:240
 msgid "contributor"
 msgstr "ayudante"
 
-#: radio/apps/programmes/models.py:242
+#: radio/apps/programmes/models.py:241
 msgid "contributors"
 msgstr "ayudante"
 
-#: radio/apps/programmes/models.py:263
+#: radio/apps/programmes/models.py:262
 msgid "roles"
 msgstr "papeles"
 
-#: radio/apps/programmes/templates/programmes/episode_detail.html:16
-msgid "Episode"
-msgstr "Episodio"
+#: radio/apps/programmes/templates/programmes/episode_detail.html:15
+msgid "Schedule pending"
+msgstr "Horario pendiente"
 
-#: radio/apps/programmes/templates/programmes/episode_detail.html:20
-#: radio/apps/programmes/templates/programmes/programme_detail.html:16
-msgid "Staff"
-msgstr "Personal"
+#: radio/apps/programmes/templates/programmes/episode_detail.html:18
+msgid "Podcast"
+msgstr "Podcast"
+
+#: radio/apps/programmes/templates/programmes/episode_detail.html:21
+msgid "Sorry, HTML5 audio not supported."
+msgstr "Lo sentimos, audio HTML5 no soportado."
+
+#: radio/apps/programmes/templates/programmes/episode_detail.html:25
+msgid "Sorry, this podcast isn't available yet"
+msgstr "Lo sentimos, este podcast aún no está disponible"
+
+#: radio/apps/programmes/templates/programmes/episode_detail.html:27
+msgid "The podcast will be available in"
+msgstr "El podcast estará disponible en"
 
 #: radio/apps/programmes/templates/programmes/episode_detail.html:32
-#: radio/apps/programmes/templates/programmes/programme_detail.html:28
-msgid "Without people."
-msgstr "Sin gente"
+#: radio/apps/programmes/templates/programmes/programme_detail.html:33
+msgid "Staff"
+msgstr "Plantilla"
 
-#: radio/apps/programmes/templates/programmes/episode_detail.html:35
-msgid "Without information."
-msgstr "Sin información"
+#: radio/apps/programmes/templates/programmes/programme_detail.html:19
+msgid "Episodes"
+msgstr "Episodios"
 
-#: radio/apps/programmes/templates/programmes/programme_detail.html:31
-msgid "Recent episodes"
-msgstr "Episodios recientes"
+#: radio/apps/programmes/templates/programmes/programme_detail.html:23
+#: radio/libs/home/views.py:126
+msgid "Season"
+msgstr "Temporada"
 
-#: radio/apps/programmes/templates/programmes/programme_detail.html:38
+#: radio/apps/programmes/templates/programmes/programme_detail.html:29
 msgid "Without episodes."
 msgstr "Sin episodios"
+
+#: radio/apps/programmes/templates/programmes/programme_detail.html:45
+msgid "About"
+msgstr "Acerca de"
+
+#: radio/apps/programmes/templates/programmes/programme_detail.html:49
+#, python-format
+msgid "This programme ended in %(end_date)s"
+msgstr "Este programa terminó el %(end_date)s"
+
+#: radio/apps/programmes/templates/programmes/programme_detail.html:51
+#, python-format
+msgid "This programme has been active since %(start_date)s"
+msgstr "Este programa lleva emitiendo desde el %(start_date)s"
+
+#: radio/apps/programmes/templates/programmes/programme_detail.html:55
+msgid "Language"
+msgstr "Idioma"
 
 #: radio/apps/programmes/templates/programmes/programme_list.html:6
 msgid "Programme list"
@@ -476,7 +507,7 @@ msgid "schedule"
 msgstr "horario"
 
 #: radio/apps/schedules/models.py:252
-#: radio/libs/home/templates/home/base.html:40
+#: radio/libs/home/templates/home/base.html:42
 msgid "schedules"
 msgstr "horarios"
 
@@ -546,21 +577,13 @@ msgstr "mostrar página personal"
 msgid "user profile"
 msgstr "perfil de usuario"
 
-#: radio/apps/users/templates/users/userprofile_detail.html:8
-msgid "about"
-msgstr "acerca de"
+#: radio/apps/users/templates/users/userprofile_detail.html:15
+msgid "Contributions"
+msgstr "Aportaciones"
 
-#: radio/apps/users/templates/users/userprofile_detail.html:13
-msgid "collaborations"
-msgstr "Colaboradores"
-
-#: radio/apps/users/templates/users/userprofile_detail.html:25
+#: radio/apps/users/templates/users/userprofile_detail.html:28
 msgid "No user information available"
 msgstr "No hay información del usuario disponible"
-
-#: radio/apps/users/templates/users/userprofile_list.html:6
-msgid "announcers list"
-msgstr "lista de locutores"
 
 #: radio/apps/users/templates/users/userprofile_list.html:20
 msgid "No userprofiles are available"
@@ -673,19 +696,27 @@ msgstr "Configuración del calendario"
 msgid "password"
 msgstr "contraseña"
 
-#: radio/libs/home/views.py:115
-msgid "Season"
-msgstr "Temporada"
+#: radio/libs/home/templates/home/403.html:7
+msgid "Sorry! Access denied."
+msgstr "Acceso denegado."
 
-#: radio/libs/home/templates/home/base.html:39
+#: radio/libs/home/templates/home/404.html:7
+msgid "Sorry, this page doesn't exist."
+msgstr "Esta página no existe."
+
+#: radio/libs/home/templates/home/500.html:7
+msgid "Oops! An Error Occurred."
+msgstr "¡Ups! Ha ocurrido un problema."
+
+#: radio/libs/home/templates/home/base.html:41
 msgid "home"
 msgstr "inicio"
 
-#: radio/libs/home/templates/home/base.html:46
+#: radio/libs/home/templates/home/base.html:48
 msgid "Logout"
 msgstr "Cerrar sesión"
 
-#: radio/libs/home/templates/home/base.html:48
+#: radio/libs/home/templates/home/base.html:50
 msgid "Log in"
 msgstr "Iniciar sesión"
 
@@ -694,7 +725,7 @@ msgid "now playing"
 msgstr "está sonando"
 
 #: radio/libs/home/templates/home/index.html:19
-#: radio/libs/home/templates/home/index.html:40
+#: radio/libs/home/templates/home/index.html:45
 msgid "Coming soon"
 msgstr "Próximamente"
 
@@ -734,6 +765,24 @@ msgstr "Documentación"
 #: radio/libs/non_staff_admin/templates/non_staff_admin/branding.html:12
 msgid "Log out"
 msgstr "Cerrar sesión"
+
+#~ msgid "announcers list"
+#~ msgstr "lista de locutores"
+
+#~ msgid "about"
+#~ msgstr "acerca de"
+
+#~ msgid "collaborations"
+#~ msgstr "Colaboradores"
+
+#~ msgid "Without people."
+#~ msgstr "Sin gente"
+
+#~ msgid "Without information."
+#~ msgstr "Sin información"
+
+#~ msgid "Recent episodes"
+#~ msgstr "Episodios recientes"
 
 #~ msgid "Episode list"
 #~ msgstr "Lista de episodios"

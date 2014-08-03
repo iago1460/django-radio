@@ -134,11 +134,10 @@ class Episode(models.Model):
     def create_episode(cls, date, programme, last_episode=None, episode=None):
         if not last_episode:
             last_episode = Episode.get_last_episode(programme)
-        if last_episode:
-            season = last_episode.season
+        season = programme.current_season
+        if last_episode and last_episode.season == season:
             number_in_season = last_episode.number_in_season + 1
         else:
-            season = programme.current_season
             number_in_season = 1
         if episode:
             episode.programme = programme
@@ -201,7 +200,7 @@ class Episode(models.Model):
 
     @classmethod
     def get_last_episode(cls, programme):
-        return cls.objects.filter(programme=programme, season=programme.current_season).order_by('-number_in_season').select_related('programme').first()
+        return cls.objects.filter(programme=programme).order_by('-season', '-number_in_season').select_related('programme').first()
 
     def get_absolute_url(self):
         return reverse('programmes:episode_detail', args=[self.programme.slug, self.season, self.number_in_season])

@@ -3,8 +3,35 @@ from django.conf.urls import patterns, include, url
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+
 from radio.libs.non_staff_admin.admin import non_staff_admin_site
+
+
 admin.autodiscover()
+
+
+def handler400(request):
+    response = render_to_response('home/400.html', {}, context_instance=RequestContext(request))
+    response.status_code = 400
+    return response
+
+def handler404(request):
+    response = render_to_response('home/404.html', {}, context_instance=RequestContext(request))
+    response.status_code = 404
+    return response
+
+def handler403(request):
+    response = render_to_response('home/403.html', {}, context_instance=RequestContext(request))
+    response.status_code = 403
+    return response
+
+def handler500(request):
+    response = render_to_response('home/500.html', {}, context_instance=RequestContext(request))
+    response.status_code = 500
+    return response
+
 
 urlpatterns = patterns('',
     url(r'^$', 'radio.libs.home.views.index'),

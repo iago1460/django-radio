@@ -5,22 +5,25 @@
 {% block content %}
 	<div class="row">
 		{% if userprofile %}
-			<h1>{% trans "about"|upper %} {{userprofile.user|upper}}</h1>
+			<h1>{% firstof userprofile.user.get_full_name|upper userprofile.user|upper %} </h1>
 			<div class="media">
 				<img src="{{ userprofile.avatar.url }}">
 			</div>
 			<p>{{userprofile.bio}}</p>
-			<h2>{% trans "collaborations"|upper %}</h2>
-			<ul>
+			
+			{% if role_list %}
+			<h2>{% trans "Contributions"|upper %}</h2>
+			<dl id="tabulate">
 				{% for role in role_list %}
-					{% if role.get_role_display %}
-						<li><a href="{% url 'programmes:detail' role.programme.slug %}">{{ role.programme }} ({{ role.get_role_display }})</a></li>
-					{% else %}
-						<li><a href="{% url 'programmes:detail' role.programme.slug %}">{{ role.programme }}</a></li>
-					{% endif %}
-						<p>{{role.description}}</p>
+					<dt><a href="{% url 'programmes:detail' role.programme.slug %}">{{ role.programme }}
+					 {% if unspecified != role.role %}({{ role.get_role_display }}){% endif %}
+					</a></dt>
+					<dd>{% if role.description %}{{role.description}}{% else %}.{% endif %} </dd>
 				{% endfor %}
-			</ul>
+			</dl>
+			{% endif %}
+			
+			
 		{% else %}
 			<h1>{% trans "No user information available"|upper %}</h1>
 			<div class="media">
