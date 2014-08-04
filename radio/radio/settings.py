@@ -26,7 +26,7 @@ DEBUG = False
 
 TEMPLATE_DEBUG = False
 
-ALLOWED_HOSTS = ['54.213.150.139', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['demo.radioco.org', '127.0.0.1', 'localhost']
 
 
 # Application definition

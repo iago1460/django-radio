@@ -18,6 +18,7 @@ from radio.libs.global_settings.models import CalendarConfiguration
 
 def schedule_list(request):
     today = datetime.datetime.now()
+    # FIXME: crash if don't exist
     calendar_configuration = CalendarConfiguration.objects.get()
 
     offset = (today.weekday() - calendar_configuration.first_day) % 7
