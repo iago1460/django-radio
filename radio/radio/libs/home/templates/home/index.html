@@ -22,7 +22,7 @@
 	</div>
 {% endblock %}
 {% block content %}
-	<h1>{% trans "playlist"|upper %} {{now|date|upper }}</h1>
+	<h1>{% trans "playlist"|upper %} {{now|date:"DATE_FORMAT"|upper }}</h1>
 	
 	<ul class="list-group">
 		{% if schedule_now %}
@@ -31,10 +31,15 @@
 				<a href="{% url 'programmes:detail' schedule_now.programme.slug %}">{{ schedule_now.programme.name }}</a></h4>
 			</li>
 		{% endif %}
-		{% for schedule, date in next_events %}
+			
+		{% for schedule, date, episode in next_events %}
 			<li class="list-group-item">
-				<h4><span class="label label-success">{{date|date:"G:i" }}</span>
-				<a href="{% url 'programmes:detail' schedule.programme.slug %}">{{ schedule.programme.name }}</a></h4>
+			<h4><span class="label label-success">{{date|date:"G:i" }}</span>
+			{% if episode%}
+				<a href="{% url 'programmes:episode_detail' schedule.programme.slug episode.season episode.number_in_season%}">{{ schedule.programme.name }}</a>
+			{% else %}
+				<a href="{% url 'programmes:detail' schedule.programme.slug %}">{{ schedule.programme.name }}</a>
+			{% endif %}
 			</li>
 		{% empty %}
 			<p>{% trans "Coming soon"|upper %}</p>

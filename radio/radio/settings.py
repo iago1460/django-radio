@@ -32,7 +32,7 @@ ALLOWED_HOSTS = ['54.213.150.139', '127.0.0.1', 'localhost']
 # Application definition
 
 INSTALLED_APPS = (
-    'bootstrap_admin',
+    # 'bootstrap_admin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'radio',
     'radio.libs.global_settings',
+    'radio.libs.non_staff_admin',
     'radio.libs.home',
     'radio.apps.users',
     'radio.apps.programmes',
@@ -118,7 +119,7 @@ TIME_ZONE = 'Europe/Madrid'
 USE_I18N = True
 
 USE_TZ = False
-USE_L10N = False
+USE_L10N = True
 
 
 LANGUAGES = (

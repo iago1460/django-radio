@@ -8,11 +8,11 @@ from radio.apps.programmes.models import Programme
 urlpatterns = patterns('',
     url(r'^$',
         ListView.as_view(
-            queryset=Programme.objects.order_by('-name'),
+            queryset=Programme.objects.order_by('name'),
             template_name='programmes/programme_list.html'),
         name='list'),
     url(r'^(?P<slug>[-\w]+)/$', views.programme_detail, name='detail'),
     url(r'^(?P<slug>[-\w]+)/(?P<season_number>\d+)x(?P<episode_number>\d+)/$', views.episode_detail, name='episode_detail'),
 
-    (r'^(?P<slug>[-\w]+)/rss/$', RssProgrammeFeed())
+    url(r'^(?P<slug>[-\w]+)/rss/$', RssProgrammeFeed(), name='rss')
 )

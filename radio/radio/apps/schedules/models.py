@@ -4,6 +4,8 @@ import datetime
 from dateutil import rrule
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 
 from radio.apps.programmes.models import Programme, Episode
@@ -40,8 +42,8 @@ class ScheduleBoard(models.Model):
     def clean(self):
         if self.start_date:
             if self.end_date:
-                if self.start_date >= self.end_date:
-                    raise ValidationError(_('start date must be before end date.'))
+                if self.start_date > self.end_date:
+                    raise ValidationError(_('end date must be greater than or equal to start date.'))
                 # check date collision
                 qs = ScheduleBoard.objects.filter(start_date__lte=self.end_date, end_date__isnull=True) | ScheduleBoard.objects.filter(start_date__lte=self.end_date, end_date__gte=self.start_date)
                 if self.pk is not None:
@@ -65,6 +67,18 @@ class ScheduleBoard(models.Model):
             # both None = disable
             pass
 
+    def save(self, *args, **kwargs):
+        # rearrange episodes
+        if self.pk is not None:
+            orig = ScheduleBoard.objects.get(pk=self.pk)
+            if orig.start_date != self.start_date or orig.end_date != self.end_date:  # Field has changed
+                super(ScheduleBoard, self).save(*args, **kwargs)
+                Episode.rearrange_episodes(programme=None, after=datetime.datetime.now())
+            else:
+                super(ScheduleBoard, self).save(*args, **kwargs)
+        else:
+            super(ScheduleBoard, self).save(*args, **kwargs)
+
     @classmethod
     def get_current(cls, dt):
         schedule_board = cls.objects.filter(start_date__lte=dt, end_date__isnull=True).order_by('-start_date') | cls.objects.filter(start_date__lte=dt, end_date__gte=dt).order_by('-start_date')
@@ -73,12 +87,14 @@ class ScheduleBoard(models.Model):
     class Meta:
         verbose_name = _('schedule board')
         verbose_name_plural = _('schedule board')
-        ordering = ['start_date']
 
     def __unicode__(self):
         return self.name
 
 
+@receiver(post_delete, sender=ScheduleBoard)
+def delete_ScheduleBoard_handler(sender, **kwargs):
+    Episode.rearrange_episodes(programme=None, after=datetime.datetime.now())
 
 class Schedule(models.Model):
     programme = models.ForeignKey(Programme, verbose_name=_("programme"))
@@ -86,7 +102,7 @@ class Schedule(models.Model):
     start_hour = models.TimeField(verbose_name=_('start time'))
     type = models.CharField(verbose_name=_("type"), choices=emission_type, max_length=1)
     schedule_board = models.ForeignKey(ScheduleBoard, verbose_name=_("schedule board"))
-    source = models.ForeignKey('self', blank=True, null=True, verbose_name=_("source"))
+    source = models.ForeignKey('self', blank=True, null=True, on_delete=models.SET_NULL, verbose_name=_("source"), help_text=_("It is used when is a broadcast."))
 
     def runtime(self):
         return self.programme.runtime
@@ -103,11 +119,20 @@ class Schedule(models.Model):
             end_date = end_date + datetime.timedelta(days=1)
             return rrule.rrule(rrule.WEEKLY, byweekday=[self.day], dtstart=datetime.datetime.combine(start_date, self.start_hour), until=end_date)
         else:
-            return rrule.rrule(rrule.WEEKLY, byweekday=[self.day], dtstart=datetime.datetime.combine(start_date, self.start_hour))
+            end_date = self.schedule_board.end_date
+            if end_date:
+                # Due to rrule we need to add 1 day
+                end_date = end_date + datetime.timedelta(days=1)
+                return rrule.rrule(rrule.WEEKLY, byweekday=[self.day], dtstart=datetime.datetime.combine(start_date, self.start_hour), until=end_date)
+            else:
+                return rrule.rrule(rrule.WEEKLY, byweekday=[self.day], dtstart=datetime.datetime.combine(start_date, self.start_hour))
 
     def dates_between(self, after, before):
+        '''
+            Return a sorted list of dates between after and before
+        '''
         dates = self.__get_rrule().between(after, before, True)
-        # add programme if it hasn't finished
+        # add date if the programme hasn't finished
         start_date = self.date_before(after)
         if start_date and start_date != after:
             if start_date + self.runtime() > after:
@@ -177,7 +202,6 @@ class Schedule(models.Model):
         dates = []
         schedules = []
         for schedule in list_schedules:
-            # if schedule != exclude:
             list_dates = schedule.dates_between(after, before)
             if list_dates:
                 schedules.append(schedule)
@@ -201,6 +225,24 @@ class Schedule(models.Model):
         if earlier_schedule is None or dt > earlier_date + earlier_schedule.runtime():  # Todo: check
             return None, None
         return earlier_schedule, earlier_date
+
+    @classmethod
+    def get_next_date(cls, programme, after):
+        list_schedules = cls.objects.filter(programme=programme, type='L')
+        list_schedules = list_schedules.filter(programme__end_date__isnull=True) | list_schedules.filter(programme__end_date__gte=after)
+        list_schedules = list_schedules.filter(schedule_board__start_date__isnull=False, schedule_board__end_date__isnull=True) | list_schedules.filter(schedule_board__end_date__gte=after)
+        # list_schedules = list_schedules.select_related('programme', 'schedule_board', 'source__programme', 'source__schedule_board')
+        closer_date = None
+        closer_schedule = None
+        for schedule in list_schedules:
+            # if schedule != exclude:
+            date = schedule.date_after(after)
+            if date and (closer_date is None or date < closer_date):
+                closer_date = date
+                closer_schedule = schedule
+        if closer_schedule is None:  # Todo: check
+            return None, None
+        return closer_schedule, closer_date
 
     def __unicode__(self):
         return self.get_day_display() + ' - ' + self.start_hour.strftime('%H:%M')

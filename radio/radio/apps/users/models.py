@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
@@ -12,6 +13,9 @@ class UserProfile(models.Model):
     display_personal_page = models.BooleanField(default=False, verbose_name=_("display personal page"))
     slug = models.SlugField(max_length=30)
 
+    def get_absolute_url(self):
+        return reverse('users:detail', args=[self.slug])
+
     def save(self, *args, **kwargs):
         if not self.pk:
             try:
@@ -24,7 +28,7 @@ class UserProfile(models.Model):
 
     class Meta:
         verbose_name = _('user profile')
-        verbose_name_plural = _('user profiles')
+        verbose_name_plural = _('user profile')
 
     def __unicode__(self):
         return "%s's profile" % self.user

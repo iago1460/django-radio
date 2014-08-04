@@ -10,7 +10,6 @@
 }
 	
 #external-events {
-	width: 150px;
 	padding: 0 10px;
 	border: 1px solid #ccc;
 	background: #eee;
@@ -42,7 +41,8 @@
 	margin: 0;
 	vertical-align: middle;
 }
-
-#calendar {
+/*
+#calendar {  disabled 
 	width: 900px;
 }
+*/

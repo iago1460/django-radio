@@ -11,6 +11,7 @@ from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
+from django.utils.translation import ugettext as _
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -54,14 +55,19 @@ def user_login(request):
                     if user.is_active:
                         # This logs him in
                         login(request, user)
-                        return HttpResponseRedirect(reverse('dashboard:index'))
+                        return HttpResponseRedirect(reverse('usersadmin:index'))
                 return render(request, "home/login.html", {'form': form, 'error':True})
             else:
                 return render(request, "home/login.html", {'form': form})
         else:
             form = LoginForm()
             return render(request, "home/login.html", {'form': form})
-    return HttpResponseRedirect(reverse('dashboard:index'))
+    return HttpResponseRedirect(reverse('usersadmin:index'))
+    '''
+    if request.POST.get('next'):
+        return HttpResponseRedirect(request.POST.get('next'))
+    return HttpResponseRedirect(reverse('usersadmin:index'))
+    '''
 
 # User Logout View
 def user_logout(request):
@@ -84,19 +90,42 @@ def check_recorder_program(user):
 def recording_schedules(request):
     if not settings.DEBUG and not request.is_ajax() and not request.GET.get('start'):
         return HttpResponseBadRequest()
-    start = datetime.datetime.strptime(request.GET.get('start'), '%Y-%m-%d')
+    start = datetime.datetime.strptime(request.GET.get('start'), '%Y-%m-%d %H:%M:%S')
+    next_hours = request.GET.get("next_hours", None)
+    if not next_hours:
+        next_hours = PodcastConfiguration.objects.get().next_events
+    else:
+        next_hours = int(next_hours)
     json_list = []
-    schedules, dates = Schedule.between(start, start + relativedelta(hours=+48), live=True)
+
+    next_schedules, next_dates = Schedule.between(start, start + relativedelta(hours=next_hours), live=True)
+    schedules = []
+    dates = []
+    for x in range(len(next_schedules)):
+        for y in range(len(next_dates[x])):
+            schedules.append(next_schedules[x])
+            dates.append(next_dates[x][y])
+    # sort
+    dates, schedules = (list(t) for t in zip(*sorted(zip(dates, schedules))))
+
     for x in range(len(schedules)):
         schedule = schedules[x]
-        for y in range(len(dates[x])):
-            date = dates[x][y]
-            date = date + datetime.timedelta(seconds=PodcastConfiguration.objects.get().start_delay)
-            duration = schedule.runtime().seconds - PodcastConfiguration.objects.get().start_delay - PodcastConfiguration.objects.get().end_delay
-            # start = date.strftime("%Y-%m-%dT%H:%M:%S"+utc_str)
-            json_entry = {'id':schedule.programme.id, 'start':str(date), 'duration':str(duration),
-                          'title': schedule.programme.slug}
-            json_list.append(json_entry)
+        date = dates[x]
+
+        # Create the episode to retrieve season and episode number
+        try:
+            episode = Episode.objects.select_related('programme').get(issue_date=date, programme=schedule.programme)
+        except Episode.DoesNotExist:
+            episode = Episode.create_episode(date, schedule.programme)
+
+        start_date = date + datetime.timedelta(seconds=PodcastConfiguration.objects.get().start_delay)
+        duration = schedule.runtime().seconds - PodcastConfiguration.objects.get().start_delay - PodcastConfiguration.objects.get().end_delay
+        # start = date.strftime("%Y-%m-%dT%H:%M:%S"+utc_str)
+        json_entry = {'id':schedule.programme.id, 'issue_date':date.strftime('%Y-%m-%d %H-%M-%S'), 'start':start_date.strftime('%Y-%m-%d %H-%M-%S'), 'duration':str(duration),
+                      'genre':schedule.programme.get_category_display(), 'programme_name': schedule.programme.slug,
+                      'title':episode.title, 'author': schedule.programme.name, 'album': _('Season') + ' ' + str(episode.season), 'track': episode.number_in_season}
+        json_list.append(json_entry)
+
     return HttpResponse(json.dumps(json_list), content_type='application/json')
 
 
@@ -117,15 +146,20 @@ def submit_recorder(request):
     url = PodcastConfiguration.objects.get().url_source + file_name
 
     try:
-        episode = Episode.objects.select_related('programme').get(issue_date=date)
+        episode = Episode.objects.select_related('programme').get(issue_date=date, programme=programme)
     except Episode.DoesNotExist:
         episode = Episode.create_episode(date, programme)
 
     duration = episode.programme._runtime
     try:
-        # can exist but it must have the same values
-        # ignore if exist
-        Podcast.objects.get(episode=episode)
+        # can exist but it should have same values
+        # overwrite if episode exists
+        podcast = Podcast.objects.get(episode=episode)
+        podcast.url = url
+        podcast.mime_type = mime_type
+        podcast.length = length
+        podcast.duration = duration
+        podcast.save()
     except Podcast.DoesNotExist:
         Podcast.objects.create(episode=episode, url=url, mime_type=mime_type, length=length, duration=duration)
     return HttpResponse()
