@@ -88,8 +88,8 @@ def check_recorder_program(user):
 @permission_classes((IsAuthenticated,))
 @user_passes_test(check_recorder_program)
 def recording_schedules(request):
-    if not settings.DEBUG and not request.is_ajax() and not request.GET.get('start'):
-        return HttpResponseBadRequest()
+    # if not settings.DEBUG and and not request.GET.get('start'):
+    #    return HttpResponseBadRequest()
     start = datetime.datetime.strptime(request.GET.get('start'), '%Y-%m-%d %H:%M:%S')
     next_hours = request.GET.get("next_hours", None)
     if not next_hours:
@@ -105,8 +105,10 @@ def recording_schedules(request):
         for y in range(len(next_dates[x])):
             schedules.append(next_schedules[x])
             dates.append(next_dates[x][y])
+
     # sort
-    dates, schedules = (list(t) for t in zip(*sorted(zip(dates, schedules))))
+    if schedules:
+        dates, schedules = (list(t) for t in zip(*sorted(zip(dates, schedules))))
 
     for x in range(len(schedules)):
         schedule = schedules[x]
@@ -134,9 +136,6 @@ def recording_schedules(request):
 @permission_classes((IsAuthenticated,))
 @user_passes_test(check_recorder_program)
 def submit_recorder(request):
-    if not settings.DEBUG and not request.is_ajax():
-        return HttpResponseBadRequest()
-
     programme_id = int(request.GET.get('programme_id'))
     programme = get_object_or_404(Programme, id=programme_id)
     date = datetime.datetime.strptime(request.GET.get('date'), '%Y-%m-%d %H-%M-%S')
