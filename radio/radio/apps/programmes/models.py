@@ -106,7 +106,8 @@ class Programme(models.Model):
         return reverse('programmes:detail', args=[self.slug])
 
     def __unicode__(self):
-        return self.name
+        return u"%s" % (self.name)
+
 
 
 class Episode(models.Model):
@@ -216,7 +217,7 @@ class Episode(models.Model):
         verbose_name_plural = _('episodes')
 
     def __unicode__(self):
-        return str(self.season) + 'x' + str(self.number_in_season) + ' ' + str(self.programme)
+        return u"%sx%s %s" % (self.season, self.number_in_season, self.programme)
 
 '''
 # participants added in post_save signal
