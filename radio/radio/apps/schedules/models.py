@@ -89,7 +89,7 @@ class ScheduleBoard(models.Model):
         verbose_name_plural = _('schedule board')
 
     def __unicode__(self):
-        return self.name
+        return u"%s" % (self.name)
 
 
 @receiver(post_delete, sender=ScheduleBoard)
