@@ -19,7 +19,7 @@ class UserProfileMethodTests(TestCase):
         user.save()
         user_profile = UserProfile(user=user, bio='my bio')
         user_profile.save()
-        programme = Programme.objects.create(name="Test programme", synopsis="This is a description", _runtime=60, start_date=datetime.date(2014, 1, 31))
+        programme = Programme.objects.create(name="Test programme", synopsis="This is a description", current_season=1, _runtime=60, start_date=datetime.date(2014, 1, 31))
         role = Role.objects.create(person=user, programme=programme)
         self.assertEqual(programme, Programme.objects.get(id=programme.id))
         self.assertEqual(user_profile, UserProfile.objects.get(id=user_profile.id))

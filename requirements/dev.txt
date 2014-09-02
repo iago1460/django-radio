@@ -3,3 +3,4 @@
 pygraphviz
 django-debug-toolbar
 coverage
+mock
