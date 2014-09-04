@@ -1,6 +1,6 @@
 {% load staticfiles i18n %}
-{% load solo_tags %}
-{% get_solo 'global_settings.SiteConfiguration' as site_config %}
+{% load global_settings_extras %}
+{% get_global_model 'global_settings.SiteConfiguration' as site_config %}
 <!DOCTYPE html>
 <html>
 	<head>

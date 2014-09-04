@@ -66,7 +66,6 @@ INSTALLED_APPS = (
     'radio.apps.dashboard',
     'debug_toolbar',
     'bootstrap3',
-    'solo',
     'rest_framework',
     'rest_framework.authtoken'
 )

@@ -22,8 +22,32 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.authtoken.models import Token
-from solo.models import SingletonModel
 from radio.apps.schedules.models import WEEKDAY_CHOICES
+
+
+
+class SingletonModelManager(models.Manager):
+    def get(self, *args, **kwargs):
+        obj, created = super(SingletonModelManager, self).get_or_create(**kwargs)
+        return obj
+
+class SingletonModel(models.Model):
+    objects = SingletonModelManager()
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super(SingletonModel, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        pass
+
+    @classmethod
+    def get_global(cls):
+        obj, created = cls.objects.get_or_create(pk=1)
+        return obj
+
+    class Meta:
+        abstract = True
 
 
 class SiteConfiguration(SingletonModel):
