@@ -16,23 +16,15 @@
 
 
 import datetime
-import re
 
 from dateutil.relativedelta import relativedelta
 from django import forms
-from django.conf.urls import url, patterns
 from django.contrib import admin
-from django.contrib.admin import widgets
-from django.contrib.auth.models import User
-from django.core import validators
 from django.forms import ValidationError
-from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
-from solo.admin import SingletonModelAdmin
 
 from radio.apps.programmes.models import Programme, Podcast, Episode, Role, Participant
 from radio.apps.schedules.models import Schedule
-from radio.apps.users.models import UserProfile
 from radio.libs.non_staff_admin.admin import non_staff_admin_site
 
 
