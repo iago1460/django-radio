@@ -141,6 +141,7 @@ USE_L10N = True
 LANGUAGES = (
     ('en', 'English'),
     ('es', 'Spanish'),
+    ('gl', 'Galician'),
 )
 
 
