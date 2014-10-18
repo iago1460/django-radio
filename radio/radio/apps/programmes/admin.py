@@ -409,15 +409,18 @@ class NonStaffEpisodeAdminForm(forms.ModelForm):
 
     def clean_programme(self):
         programme = self.cleaned_data['programme']
+        now = datetime.datetime.now()
         if not self.instance.pk:
             last_episode = Episode.get_last_episode(programme)
             if last_episode:
                 if last_episode.issue_date:
                     after = last_episode.issue_date + programme.runtime
+                    if after < now:
+                        after = now
                 else:
                     raise forms.ValidationError(_('There are no available schedules.'))
             else:
-                after = datetime.datetime.now()
+                after = now
             schedule, date = Schedule.get_next_date(programme=programme, after=after)
             if not date:
                 raise forms.ValidationError(_('There are no available schedules.'))
@@ -512,10 +515,13 @@ class NonStaffEpisodeAdmin(admin.ModelAdmin):
         if not obj.pk:
             programme = obj.programme
             last_episode = Episode.get_last_episode(programme)
+            now = datetime.datetime.now()
             if last_episode:
                 after = last_episode.issue_date + programme.runtime
+                if after < now:
+                    after = now
             else:
-                after = datetime.datetime.now()
+                after = now
             schedule, date = Schedule.get_next_date(programme=programme, after=after)
             Episode.create_episode(episode=obj, date=date, programme=programme, last_episode=last_episode)
         else:
