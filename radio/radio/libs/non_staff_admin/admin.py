@@ -23,7 +23,13 @@ from radio.libs.non_staff_admin.forms import UserAdminAuthenticationForm
 class UserAdmin(AdminSite):
 
     index_template = 'non_staff_admin/index.html'
+    app_index_template = 'non_staff_admin/app.html'
     login_form = UserAdminAuthenticationForm
+
+    site_header = 'RadioCo administration'
+    index_title = 'Site administration'
+    site_title = 'Django site admin'
+
 
     def has_permission(self, request):
         '''

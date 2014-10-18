@@ -1,17 +1,5 @@
 {% load i18n %}
 
-<h1 id="site-name">{% trans 'RadioCo Administration' %}</h1>
+<h1 id="site-name"><a href="{% url 'usersadmin:index' %}">{{ site_header|default:_('Django administration') }}</a></h1>
 
-{% if user.is_active and not user.is_staff %}
-<div id="user-tools">
-     {% trans 'Welcome,' %}
-     <strong>{% firstof user.get_short_name user.get_username %}</strong>.
-     {% block userlinks %}
-         {% url 'django-admindocs-docroot' as docsroot %}
-         {% if docsroot %}
-             <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
-         {% endif %}
-         <a href="{% url 'logout' %}">{% trans 'Log out' %}</a>
-     {% endblock %}
- </div>
- {%endif%}
+

@@ -6,3 +6,27 @@
 {% block branding %}
 	{% include "non_staff_admin/branding.html" %}
 {% endblock %}
+
+{% block nav-global %}
+{% if user.is_active and not user.is_staff %}
+	<div id="user-tools">
+	    {% block welcome-msg %}
+	        {% trans 'Welcome,' %}
+	        <strong>{% firstof user.get_short_name user.get_username %}</strong>.
+	    {% endblock %}
+	    {% block userlinks %}
+	        {% if site_url %}
+	            <a href="{{ site_url }}">{% trans 'View site' %}</a> /
+	        {% endif %}
+	        {% url 'django-admindocs-docroot' as docsroot %}
+	        {% if docsroot %}
+	            <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
+	        {% endif %}
+	        {% if user.has_usable_password %}
+	        <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> /
+	        {% endif %}
+	        <a href="{% url 'logout' %}">{% trans 'Log out' %}</a>
+	    {% endblock %}
+	</div>
+{% endif %}
+{% endblock %}
