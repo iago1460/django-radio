@@ -44,6 +44,7 @@ class UserProfile(models.Model):
         super(UserProfile, self).save(*args, **kwargs)
 
     class Meta:
+        default_permissions = ('change',)
         verbose_name = _('user profile')
         verbose_name_plural = _('user profile')
 

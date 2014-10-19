@@ -72,14 +72,14 @@ def user_login(request):
                     if user.is_active:
                         # This logs him in
                         login(request, user)
-                        return HttpResponseRedirect(reverse('usersadmin:index'))
+                        return HttpResponseRedirect(reverse('admin:index'))
                 return render(request, "home/login.html", {'form': form, 'error':True})
             else:
                 return render(request, "home/login.html", {'form': form})
         else:
             form = LoginForm()
             return render(request, "home/login.html", {'form': form})
-    return HttpResponseRedirect(reverse('usersadmin:index'))
+    return HttpResponseRedirect(reverse('admin:index'))
     '''
     if request.POST.get('next'):
         return HttpResponseRedirect(request.POST.get('next'))

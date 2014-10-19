@@ -20,10 +20,11 @@ import datetime
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils.translation import ugettext as _u
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.authtoken.models import Token
-from radio.apps.schedules.models import WEEKDAY_CHOICES
 
+from radio.apps.schedules.models import WEEKDAY_CHOICES
 
 
 class SingletonModelManager(models.Manager):
@@ -54,9 +55,10 @@ class SiteConfiguration(SingletonModel):
     site_name = models.CharField(max_length=255, default='RadioCo', verbose_name=_("Site Name"))
 
     def __unicode__(self):
-        return _('Global Configuration')
+        return _u('Global Configuration')
 
     class Meta:
+        default_permissions = ('change',)
         verbose_name = _('Global Configuration')
         verbose_name_plural = _('Global Configuration')
 
@@ -79,9 +81,11 @@ class PodcastConfiguration(SingletonModel):
             return _('User %(username)s doesn\'t exist') % {'username': username, }
 
     def __unicode__(self):
-        return _('Podcast Configuration')
+        # In django 1.7 we can't use lazy
+        return _u('Podcast Configuration')
 
     class Meta:
+        default_permissions = ('change',)
         verbose_name = _('Podcast Configuration')
         verbose_name_plural = _('Podcast Configuration')
 
@@ -94,8 +98,9 @@ class CalendarConfiguration(SingletonModel):
     display_next_weeks = models.PositiveIntegerField(default=1, verbose_name=_("display next weeks"))
 
     def __unicode__(self):
-        return _('Calendar Configuration')
+        return _u('Calendar Configuration')
 
     class Meta:
+        default_permissions = ('change',)
         verbose_name = _('Calendar Configuration')
         verbose_name_plural = _('Calendar Configuration')
