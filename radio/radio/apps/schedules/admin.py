@@ -26,23 +26,22 @@ from django.shortcuts import render_to_response, redirect
 from django.utils.translation import ugettext_lazy as _
 
 from radio.apps.schedules.models import Schedule, ScheduleBoard
-from radio.libs.non_staff_admin.admin import non_staff_admin_site
 
 
-
+'''
 class ScheduleInline(admin.StackedInline):
     model = Schedule
     extra = 0
 
     def get_queryset(self, request):
         return super(ScheduleInline, self).get_queryset(request).select_related('programme')
-
+'''
 class ScheduleBoardAdmin(admin.ModelAdmin):
     list_display = ('name', 'start_date', 'end_date')
     list_filter = ['start_date', 'end_date']
     search_fields = ['name']
     ordering = ['start_date']
-    inlines = [ScheduleInline]
+    inlines = []
     actions = ['copy_ScheduleBoard']
 
     def copy_ScheduleBoard(self, request, queryset):
@@ -80,12 +79,8 @@ class ScheduleBoardAdmin(admin.ModelAdmin):
 
 
 
-class NonStaffScheduleBoardAdmin(ScheduleBoardAdmin):
-    inlines = []
-
 
 admin.site.register(ScheduleBoard, ScheduleBoardAdmin)
-non_staff_admin_site.register(ScheduleBoard, NonStaffScheduleBoardAdmin)
 
 
 try:
@@ -94,36 +89,6 @@ except ImportError:
     from django.utils.encoding import force_text as force_unicode
 
 
-'''
-class ConfigAdmin(admin.ModelAdmin):    
-    list_display = ('id', 'username', 'useralias','status','language','action')
-    
-    def get_urls(self):
-        urls = (superConfigAdmin, self).get_urls()
-        my_urls = patterns('',
-                          (r'^view/(?P\d+)', self.admin_site.admin_view(self.config_detail))
-        )
-        return my_urls + urls
- 
-    def config_detail(self,request, id):
-        config = Config.objects.get(pk=id),exclude.('email_notification', 'loginkey'))
-        opts = Config._meta
-        app_label = opts.app_label
-
-        #create tempate page and extend admin/base.html 
-        config_detail_view_template = 'admin/config/detail_view.html'
-        cxt = {
-           'data' : config,
-        }        
-        return render_to_response(config_detail_view_template , cxt, context_instance=RequestContext(request))
-        
-    def action(self,form):
-         return "<a href='view/%s'>view</a>" % (form.id)
-    action.allow_tags = True
-
- 
-admin.site.register(Config, ConfigAdmin)
-'''
 
 
 class FullcalendarAdmin(admin.ModelAdmin):
@@ -158,7 +123,7 @@ class FullcalendarAdmin(admin.ModelAdmin):
         urls = super(FullcalendarAdmin, self).get_urls()
         url_name_prefix = '%(app_name)s_%(model_name)s' % {
             'app_name': self.model._meta.app_label,
-            'model_name': self.model._meta.module_name,
+            'model_name': self.model._meta.model_name,
         }
         custom_urls = patterns('',
             url(r'^$',
@@ -186,4 +151,4 @@ class FullcalendarAdmin(admin.ModelAdmin):
         )
     '''
 
-non_staff_admin_site.register(Schedule, FullcalendarAdmin)
+admin.site.register(Schedule, FullcalendarAdmin)

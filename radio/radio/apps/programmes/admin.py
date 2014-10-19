@@ -25,104 +25,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from radio.apps.programmes.models import Programme, Podcast, Episode, Role, Participant
 from radio.apps.schedules.models import Schedule
-from radio.libs.non_staff_admin.admin import non_staff_admin_site
 
 
-class RoleInline(admin.StackedInline):
-    model = Role
-    extra = 0
 
-    def get_queryset(self, request):
-        return super(RoleInline, self).get_queryset(request).select_related('programme', 'person')
-
-class ProgrammeAdmin(admin.ModelAdmin):
-    exclude = ('slug',)
-    list_display = ('name', 'start_date', 'end_date')
-    list_filter = ['start_date', 'end_date']
-    search_fields = ['name']
-    inlines = [RoleInline]
-
-
-class PodcastInline(admin.StackedInline):
-    model = Podcast
-
-class ParticipantInline(admin.StackedInline):
-    model = Participant
-    extra = 0
-
-    def get_queryset(self, request):
-        return super(ParticipantInline, self).get_queryset(request).select_related('episode__programme', 'person')
-
-class EpisodeAdmin(admin.ModelAdmin):
-    exclude = ('slug',)
-    list_display = ('__unicode__', 'issue_date')
-    list_filter = ['issue_date', 'programme']
-    search_fields = ['programme__name']
-    inlines = [ParticipantInline, PodcastInline]
-    list_select_related = True
-
-
-'''
-class RoleAdmin(admin.ModelAdmin):
-    list_display = ('role', 'programme', 'person')
-    list_filter = ['role', 'programme', 'person']
-
-
-class ParticipantAdmin(admin.ModelAdmin):
-    list_display = ('role', 'episode', 'person')
-    list_filter = ['role', 'episode', 'person']
-'''
-
-#################### NON STAFF ####################
-###################################################
-
-'''
-########### Role ###########
-
-class OwnProgrammeListFilter(admin.SimpleListFilter):
-    title = _('programmes')
-    parameter_name = 'programme'
-
-    def lookups(self, request, model_admin):
-        list_tuple = []
-        for programme in Programme.objects.filter(announcers__in=[request.user]).distinct():
-            list_tuple.append((programme.id, programme.name))
-        return list_tuple
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(programme__id=self.value())
-        else:
-            return queryset
-
-
-class OwnRoleListFilter(admin.SimpleListFilter):
-    title = _('roles')
-    parameter_name = 'role'
-
-    def lookups(self, request, model_admin):
-        dic = {}
-        for role in Role.objects.filter(person=request.user):
-            if not dic.get(role.role):
-                dic[role.role] = role.get_role_display()
-        return dic.items()
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(role=self.value())
-        else:
-            return queryset
-
-
-class NonStaffRoleAdmin(admin.ModelAdmin):
-    list_display = ('role', 'programme')
-    list_filter = [OwnRoleListFilter, OwnProgrammeListFilter]
-
-    def get_queryset(self, request):
-        qs = super(NonStaffRoleAdmin, self).get_queryset(request)
-        return qs.filter(person=request.user)
-
-'''
 ########### Programme ###########
 
 class NonStaffRoleInlineForm(forms.ModelForm):
@@ -276,53 +181,8 @@ class NonStaffProgrammeAdmin(admin.ModelAdmin):
             qs = qs.filter(announcers__in=[request.user]).distinct()
         return qs
 
-'''
-########### Participant ###########
-
-class OwnProgrammeEpisodeListFilter(admin.SimpleListFilter):
-    title = _('programmes')
-    parameter_name = 'programme'
-
-    def lookups(self, request, model_admin):
-        list_tuple = []
-        for programme in Programme.objects.filter(announcers__in=[request.user]).distinct():
-            list_tuple.append((programme.id, programme.name))
-        return list_tuple
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(episode__programme__id=self.value())
-        else:
-            return queryset
 
 
-class OwnParticipantListFilter(admin.SimpleListFilter):
-    title = _('roles')
-    parameter_name = 'role'
-
-    def lookups(self, request, model_admin):
-        dic = {}
-        for participant in Participant.objects.filter(person=request.user):
-            if not dic.get(participant.role):
-                dic[participant.role] = participant.get_role_display()
-        return dic.items()
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(role=self.value())
-        else:
-            return queryset
-
-
-class NonStaffParticipantAdmin(admin.ModelAdmin):
-    list_display = ('role', 'episode')
-    list_filter = [OwnParticipantListFilter, OwnProgrammeEpisodeListFilter]
-
-    def get_queryset(self, request):
-        qs = super(NonStaffParticipantAdmin, self).get_queryset(request)
-        return qs.filter(person=request.user)
-
-'''
 ########### Episode ###########
 
 class NonStaffParticipantInlineForm(forms.ModelForm):
@@ -403,6 +263,7 @@ class NonStaffEpisodeAdminForm(forms.ModelForm):
 
     class Meta:
         model = Episode
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(NonStaffEpisodeAdminForm, self).__init__(*args, **kwargs)
@@ -488,13 +349,18 @@ class OwnEpisodeIssueDateListFilter(admin.SimpleListFilter):
         else:
             return queryset
 
+
+class PodcastInline(admin.StackedInline):
+    model = Podcast
+
+
 class NonStaffEpisodeAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'issue_date')
     list_select_related = True
     ordering = ['-season', '-number_in_season']
     list_filter = ['issue_date', OwnEpisodeProgrammeListFilter, OwnEpisodeIssueDateListFilter]
     search_fields = ['programme__name']
-    inlines = [NonStaffParticipantInline]
+    inlines = [NonStaffParticipantInline, PodcastInline]
     fields = ['programme', 'title', 'summary', 'issue_date', 'season', 'number_in_season']
     form = NonStaffEpisodeAdminForm
     '''
@@ -530,7 +396,8 @@ class NonStaffEpisodeAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         field = super(NonStaffEpisodeAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
         if db_field.name == 'programme':
-            field.queryset = field.queryset.filter(announcers__in=[request.user]).distinct()
+            if request and not request.user.has_perm('programmes.see_all_episodes'):
+                field.queryset = field.queryset.filter(announcers__in=[request.user]).distinct()
         return field
 
     def get_readonly_fields(self, request, obj=None):
@@ -579,21 +446,12 @@ class NonStaffEpisodeAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super(NonStaffEpisodeAdmin, self).get_queryset(request)
-        return qs.filter(people__in=[request.user]).distinct()
+        if not request.user.has_perm('programmes.see_all_episodes'):
+            qs = qs.filter(people__in=[request.user]).distinct()
+        return qs
 
 
 
-
-
-
-non_staff_admin_site.register(Episode, NonStaffEpisodeAdmin)
-admin.site.register(Programme, ProgrammeAdmin)
-admin.site.register(Episode, EpisodeAdmin)
-# non_staff_admin_site.register(Participant, NonStaffParticipantAdmin)
-# non_staff_admin_site.register(Role, NonStaffRoleAdmin)
-
-
-non_staff_admin_site.register(Programme, NonStaffProgrammeAdmin)
-
-
+admin.site.register(Programme, NonStaffProgrammeAdmin)
+admin.site.register(Episode, NonStaffEpisodeAdmin)
 

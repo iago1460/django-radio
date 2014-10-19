@@ -1,18 +1,10 @@
-
-{% extends "non_staff_admin/base_site.html" %}
+{% extends "dashboard/base_site.html" %}
 {% load i18n %}
 {% load staticfiles i18n %}
 {% load admin_urls %}
 
 
 
-{% block breadcrumbs %}
-<div class="breadcrumbs">
-    <a href="{% url 'usersadmin:index' %}">{% trans 'Home' %}</a> &rsaquo; 
-    <a href="../">{{ app_label|capfirst|escape }}</a> &rsaquo; 
-    {{ opts.verbose_name|capfirst }}
-</div>
-{% endblock %}
 
 
 {% block extrastyle %}

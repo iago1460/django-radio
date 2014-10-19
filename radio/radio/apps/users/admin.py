@@ -27,13 +27,15 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 
 from radio.apps.users.models import UserProfile
-from radio.libs.non_staff_admin.admin import non_staff_admin_site
 
 try:
     from django.utils.encoding import force_unicode
 except ImportError:
     from django.utils.encoding import force_text as force_unicode
 
+
+
+########### User ###########
 
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
@@ -51,7 +53,6 @@ admin.site.register(User, UserProfileAdmin)
 
 ########### Profile ###########
 
-
 class NonStaffUserProfileForm(forms.ModelForm):
 
     username = forms.CharField(label=_('username'), max_length=30,
@@ -63,8 +64,6 @@ class NonStaffUserProfileForm(forms.ModelForm):
     first_name = forms.CharField(label=_('first name'), max_length=30, required=False)
     last_name = forms.CharField(label=_('last name'), max_length=30, required=False)
     email = forms.EmailField(label=_('email address'), required=False)
-    password1 = forms.CharField(label=_("Password"), widget=forms.PasswordInput, required=False)
-    password2 = forms.CharField(label=_("Password confirmation"), widget=forms.PasswordInput, required=False, help_text=_("Enter the same password as above, for verification."))
 
     def __init__(self, *args, **kwargs):
         super(NonStaffUserProfileForm, self).__init__(*args, **kwargs)
@@ -74,10 +73,6 @@ class NonStaffUserProfileForm(forms.ModelForm):
             self.fields['first_name'].initial = self.instance.user.first_name
             self.fields['last_name'].initial = self.instance.user.last_name
             self.fields['email'].initial = self.instance.user.email
-            # If one field gets autocompleted but not the other, our 'neither
-            # password or both password' validation will be triggered.
-            self.fields['password1'].widget.attrs['autocomplete'] = 'off'
-            self.fields['password2'].widget.attrs['autocomplete'] = 'off'
 
 
     def save(self, force_insert=False, force_update=False, commit=True):
@@ -86,7 +81,6 @@ class NonStaffUserProfileForm(forms.ModelForm):
         instance.user.first_name = self.cleaned_data['first_name']
         instance.user.last_name = self.cleaned_data['last_name']
         instance.user.email = self.cleaned_data['email']
-        instance.user.set_password(self.cleaned_data['password1'])
         if commit:
             instance.user.save()
             instance.save()
@@ -99,16 +93,10 @@ class NonStaffUserProfileForm(forms.ModelForm):
             raise forms.ValidationError(_('User with this Username already exists.'))
         return username
 
-    def clean_password2(self):
-        password1 = self.cleaned_data.get("password1")
-        password2 = self.cleaned_data.get("password2")
-        if (password1 and password2 and password1 != password2) or (password1 and not password2) or (password2 and not password1):
-            raise forms.ValidationError(_("The two password fields didn't match."))
-        return password2
 
 class SingletonProfileAdmin(admin.ModelAdmin):
     form = NonStaffUserProfileForm
-    fields = ['username', 'password1', 'password2', 'first_name', 'last_name', 'email' , 'bio', 'avatar', 'display_personal_page']
+    fields = ['username', 'first_name', 'last_name', 'email' , 'bio', 'avatar', 'display_personal_page']
 
     def save_model(self, request, obj, form, change):
         if obj.pk:
@@ -127,7 +115,7 @@ class SingletonProfileAdmin(admin.ModelAdmin):
         urls = super(SingletonProfileAdmin, self).get_urls()
         url_name_prefix = '%(app_name)s_%(model_name)s' % {
             'app_name': self.model._meta.app_label,
-            'model_name': self.model._meta.module_name,
+            'model_name': self.model._meta.model_name,
         }
         custom_urls = patterns('',
             url(r'^history/$',
@@ -160,7 +148,7 @@ class SingletonProfileAdmin(admin.ModelAdmin):
             extra_context=extra_context,
         )
 
-non_staff_admin_site.register(UserProfile, SingletonProfileAdmin)
+admin.site.register(UserProfile, SingletonProfileAdmin)
 
 
 

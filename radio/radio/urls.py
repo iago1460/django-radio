@@ -22,11 +22,17 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.utils.translation import ugettext_lazy as _
 
-from radio.libs.non_staff_admin.admin import non_staff_admin_site
 
+# Not necessary in Django > 1.7
+# admin.autodiscover()
+admin.site.logout_template = 'home/logged_out.html'
+# admin.site.login_form = 'home/login.html'
+admin.site.site_header = _('RadioCo administration')
+admin.site.site_title = _('RadioCo site admin')
+# admin.site.index_title = _('Site administration')
 
-admin.autodiscover()
 
 
 def handler400(request):
@@ -56,7 +62,6 @@ urlpatterns = patterns('',
     url(r'^logout/$', 'radio.libs.home.views.user_logout', name="logout"),
     url(r'^admin/', include(admin.site.urls)),
     # url(r'^configuration/schedule_editor/', 'radio.apps.dashboard.views.full_calendar', name="schedule_editor"),
-    url(r'^configuration/', include(non_staff_admin_site.urls), name="non_staff_admin"),
     url(r'^schedules/', include('radio.apps.schedules.urls', namespace="schedules")),
     url(r'^dashboard/', include('radio.apps.dashboard.urls', namespace="dashboard")),
     url(r'^programmes/', include('radio.apps.programmes.urls', namespace="programmes")),

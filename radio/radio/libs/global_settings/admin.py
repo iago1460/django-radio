@@ -43,7 +43,7 @@ class SingletonModelAdmin(admin.ModelAdmin):
         urls = super(SingletonModelAdmin, self).get_urls()
         url_name_prefix = '%(app_name)s_%(model_name)s' % {
             'app_name': self.model._meta.app_label,
-            'model_name': self.model._meta.module_name,
+            'model_name': self.model._meta.model_name,
         }
         custom_urls = patterns('',
             url(r'^history/$',
@@ -67,13 +67,14 @@ class SingletonModelAdmin(admin.ModelAdmin):
             self.message_user(request, msg)
             return HttpResponseRedirect("../../")
 
-    def change_view(self, request, object_id, extra_context=None):
+    def change_view(self, request, object_id, form_url='', extra_context=None):
         if object_id == '1':
             self.model.objects.get_or_create(pk=1)
         return super(SingletonModelAdmin, self).change_view(
             request,
             object_id,
-            extra_context=extra_context,
+            form_url,
+            extra_context,
         )
 
 

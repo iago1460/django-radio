@@ -232,6 +232,9 @@ class Episode(models.Model):
         unique_together = (('season', 'number_in_season', 'programme'))
         verbose_name = _('episode')
         verbose_name_plural = _('episodes')
+        permissions = (
+            ("see_all_episodes", "Can see all episodes"),
+        )
 
     def __unicode__(self):
         return u"%sx%s %s" % (self.season, self.number_in_season, self.programme)
