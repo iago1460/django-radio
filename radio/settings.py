@@ -150,16 +150,15 @@ REST_FRAMEWORK = {
 }
 
 
+PROJECT_PATH = os.path.realpath(os.path.dirname(__file__))
 
-ABSOLUTE_PATHNAME = '/home/user/git/django-radio'
-
-LOCALE_PATHS = (ABSOLUTE_PATHNAME + '/radio/locale',)
+LOCALE_PATHS = os.path.join(PROJECT_PATH, 'locale')
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
-    ABSOLUTE_PATHNAME + '/static',
+    os.path.join(PROJECT_PATH, 'static'),
 )
-MEDIA_ROOT = ABSOLUTE_PATHNAME + '/resources/'
+MEDIA_ROOT = os.path.join(PROJECT_PATH, 'media')
 MEDIA_URL = '/media/'
 
 
