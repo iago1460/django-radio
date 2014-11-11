@@ -92,6 +92,9 @@
 	$(document).ready(function () {
 
 	    var calendar = $('#calendar').fullCalendar({
+	    	height: 'auto',
+	    	contentHeight: 'auto',
+	    	aspectRatio: 1.35,
 	        lang: '{{language}}',
 	        eventDurationEditable: false,
 	        eventStartEditable: true,
@@ -210,7 +213,7 @@
 	        
 	        eventDragStop: function(event, jsEvent, ui, view) { 
 	            //console.log(event.id);
-	             if (isElemOverDiv(ui, $('div#external-events'))) {
+	             if (isElemOverDiv(jsEvent, $('div#external-events'))) {
 	            	 $.ajax({
 	                     type: "POST",
 	                     url: "delete_schedule",
@@ -295,15 +298,16 @@
 
 
 	var isElemOverDiv = function(draggedItem, dropArea) {
-	    var dragged = $(draggedItem)[0].offset;
+	    var draggedX = draggedItem.pageX;
+	    var draggedY = draggedItem.pageY;
 
 	    var b = $(dropArea);
 	    var limitX = parseInt(b.offset().left) + parseInt(b.outerWidth());
 	    var limitY = parseInt(b.offset().top) + parseInt(b.outerHeight());
 
 	    // Compare
-	    if ( limitY >=   parseInt(dragged.top) 
-	        && limitX >=   parseInt(dragged.left) ) 
+	    if ( limitY >=   parseInt(draggedY) 
+	        && limitX >=   parseInt(draggedX) ) 
 	    { 
 	        return true; 
 	    }
@@ -338,7 +342,7 @@
 		</div>
 	</div>
 	<br >
-	  <div class="row-fluid">
+	  <div>
 	    <div class="col-xs-2">
 	      <!--Sidebar content-->
 	      
