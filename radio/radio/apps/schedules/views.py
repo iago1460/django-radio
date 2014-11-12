@@ -23,6 +23,7 @@ from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
@@ -30,7 +31,6 @@ from django.utils.translation import ugettext_lazy as _
 from radio.apps.programmes.models import Programme, Episode
 from radio.apps.schedules.models import Schedule
 from radio.libs.global_settings.models import CalendarConfiguration
-
 
 
 def schedule_list(request):
