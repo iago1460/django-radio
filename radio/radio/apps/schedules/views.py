@@ -23,6 +23,7 @@ from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
@@ -32,25 +33,23 @@ from radio.apps.schedules.models import Schedule
 from radio.libs.global_settings.models import CalendarConfiguration
 
 
-
 def schedule_list(request):
-    today = datetime.datetime.now()
     calendar_configuration = CalendarConfiguration.objects.get()
-
-    offset = (today.weekday() - calendar_configuration.first_day) % 7
-    last_day = today - relativedelta(days=offset)
-
-    after = datetime.datetime.combine(last_day.date(), datetime.time(0, 0, 0))
-    before = after + relativedelta(weeks=calendar_configuration.display_next_weeks + 1)
-
-    context = {'today':after, 'events':json.dumps(__get_events(after=after, before=before, json_mode=True)),
+    context = {
         'scroll_time': calendar_configuration.scroll_time.strftime('%H:%M:%S'),
         'min_time': calendar_configuration.min_time.strftime('%H:%M:%S'),
         'max_time': calendar_configuration.max_time.strftime('%H:%M:%S'),
         'first_day': calendar_configuration.first_day + 1,
         'language' : request.LANGUAGE_CODE,
+        'feed_schedules' : reverse('schedules:feed_schedules'),
     }
     return render(request, 'schedules/schedules_list.html', context)
+
+
+def feed_schedules(request):
+    start = datetime.datetime.strptime(request.GET.get('start'), '%Y-%m-%d')
+    end = datetime.datetime.strptime(request.GET.get('end'), '%Y-%m-%d')
+    return HttpResponse(json.dumps(__get_events(after=start, before=end, json_mode=True)), content_type='application/json')
 
 
 
