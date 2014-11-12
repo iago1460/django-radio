@@ -22,6 +22,7 @@ from radio.apps.schedules import views
 
 urlpatterns = patterns('',
     url(r'^$', views.schedule_list, name='list'),
+    url(r'^feed_schedules/', views.feed_schedules, name='feed_schedules'),
 )
 
 
