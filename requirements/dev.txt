@@ -4,3 +4,6 @@ pygraphviz
 django-debug-toolbar
 coverage
 mock
+sphinx
+sphinx-autobuild
+sphinx_rtd_theme
