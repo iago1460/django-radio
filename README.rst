@@ -1,32 +1,27 @@
-=======
+#######
 RadioCo
-=======
+#######
 
-**A radio system**.
+RadioCo is a broadcasting radio recording scheduling system. RadioCo has been
+intended to provide a solution for a wide range of broadcast projects, from
+community to public and commercial stations.
 
-This app provides an easy way to set up your radio. 
+********
+Features
+********
 
+* designed to work with any web browser
+* drag and drop scheduling calendar interface
+* live shows can be recorded and published automatically
+* complete authentication system (user accounts, groups, permissions)
 
-Recorder Program
-----------------
+* ...and much more
 
-https://github.com/iago1460/django-radio-recorder
+More information on `our website <http://radioco.org/>`_.
 
+*************
+Documentation
+*************
 
-Website
--------
-
-http://radioco.org/
-
-
-Installation
-============
-
-Requirements
-------------
-
-- Python 2.7
-
-Install requirements::
-
-	pip install -r requirements.txt
+Please head over to our `documentation <http://django-radio.readthedocs.org/>`_ for all
+the details on how to install, extend and use RadioCo.
