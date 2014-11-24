@@ -1,7 +1,0 @@
-# requirements/common.txt
-Django>=1.7
-Pillow
-python-dateutil
-pytz
-django-bootstrap3
-djangorestframework
