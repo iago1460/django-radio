@@ -23,9 +23,6 @@ tests/htmlcov
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Translations
-*.mo
-
 # Related to Desktops and OS
 .DS_Store
 .AppleDouble

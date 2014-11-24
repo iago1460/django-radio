@@ -1,5 +1,6 @@
 # requirements/dev.txt
 -r common.txt
+django_extensions
 pygraphviz
 django-debug-toolbar
 coverage

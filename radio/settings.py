@@ -48,14 +48,16 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
-    # 'bootstrap_admin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_extensions',
+
+    'django_extensions',  # dev
+    'debug_toolbar',  # dev
+
     'radio',
     'radio.libs.global_settings',
     'radio.libs.home',
@@ -63,7 +65,6 @@ INSTALLED_APPS = (
     'radio.apps.programmes',
     'radio.apps.schedules',
     'radio.apps.dashboard',
-    'debug_toolbar',
     'bootstrap3',
     'rest_framework',
     'rest_framework.authtoken'
@@ -79,16 +80,19 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware',
 )
 
+
+
 TEMPLATE_CONTEXT_PROCESSORS = (
+    'radio.global_vars.global_vars',
     'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
     'django.core.context_processors.static',
     'django.core.context_processors.tz',
-    'django.contrib.messages.context_processors.messages',
-    'radio.global_vars.global_vars',
+    'django.contrib.messages.context_processors.messages'
 )
+
 
 ROOT_URLCONF = 'radio.urls'
 
@@ -135,25 +139,21 @@ REST_FRAMEWORK = {
 }
 
 
+PROJECT_PATH = os.path.realpath(os.path.dirname(__file__))
 
-ABSOLUTE_PATHNAME = '/home/user/git/django-radio'
-
-LOCALE_PATHS = (ABSOLUTE_PATHNAME + '/radio/locale',)
+LOCALE_PATHS = os.path.join(PROJECT_PATH, 'locale')
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-    ABSOLUTE_PATHNAME + '/static',
-)
-MEDIA_ROOT = ABSOLUTE_PATHNAME + '/resources/'
+STATIC_ROOT = os.path.join(PROJECT_PATH, 'static')
+MEDIA_ROOT = os.path.join(PROJECT_PATH, 'media')
 MEDIA_URL = '/media/'
 
 
 
-GRAPH_MODELS = {
+GRAPH_MODELS = {  # dev
   'all_applications': True,
   'group_models': True,
 }
 
 # Variables
-LOGIN_URL = 'login'  # name of url pattern
 USERNAME_RADIOCO_RECORDER = 'RadioCo_Recorder'

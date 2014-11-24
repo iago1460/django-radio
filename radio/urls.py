@@ -71,10 +71,6 @@ urlpatterns = patterns('',
     url(r'^api/1/submit_recorder/$', 'radio.libs.home.views.submit_recorder', name="submit_recorder"),
 )
 
-urlpatterns += i18n_patterns('',
-    url(r'^admin/', include(admin.site.urls)),
-)
-
 # Media
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
