@@ -48,14 +48,16 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
-    # 'bootstrap_admin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_extensions',
+
+    'django_extensions',  # dev
+    'debug_toolbar',  # dev
+
     'radio',
     'radio.libs.global_settings',
     'radio.libs.home',
@@ -63,7 +65,6 @@ INSTALLED_APPS = (
     'radio.apps.programmes',
     'radio.apps.schedules',
     'radio.apps.dashboard',
-    'debug_toolbar',
     'bootstrap3',
     'rest_framework',
     'rest_framework.authtoken'
@@ -79,31 +80,19 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware',
 )
 
+
+
 TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
     'radio.global_vars.global_vars',
-)
-"""
-TEMPLATE_CONTEXT_PROCESSORS = (
-    # 'ism.context_processor.user_vars',
     'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
     'django.core.context_processors.static',
-    'django.contrib.messages.context_processors.messages',
-    'django.core.context_processors.request',
+    'django.core.context_processors.tz',
+    'django.contrib.messages.context_processors.messages'
 )
 
-MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    # 'pipeline.middleware.MinifyHTMLMiddleware',
-)"""
 
 ROOT_URLCONF = 'radio.urls'
 
@@ -161,11 +150,10 @@ MEDIA_URL = '/media/'
 
 
 
-GRAPH_MODELS = {
+GRAPH_MODELS = {  # dev
   'all_applications': True,
   'group_models': True,
 }
 
 # Variables
-LOGIN_URL = 'login'  # name of url pattern
 USERNAME_RADIOCO_RECORDER = 'RadioCo_Recorder'

@@ -15,23 +15,27 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import os
+import os, radio
 from setuptools import setup, find_packages
 
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
+    author='Iago Veloso Abalo',
+    author_email='author@radioco.org',
     name='django-radio',
-    version='0.7',
+    version=radio.__version__,
+    description='This app provides an easy way to set up your radio',
+    long_description=open(os.path.join(os.path.dirname(__file__), 'README.rst')).read(),
+    url='http://radioco.org/',
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
     license='GPLv3',
-    description='This app provides an easy way to set up your radio',
-    author='Iago Veloso',
+    platforms=['OS Independent'],
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: Django',
         'Intended Audience :: End Users/Desktop',
@@ -42,12 +46,11 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
     install_requires=[
-		'Django==1.7',
-		'python-dateutil==2.2',
-		'pytz==2014.7',
-		'django_extensions==1.4.0',
-		'django-bootstrap3==4.11.0',
-		'djangorestframework==2.4.3',
-		'Pillow==2.6.1',
+		'Django>=1.7',
+        'Pillow',
+		'python-dateutil',
+		'pytz',
+		'django-bootstrap3',
+		'djangorestframework',
     ],
 )
