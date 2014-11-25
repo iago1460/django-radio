@@ -25,7 +25,6 @@
 	$(document).ready(function () {
 
 	    var calendar = $('#calendar').fullCalendar({
-<<<<<<< HEAD
 	    	height: 'auto',
 	    	contentHeight: 'auto',
 	    	aspectRatio: 1.35,
@@ -56,37 +55,6 @@
 	        droppable: false,
 	        
 	        events: '{{feed_schedules}}'
-=======
-	        lang: '{{language}}',
-	        eventDurationEditable: false,
-	        eventStartEditable: false,
-	        allDaySlot: false,
-	        firstDay: {{first_day}},
-	        minTime: '{{min_time}}',
-	        maxTime: '{{max_time}}',
-	        axisFormat: 'HH:mm',
-	        timezone: false,
-	        scrollTime: '{{scroll_time}}',
-	        
-	        header: {
-	        	left: 'prev,next today',
-				center: 'title',
-				right: 'agendaWeek,agendaDay'
-	        },
-	        columnFormat: {
-	            month: 'ddd',    // Mon
-	            week: 'dddd',	 // Monday
-	            day: 'dddd'     
-	        },
-	        defaultView: 'agendaWeek',
-
-	        
-	        droppable: false,
-	        
-	        events: 
-						{{events|safe}}
-		        
->>>>>>> refs/heads/restructure
 	    })
 
 	});
