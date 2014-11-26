@@ -15,34 +15,46 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import os
-from setuptools import setup
-
+import os, radio
+from setuptools import setup, find_packages
 
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
+    author='Iago Veloso Abalo',
+    author_email='author@radioco.org',
     name='django-radio',
-    version='0.1',
-    packages=['radio'],
-    include_package_data=True,
-    license='GPLv3',
+    version=radio.__version__,
     description='This app provides an easy way to set up your radio',
-    author='Iago Veloso',
+    long_description=open(os.path.join(os.path.dirname(__file__), 'README.rst')).read(),
+    url='http://radioco.org/',
+    packages=find_packages(),
+    include_package_data=True,
+    zip_safe=False,
+    license='GPLv3',
+    platforms=['OS Independent'],
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: Django',
+        'Intended Audience :: Developers',
         'Intended Audience :: End Users/Desktop',
-        'License :: OSI Approved :: GPLv3',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Operating System :: OS Independent',
+        'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+        'Topic :: Software Development',
+        'Topic :: Software Development :: Libraries :: Application Frameworks',
     ],
-    requires=(
+    install_requires=[
+        'Django>=1.7',
+        'Pillow',
+        'python-dateutil',
         'pytz',
-        'python_dateutil',
-    ),
+        'django-bootstrap3',
+        'djangorestframework',
+    ],
 )

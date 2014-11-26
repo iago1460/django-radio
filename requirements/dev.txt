@@ -1,9 +1,0 @@
-# requirements/dev.txt
--r common.txt
-pygraphviz
-django-debug-toolbar
-coverage
-mock
-sphinx
-sphinx-autobuild
-sphinx_rtd_theme

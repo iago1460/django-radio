@@ -1,10 +1,10 @@
-#######
-RadioCo
-#######
+############
+django radio
+############
 
-RadioCo is a broadcasting radio recording scheduling system. RadioCo has been
-intended to provide a solution for a wide range of broadcast projects, from
-community to public and commercial stations.
+A radio management application that makes easy scheduling, live recording, publishing...
+
+It is used by `RadioCo  <https://github.com/iago1460/radioco>`_.
 
 ********
 Features
@@ -24,4 +24,10 @@ Documentation
 *************
 
 Please head over to our `documentation <http://django-radio.readthedocs.org/>`_ for all
-the details on how to install, extend and use RadioCo.
+the details on how to install, extend and use django radio.
+
+***********
+Quick Start
+***********
+
+We recommend using a `configured radioco project  <https://github.com/iago1460/radioco>`_.
