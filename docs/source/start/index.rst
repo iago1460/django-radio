@@ -73,8 +73,7 @@ We’ll get started by setting up our environment.
 
 .. code-block:: bash
 
-    sudo apt-get install python-pip python-dev git-core alsa-utils vorbis-tools
-    sudo pip install virtualenv
+    sudo apt-get install python-dev python-pip python-virtualenv git-core alsa-utils vorbis-tools
 
 
 Next, download the project and create the virual environment:

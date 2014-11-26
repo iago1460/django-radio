@@ -3,6 +3,7 @@ django radio
 ############
 
 A radio management application that makes easy scheduling, live recording, publishing...
+
 It is used by `RadioCo  <https://github.com/iago1460/radioco>`_.
 
 ********
