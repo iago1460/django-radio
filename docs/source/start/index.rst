@@ -12,20 +12,18 @@ Installing web application
 Installing on Ubuntu
 ====================
 
-If you're using Ubuntu, the following should get you started:
+If you're using Ubuntu (tested with 14.04), the following should get you started:
 
 .. code-block:: bash
 
-    sudo apt-get install python-pip python-dev git-core
-    sudo pip install virtualenv
+    sudo apt-get install git-core python-dev python-pip python-virtualenv
 
 Next, download the project and cd into it:
 
 .. code-block:: bash
 
-    git clone https://github.com/iago1460/django-radio
-    cd django-radio
-
+    git clone https://github.com/iago1460/radioco
+    cd radioco
 
 Create and switch to the virtualenv at the command line by typing:
 
