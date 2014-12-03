@@ -1,6 +1,15 @@
 ############
 django radio
 ############
+.. image:: https://pypip.in/version/django-radio/badge.svg
+    :target: https://pypi.python.org/pypi/django-radio/
+.. image:: https://pypip.in/download/django-radio/badge.svg
+    :target: https://pypi.python.org/pypi/django-radio/
+.. image:: https://pypip.in/py_versions/django-radio/badge.svg
+    :target: https://pypi.python.org/pypi/django-radio/
+.. image:: https://pypip.in/license/django-radio/badge.svg
+    :target: https://pypi.python.org/pypi/django-radio/
+
 
 A radio management application that makes easy scheduling, live recording, publishing...
 
