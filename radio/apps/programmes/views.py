@@ -18,7 +18,6 @@
 import datetime
 
 from django.shortcuts import render, get_object_or_404
-from django.templatetags.static import static
 
 from radio.apps.programmes.models import Episode, Programme, Role, Participant, \
     NOT_SPECIFIED
@@ -26,10 +25,9 @@ from radio.apps.programmes.models import Episode, Programme, Role, Participant, 
 
 def programme_detail(request, slug):
     programme = get_object_or_404(Programme, slug=slug)
-    url_flag = static('radio/images/' + programme.language + '.png')
     context = {'programme': programme, 'unspecified': NOT_SPECIFIED, 'language': programme.get_language_display(),
                'role_list':Role.objects.filter(programme=programme).select_related('person__userprofile', 'programme'),
-               'episode_list': Episode.objects.filter(programme=programme).select_related('programme').order_by('-season', '-number_in_season'), 'url_flag':url_flag}
+               'episode_list': Episode.objects.filter(programme=programme).select_related('programme').order_by('-season', '-number_in_season')}
     return render(request, 'programmes/programme_detail.html', context)
 
 def episode_detail(request, slug, season_number, episode_number):

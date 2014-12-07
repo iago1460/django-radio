@@ -17,6 +17,7 @@
 
 import datetime
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
@@ -28,10 +29,10 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 
-SPANISH = "ES"
-GALICIAN = "GA"
-LANGUAGES = ((SPANISH, _("Spanish")),
-    (GALICIAN, _("Galician")))
+if hasattr(settings, 'PROGRAMME_LANGUAGES'):
+    PROGRAMME_LANGUAGES = settings.PROGRAMME_LANGUAGES
+else:
+    PROGRAMME_LANGUAGES = settings.LANGUAGES
 
 
 PRESENTER = 'PR'
@@ -71,7 +72,7 @@ class Programme(models.Model):
     announcers = models.ManyToManyField(User, blank=True, null=True, through='Role', verbose_name=_("announcers"))
     synopsis = models.TextField(blank=True, verbose_name=_("synopsis"))
     photo = models.ImageField(upload_to='photos/', default='/static/radio/images/default-programme-photo.jpg', verbose_name=_("photo"))
-    language = models.CharField(verbose_name=_("language"), choices=LANGUAGES, max_length=2, default=SPANISH)
+    language = models.CharField(verbose_name=_("language"), choices=map(lambda (k, v): (k, _(v)), PROGRAMME_LANGUAGES), max_length=7)
     current_season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("current season"))
     category = models.CharField(blank=True, null=True, max_length=50, choices=CATEGORY_CHOICES, verbose_name=_("category"))
     slug = models.SlugField(max_length=100, unique=True)
