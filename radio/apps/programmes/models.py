@@ -72,7 +72,7 @@ class Programme(models.Model):
     announcers = models.ManyToManyField(User, blank=True, null=True, through='Role', verbose_name=_("announcers"))
     synopsis = models.TextField(blank=True, verbose_name=_("synopsis"))
     photo = models.ImageField(upload_to='photos/', default='/static/radio/images/default-programme-photo.jpg', verbose_name=_("photo"))
-    language = models.CharField(verbose_name=_("language"), choices=map(lambda (k, v): (k, _(v)), PROGRAMME_LANGUAGES), max_length=7)
+    language = models.CharField(default=PROGRAMME_LANGUAGES[0][0], verbose_name=_("language"), choices=map(lambda (k, v): (k, _(v)), PROGRAMME_LANGUAGES), max_length=7)
     current_season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("current season"))
     category = models.CharField(blank=True, null=True, max_length=50, choices=CATEGORY_CHOICES, verbose_name=_("category"))
     slug = models.SlugField(max_length=100, unique=True)
