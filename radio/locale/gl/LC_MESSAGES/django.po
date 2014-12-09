@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-08 19:41+0100\n"
+"POT-Creation-Date: 2014-12-09 17:37+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -573,11 +573,11 @@ msgstr "Nome da web"
 msgid "Global Configuration"
 msgstr "Configuración global"
 
-#: radio/libs/global_settings/models.py:68
+#: radio/libs/global_settings/models.py:67
 msgid "URL Source"
 msgstr "Dirección URL"
 
-#: radio/libs/global_settings/models.py:68
+#: radio/libs/global_settings/models.py:67
 msgid ""
 "The source url where the recordings will be available after the upload. For "
 "example: \"http://RadioCo.org/recordings/\""
@@ -585,78 +585,79 @@ msgstr ""
 "Dirección url fonte onde as gravacións estarán dispoñibles trala subida. Por "
 "exemplo: \"http://RadioCo.org/recordings/\""
 
-#: radio/libs/global_settings/models.py:69
+#: radio/libs/global_settings/models.py:68
 msgid "start delay"
 msgstr "retraso inicial"
 
-#: radio/libs/global_settings/models.py:69
+#: radio/libs/global_settings/models.py:68
 msgid "In seconds. Initial delay of recordings"
 msgstr "En segundos. Retraso inicial das gravacións"
 
-#: radio/libs/global_settings/models.py:70
+#: radio/libs/global_settings/models.py:69
 msgid "end delay"
 msgstr "retraso final"
 
-#: radio/libs/global_settings/models.py:70
+#: radio/libs/global_settings/models.py:69
 msgid "In seconds."
 msgstr "En segundos."
 
-#: radio/libs/global_settings/models.py:71
+#: radio/libs/global_settings/models.py:70
 msgid "next events"
 msgstr "próximos eventos"
 
-#: radio/libs/global_settings/models.py:71
+#: radio/libs/global_settings/models.py:70
 msgid "In hours. The next events supplied to the recorder program"
 msgstr "En horas. Os próximos eventos proporcionados o programa de gravación"
 
-#: radio/libs/global_settings/models.py:81
-#, python-format
-msgid "User %(username)s doesn't exist"
-msgstr "O usuario %(username)s non existe"
+#: radio/libs/global_settings/models.py:83
+msgid "Variable USERNAME_RADIOCO_RECORDER doesn't exist in your settings file"
+msgstr ""
+"A variable USERNAME_RADIOCO_RECORDER non existe no seu ficheiro de "
+"configuración"
 
-#: radio/libs/global_settings/models.py:89
-#: radio/libs/global_settings/models.py:90
+#: radio/libs/global_settings/models.py:91
+#: radio/libs/global_settings/models.py:92
 msgid "Podcast Configuration"
 msgstr "Configuración do podcast"
 
-#: radio/libs/global_settings/models.py:94
+#: radio/libs/global_settings/models.py:96
 msgid "scroll time"
 msgstr "tempo de desprazamento"
 
-#: radio/libs/global_settings/models.py:94
+#: radio/libs/global_settings/models.py:96
 msgid "Determines how far down the scroll pane is initially scrolled down."
 msgstr "Determina o desprazamento inicial da grella"
 
-#: radio/libs/global_settings/models.py:95
+#: radio/libs/global_settings/models.py:97
 msgid "first day"
 msgstr "día de comezo"
 
-#: radio/libs/global_settings/models.py:95
+#: radio/libs/global_settings/models.py:97
 msgid "The day that the calendar begins"
 msgstr "O día no que o calendario comeza"
 
-#: radio/libs/global_settings/models.py:96
+#: radio/libs/global_settings/models.py:98
 msgid "min time"
 msgstr "hora mínima"
 
-#: radio/libs/global_settings/models.py:96
+#: radio/libs/global_settings/models.py:98
 msgid ""
 "Determines the starting time that will be displayed, even when the "
 "scrollbars have been scrolled all the way up."
 msgstr "Determina a hora mínima que se amosará aínda que se faga scroll"
 
-#: radio/libs/global_settings/models.py:97
+#: radio/libs/global_settings/models.py:99
 msgid "max time"
 msgstr "hora máxima"
 
-#: radio/libs/global_settings/models.py:97
+#: radio/libs/global_settings/models.py:99
 msgid ""
 "Determines the end time (exclusively) that will be displayed, even when the "
 "scrollbars have been scrolled all the way down."
 msgstr "Determina a hora máxima que se amosará aínda que se faga scroll"
 
-#: radio/libs/global_settings/models.py:104
-#: radio/libs/global_settings/models.py:105
+#: radio/libs/global_settings/models.py:106
+#: radio/libs/global_settings/models.py:107
 msgid "Calendar Configuration"
 msgstr "Configuración do calendario"
 
@@ -748,6 +749,9 @@ msgstr "Por favor identifíquese"
 #: radio/libs/home/templates/home/login.html:17
 msgid "Wrong Username and password combination."
 msgstr "Combinación de usuario e contrasinal incorrecta"
+
+#~ msgid "User %(username)s doesn't exist"
+#~ msgstr "O usuario %(username)s non existe"
 
 #~ msgid "Spanish"
 #~ msgstr "Castelán"
