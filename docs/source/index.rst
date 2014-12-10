@@ -22,7 +22,7 @@ Here are a few of the key features:
 
 * ...and much more
 
-.. warning::
+.. note::
     This software is not for live streaming
 
 
@@ -42,7 +42,9 @@ Table of contents
    :maxdepth: 2
 
    start/index
+   reference/index
    contributing/index
+   upgrade/index
 
 
 Indices and tables
