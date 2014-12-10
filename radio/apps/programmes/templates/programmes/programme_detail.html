@@ -52,7 +52,7 @@
 	{% endif %}
 	</li>
 	<li>
-	{% trans "Language" %}: <img src="{{ url_flag }}" title="{{language}}" />
+	{% trans "Language" %}: {{language}}
 	</li>
 	<li>
 	Rss: <a href="{% url 'programmes:rss' programme.slug %}"><img src="{% static "radio/images/rss-icon-28x28.png" %}"></a>

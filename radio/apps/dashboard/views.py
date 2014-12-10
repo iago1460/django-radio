@@ -97,16 +97,16 @@ def full_calendar(request):
     try:
         if schedule_permissions(request.user):
             schedule_boards = ScheduleBoard.objects.all().order_by('start_date')
-            if schedule_boards:
-                calendar_configuration = CalendarConfiguration.objects.get()
-                context = {'scheduleBoards' : schedule_boards,
-                           'scroll_time': calendar_configuration.scroll_time.strftime('%H:%M:%S'),
-                           'first_day': calendar_configuration.first_day + 1,
-                           'language' : request.LANGUAGE_CODE,
-                           'current_scheduleBoard':ScheduleBoard.get_current(datetime.datetime.now())}
-                return render(request, 'dashboard/fullcalendar.html', context)
-            else:
-                return render(request, 'dashboard/fullcalendar_error.html', {'error_info':_('Sorry, you have to create a calendar first.')})
+            if not schedule_boards:
+                ScheduleBoard.objects.create(name="Unnamed")
+                schedule_boards = ScheduleBoard.objects.all()
+            calendar_configuration = CalendarConfiguration.objects.get()
+            context = {'scheduleBoards' : schedule_boards,
+                       'scroll_time': calendar_configuration.scroll_time.strftime('%H:%M:%S'),
+                       'first_day': calendar_configuration.first_day + 1,
+                       'language' : request.LANGUAGE_CODE,
+                       'current_scheduleBoard':ScheduleBoard.get_current(datetime.datetime.now())}
+            return render(request, 'dashboard/fullcalendar.html', context)
         else:
             return render(request, 'dashboard/fullcalendar_error.html', {'error_info':_('Sorry, you don\'t have enough permissions. Please contact your administrator.')})
     except CalendarConfiguration.DoesNotExist:

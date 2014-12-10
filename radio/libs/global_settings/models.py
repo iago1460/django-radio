@@ -63,7 +63,6 @@ class SiteConfiguration(SingletonModel):
         verbose_name_plural = _('Global Configuration')
 
 
-
 class PodcastConfiguration(SingletonModel):
     url_source = models.CharField(blank=True, default="", max_length=500, verbose_name=_("URL Source"), help_text=_("The source url where the recordings will be available after the upload. For example: \"http://RadioCo.org/recordings/\""))
     start_delay = models.PositiveIntegerField(default=0, verbose_name=_("start delay"), help_text=_("In seconds. Initial delay of recordings"))
@@ -72,13 +71,16 @@ class PodcastConfiguration(SingletonModel):
 
     @property
     def recorder_token(self):
-        username = settings.USERNAME_RADIOCO_RECORDER
-        try:
-            user = User.objects.get(username=username)
+        if hasattr(settings, 'USERNAME_RADIOCO_RECORDER'):
+            username = settings.USERNAME_RADIOCO_RECORDER
+            user, created = User.objects.get_or_create(username=username)
+            if created:
+                user.set_password(User.objects.make_random_password())
+                user.save()
             token, created = Token.objects.get_or_create(user=user)
             return token.key
-        except User.DoesNotExist:
-            return _('User %(username)s doesn\'t exist') % {'username': username, }
+        else:
+            return _('Variable USERNAME_RADIOCO_RECORDER doesn\'t exist in your settings file')
 
     def __unicode__(self):
         # In django 1.7 we can't use lazy

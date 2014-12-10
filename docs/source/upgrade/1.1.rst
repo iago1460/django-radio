@@ -1,0 +1,24 @@
+#################
+1.1 release notes
+#################
+
+*****************
+What's new in 1.1
+*****************
+
+*   Numerous updates to the documentation
+*   Updates to facilitate the starting-up (radioco_recorder_user and a empty shedule_board are self-created)
+*   Added custom languages to programmes (by default, all django languages)
+
+
+********************
+How this affects you
+********************
+
+If you’re starting with a new installation, you don’t need to worry about this. 
+Don’t even bother reading this section; it’s for upgraders.
+
+Activate your virtualenv and do the following in your project main directory::
+
+    pip install django-radio==1.1
+    python manage.py migrate
