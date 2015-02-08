@@ -28,6 +28,8 @@ from django.dispatch.dispatcher import receiver
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
+from ckeditor.fields import RichTextField
+
 
 if hasattr(settings, 'PROGRAMME_LANGUAGES'):
     PROGRAMME_LANGUAGES = settings.PROGRAMME_LANGUAGES
@@ -70,7 +72,7 @@ class Programme(models.Model):
     start_date = models.DateField(verbose_name=_('start date'))
     end_date = models.DateField(blank=True, null=True, verbose_name=_('end date'), help_text=_("This field can be null."))
     announcers = models.ManyToManyField(User, blank=True, null=True, through='Role', verbose_name=_("announcers"))
-    synopsis = models.TextField(blank=True, verbose_name=_("synopsis"))
+    synopsis = RichTextField(blank=True, verbose_name=_("synopsis"))
     photo = models.ImageField(upload_to='photos/', default='/static/radio/images/default-programme-photo.jpg', verbose_name=_("photo"))
     language = models.CharField(default=PROGRAMME_LANGUAGES[0][0], verbose_name=_("language"), choices=map(lambda (k, v): (k, _(v)), PROGRAMME_LANGUAGES), max_length=7)
     current_season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("current season"))
@@ -132,7 +134,7 @@ class Episode(models.Model):
     title = models.CharField(max_length=100, blank=True, null=True, verbose_name=_("title"))
     people = models.ManyToManyField(User, blank=True, null=True, through='Participant', verbose_name=_("people"))
     programme = models.ForeignKey(Programme, verbose_name=_("programme"))
-    summary = models.TextField(blank=True, verbose_name=_("summary"))
+    summary = RichTextField(blank=True, verbose_name=_("summary"))
     # issue_date = models.DateTimeField(db_index=True, unique=True, verbose_name=_('issue date'))
     issue_date = models.DateTimeField(blank=True, null=True, db_index=True, verbose_name=_('issue date'))
     season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("season"))

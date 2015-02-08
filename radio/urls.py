@@ -67,6 +67,8 @@ urlpatterns = patterns('',
     url(r'^programmes/', include('radio.apps.programmes.urls', namespace="programmes")),
     url(r'^users/', include('radio.apps.users.urls', namespace="users")),
 
+    url(r'^ckeditor/', include('ckeditor.urls')),
+
     url(r'^api/1/recording_schedules/$', 'radio.libs.home.views.recording_schedules', name="recording_schedules"),
     url(r'^api/1/submit_recorder/$', 'radio.libs.home.views.submit_recorder', name="submit_recorder"),
 )

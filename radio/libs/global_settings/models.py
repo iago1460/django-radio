@@ -24,6 +24,7 @@ from django.utils.translation import ugettext as _u
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.authtoken.models import Token
 
+from ckeditor.fields import RichTextField
 from radio.apps.schedules.models import WEEKDAY_CHOICES
 
 
@@ -53,6 +54,7 @@ class SingletonModel(models.Model):
 
 class SiteConfiguration(SingletonModel):
     site_name = models.CharField(max_length=255, default='RadioCo', verbose_name=_("Site Name"))
+    footer = models.TextField(blank=True, default="", verbose_name=_("Footer"), help_text=_('Can contain raw HTML.'))
 
     def __unicode__(self):
         return _u('Global Configuration')

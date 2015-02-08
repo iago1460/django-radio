@@ -12,7 +12,7 @@
 						<a href="{% url 'users:detail' userprofile.slug %}"><img class="media-object" src="{{ userprofile.avatar.url }}"></a>
 						<div class="caption">
 							<h3><a href="{% url 'users:detail' userprofile.slug %}">{{ userprofile.user }}</a></h3>
-							<p>{{ userprofile.bio|truncatewords:12 }}</p>
+							<p>{{ userprofile.bio|truncatewords_html:12|safe }}</p>
 						</div>
 					</div>
 				</div>

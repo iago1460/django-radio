@@ -56,5 +56,6 @@ setup(
         'pytz',
         'django-bootstrap3',
         'djangorestframework',
+        'django-ckeditor',
     ],
 )

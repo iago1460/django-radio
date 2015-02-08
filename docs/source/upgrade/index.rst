@@ -13,3 +13,4 @@ on any process that makes changes to your database.
     :maxdepth: 1
 
     1.1
+    1.1.1

@@ -13,7 +13,7 @@
 			</div>
 			<div class="media-body">
 				<h4 class="media-heading"><a href="{% url 'programmes:detail' programme.slug %}">{{ programme.name }}</a></h4>
-				<p>{{ programme.synopsis|truncatewords:24 }}</p>
+				<p>{{ programme.synopsis|truncatewords_html:24|safe }}</p>
 			</div>
 		</div>
 	{% empty %}

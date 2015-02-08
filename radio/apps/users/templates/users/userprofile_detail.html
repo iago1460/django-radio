@@ -9,7 +9,7 @@
 			<div class="media">
 				<img src="{{ userprofile.avatar.url }}">
 			</div>
-			<p>{{userprofile.bio}}</p>
+			<p>{{userprofile.bio|safe}}</p>
 			
 			{% if role_list %}
 			<h2>{% trans "Contributions"|upper %}</h2>
