@@ -62,7 +62,12 @@
 		<!-- /container -->
 		<div class="footer">
 			<div class="container">
-				<p class="text-muted"><a href="http://radioco.org/" target="_blank"> <span class="glyphicon glyphicon-wrench"></span> RadioCo</a></p>
+				<div class="col-lg-10">
+					{{ site_config.footer|safe }}
+				</div>
+				<div class="col-lg-2">
+					<p class="text-muted"><a href="http://radioco.org/" target="_blank"> <span class="glyphicon glyphicon-wrench"></span> RadioCo</a></p>
+				</div>
 			</div>
 		</div>
 	</body>

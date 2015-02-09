@@ -9,11 +9,11 @@
 			<div class="media">
 				<a href="{% url 'programmes:detail' programme.slug %}"><img src="{{ programme.photo.url }}"></a>
 			</div>
-			<p>{{programme.synopsis|truncatewords:12}}</p>
+			<p>{{programme.synopsis|truncatewords_html:12|safe}}</p>
 		</div>
 	</div>
 		<h2>{% firstof episode.title programme %}: <small>{% if episode.issue_date %} {{episode.issue_date|date:"DATETIME_FORMAT"}} {% else %}{% trans "Schedule pending" %} {% endif %}</small></h2>
-		<p>{{ episode.summary }}</p>
+		<p>{{ episode.summary|safe }}</p>
 		
 		<h3>{% trans "Podcast"|upper %}</h3>
 		{% if episode.podcast %}
