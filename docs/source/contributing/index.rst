@@ -22,6 +22,16 @@ Branch policy
 * **feature branches**: these are used to develop new features.
 
 
+************************
+Contributing Translation
+************************
+
+For translators we have a `Transifex account
+<https://www.transifex.com/projects/p/django-radio/>`_ where you can translate
+the .po files and don't need to install git to be able to contribute. All
+changes there will be automatically sent to the project.
+
+
 **************************
 Contributing Documentation
 **************************
