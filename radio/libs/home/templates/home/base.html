@@ -34,11 +34,11 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 					</button>
-					<a class="navbar-brand" href="/">{{ site_config.site_name }}</a>
+					<a class="navbar-brand" href="{% url 'home' %}">{{ site_config.site_name }}</a>
 				</div>
 				<div class="navbar-collapse collapse">
 					<ul class="nav navbar-nav">
-						<li {% block index_class %}{% endblock %}><a href="/">{% trans "home"|title %}</a></li>
+						<li {% block index_class %}{% endblock %}><a href="{% url 'home' %}">{% trans "home"|title %}</a></li>
 						<li {% block schedules_class %}{% endblock %}><a href="{% url 'schedules:list' %}">{% trans "schedules"|title %}</a></li>
 						<li {% block programmes_class %}{% endblock %}><a href="{% url 'programmes:list' %}">{% trans "programmes"|title %}</a></li>
 						<li {% block users_class %}{% endblock %}><a href="{% url 'users:list' %}">{% trans "people"|title %}</a></li>

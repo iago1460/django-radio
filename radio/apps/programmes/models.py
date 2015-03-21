@@ -17,6 +17,7 @@
 
 import datetime
 
+from ckeditor.fields import RichTextField
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -26,9 +27,8 @@ from django.db import models
 from django.db.models.signals import post_save, pre_save
 from django.dispatch.dispatcher import receiver
 from django.template.defaultfilters import slugify
+from django.templatetags.static import static
 from django.utils.translation import ugettext_lazy as _
-
-from ckeditor.fields import RichTextField
 
 
 if hasattr(settings, 'PROGRAMME_LANGUAGES'):
@@ -73,7 +73,7 @@ class Programme(models.Model):
     end_date = models.DateField(blank=True, null=True, verbose_name=_('end date'), help_text=_("This field can be null."))
     announcers = models.ManyToManyField(User, blank=True, null=True, through='Role', verbose_name=_("announcers"))
     synopsis = RichTextField(blank=True, verbose_name=_("synopsis"))
-    photo = models.ImageField(upload_to='photos/', default='/static/radio/images/default-programme-photo.jpg', verbose_name=_("photo"))
+    photo = models.ImageField(upload_to='photos/', default=static('radio/images/default-programme-photo.jpg'), verbose_name=_("photo"))
     language = models.CharField(default=PROGRAMME_LANGUAGES[0][0], verbose_name=_("language"), choices=map(lambda (k, v): (k, _(v)), PROGRAMME_LANGUAGES), max_length=7)
     current_season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("current season"))
     category = models.CharField(blank=True, null=True, max_length=50, choices=CATEGORY_CHOICES, verbose_name=_("category"))

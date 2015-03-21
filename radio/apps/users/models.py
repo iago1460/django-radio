@@ -15,20 +15,20 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+from ckeditor.fields import RichTextField
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
+from django.templatetags.static import static
 from django.utils.translation import ugettext_lazy as _
-
-from ckeditor.fields import RichTextField
 
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     bio = RichTextField(blank=True, verbose_name=_("biography"))
-    avatar = models.ImageField(upload_to='avatars/', default='/static/radio/images/default-userprofile-avatar.jpg', verbose_name=_("avatar"))
+    avatar = models.ImageField(upload_to='avatars/', default=static('radio/images/default-userprofile-avatar.jpg'), verbose_name=_("avatar"))
     display_personal_page = models.BooleanField(default=False, verbose_name=_("display personal page"))
     slug = models.SlugField(max_length=30)
 

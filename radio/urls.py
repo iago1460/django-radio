@@ -57,7 +57,7 @@ def handler500(request):
 
 
 urlpatterns = patterns('',
-    url(r'^$', 'radio.libs.home.views.index'),
+    url(r'^$', 'radio.libs.home.views.index', name="home"),
     url(r'^login/$', 'radio.libs.home.views.user_login', name="login"),
     url(r'^logout/$', 'radio.libs.home.views.user_logout', name="logout"),
     url(r'^admin/', include(admin.site.urls)),
