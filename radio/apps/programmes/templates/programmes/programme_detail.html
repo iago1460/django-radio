@@ -22,7 +22,7 @@
 			{% ifchanged episode.season %}
 	            <h4>{% trans "Season" %} {{episode.season}}</h4>
 	        {% endifchanged %}
-				<li><a href="{% url 'programmes:episode_detail' programme.slug episode.season episode.number_in_season%}">{{ episode }}</a></li>
+				<li><a href="{% url 'programmes:episode_detail' programme.slug episode.season episode.number_in_season %}">{{ episode }}</a></li>
 			{% endfor %}
 		</ul>
 	{% else %}
@@ -31,14 +31,9 @@
 	
 	{% if role_list %}
 		<h2>{% trans "Staff"|upper %}</h2>
-		<dl id="tabulate">
-			{% for role in role_list %}
-				<dt><a href="{% url 'users:detail' role.person.userprofile.slug %}">{% firstof role.person.get_full_name role.person %}
-				 {% if unspecified != role.role %}({{ role.get_role_display }}){% endif %}
-				</a></dt>
-				<dd>{% if role.description %}{{role.description}}{% else %}.{% endif %} </dd>
-			{% endfor %}
-		</dl>
+		{% with role_list as list %}
+            {% include "programmes/staff_list_snippet.html" %}
+        {% endwith %}
 	{% endif %}
 	
 	

@@ -30,13 +30,8 @@
 		
 		{% if role_list %}
 			<h3>{% trans "Staff"|upper %}</h3>
-			<dl id="tabulate">
-				{% for role in role_list %}
-					<dt><a href="{% url 'users:detail' role.person.userprofile.slug %}">{% firstof role.person.get_full_name role.person %}
-					 {% if unspecified != role.role %}({{ role.get_role_display }}){% endif %}
-					</a></dt>
-					<dd>{% if role.description %}{{role.description}}{% else %}.{% endif %} </dd>
-				{% endfor %}
-			</dl>
+			{% with role_list as list %}
+		        {% include "programmes/staff_list_snippet.html" %}
+		    {% endwith %}
 		{% endif %}
 {% endblock %}

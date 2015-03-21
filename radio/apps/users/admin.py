@@ -45,6 +45,25 @@ class UserProfileInline(admin.StackedInline):
 class UserProfileAdmin(UserAdmin):
     inlines = (UserProfileInline,)
 
+    list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups', 'userprofile__display_personal_page')
+
+    '''
+    # FIXME: User has no field named 'userprofile__display_personal_page'
+    
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'userprofile__display_personal_page') 
+    actions = ['make_public']
+
+    def make_public(self, request, queryset):
+        rows_updated = queryset.update(userprofile__display_personal_page=True)
+        if rows_updated == 1:
+            message_bit = _("1 profile was successfully marked as public.")
+        else:
+            message_bit = _('%(obj)s profiles were successfully marked as public') % {'obj': rows_updated}
+
+        self.message_user(request, message_bit)
+    make_public.short_description = _("Mark selected user profiles as public")
+    '''
+
 # Re-register UserAdmin
 admin.site.unregister(User)
 admin.site.register(User, UserProfileAdmin)
