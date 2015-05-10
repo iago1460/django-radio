@@ -15,7 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import os, radio
+import os
+import radio
 from setuptools import setup, find_packages
 
 # allow setup.py to be run from any path

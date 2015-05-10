@@ -19,7 +19,7 @@ import datetime
 from django.contrib.syndication.views import Feed
 from django.shortcuts import get_object_or_404
 from django.utils import feedgenerator
-from radio.apps.programmes.models import Programme, Podcast
+from apps.programmes.models import Programme, Podcast
 
 class iTunesFeed(feedgenerator.Rss201rev2Feed):
 

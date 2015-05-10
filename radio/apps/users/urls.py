@@ -17,7 +17,7 @@
 
 from django.conf.urls import patterns, url
 
-from radio.apps.users import views
+from apps.users import views
 
 
 urlpatterns = patterns('',

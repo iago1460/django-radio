@@ -18,7 +18,7 @@
 import datetime
 from django.test import TestCase
 
-from radio.apps.programmes.models import Programme, Episode
+from apps.programmes.models import Programme, Episode
 
 
 class ProgrammeMethodTests(TestCase):

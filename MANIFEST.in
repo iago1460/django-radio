@@ -3,3 +3,4 @@ include README.rst
 recursive-include radio *
 recursive-exclude * *.pyc
 recursive-exclude * *~
+exclude radio/db.*

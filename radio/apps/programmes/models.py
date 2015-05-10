@@ -175,7 +175,7 @@ class Episode(models.Model):
     @classmethod
     def rearrange_episodes(cls, programme, after):
         # TODO: improve
-        from radio.apps.schedules.models import Schedule
+        from apps.schedules.models import Schedule
         next_episodes = Episode.objects.filter(issue_date__gte=after) | Episode.objects.filter(issue_date__isnull=True)
         if programme:
             next_episodes = next_episodes.filter(programme=programme)

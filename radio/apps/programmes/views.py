@@ -19,7 +19,7 @@ import datetime
 
 from django.shortcuts import render, get_object_or_404
 
-from radio.apps.programmes.models import Episode, Programme, Role, Participant, \
+from apps.programmes.models import Episode, Programme, Role, Participant, \
     NOT_SPECIFIED
 
 

@@ -20,8 +20,8 @@ import datetime
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from radio.apps.programmes.models import Programme, Role
-from radio.apps.users.models import UserProfile
+from apps.programmes.models import Programme, Role
+from apps.users.models import UserProfile
 
 
 class UserProfileMethodTests(TestCase):

@@ -23,8 +23,8 @@ from django.contrib import admin
 from django.forms import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
-from radio.apps.programmes.models import Programme, Podcast, Episode, Role, Participant
-from radio.apps.schedules.models import Schedule
+from apps.programmes.models import Programme, Podcast, Episode, Role, Participant
+from apps.schedules.models import Schedule
 
 
 

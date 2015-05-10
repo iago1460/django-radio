@@ -25,7 +25,7 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 
-from radio.apps.programmes.models import Programme, Episode
+from apps.programmes.models import Programme, Episode
 
 
 emission_type = (("L", _("live")),

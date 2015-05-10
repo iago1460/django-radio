@@ -26,10 +26,10 @@ from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 
-from radio.apps.dashboard.forms import ScheduleForm
-from radio.apps.programmes.models import Programme, Episode
-from radio.apps.schedules.models import Schedule, ScheduleBoard
-from radio.libs.global_settings.models import CalendarConfiguration
+from apps.dashboard.forms import ScheduleForm
+from apps.programmes.models import Programme, Episode
+from apps.schedules.models import Schedule, ScheduleBoard
+from apps.global_settings.models import CalendarConfiguration
 
 
 

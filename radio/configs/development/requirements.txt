@@ -1,0 +1,5 @@
+-r ../common/requirements.txt
+pygraphviz
+django-debug-toolbar
+coverage
+mock

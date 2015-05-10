@@ -28,9 +28,9 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
 
-from radio.apps.programmes.models import Programme, Episode
-from radio.apps.schedules.models import Schedule
-from radio.libs.global_settings.models import CalendarConfiguration
+from apps.programmes.models import Programme, Episode
+from apps.schedules.models import Schedule
+from apps.global_settings.models import CalendarConfiguration
 
 
 def schedule_list(request):

@@ -1,0 +1,2 @@
+# Install all of our minimum dependencies.
+-r radio/configs/common/requirements.txt

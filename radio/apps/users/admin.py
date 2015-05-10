@@ -26,7 +26,7 @@ from django.core import validators
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 
-from radio.apps.users.models import UserProfile
+from apps.users.models import UserProfile
 
 try:
     from django.utils.encoding import force_unicode

@@ -1,0 +1,7 @@
+Django>=1.7, <1.8
+Pillow
+python-dateutil
+pytz
+django-bootstrap3
+djangorestframework
+django-ckeditor

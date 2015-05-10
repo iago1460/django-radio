@@ -22,8 +22,8 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from mock import patch
 
-from radio.apps.programmes.models import Programme, Episode
-from radio.apps.schedules.models import ScheduleBoard, Schedule, MO, TU, WE, TH, FR, SA, SU
+from apps.programmes.models import Programme, Episode
+from apps.schedules.models import ScheduleBoard, Schedule, MO, TU, WE, TH, FR, SA, SU
 
 
 def to_relativedelta(tdelta):

@@ -25,7 +25,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, redirect
 from django.utils.translation import ugettext_lazy as _
 
-from radio.apps.schedules.models import Schedule, ScheduleBoard
+from apps.schedules.models import Schedule, ScheduleBoard
 
 
 '''
