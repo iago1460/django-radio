@@ -1,32 +1,27 @@
 from fabric.api import env, local, require, lcd
 
 
-env.project_name = 'django_radio'
+env.project_name = 'radioco'
 env.python = 'python2.7'
 
 def heroku_setup():
     local('heroku login')
+    local('heroku create %(project_name)s' % env)
     local('git init')
     local('heroku git:remote -a %(project_name)s' % env)
 
-def production():
-    """
-    Work on production environment
-    """
-    pass
 
-
-def branch(branch_name):
+def master():
     """
-    Work on any specified branch.
+    Work on master branch.
     """
-    env.branch = branch_name
+    env.branch = 'master'
 
 
 def heroku_deploy():
-    require('settings', provided_by=[production])
-    require('branch', provided_by=[branch])
+    require('branch', provided_by=[master])
 
-    local('git add .')
-    local('git commit -am "autocommit to deploy"')
+    # local('git add .')
+    # local('git commit -am "autocommit to deploy"')
+
     local('git push heroku %(branch)s' % env)

@@ -1,2 +1,3 @@
+-r ../common/requirements.txt
 fabric
 django-toolbelt
