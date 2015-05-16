@@ -3,7 +3,7 @@ from fabric.api import env, local, require, lcd
 
 env.heroku_project_name = 'radioco'
 env.python = 'python2.7'
-env.heroku_manage_py = 'radio/configs/heroku/manage.py'
+env.heroku_config_path = 'radio/configs/heroku'
 
 def heroku_setup():
     local('heroku login')
@@ -26,5 +26,5 @@ def heroku_deploy():
     # local('git commit -am "autocommit to deploy"')
 
     local('git push heroku %(branch)s' % env)
-    local('heroku run python %(heroku_manage_py)s install requirements.txt' % env)
-    local('heroku run python %(heroku_manage_py)s migrate' % env)
+    local('heroku run "pip install -r %(heroku_config_path)s/requirements.txt"' % env)
+    local('heroku run "python %(heroku_config_path)s/manage.py migrate"' % env)
