@@ -1,2 +1,2 @@
-# Install all heroku production dependencies.
--r radio/configs/heroku/requirements.txt
+# Install all of our minimum dependencies.
+-r radio/configs/common/requirements.txt
