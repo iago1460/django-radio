@@ -1,3 +1,0 @@
-# Install all heroku production dependencies.
--r ../common/requirements.txt
-django-toolbelt

@@ -1,2 +1,4 @@
-# Install all of our minimum dependencies.
--r radio/configs/common/requirements.txt
+# heroku production dependencies.
+# Must be in root path.
+-r radio/common/requirements.txt
+django-toolbelt

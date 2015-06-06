@@ -42,5 +42,4 @@ def heroku_deploy():
     # Deploy changes
     local('git push heroku %(branch)s' % env)
     # Install requirements and run migrations
-    local('heroku run "pip install -r %(heroku_config_path)s/requirements.txt"' % env)
     local('heroku run "python %(heroku_config_path)s/manage.py migrate"' % env)
