@@ -1,56 +1,67 @@
 {% extends "radio/base.html" %}
 {% load staticfiles i18n %}
 
+
+{% block page_title %}{{ programme.name }}{% endblock %}
+
+
 {% block programmes_class %}class="active"{% endblock %}
+
+
 {% block content %}
-	<h1>{{ programme.name }}</h1> 
-	<div class="row">
-		<div class="span8">
-			<div class="media">
-				<img src="{{ programme.photo.url }}">
-			</div>
-			<p>{{programme.synopsis|safe}}</p>
-		</div>
-	</div>
-	
-	
-	
-	{% if episode_list %}
-		<h2>{% trans "Episodes"|upper %}</h2>
-		<ul>
+    <div class="container mt">
+        <div class="row">
+            <div class="col-lg-10 col-lg-offset-1 centered">
+                <img class="center-block img-responsive" src="{{ programme.photo.url }}" alt="...">
+            </div>
+
+
+            <div class="col-lg-5 col-lg-offset-1">
+			 	<div class="spacing"></div>
+		 		<h4>{{ programme.name }}</h4>
+		 		<p>{{programme.synopsis|safe}}</p>
+		 	</div>
+
+		 	<div class="col-lg-4 col-lg-offset-1">
+			 	<div class="spacing"></div>
+		 		<h4>{% trans 'Programme Details' %}</h4>
+		 		<div class="hline"></div>
+		 		<p><b>Language:</b> {{ language }}</p>
+		 		<p><b>Category:</b> {{ programme.get_category_display }}</p>
+		 		<p><b>RSS:</b> <a href="{% url 'programmes:rss' programme.slug %}"><i class="fa fa-rss-square fa-2x"></i></a></p>
+		 	</div>
+
+        </div><! --/row -->
+    </div><! --/container -->
+
+
+    <div class="container mtb">
+        <div class="row">
+            <h3 class="mb text-center">{% trans 'Episodes' %}</h3>
 			{% for episode in episode_list %}
-			{% ifchanged episode.season %}
-	            <h4>{% trans "Season" %} {{episode.season}}</h4>
-	        {% endifchanged %}
-				<li><a href="{% url 'programmes:episode_detail' programme.slug episode.season episode.number_in_season %}">{{ episode }}</a></li>
-			{% endfor %}
-		</ul>
-	{% else %}
-		<p>{% trans "Without episodes."|upper %}</p>
-	{% endif %}
-	
-	{% if role_list %}
-		<h2>{% trans "Staff"|upper %}</h2>
-		{% with role_list as list %}
-            {% include "programmes/staff_list_snippet.html" %}
-        {% endwith %}
-	{% endif %}
-	
-	
-	<h2>{% trans "About"|upper %}</h2>
-	<ul class="list-unstyled">
-	<li>
-	{% if programme.end_date %}
-		{% blocktrans with end_date=programme.end_date %}This programme ended in {{ end_date }}{% endblocktrans %}
-	{% else %}
-		{% blocktrans with start_date=programme.start_date %}This programme has been active since {{ start_date }}{% endblocktrans %}
-	{% endif %}
-	</li>
-	<li>
-	{% trans "Language" %}: {{language}}
-	</li>
-	<li>
-	Rss: <a href="{% url 'programmes:rss' programme.slug %}"><img src="{% static "radio/images/rss-icon-28x28.png" %}"></a>
-	</li>
-	</ul>
+
+                {% ifchanged episode.season %}
+                    {% if not forloop.first %}</div> {% endif %}
+                    <div class="col-lg-3">
+                        <h4>{% trans "Season" %} {{episode.season}}</h4>
+                        <div class="hline"></div>
+                {% endifchanged %}
+                <p><a href="{% url 'programmes:episode_detail' programme.slug episode.season episode.number_in_season %}">{{ episode }}</a></p>
+                {% if forloop.last %}</div>{% endif %}
+
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if role_list %}
+        <div class="container mtb">
+            <div class="row centered">
+                <h3 class="mb">MEMBERS</h3>
+                {% for role in role_list %}
+                    {% include "programmes/role_snippet.html" %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
 {% endblock %}

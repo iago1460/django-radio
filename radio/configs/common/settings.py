@@ -72,6 +72,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'django.core.context_processors.tz',
     'django.contrib.messages.context_processors.messages',
+    'apps.radio.context_processors.settings',
 )
 
 ROOT_URLCONF = 'radio.configs.common.urls'
@@ -119,6 +120,9 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 
+SITE_ID = 1
+
+
 # RadioCo Settings
 # http://django-radio.readthedocs.org/en/latest/reference/configuration.html
 
@@ -128,6 +132,7 @@ USERNAME_RADIOCO_RECORDER = 'RadioCo_Recorder'
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_JQUERY_URL = '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js'
 
+# RadioCo EXAMPLE SETTINGS
 '''
 gettext_noop = lambda s: s
 PROGRAMME_LANGUAGES = (
@@ -139,7 +144,7 @@ PROGRAMME_LANGUAGES = (
 
 # Import local settings
 try:
-	from local_settings import *
+    from local_settings import *
 except ImportError:
-	pass
+    pass
 

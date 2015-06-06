@@ -1,74 +1,237 @@
-{% load staticfiles i18n %}
+{% load i18n future staticfiles %}
 {% load global_settings_extras %}
 {% get_global_model 'global_settings.SiteConfiguration' as site_config %}
+
+
 <!DOCTYPE html>
-<html>
-	<head>
-		{% block meta_tags %}{% endblock %}
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>
-			{% block title %}{{ site_config.site_name }}{% endblock %}
-		</title>
-		{% block stylesheets %}
-			<link rel="stylesheet" href="{% static "radio/css/bootstrap.min.css" %}" type="text/css" />
-			<link rel="stylesheet" href="{% static "radio/css/jumbotron.css" %}" type="text/css" />
-			<link rel="stylesheet" href="{% static "radio/css/sticky-footer.css" %}" type="text/css" />
-			<link rel="stylesheet" href="{% static "radio/css/radioco.css" %}" type="text/css" />
-		{% endblock %}
-		{% block javascript %}
-			<script src="{% static "radio/js/jquery-2.1.0.min.js" %}" type="text/javascript"></script>
-			<script src="{% static "radio/js/bootstrap.min.js" %}" type="text/javascript"></script>
-		{% endblock %}
-		{% block extra_head %}{% endblock %}
-	</head>
-	<body>
-		<!-- Fixed navbar -->
-		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-			<div class="container">
-				<div class="navbar-header">
-					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					</button>
-					<a class="navbar-brand" href="{% url 'home' %}">{{ site_config.site_name }}</a>
-				</div>
-				<div class="navbar-collapse collapse">
-					<ul class="nav navbar-nav">
-						<li {% block index_class %}{% endblock %}><a href="{% url 'home' %}">{% trans "home"|title %}</a></li>
-						<li {% block schedules_class %}{% endblock %}><a href="{% url 'schedules:list' %}">{% trans "schedules"|title %}</a></li>
-						<li {% block programmes_class %}{% endblock %}><a href="{% url 'programmes:list' %}">{% trans "programmes"|title %}</a></li>
-						<li {% block users_class %}{% endblock %}><a href="{% url 'users:list' %}">{% trans "people"|title %}</a></li>
-					</ul>
-					<ul class="nav navbar-nav navbar-right">
-						{% if user.is_authenticated %}
-						    <li><a href="{% url 'logout' %}">{% trans "Logout"|title %}</a></li>
-						{% else %}
-						    <li {% block login_class %}{% endblock %}><a href="{% url 'login' %}">{% trans "Log in"|title %}</a></li>
-						{% endif %}
-		            </ul>
-				</div>
-				<!--/.nav-collapse -->
-			</div>
-		</div>
-		{% block header_content %}{% endblock %}
-		<div class="container">
-			{% block content %}
-			{% endblock %}
-		</div>
-		<!-- /container -->
-		<div class="footer">
-			<div class="container">
-				<div class="col-lg-10">
-					{{ site_config.footer|safe }}
-				</div>
-				<div class="col-lg-2">
-					<p class="text-muted"><a href="http://radioco.org/" target="_blank"> <span class="glyphicon glyphicon-wrench"></span> RadioCo</a></p>
-				</div>
-			</div>
-		</div>
-	</body>
+<html lang="{{ LANGUAGE_CODE }}"{% if LANGUAGE_BIDI %} dir="rtl"{% endif %}>
+
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="{% block meta_keywords %}{% endblock %}">
+    <meta name="description" content="{% block meta_description %}{% endblock %}">
+    <title>
+        {% block meta_title %}{% endblock %}
+        {% if settings.SITE_TITLE %} | {{ settings.SITE_TITLE }}{% endif %}
+    </title>
+
+    <link rel="shortcut icon" href="{% static "radio/img/favicon.ico" %}">
+
+    <link rel="stylesheet" href="{% static "radio/css/bootstrap.css" %}">
+    <link href="{% static "radio/css/font-awesome.min.css" %}" rel="stylesheet" type="text/css" />
+    <link href="{% static "radio/css/style.css" %}" rel="stylesheet">
+
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,600,800' rel='stylesheet' type='text/css'>
+
+    {% block extra_css %}{% endblock %}
+
+    {% block extra_js %}{% endblock %}
+
+    {% include "radio/includes/footer_scripts.html" %}
+
+    <!--[if lt IE 9]>
+        <script src="{% static "radio/js/html5shiv.js" %}"></script>
+        <script src="{% static "radio/js/respond.min.js" %}"></script>
+    <![endif]-->
+
+    {% block extra_head %}{% endblock %}
+</head>
+
+
+<body>
+    {% block intro %} {% endblock %}
+
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle Navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{% url 'home' %}">{{ site_config.site_name }}</a>
+            </div>
+
+            <div class="navbar-collapse collapse navbar-right">
+                <ul class="nav navbar-nav">
+                    <li {% block index_class %}{% endblock %}><a href="{% url 'home' %}">{% trans "home"|title %}</a></li>
+                    <li {% block schedules_class %}{% endblock %}><a href="{% url 'schedules:list' %}">{% trans "schedules"|title %}</a></li>
+                    <li {% block programmes_class %}{% endblock %}><a href="{% url 'programmes:list' %}">{% trans "programmes"|title %}</a></li>
+                    <li {% block users_class %}{% endblock %}><a href="{% url 'users:list' %}">{% trans "people"|title %}</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {% block page_title_wrapper%}
+        <div id="blue">
+            <div class="container">
+                <div class="row">
+                    <h3>{% block page_title %}{% endblock %}</h3>
+                </div><!-- /row -->
+            </div> <!-- /container -->
+        </div>
+    {% endblock %}
+
+    <div class="container">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-dismissable alert-{{ message.tags }}" data-alert="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    {% block content%}{% endblock %}
+
+    <div id="footerwrap">
+        <div class="container">
+            <div class="row">
+                {% if site_config.about_footer %}
+                    <div class="col-lg-4">
+                        <h4>{% trans 'About' %}</h4>
+                        <div class="hline-w"></div>
+                        <p>
+                            {{ site_config.about_footer }}
+                        </p>
+                    </div>
+                {% endif %}
+                {% if site_config.twitter_address or site_config.facebook_address %}
+                    <div class="col-lg-4">
+                        <h4>{% trans 'Social Links' %}</h4>
+                        <div class="hline-w"></div>
+                        <p>
+                            {% if site_config.facebook_address %}
+                                <a href="{{ site_config.facebook_address }}">
+                                    <i class="fa fa-facebook"></i></a>
+                                </a>
+                            {% endif %}
+                            {% if site_config.twitter_address %}
+                                <a href="{{ site_config.twitter_address }}">
+                                    <i class="fa fa-twitter"></i></a>
+                                </a>
+                            {% endif %}
+                        </p>
+                    </div>
+                {% endif %}
+                {% if site_config.address %}
+                    <div class="col-lg-4">
+                        <h4>{% trans 'Our Address' %}</h4>
+                        <div class="hline-w"></div>
+                        <p>
+                            {{ site_config.address }}
+                        </p>
+                    </div>
+                {% endif %}
+		 	</div><! --/row -->
+            <div class="row">
+                <p class="site-info text-center">
+                    {% blocktrans with url='<a href="http://radioco.org" target="_blank">RadioCo</a>' %}This website is running {{ url }}{% endblocktrans%}
+                </p>
+            </div>
+	 	</div><! --/container -->
+	 </div><! --/footerwrap -->
+
+<!-- Core JavaScript Files -->
+<!-- Placed at the end of the document so the pages load faster -->
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="{% static "radio/js/bootstrap.min.js" %}"></script>
+<script src="{% static "radio/js/retina-1.1.0.js" %}"></script>
+<script src="{% static "radio/js/jquery.hoverdir.js" %}"></script>
+<script src="{% static "radio/js/jquery.hoverex.min.js" %}"></script>
+<script src="{% static "radio/js/jquery.prettyPhoto.js" %}"></script>
+<script src="{% static "radio/js/jquery.isotope.min.js" %}"></script>
+<script src="{% static "radio/js/custom.js" %}"></script>
+<script>
+    // Portfolio
+    (function($) {
+        "use strict";
+        var $container = $('.portfolio'),
+                $items = $container.find('.portfolio-item'),
+                portfolioLayout = 'fitRows';
+
+        if( $container.hasClass('portfolio-centered') ) {
+            portfolioLayout = 'masonry';
+        }
+
+        $container.isotope({
+            filter: '*',
+            animationEngine: 'best-available',
+            layoutMode: portfolioLayout,
+            animationOptions: {
+                duration: 750,
+                easing: 'linear',
+                queue: false
+            },
+            masonry: {
+            }
+        }, refreshWaypoints());
+
+        function refreshWaypoints() {
+            setTimeout(function() {
+            }, 1000);
+        }
+
+        $('nav.portfolio-filter ul a').on('click', function() {
+            var selector = $(this).attr('data-filter');
+            $container.isotope({ filter: selector }, refreshWaypoints());
+            $('nav.portfolio-filter ul a').removeClass('active');
+            $(this).addClass('active');
+            return false;
+        });
+
+        function getColumnNumber() {
+            var winWidth = $(window).width(),
+                    columnNumber = 1;
+
+            if (winWidth > 1200) {
+                columnNumber = 5;
+            } else if (winWidth > 950) {
+                columnNumber = 4;
+            } else if (winWidth > 600) {
+                columnNumber = 3;
+            } else if (winWidth > 400) {
+                columnNumber = 2;
+            } else if (winWidth > 250) {
+                columnNumber = 1;
+            }
+            return columnNumber;
+        }
+
+        function setColumns() {
+            var winWidth = $(window).width(),
+                    columnNumber = getColumnNumber(),
+                    itemWidth = Math.floor(winWidth / columnNumber);
+
+            $container.find('.portfolio-item').each(function() {
+                $(this).css( {
+                    width : itemWidth + 'px'
+                });
+            });
+        }
+
+        function setPortfolio() {
+            setColumns();
+            $container.isotope('reLayout');
+        }
+
+        $container.imagesLoaded(function () {
+            setPortfolio();
+        });
+
+        $(window).on('resize', function () {
+            setPortfolio();
+        });
+    })(jQuery);
+</script>
+{% block javascript %}{% endblock javascript %}
+
+</body>
 </html>

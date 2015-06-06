@@ -1,37 +1,69 @@
 {% extends "radio/base.html" %}
 {% load staticfiles i18n %}
 
+
+{% block page_title %}{{ episode }}{% endblock %}
+
 {% block programmes_class %}class="active"{% endblock %}
+
+
 {% block content %}
-	<h1><a href="{% url 'programmes:detail' programme.slug %}">{{ programme.name }}</a></h1>
-	<div class="row">
-		<div class="span8">
-			<div class="media">
-				<a href="{% url 'programmes:detail' programme.slug %}"><img src="{{ programme.photo.url }}"></a>
-			</div>
-			<p>{{programme.synopsis|truncatewords_html:12|safe}}</p>
-		</div>
-	</div>
-		<h2>{% firstof episode.title programme %}: <small>{% if episode.issue_date %} {{episode.issue_date|date:"DATETIME_FORMAT"}} {% else %}{% trans "Schedule pending" %} {% endif %}</small></h2>
-		<p>{{ episode.summary|safe }}</p>
-		
-		<h3>{% trans "Podcast"|upper %}</h3>
-		{% if episode.podcast %}
-			<audio src="{{episode.podcast.url}}"  type="{{episode.podcast.mime_type}}" controls>
-			<p>{% trans "Sorry, HTML5 audio not supported." %}</p>
-			</audio>
-		{% else %}
-			{% if not episode_end_date or now > episode_end_date %}
-				{% trans "Sorry, this podcast isn't available yet" %}
-			{% else %}
-				{% trans "The podcast will be available in" %} {{  episode_end_date|timeuntil }}
-			{% endif %}
-		{% endif %}
-		
-		{% if role_list %}
-			<h3>{% trans "Staff"|upper %}</h3>
-			{% with role_list as list %}
-		        {% include "programmes/staff_list_snippet.html" %}
-		    {% endwith %}
-		{% endif %}
+    <div class="container mtb">
+        <div class="row">
+            <div class="col-lg-10 col-lg-offset-1 centered">
+                <img class="center-block img-responsive" src="{{ programme.photo.url }}" alt="...">
+            </div>
+
+
+            <div class="col-lg-5 col-lg-offset-1">
+			 	<div class="spacing"></div>
+		 		<h4>{% firstof episode.title|upper episode|upper %}</h4>
+		 		<p>{{ episode.summary|safe }}</p>
+
+		 		<h4>{% trans "Podcast" %}</h4>
+                <p>
+                    {% if episode.podcast %}
+                        <audio src="{{episode.podcast.url}}"  type="{{episode.podcast.mime_type}}" controls>
+                            {% trans "Your browser does not support the audio element." %}
+                        </audio>
+                    {% else %}
+                        {% if not episode_end_date or now > episode_end_date %}
+                            {% trans "Sorry, this podcast isn't available yet" %}
+                        {% else %}
+                            {% trans "The podcast will be available in" %} {{  episode_end_date|timeuntil }}
+                        {% endif %}
+                    {% endif %}
+                </p>
+		 	</div>
+
+		 	<div class="col-lg-4 col-lg-offset-1">
+			 	<div class="spacing"></div>
+		 		<h4>{% trans 'Programme Details' %}</h4>
+		 		<div class="hline"></div>
+                <p><b>{% trans 'Date:' %}</b>
+                    {% if episode.issue_date %}
+                        {{episode.issue_date|date:"DATETIME_FORMAT"}}
+                    {% else %}
+                        {% trans "Schedule pending" %}
+                    {% endif %}
+                </p>
+                <p><b>{% trans 'Programme:' %}</b> <a href="{% url 'programmes:detail' programme.slug %}">{{ programme.name }}</a></p>
+		 		<p><b>{% trans 'Category:' %}</b> {{ programme.get_category_display }}</p>
+		 		<p><b>{% trans 'RSS:' %}</b> <a href="{% url 'programmes:rss' programme.slug %}"><i class="fa fa-rss-square fa-2x"></i></a></p>
+		 	</div>
+
+        </div><! --/row -->
+    </div><! --/container -->
+
+    {% if role_list %}
+        <div class="container mtb">
+            <div class="row centered">
+                <h3 class="mb">{% trans 'Participants'|upper %}</h3>
+                {% for role in role_list %}
+                    {% include "programmes/role_snippet.html" %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
 {% endblock %}

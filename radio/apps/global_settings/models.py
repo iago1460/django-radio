@@ -54,7 +54,13 @@ class SingletonModel(models.Model):
 
 class SiteConfiguration(SingletonModel):
     site_name = models.CharField(max_length=255, default='RadioCo', verbose_name=_("Site Name"))
-    footer = models.TextField(blank=True, default="", verbose_name=_("Footer"), help_text=_('Can contain raw HTML.'))
+    about_footer = models.TextField(blank=True, default="", verbose_name=_("Footer"))
+    more_about_us = models.TextField(blank=True, default="", verbose_name=_("More info"))
+    google_analytics_id = models.CharField(max_length=255, blank=True, default="", verbose_name=_('Example "%(value)s"') % {'value': 'UA-00000-0', })
+    address = models.TextField(blank=True, default="", verbose_name=_("Address"), help_text=_('Can contain raw HTML.'))
+
+    twitter_address = models.CharField(max_length=255, verbose_name=_('Twitter address'), blank=True, null=True)
+    facebook_address = models.CharField(max_length=255, verbose_name=_('facebook address'), blank=True, null=True)
 
     def __unicode__(self):
         return _u('Global Configuration')

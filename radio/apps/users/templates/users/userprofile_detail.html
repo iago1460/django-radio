@@ -1,34 +1,52 @@
 {% extends "radio/base.html" %}
 {% load staticfiles i18n %}
 
+
+{% block page_title %}{% firstof userprofile.user.get_full_name userprofile.user %}{% endblock %}
+
+
 {% block users_class %}class="active"{% endblock %}
+
+
 {% block content %}
-	<div class="row">
-		{% if userprofile %}
-			<h1>{% firstof userprofile.user.get_full_name|upper userprofile.user|upper %} </h1>
-			<div class="media">
-				<img src="{{ userprofile.avatar.url }}">
-			</div>
-			<p>{{userprofile.bio|safe}}</p>
-			
-			{% if role_list %}
-			<h2>{% trans "Contributions"|upper %}</h2>
-			<dl id="tabulate">
-				{% for role in role_list %}
-					<dt><a href="{% url 'programmes:detail' role.programme.slug %}">{{ role.programme }}
-					 {% if unspecified != role.role %}({{ role.get_role_display }}){% endif %}
-					</a></dt>
-					<dd>{% if role.description %}{{role.description}}{% else %}.{% endif %} </dd>
-				{% endfor %}
-			</dl>
-			{% endif %}
-			
-			
-		{% else %}
-			<h1>{% trans "No user information available"|upper %}</h1>
-			<div class="media">
-				<img src="{% static "radio/images/default-userprofile-avatar.jpg" %}">
-			</div>
-		{% endif %}
-	</div>
+    <div class="container mt">
+        <div class="row">
+            <div class="col-lg-10 col-lg-offset-1 centered">
+                <img class="center-block img-responsive" src="{{ userprofile.avatar.url }}" alt="...">
+            </div>
+
+
+            <div class="col-lg-5 col-lg-offset-1">
+			 	<div class="spacing"></div>
+		 		<h4>{% firstof userprofile.user.get_full_name|upper userprofile.user|upper %}</h4>
+		 		<p>{{ userprofile.bio|safe }}</p>
+		 	</div>
+
+		 	<div class="col-lg-4 col-lg-offset-1">
+			 	<div class="spacing"></div>
+		 		<h4>{% trans 'Programme Details' %}</h4>
+		 		<div class="hline"></div>
+		 		<p><b>Joined:</b> {{ userprofile.user.date_joined }}</p>
+		 	</div>
+
+        </div><! --/row -->
+    </div><! --/container -->
+
+    {% if role_list %}
+        <div class="container mtb">
+            <div class="row">
+                <div class="col-lg-10 col-lg-offset-1 centered">
+                    <h2>{% trans "Contributions"|upper %}</h2>
+                    <dl id="tabulate">
+                        {% for role in role_list %}
+                            <dt><a href="{% url 'programmes:detail' role.programme.slug %}">{{ role.programme }}
+                                {% if unspecified != role.role %}({{ role.get_role_display }}){% endif %}
+                            </a></dt>
+                            <dd>{% if role.description %}{{role.description}}{% else %}.{% endif %} </dd>
+                        {% endfor %}
+                    </dl>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}

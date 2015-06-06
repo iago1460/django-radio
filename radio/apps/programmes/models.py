@@ -240,6 +240,8 @@ class Episode(models.Model):
         )
 
     def __unicode__(self):
+        if self.title:
+            return u"%sx%s %s" % (self.season, self.number_in_season, self.title)
         return u"%sx%s %s" % (self.season, self.number_in_season, self.programme)
 
 '''
@@ -293,7 +295,7 @@ class Role(models.Model):
 
 
 class Podcast(models.Model):
-    episode = models.OneToOneField(Episode, primary_key=True)
+    episode = models.OneToOneField(Episode, primary_key=True, related_name='podcast')
     url = models.CharField(max_length=2048)
     mime_type = models.CharField(max_length=20)
     length = models.PositiveIntegerField()  # bytes

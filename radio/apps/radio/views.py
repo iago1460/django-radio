@@ -54,8 +54,12 @@ def index(request):
 
     next_events = __get_events(end_time, end_time + relativedelta(hours=+16))
 
+    other_programmes = Programme.objects.order_by('?').all()[:10]
+    latest_episodes = Episode.objects.filter(podcast__isnull=False).order_by('-issue_date')[:5]
+
     context = {'schedule_now':schedule_now, 'start_time':start_time, 'percentage':percentage,
-               'end_time':end_time, 'now': now, 'next_events':next_events}
+               'end_time':end_time, 'now': now, 'next_events':next_events, 'other_programmes':other_programmes,
+               'latest_episodes':latest_episodes}
     return render(request, 'radio/index.html', context)
 
 

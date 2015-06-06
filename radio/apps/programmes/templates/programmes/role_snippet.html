@@ -1,0 +1,23 @@
+{% load staticfiles i18n %}
+
+
+<div class="col-lg-3 col-md-3 col-sm-3">
+    <div class="he-wrap tpl6">
+        <img class="img-responsive" src="{{ role.person.userprofile.avatar.url }}" alt="">
+        <div class="he-view">
+            <div class="bg a0" data-animate="fadeIn">
+                <h3 class="a1" data-animate="fadeInDown">{% firstof role.person.get_full_name role.person %}</h3>
+                {% if role.person.userprofile.display_personal_page %}
+                    <a href="{% url 'users:detail' role.person.userprofile.slug %}" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
+                {% endif %}
+                <h5 class="a1" data-animate="fadeInDown">{{ role.get_role_display }}</h5>
+            </div><!-- he bg -->
+        </div><!-- he view -->
+    </div><!-- he wrap -->
+    <h4>{% firstof role.person.get_full_name role.person %}</h4>
+    {% if unspecified != role.role %}
+        <h5 class="ctitle">{{ role.get_role_display }}</h5>
+    {% endif %}
+    <p>{{ role.description|truncatewords_html:20|safe }}</p>
+    <div class="hline"></div>
+</div><! --/col-lg-3 -->

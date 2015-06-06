@@ -1,0 +1,16 @@
+{% load global_settings_extras %}
+{% get_global_model 'global_settings.SiteConfiguration' as site_config %}
+
+<script>
+    {% if not settings.DEBUG and site_config.google_analytics_id and not request.user.is_staff %}
+        var _gaq = _gaq || [['_trackPageview']];
+        _gaq.unshift(['_setAccount', '{{ site_config.google_analytics_id }}']);
+        (function(d, t) {
+            var g = d.createElement(t),
+                s = d.getElementsByTagName(t)[0];
+            g.async = true;
+            g.src = '//www.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g, s);
+        })(document, 'script');
+    {% endif %}
+</script>
