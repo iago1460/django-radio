@@ -8,6 +8,17 @@ from apps.users.models import UserProfile
 
 
 def create_example_data():
+    # Create administrator
+    user, created = User.objects.get_or_create(
+        username='admin', defaults={
+            'is_superuser':True,
+            'is_staff':True,
+        }
+    )
+    if created:
+        user.set_password('1234')
+        user.save()
+
     # Site config
     site_config = SiteConfiguration.get_global()
     site_config.about_footer = '''
@@ -76,7 +87,6 @@ def create_example_data():
         user, created = User.objects.get_or_create(
             username='user_%s' % username_counter,
             defaults={
-                'password':'1234',
                 'first_name': titles[username_counter]
             }
         )
