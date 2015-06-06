@@ -1,4 +1,3 @@
 # Install all heroku production dependencies.
 -r ../common/requirements.txt
-fabric
 django-toolbelt
