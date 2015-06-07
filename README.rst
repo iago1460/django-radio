@@ -26,6 +26,9 @@ Features
 
 * ...and much more
 
+
+![Alt text](/screenshots/home_preview.png?raw=true "Optional Title")
+
 More information on `our website <http://radioco.org/>`_.
 
 *************
