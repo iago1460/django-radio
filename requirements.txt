@@ -1,4 +1,3 @@
-# heroku production dependencies.
-# Must be in root path.
+# heroku production dependencies. Must be in root path.
 -r radio/configs/common/requirements.txt
 django-toolbelt
