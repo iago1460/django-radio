@@ -24,6 +24,8 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
+from filebrowser.sites import site
+
 
 # Not necessary in Django > 1.7
 # admin.autodiscover()
@@ -60,6 +62,8 @@ urlpatterns = patterns('',
     url(r'^$', 'apps.radio.views.index', name="home"),
     url(r'^login/$', 'apps.radio.views.user_login', name="login"),
     url(r'^logout/$', 'apps.radio.views.user_logout', name="logout"),
+    url(r'^admin/filebrowser/', include(site.urls)),
+    url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
     # url(r'^configuration/schedule_editor/', 'apps.dashboard.views.full_calendar', name="schedule_editor"),
     url(r'^schedules/', include('apps.schedules.urls', namespace="schedules")),

@@ -37,6 +37,10 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'grappelli',
+    'filebrowser',
+
     'django.contrib.admin',
     'django.contrib.sitemaps',
     'django.contrib.humanize',
@@ -71,6 +75,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.media',
     'django.core.context_processors.static',
     'django.core.context_processors.tz',
+    'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
     'apps.radio.context_processors.settings',
 )
@@ -107,7 +112,9 @@ USE_TZ = False
 
 SITE_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
-LOCALE_PATHS = os.path.join(SITE_ROOT, 'locale')
+LOCALE_PATHS = (
+    os.path.join(SITE_ROOT, 'locale'),
+)
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(SITE_ROOT, 'static')
