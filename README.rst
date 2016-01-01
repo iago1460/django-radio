@@ -26,6 +26,8 @@ Features
 
 * ...and much more
 
+.. image:: /screenshots/home_preview.png?raw=true
+
 More information on `our website <http://radioco.org/>`_.
 
 *************
