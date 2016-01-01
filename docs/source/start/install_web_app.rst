@@ -19,15 +19,15 @@ Next, download the project and cd into it:
 
 .. code-block:: bash
 
-    git clone https://github.com/iago1460/radioco
-    cd radioco
+    git clone https://github.com/iago1460/django-radio
+    cd django-radio
 
 Create and switch to the virtualenv at the command line by typing:
 
 .. code-block:: bash
 
-    virtualenv .
-    source bin/activate
+    virtualenv venv
+    source venv/bin/activate
   
 Install the requirements:
 
