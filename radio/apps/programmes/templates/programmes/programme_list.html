@@ -1,5 +1,5 @@
 {% extends "radio/base.html" %}
-{% load staticfiles i18n %}
+{% load staticfiles i18n fb_versions %}
 
 
 {% block page_title %}{% trans "Programme list" %}{% endblock %}
@@ -14,7 +14,7 @@
             <div class="row">
                 <div class="col-lg-6">
                     <a href="{% url 'programmes:detail' programme.slug %}">
-                        <img class="img-responsive" src="{{ programme.photo.url }}" alt="...">
+                        <img class="img-responsive" src="{% version programme.photo 'programme_preview' %}" alt="...">
                     </a>
                 </div>
 

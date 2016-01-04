@@ -1,6 +1,6 @@
 {% extends "radio/base.html" %}
 {% load i18n staticfiles %}
-{% load global_settings_extras %}
+{% load global_settings_extras fb_versions %}
 {% get_global_model 'global_settings.SiteConfiguration' as site_config %}
 
 
@@ -89,23 +89,10 @@
             <div class="portfolio-centered">
                 <div class="recentitems portfolio">
 
-{#                <div class="col-lg-3 col-md-3 col-sm-3">#}
-{#                    <div class="he-wrap tpl6">#}
-{#                        <img src="{{ programme.photo.url }}" alt="">#}
-{#                        <div class="he-view">#}
-{#                            <div class="bg a0" data-animate="fadeIn">#}
-{#                                <h3 class="a1" data-animate="fadeInDown">{{ programme.title }}</h3>#}
-{#                                <a href="#" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-envelope"></i></a>#}
-{#                                <a href="#" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-twitter"></i></a>#}
-{#                            </div><!-- he bg -->#}
-{#                        </div><!-- he view -->#}
-{#                    </div><!-- he wrap -->#}
-{#                </div>#}
-
                     {% for programme in other_programmes %}
-                        <div class="portfolio-item graphic-design">
+                        <div class="portfolio-item ">
                             <div class="he-wrap tpl6">
-                            <img class="image-item" src="{{ programme.photo.url }}" alt="">
+                                <img src="{% version programme.photo 'home_preview' %}" alt="">
                                 <div class="he-view">
                                     <div class="bg a0" data-animate="fadeIn">
                                         <h3 class="a1" data-animate="fadeInDown">{{ programme.name }}</h3>

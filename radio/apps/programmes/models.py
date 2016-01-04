@@ -73,7 +73,7 @@ class Programme(models.Model):
     end_date = models.DateField(blank=True, null=True, verbose_name=_('end date'), help_text=_("This field can be null."))
     announcers = models.ManyToManyField(User, blank=True, null=True, through='Role', verbose_name=_("announcers"))
     synopsis = RichTextField(blank=True, verbose_name=_("synopsis"))
-    photo = models.ImageField(upload_to='photos/', default=static('radio/images/default-programme-photo.jpg'), verbose_name=_("photo"))
+    photo = models.ImageField(upload_to='photos/', default='defaults/default-programme-photo.jpg', verbose_name=_("photo"))
     language = models.CharField(default=PROGRAMME_LANGUAGES[0][0], verbose_name=_("language"), choices=map(lambda (k, v): (k, _(v)), PROGRAMME_LANGUAGES), max_length=7)
     current_season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("current season"))
     category = models.CharField(blank=True, null=True, max_length=50, choices=CATEGORY_CHOICES, verbose_name=_("category"))

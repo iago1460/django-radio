@@ -47,7 +47,7 @@ def create_example_data():
             'start_date':start_date,
             'synopsis':synopsis,
             'language':'en',
-            'photo':static('radio/images/example/radio_1.jpg'),
+            'photo':'defaults/example/radio_1.jpg',
             'current_season':1,
             'category':'News & Politics',
             '_runtime':60,
@@ -91,7 +91,7 @@ def create_example_data():
             }
         )
         user.userprofile.bio = synopsis
-        user.userprofile.avatar = static('radio/images/example/user_%s.jpg' % username_counter)
+        user.userprofile.avatar = 'defaults/example/user_%s.jpg' % username_counter
         user.userprofile.display_personal_page = True
         user.userprofile.save()
 
@@ -112,7 +112,7 @@ def create_example_data():
             start_date=start_date,
             synopsis=synopsis,
             language='en',
-            photo=static('radio/images/example/radio_%s.jpg' % str(programme_counter + 1)),
+            photo='defaults/example/radio_%s.jpg' % str(programme_counter + 1),
             current_season=1,
             category='News & Politics',
             _runtime=60
