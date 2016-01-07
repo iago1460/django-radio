@@ -159,9 +159,9 @@ FILEBROWSER_VERSIONS = {
     'big': {'verbose_name': 'Big (6 col)', 'width': 460, 'height': '', 'opts': ''},
     'large': {'verbose_name': 'Large (8 col)', 'width': 680, 'height': '', 'opts': ''},
 
-
-    'home_preview': {'verbose_name': 'Big (6 col)', 'width': 600, 'height': 450, 'opts': 'crop upscale'},
+    'item_overlap': {'verbose_name': 'Big (6 col)', 'width': 600, 'height': 450, 'opts': 'crop upscale'},
     'programme_preview': {'verbose_name': 'Big (6 col)', 'width': 800, 'height': 600, 'opts': 'crop upscale'},
+    'person_preview': {'verbose_name': 'Big (6 col)', 'width': 600, 'height': 600, 'opts': 'crop upscale'},
 }
 FILEBROWSER_ADMIN_VERSIONS = [
     'thumb', 'small', 'medium', 'large',

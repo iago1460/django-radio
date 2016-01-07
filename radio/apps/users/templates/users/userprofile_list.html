@@ -1,5 +1,5 @@
 {% extends "radio/base.html" %}
-{% load staticfiles i18n %}
+{% load staticfiles i18n fb_versions %}
 
 
 {% block page_title %}{% trans "People" %}{% endblock %}
@@ -28,7 +28,9 @@
                     {% for userprofile in userprofile_list %}
                     <div class="portfolio-item graphic-design">
                         <div class="he-wrap tpl6">
-                            <a href="{% url 'users:detail' userprofile.slug %}"><img class="image-item" src="{{ userprofile.avatar.url }}"></a>
+{#                            <a href="{% url 'users:detail' userprofile.slug %}">#}
+                                <img class="img-responsive" src="{% version userprofile.avatar 'item_overlap' %}">
+{#                            </a>#}
 
                             <div class="he-view">
                                 <div class="bg a0" data-animate="fadeIn">

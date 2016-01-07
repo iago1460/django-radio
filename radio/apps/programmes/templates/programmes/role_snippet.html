@@ -1,9 +1,9 @@
-{% load staticfiles i18n %}
+{% load staticfiles i18n fb_versions %}
 
 
 <div class="col-lg-3 col-md-3 col-sm-3">
     <div class="he-wrap tpl6">
-        <img class="img-responsive" src="{{ role.person.userprofile.avatar.url }}" alt="">
+        <img class="img-responsive" src="{% version role.person.userprofile.avatar 'person_preview' %}" alt="">
         <div class="he-view">
             <div class="bg a0" data-animate="fadeIn">
                 <h3 class="a1" data-animate="fadeInDown">{% firstof role.person.get_full_name role.person %}</h3>
