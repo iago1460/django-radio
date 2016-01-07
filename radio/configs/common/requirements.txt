@@ -6,3 +6,4 @@ django-bootstrap3
 djangorestframework
 django-ckeditor==5.0.2
 fabric
+django-disqus

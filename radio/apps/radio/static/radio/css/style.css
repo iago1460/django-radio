@@ -192,6 +192,18 @@ a:focus {
 	margin-top: 60px;
 }
 
+.mhtb {
+	margin-top: 40px;
+	margin-bottom: 40px;
+}
+.mhb {
+	margin-bottom: 40px;
+}
+
+.mht {
+	margin-top: 40px;
+}
+
 .hline {
 	border-bottom: 2px solid #384452;
 }

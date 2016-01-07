@@ -1,5 +1,5 @@
 {% extends "radio/base.html" %}
-{% load staticfiles i18n %}
+{% load staticfiles i18n disqus_tags %}
 
 
 {% block page_title %}{{ programme.name }}{% endblock %}
@@ -16,14 +16,12 @@
             </div>
 
 
-            <div class="col-lg-5 col-lg-offset-1">
-			 	<div class="spacing"></div>
+            <div class="col-lg-5 col-lg-offset-1 spacing">
 		 		<h4>{{ programme.name }}</h4>
 		 		<p>{{programme.synopsis|safe}}</p>
 		 	</div>
 
-		 	<div class="col-lg-4 col-lg-offset-1">
-			 	<div class="spacing"></div>
+		 	<div class="col-lg-4 col-lg-offset-1 spacing">
 		 		<h4>{% trans 'Programme Details' %}</h4>
 		 		<div class="hline"></div>
 		 		<p><b>Language:</b> {{ language }}</p>
@@ -32,12 +30,22 @@
 		 	</div>
 
         </div><! --/row -->
+        {% if settings.DISQUS_ENABLE %}
+            <div class="row mhb">
+                <div class="col-lg-10 col-lg-offset-1 centered">
+                    {% set_disqus_identifier programme.id|stringformat:"i" %}
+                    {% set_disqus_title programme.name %}
+                    {% set_disqus_url programme.get_absolute_url %}
+                    {% disqus_show_comments %}
+                </div>
+            </div>
+        {% endif %}
     </div><! --/container -->
 
 
-    <div class="container mtb">
+    <div class="container mhb">
         <div class="row">
-            <h3 class="mb text-center">{% trans 'Episodes' %}</h3>
+            <h3 class="text-center">{% trans 'Episodes' %}</h3>
 			{% for episode in episode_list %}
 
                 {% ifchanged episode.season %}
@@ -54,7 +62,7 @@
     </div>
 
     {% if role_list %}
-        <div class="container mtb">
+        <div class="container mhb">
             <div class="row centered">
                 <h3 class="mb">MEMBERS</h3>
                 {% for role in role_list %}

@@ -1,8 +1,8 @@
 {% extends "radio/base.html" %}
-{% load staticfiles i18n %}
-
+{% load staticfiles i18n disqus_tags %}
 
 {% block page_title %}{{ episode }}{% endblock %}
+
 
 {% block programmes_class %}class="active"{% endblock %}
 
@@ -15,48 +15,56 @@
             </div>
 
 
-            <div class="col-lg-5 col-lg-offset-1">
-			 	<div class="spacing"></div>
-		 		<h4>{% firstof episode.title|upper episode|upper %}</h4>
-		 		<p>{{ episode.summary|safe }}</p>
+            <div class="col-lg-5 col-lg-offset-1 spacing">
+                    <h4>{% firstof episode.title|upper episode|upper %}</h4>
+                    <p>{{ episode.summary|safe }}</p>
 
-		 		<h4>{% trans "Podcast" %}</h4>
-                <p>
-                    {% if episode.podcast %}
-                        <audio src="{{episode.podcast.url}}"  type="{{episode.podcast.mime_type}}" controls>
-                            {% trans "Your browser does not support the audio element." %}
-                        </audio>
-                    {% else %}
-                        {% if not episode_end_date or now > episode_end_date %}
-                            {% trans "Sorry, this podcast isn't available yet" %}
+                    <h4>{% trans "Podcast" %}</h4>
+                    <p>
+                        {% if episode.podcast %}
+                            <audio src="{{episode.podcast.url}}"  type="{{episode.podcast.mime_type}}" controls>
+                                {% trans "Your browser does not support the audio element." %}
+                            </audio>
                         {% else %}
-                            {% trans "The podcast will be available in" %} {{  episode_end_date|timeuntil }}
+                            {% if not episode_end_date or now > episode_end_date %}
+                                {% trans "Sorry, this podcast isn't available yet" %}
+                            {% else %}
+                                {% trans "The podcast will be available in" %} {{  episode_end_date|timeuntil }}
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
-                </p>
-		 	</div>
+                    </p>
+            </div>
 
-		 	<div class="col-lg-4 col-lg-offset-1">
-			 	<div class="spacing"></div>
-		 		<h4>{% trans 'Programme Details' %}</h4>
-		 		<div class="hline"></div>
-                <p><b>{% trans 'Date:' %}</b>
-                    {% if episode.issue_date %}
-                        {{episode.issue_date|date:"DATETIME_FORMAT"}}
-                    {% else %}
-                        {% trans "Schedule pending" %}
-                    {% endif %}
-                </p>
-                <p><b>{% trans 'Programme:' %}</b> <a href="{% url 'programmes:detail' programme.slug %}">{{ programme.name }}</a></p>
-		 		<p><b>{% trans 'Category:' %}</b> {{ programme.get_category_display }}</p>
-		 		<p><b>{% trans 'RSS:' %}</b> <a href="{% url 'programmes:rss' programme.slug %}"><i class="fa fa-rss-square fa-2x"></i></a></p>
-		 	</div>
+            <div class="col-lg-4 col-lg-offset-1 spacing">
+                    <h4>{% trans 'Programme Details' %}</h4>
+                    <div class="hline"></div>
+                    <p><b>{% trans 'Date:' %}</b>
+                        {% if episode.issue_date %}
+                            {{episode.issue_date|date:"DATETIME_FORMAT"}}
+                        {% else %}
+                            {% trans "Schedule pending" %}
+                        {% endif %}
+                    </p>
+                    <p><b>{% trans 'Programme:' %}</b> <a href="{% url 'programmes:detail' programme.slug %}">{{ programme.name }}</a></p>
+                    <p><b>{% trans 'Category:' %}</b> {{ programme.get_category_display }}</p>
+                    <p><b>{% trans 'RSS:' %}</b> <a href="{% url 'programmes:rss' programme.slug %}"><i class="fa fa-rss-square fa-2x"></i></a></p>
+            </div>
 
         </div><! --/row -->
+        {% if settings.DISQUS_ENABLE %}
+            <div class="row">
+                <div class="col-lg-10 col-lg-offset-1 centered">
+                    {% set_disqus_identifier programme.id|stringformat:"i" %}
+                    {% set_disqus_title programme.name %}
+                    {% set_disqus_url episode.get_absolute_url %}
+                    {% disqus_show_comments %}
+                </div>
+            </div>
+        {% endif %}
     </div><! --/container -->
 
     {% if role_list %}
-        <div class="container mtb">
+        <div class="container mhtb">
             <div class="row centered">
                 <h3 class="mb">{% trans 'Participants'|upper %}</h3>
                 {% for role in role_list %}
