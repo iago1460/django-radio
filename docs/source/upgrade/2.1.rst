@@ -1,9 +1,9 @@
 #################
-2.0 release notes
+2.1 release notes
 #################
 
 *****************
-What's new in 2.0
+What's new in 2.1
 *****************
 
 *   New layout! The whole site has been redesigned
