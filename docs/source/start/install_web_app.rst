@@ -33,19 +33,10 @@ Install the requirements:
 
 .. code-block:: bash
 
-    pip install -r requirements.txt
+    pip install -r radio/configs/common/requirements.txt
 
-Setup the database:
-
-.. code-block:: bash
-
-    python manage.py migrate
-
-Create a superuser:
-
-.. code-block:: bash
-
-    python manage.py createsuperuser
+.. note::
+    Some requirements such as Pillow need libraries on your system to work.
     
 *******
 Testing
@@ -55,7 +46,7 @@ Let’s verify your installation
 
 .. code-block:: bash
 
-    python manage.py runserver
+    fab quickstart
 
 Now that the server’s running, visit http://127.0.0.1:8000/
 

@@ -15,3 +15,4 @@ on any process that makes changes to your database.
     1.1
     1.1.1
     1.2
+    2.0

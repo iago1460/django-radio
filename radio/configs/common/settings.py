@@ -22,6 +22,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
+##################################################################################
+# To override this settings create a "local_settings.py" file in same location.  #
+# RadioCo Settings                                                               #
+# http://django-radio.readthedocs.org/en/latest/reference/configuration.html     #
+##################################################################################
+
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '(h_$1pj(&usx%kw^m6$7*x9pnar+t_136g!3)g#+eje5r^3(!+'
 
@@ -159,16 +166,15 @@ USERNAME_RADIOCO_RECORDER = 'RadioCo_Recorder'
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_JQUERY_URL = '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js'
 
-# RadioCo EXAMPLE SETTINGS
-'''
+# Available Languages
 gettext_noop = lambda s: s
 PROGRAMME_LANGUAGES = (
     ('es', gettext_noop('Spanish')),
     ('en', gettext_noop('English')),
+    ('gl', gettext_noop('Galician')),
 )
-'''
 
-
+# Disqus
 DISQUS_ENABLE = False
 DISQUS_API_KEY = ''
 DISQUS_WEBSITE_SHORTNAME = ''
