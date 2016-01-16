@@ -17,6 +17,7 @@
 
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+SITE_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 
 # Quick-start development settings - unsuitable for production
@@ -88,6 +89,26 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'apps.radio.context_processors.settings',
 )
 
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+)
+
+TEMPLATE_DIRS = (
+    os.path.join(SITE_ROOT, 'templates'),
+)
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': TEMPLATE_DIRS,
+        'OPTIONS': {
+            'context_processors': TEMPLATE_CONTEXT_PROCESSORS,
+            'loaders': TEMPLATE_LOADERS,
+        },
+    },
+]
+
 ROOT_URLCONF = 'radio.configs.common.urls'
 
 
@@ -118,7 +139,6 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-SITE_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 LOCALE_PATHS = (
     os.path.join(SITE_ROOT, 'locale'),
@@ -179,6 +199,9 @@ DISQUS_ENABLE = False
 DISQUS_API_KEY = ''
 DISQUS_WEBSITE_SHORTNAME = ''
 
+# Admin
+GRAPPELLI_ADMIN_HEADLINE = 'RadioCo'
+GRAPPELLI_ADMIN_TITLE = 'RadioCo'
 
 # Import local settings
 try:

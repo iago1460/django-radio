@@ -1,15 +1,33 @@
-#############
-Configuration
-#############
-
-RadioCo has a number of settings to configure its behaviour.
-
-|
-
-*****************
+#################
 Application Setup
-*****************
-These settings should be available in your ``settings.py``. Your settings should be in a ``local_settings.py`` file in
+#################
+RadioCo can be adapted to your needs, you have three ways, in the administration page in the Global Settings section,
+overriding the settings.py and overriding templates.
+
+
+***************
+Global settings
+***************
+
+Go to the admin section on your browser and edit the information available. You can setup the google analytics id here.
+
+
+*********
+Templates
+*********
+
+There is a empty folder called templates inside radio folder. You should override templates here, make sure to keep
+the relative path.
+
+For example, to override the episode detail page copy the episode_detail.html file from
+radio/apps/programmes/templates/programmes/episode_detail.html to radio/templates/episode_detail.html
+
+
+***********
+Settings.py
+***********
+
+These settings are available in ``settings.py``. Your settings should be in a ``local_settings.py`` file in
 the same directory as ``settings.py``.
 
 .. warning::
@@ -61,29 +79,3 @@ Add comments to your site with Disqus. `Create your account <https://disqus.com/
     DISQUS_API_KEY = 'YOUR_API_KEY'
     DISQUS_WEBSITE_SHORTNAME = 'YOUR_SHORTNAME'
 
-
-|
-|
-|
-
-
-**********************
-Recorder Program Setup
-**********************
-The settings should be available in your `settings.ini <https://github.com/iago1460/django-radio-recorder/blob/master/recorder/settings.ini>`_.
-
-
-
-*******************
-Communication Setup
-*******************
-
-In your Admin interface go to **Podcast Configuration**, copy **Recorder token** and
-put into the Recorder Program settings::
-
-    token:8fdde6d703c05773084ea83e5ec2da62637666a0 #for example
-
-Modify the **url** in your Recorder Program settings::
-
-    url:http://yourdomain:80/api/1/
-    

@@ -1,19 +1,8 @@
 ############
-django radio
+RadioCo
 ############
-.. image:: https://pypip.in/version/django-radio/badge.svg
-    :target: https://pypi.python.org/pypi/django-radio/
-.. image:: https://pypip.in/download/django-radio/badge.svg
-    :target: https://pypi.python.org/pypi/django-radio/
-.. image:: https://pypip.in/py_versions/django-radio/badge.svg
-    :target: https://pypi.python.org/pypi/django-radio/
-.. image:: https://pypip.in/license/django-radio/badge.svg
-    :target: https://pypi.python.org/pypi/django-radio/
 
-
-A radio management application that makes easy scheduling, live recording, publishing...
-
-It is used by `RadioCo  <https://github.com/iago1460/radioco>`_.
+RadioCo is a radio management application that makes easy scheduling, live recording, publishing...
 
 ********
 Features
@@ -35,7 +24,7 @@ Documentation
 *************
 
 Please head over to our `documentation <http://django-radio.readthedocs.org/>`_ for all
-the details on how to install, extend and use django radio.
+the details on how to install, extend and use RadioCo.
 
 ***********
 Quick Start

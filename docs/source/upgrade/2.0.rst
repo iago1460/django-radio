@@ -9,6 +9,7 @@ What's new in 2.0
 *   New layout! The whole site has been redesigned
 *   Added image versions, RadioCo will adapt your images to fit in the new template
 *   Added comments support.
+*   Added analytics support.
 
 
 ********************
@@ -23,5 +24,9 @@ To setup your settings please read the configuration section.
 
 You should be able to keep your current database but make sure to create a backup before start.
 
+.. code-block:: bash
+
+    pip install -r radio/configs/common/requirements.txt
+    python manage.py collectstatic
     python manage.py migrate
-    
+
