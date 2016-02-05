@@ -17,6 +17,7 @@
 
 from radio.configs.common.settings import *
 
+SECRET_KEY = os.environ['SECRET_KEY']
 
 DEBUG = False
 
@@ -34,7 +35,7 @@ DATABASES = {
 WSGI_APPLICATION = 'radio.configs.docker.wsgi.application'
 
 # Allow all host headers
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 # Import local settings
 try:

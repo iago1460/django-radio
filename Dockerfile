@@ -1,4 +1,5 @@
 FROM python:2.7
+MAINTAINER Iago Veloso Abalo "author@radioco.org"
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app

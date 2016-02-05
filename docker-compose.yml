@@ -1,6 +1,6 @@
 web:
   restart: always
-  build: ./
+  image: .
   expose:
     - "8000"
   links:
@@ -8,7 +8,7 @@ web:
   volumes:
     - /usr/src/app/radio/static
   env_file: radio/configs/docker/env
-  command: /usr/local/bin/gunicorn radio.configs.docker.wsgi:application -w 2 -b :8000
+  command: radio/configs/docker/docker-entrypoint.sh
 
 nginx:
   restart: always
@@ -29,10 +29,3 @@ postgres:
     - data
   ports:
     - "5432:5432"
-
-data:
-  restart: "no"
-  image: postgres:latest
-  volumes:
-    - /var/lib/postgresql
-  command: "true"
