@@ -5,8 +5,6 @@ web:
     - "8000"
   links:
     - postgres:postgres
-  volumes:
-    - /usr/src/app/radio/static
   env_file: radio/configs/docker/env
   command: radio/configs/docker/docker-entrypoint.sh
 
