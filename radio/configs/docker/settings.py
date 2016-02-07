@@ -19,7 +19,7 @@ from radio.configs.common.settings import *
 
 SECRET_KEY = os.environ['SECRET_KEY']
 
-DEBUG = bool(os.environ.get('DEBUG', False))
+DEBUG = unicode(os.environ.get('DEBUG', 'False')) == u'True'
 
 DATABASES = {
     'default': {
