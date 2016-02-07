@@ -19,7 +19,7 @@ from radio.configs.common.settings import *
 
 SECRET_KEY = os.environ['SECRET_KEY']
 
-DEBUG = False
+DEBUG = bool(os.environ.get('DEBUG', False))
 
 DATABASES = {
     'default': {

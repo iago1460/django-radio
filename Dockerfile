@@ -6,3 +6,5 @@ WORKDIR /usr/src/app
 
 COPY . /usr/src/app
 RUN pip install --no-cache-dir -r radio/configs/docker/requirements.txt
+
+EXPOSE 8000

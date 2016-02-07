@@ -1,8 +1,6 @@
 web:
   restart: always
   build: .
-  expose:
-    - "8000"
   links:
     - postgres:postgres
   env_file: radio/configs/docker/env
