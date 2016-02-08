@@ -17,6 +17,8 @@
 
 from radio.configs.common.settings import *
 
+DEBUG = False
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS += (
     'debug_toolbar',

@@ -38,7 +38,7 @@ admin.site.site_title = _('RadioCo site admin')
 
 
 def handler400(request):
-    response = render_to_response('radio/400.html', {}, context_instance=RequestContext(request))
+    response = render_to_response('radio/404.html', {}, context_instance=RequestContext(request))
     response.status_code = 400
     return response
 
@@ -48,7 +48,7 @@ def handler404(request):
     return response
 
 def handler403(request):
-    response = render_to_response('radio/403.html', {}, context_instance=RequestContext(request))
+    response = render_to_response('radio/404.html', {}, context_instance=RequestContext(request))
     response.status_code = 403
     return response
 

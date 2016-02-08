@@ -1,55 +1,54 @@
-##########################
-Installing web application
-##########################
-
-This tutorial is written for Python 2.7 and Ubuntu 12.04 or later.
-
-
-********************
-Installing on Ubuntu
-********************
-
-If you're using Ubuntu (tested with 14.04), the following should get you started:
-
-.. code-block:: bash
-
-    sudo apt-get install git-core python-dev python-pip python-virtualenv
-
-Next, download the project and cd into it:
-
-.. code-block:: bash
-
-    git clone https://github.com/iago1460/django-radio
-    cd django-radio
-
-Create and switch to the virtualenv at the command line by typing:
-
-.. code-block:: bash
-
-    virtualenv venv
-    source venv/bin/activate
-  
-Install the requirements:
-
-.. code-block:: bash
-
-    pip install -r radio/configs/common/requirements.txt
+#################
+Production Setup
+#################
+The Internet is a hostile environment. Before deploying this project, you should take some time to 
+review your settings, with security, performance, and operations in mind.
 
 .. note::
-    Some requirements such as Pillow need libraries on your system to work.
-    
-*******
-Testing
-*******
+    Please, review the `deployment checklist <https://docs.djangoproject.com/en/dev/howto/deployment/checklist/>`_,
+    make sure to override at least the SECRET_KEY, take a look to the Reference/Application Setup section.
 
-Let’s verify your installation
 
-.. code-block:: bash
+You have multiple options to deploy a Django application, we provide default out of the box configuration to make
+this procedure a bit easier.
 
-    fab quickstart
+******
+Heroku
+******
 
-Now that the server’s running, visit http://127.0.0.1:8000/
+RadioCo is already configured to easily deploy on Heroku, check out the folder ``radio/configs/heroku/`` and
+make sure to override the default settings creating a ``local_settings.py`` file.
+Navigate to the project root and then run::
+
+    fab save_changes
+    fab heroku_setup
+    fab master heroku_deploy
+
+
+**********************
+Deployment with docker
+**********************
+
+`Docker <https://www.docker.com/>`_ is a containerization tool used for spinning up isolated, reproducible application 
+environments. The stack includes a separate container for each service using Docker Compose.
+
+Along with Docker we will be using Docker Compose. Check the `official documentation <https://docs.docker.com/engine/installation/>`_ to install docker.
+
+
+Creating a custom image
+=======================
+
+Create a image with your current setup, navigate to the project root and then run::
+
+    docker-compose build
+
+
+
+Using the official image
+========================
+
+If you don't need/want customization you can use the `official RadioCo image <https://hub.docker.com/u/radioco/>`_ from Docker Hub,
+download the repository `docker-radioco <https://github.com/iago1460/docker-radioco>`_ to get started.
 
 .. warning::
-    Don’t use this server in anything resembling a production environment. 
-
+    Make sure to change the default SECRET_KEY, the ``env`` file under the web folder contains the environment variables.

@@ -10,5 +10,6 @@ recommended to work through them in the order presented here.
 .. toctree::
     :maxdepth: 1
 
+    trying_web_app
     install_web_app
     install_recorder_program
