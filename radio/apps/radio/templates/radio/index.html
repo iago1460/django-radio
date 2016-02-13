@@ -126,7 +126,7 @@
 	 			<h4>{% trans 'Latest Episodes' %}</h4>
 	 			<div class="hline"></div>
                 {% for episode in latest_episodes %}
-	 			    <p><a href="{{ episode.get_absolute_url }}">{{ episode.title }}</a></p>
+	 			    <p><a href="{{ episode.get_absolute_url }}">{% firstof episode.title|title episode|title %}</a></p>
                 {% empty %}
                     <p>{% trans "There are currently no podcast" %}</p>
                 {% endfor %}

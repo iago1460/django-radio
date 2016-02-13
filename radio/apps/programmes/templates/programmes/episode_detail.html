@@ -17,7 +17,8 @@
 
             <div class="col-lg-5 col-lg-offset-1 spacing">
                     <h4>{% firstof episode.title|upper episode|upper %}</h4>
-                    <p>{{ episode.summary|safe }}</p>
+
+                    <p>{% firstof episode.summary|safe episode.programme.synopsis|safe '' %}</p>
 
                     <h4>{% trans "Podcast" %}</h4>
                     <p>

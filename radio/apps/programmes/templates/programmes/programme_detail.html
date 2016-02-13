@@ -42,24 +42,25 @@
         {% endif %}
     </div><! --/container -->
 
+    {% if episode_list %}
+        <div class="container mhb">
+            <div class="row">
+                <h3 class="text-center">{% trans 'Episodes' %}</h3>
+                {% for episode in episode_list %}
 
-    <div class="container mhb">
-        <div class="row">
-            <h3 class="text-center">{% trans 'Episodes' %}</h3>
-			{% for episode in episode_list %}
+                    {% ifchanged episode.season %}
+                        {% if not forloop.first %}</div> {% endif %}
+                        <div class="col-lg-3">
+                            <h4>{% trans "Season" %} {{episode.season}}</h4>
+                            <div class="hline"></div>
+                    {% endifchanged %}
+                    <p><a href="{% url 'programmes:episode_detail' programme.slug episode.season episode.number_in_season %}">{{ episode }}</a></p>
+                    {% if forloop.last %}</div>{% endif %}
 
-                {% ifchanged episode.season %}
-                    {% if not forloop.first %}</div> {% endif %}
-                    <div class="col-lg-3">
-                        <h4>{% trans "Season" %} {{episode.season}}</h4>
-                        <div class="hline"></div>
-                {% endifchanged %}
-                <p><a href="{% url 'programmes:episode_detail' programme.slug episode.season episode.number_in_season %}">{{ episode }}</a></p>
-                {% if forloop.last %}</div>{% endif %}
-
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
-    </div>
+    {% endif %}
 
     {% if role_list %}
         <div class="container mhb">
