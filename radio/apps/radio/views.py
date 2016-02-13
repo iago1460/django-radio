@@ -63,6 +63,7 @@ def index(request):
     return render(request, 'radio/index.html', context)
 
 
+# WARNING: function not in use
 def user_login(request):
     if request.user.is_anonymous():
         if request.method == 'POST':

@@ -106,6 +106,14 @@ a:focus {
 	font-size: 12px;
 }
 
+.navbar-default .navbar-nav > .separator {
+	color: white;
+	font-weight: 700;
+	font-size: 12px;
+    padding-top: 14px;
+	line-height: 20px;
+}
+
 .navbar-default .navbar-nav > li > a:hover {
 	color: #00b3fe;
 }
