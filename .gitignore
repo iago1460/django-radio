@@ -1,3 +1,6 @@
+# collect-static files
+radio/media/_versions/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 .DS_Store
@@ -22,6 +25,12 @@ build/
 /dist/
 /django_radio.egg-info/
 sitepackages/
+
+# virtualenv
+bin/
+include/
+lib/
+local/
 
 # Installer logs
 pip-log.txt
