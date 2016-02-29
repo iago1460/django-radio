@@ -131,7 +131,7 @@ class NonStaffProgrammeAdmin(admin.ModelAdmin):
                 return NonStaffProgrammeminimumForm
     '''
     def get_form(self, request, obj=None, **kwargs):
-        kwargs['fields'] = ['name', 'start_date', 'end_date', 'synopsis', 'category', 'current_season', 'photo', 'language', '_runtime']
+        kwargs['fields'] = ['name', 'start_date', 'end_date', 'synopsis', 'category', 'current_season', 'photo', 'language', '_runtime', 'recurrences']
         if not obj or request.user.has_perm('programmes.add_programme'):
             self.exclude = ['slug', ]
         else:

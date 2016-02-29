@@ -29,6 +29,7 @@ from django.dispatch.dispatcher import receiver
 from django.template.defaultfilters import slugify
 from django.templatetags.static import static
 from django.utils.translation import ugettext_lazy as _
+from recurrence.fields import RecurrenceField
 
 
 if hasattr(settings, 'PROGRAMME_LANGUAGES'):
@@ -79,6 +80,7 @@ class Programme(models.Model):
     category = models.CharField(blank=True, null=True, max_length=50, choices=CATEGORY_CHOICES, verbose_name=_("category"))
     slug = models.SlugField(max_length=100, unique=True)
     _runtime = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("runtime"), help_text=_("In minutes."))
+    recurrences = RecurrenceField()
 
     @property
     def runtime(self):

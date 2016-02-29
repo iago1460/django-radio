@@ -26,7 +26,7 @@ build/
 /django_radio.egg-info/
 sitepackages/
 
-#virtualenv
+# virtualenv
 bin/
 include/
 lib/

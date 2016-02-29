@@ -58,6 +58,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'disqus',
+    'recurrence',
 
     # Local Project Apps
     'apps.users',
