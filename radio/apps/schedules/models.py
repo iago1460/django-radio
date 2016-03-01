@@ -339,9 +339,8 @@ class Schedule(models.Model):
         return closer_schedule, closer_date
 
     def __unicode__(self):
-        return ' - '.join(
-            self.get_day_display(),
-            self.start_hour.strftime('%H:%M'))
+        return ' - '.join([self.get_day_display(),
+                           self.start_hour.strftime('%H:%M')])
 
     class Meta:
         verbose_name = _('schedule')
