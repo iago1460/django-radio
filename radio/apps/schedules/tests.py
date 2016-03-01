@@ -27,40 +27,122 @@ from apps.schedules.models import ScheduleBoard, Schedule
 from apps.schedules.models import MO, TU, WE, TH, FR, SA, SU
 
 
-def to_relativedelta(tdelta):
-    return relativedelta(seconds=int(tdelta.total_seconds()),
-                         microseconds=tdelta.microseconds)
-
-
-class ProgrammeMethodTests(TestCase):
+class ScheduleModelTests(TestCase):
 
     def setUp(self):
+        self.schedule_board = ScheduleBoard.objects.create(
+            name='Board', start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0))
+
+        self.schedule = Schedule.objects.create(
+            programme=Programme.objects.create(
+                name="Programme 14:00 - 15:00",
+                synopsis="This is a description",
+                start_date=datetime.datetime(2014, 1, 1),
+                end_date=datetime.datetime(2014, 1, 31),
+                current_season=1,
+                runtime=60),
+            day=MO,
+            start_hour=datetime.time(14, 0, 0),
+            type='L',
+            schedule_board=self.schedule_board)
+
+        for schedule in Schedule.objects.all():
+            schedule.clean()
+
+    def test_runtime(self):
+        self.assertEqual(datetime.timedelta(hours=+1), self.schedule.runtime)
+
+    def test_date_before(self):
+        self.assertEqual(
+            self.schedule.date_before(datetime.datetime(2014, 1, 14)),
+            datetime.datetime(2014, 1, 13, 14, 0))
+
+    def test_date_after(self):
+        self.assertEqual(
+            self.schedule.date_after(datetime.datetime(2014, 1, 14)),
+            datetime.datetime(2014, 1, 20, 14, 0))
+
+    def test_dates_between(self):
+        self.assertEqual(
+            self.schedule.dates_between(
+                datetime.datetime(2014, 1, 1), datetime.datetime(2014, 1, 14)),
+            [datetime.datetime(2014, 1, 6, 14, 0),
+             datetime.datetime(2014, 1, 13, 14, 0)])
+
+    def test_dates_between_not_before_after(self):
+        schedule = Schedule(
+            programme=Programme(
+                name="Programme 14:00 - 15:00",
+                start_date=datetime.datetime(2014, 1, 2)),
+            day=WE,
+            start_hour=datetime.time(14, 0, 0),
+            schedule_board=self.schedule_board)
+        self.assertEqual(
+            schedule.dates_between(
+                datetime.datetime(2014, 1, 1), datetime.datetime(2014, 1, 7)),
+            [])
+
+    def test_dates_between_start_on_after(self):
+        schedule = Schedule(
+            programme=Programme(
+                name="Programme 14:00 - 15:00",
+                start_date=datetime.datetime(2014, 1, 1, 0, 0, 0)),
+            day=WE,
+            start_hour=datetime.time(14, 0, 0),
+            schedule_board=self.schedule_board)
+        self.assertEqual(
+            schedule.dates_between(
+                datetime.datetime(2014, 1, 1, 14, 0, 0),
+                datetime.datetime(2014, 1, 7)),
+            [datetime.datetime(2014, 1, 1, 14, 0)])
+
+    def test_dates_between_running(self):
+        schedule = Schedule(
+            programme=Programme(
+                name="Programme 14:00 - 15:00",
+                start_date=datetime.datetime(2014, 1, 1, 0, 0, 0),
+                runtime=60),
+            day=WE,
+            start_hour=datetime.time(14, 0, 0),
+            schedule_board=self.schedule_board)
+        self.assertEqual(
+            schedule.dates_between(
+                datetime.datetime(2014, 1, 1, 14, 30),
+                datetime.datetime(2014, 1, 7)),
+            [datetime.datetime(2014, 1, 1, 14, 0)])
+
+    def test_unicode(self):
+        self.assertEqual(unicode(self.schedule), 'Monday - 14:00')
+
+
+class ScheduleClassModelTests(TestCase):
+    def setUp(self):
+        self.schedule_board = ScheduleBoard.objects.create(
+            name='Board', start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0))
+
         midnight_programme = Programme.objects.create(
             name="Programme 00:00 - 09:00",
             synopsis="This is a description",
             start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0),
             end_date=datetime.datetime(2014, 1, 31, 12, 0, 0, 0),
-            current_season=1, runtime=540)
-
-        schedule_board = ScheduleBoard(
-            name='Board', start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0))
-        schedule_board.save()
-
-        start_hour = datetime.time(0, 0, 0)
-        for day in (MO, TU, WE, TH, FR, SA, SU):
-            Schedule.objects.create(
-                programme=midnight_programme,
-                day=day,
-                start_hour=start_hour,
-                type='L',
-                schedule_board=schedule_board)
+            current_season=1,
+            runtime=540)
 
         programme = Programme.objects.create(
             name="Programme 09:00 - 10:00",
             synopsis="This is a description",
             start_date=datetime.datetime(2014, 1, 1),
             end_date=datetime.datetime(2014, 1, 31),
-            current_season=1, runtime=60)
+            current_season=1,
+            runtime=60)
+
+        for day in (MO, TU, WE, TH, FR, SA, SU):
+            Schedule.objects.create(
+                programme=midnight_programme,
+                day=day,
+                start_hour=datetime.time(0, 0, 0),
+                type='L',
+                schedule_board=self.schedule_board)
 
         for day in (MO, WE, FR):
             Schedule.objects.create(
@@ -68,7 +150,7 @@ class ProgrammeMethodTests(TestCase):
                 day=day,
                 start_hour=datetime.time(9, 0, 0),
                 type='L',
-                schedule_board=schedule_board)
+                schedule_board=self.schedule_board)
 
         programme = Programme.objects.create(
             name="Programme 10:00 - 12:00",
@@ -82,16 +164,11 @@ class ProgrammeMethodTests(TestCase):
                 programme=programme,
                 day=day,
                 start_hour=datetime.time(10, 0, 0),
-                type='L',
-                schedule_board=schedule_board)
+                type='B',
+                schedule_board=self.schedule_board)
 
         for schedule in Schedule.objects.all():
             schedule.clean()
-
-    def test_runtime(self):
-        programme = Programme.objects.get(name="Programme 00:00 - 09:00")
-        self.assertEqual(
-            relativedelta(hours=+9), to_relativedelta(programme.runtime))
 
     def test_day_schedule(self):
         schedules, dates = Schedule.between(
@@ -134,6 +211,96 @@ class ProgrammeMethodTests(TestCase):
         self.assertEqual(schedule_1, schedule)
         self.assertEqual(
             datetime.datetime.combine(now_mock, schedule_1.start_hour), date)
+
+    def test_between(self):
+        schedules, dates = Schedule.between(
+            datetime.datetime(2014, 1, 1), datetime.datetime(2014, 1, 2))
+        self.assertEqual(dates, [[datetime.datetime(2014, 1, 1, 0, 0)],
+                                 [datetime.datetime(2014, 1, 2, 0, 0)],
+                                 [datetime.datetime(2014, 1, 1, 9, 0)],
+                                 [datetime.datetime(2014, 1, 1, 10, 0)]])
+
+    def test_between_live(self):
+        schedules, dates = Schedule.between(
+            datetime.datetime(2014, 1, 1),
+            datetime.datetime(2014, 1, 2),
+            live=True)
+        self.assertEqual(dates, [[datetime.datetime(2014, 1, 1, 0, 0)],
+                                 [datetime.datetime(2014, 1, 2, 0, 0)],
+                                 [datetime.datetime(2014, 1, 1, 9, 0)]])
+
+    def test_between_schedule_board(self):
+        schedules, dates = Schedule.between(
+            datetime.datetime(2014, 1, 1),
+            datetime.datetime(2014, 1, 2),
+            schedule_board=self.schedule_board)
+        self.assertEqual(dates, [[datetime.datetime(2014, 1, 1, 0, 0)],
+                                 [datetime.datetime(2014, 1, 2, 0, 0)],
+                                 [datetime.datetime(2014, 1, 1, 9, 0)],
+                                 [datetime.datetime(2014, 1, 1, 10, 0)]])
+
+    def test_between_emtpy_schedule_board(self):
+        schedules, dates = Schedule.between(
+            datetime.datetime(2014, 1, 1),
+            datetime.datetime(2014, 1, 2),
+            schedule_board=ScheduleBoard())
+        self.assertFalse(dates)
+
+    def test_between_exclude(self):
+        programme = Programme.objects.get(name="Programme 09:00 - 10:00")
+        schedule = Schedule.objects.get(
+            programme=programme,
+            day=WE,
+            start_hour=datetime.time(9, 0))
+        schedules, dates = Schedule.between(
+            datetime.datetime(2014, 1, 1),
+            datetime.datetime(2014, 1, 2),
+            exclude=schedule)
+        self.assertEqual(dates, [[datetime.datetime(2014, 1, 1, 0, 0)],
+                                 [datetime.datetime(2014, 1, 2, 0, 0)],
+                                 [datetime.datetime(2014, 1, 1, 10, 0)]])
+
+    def test_schedule(self):
+        schedule, date = Schedule.schedule(datetime.datetime(2014, 1, 2, 4, 0))
+        self.assertEqual(schedule.programme.name, 'Programme 00:00 - 09:00')
+        self.assertEqual(schedule.start_hour, datetime.time(0, 0))
+        self.assertEqual(date, datetime.datetime(2014, 1, 2, 0, 0))
+
+    def test_schedule_silence(self):
+        schedule, date = Schedule.schedule(
+            datetime.datetime(2014, 1, 1, 14, 0))
+        self.assertIsNone(schedule)
+        self.assertIsNone(date)
+
+    def test_schedule_exclude(self):
+        programme = Programme.objects.get(name="Programme 00:00 - 09:00")
+        schedule = Schedule.objects.get(
+            programme=programme,
+            day=TH,
+            start_hour=datetime.time(0, 0))
+        schedule, date = Schedule.schedule(
+            datetime.datetime(2014, 1, 2, 4, 0),
+            exclude=schedule)
+        self.assertIsNone(schedule)
+        self.assertIsNone(date)
+
+    def test_get_next_date(self):
+        programme = Programme.objects.get(name="Programme 00:00 - 09:00")
+        schedule, date = Schedule.get_next_date(
+            programme, datetime.datetime(2014, 1, 2, 4, 0))
+        self.assertEqual(date, datetime.datetime(2014, 1, 3, 0, 0))
+
+    def test_get_next_date_no_schedule(self):
+        programme = Programme.objects.get(name="Programme 00:00 - 09:00")
+        schedule, date = Schedule.get_next_date(
+            programme, datetime.datetime(2014, 2, 1, 4, 0))
+        self.assertIsNone(date)
+
+    def test_get_next_date_no_current_board(self):
+        programme = Programme.objects.get(name="Programme 00:00 - 09:00")
+        schedule, date = Schedule.get_next_date(
+            programme, datetime.datetime(2013, 1, 2, 4, 0))
+        self.assertEqual(date, datetime.datetime(2014, 1, 1, 0, 0))
 
 
 class ScheduleBoardMethodTests(TestCase):

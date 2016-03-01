@@ -156,6 +156,7 @@ class Schedule(models.Model):
         verbose_name=_("source"),
         help_text=_("It is used when is a broadcast."))
 
+    @property
     def runtime(self):
         return self.programme.runtime
 
@@ -202,7 +203,7 @@ class Schedule(models.Model):
         # add date if the programme hasn't finished
         start_date = self.date_before(after)
         if start_date and start_date != after:
-            if start_date + self.runtime() > after:
+            if start_date + self.runtime > after:
                 dates.insert(0, start_date)
         return dates
 
@@ -222,7 +223,7 @@ class Schedule(models.Model):
             # get the next emission date
             first_date_start = self.date_after(dt)
             if first_date_start:
-                first_date_end = first_date_start + self.runtime()
+                first_date_end = first_date_start + self.runtime
                 schedules, dates_list_list = Schedule.between(
                     after=first_date_start,
                     before=first_date_end,
@@ -235,7 +236,7 @@ class Schedule(models.Model):
                             if date != first_date_end:
                                 schedule = schedules[index]
                                 start_date = date
-                                end_date = start_date + schedule.runtime()
+                                end_date = start_date + schedule.runtime
                                 raise ValidationError(_(
                                     'This settings collides with: {name} '
                                     '[{start_date} - {end_date}]').format(
@@ -310,7 +311,7 @@ class Schedule(models.Model):
                 earlier_date = date
                 earlier_schedule = schedule
         if (earlier_schedule is None or
-                dt > earlier_date + earlier_schedule.runtime()):
+                dt > earlier_date + earlier_schedule.runtime):
             # XXX Todo: check
             return None, None
         return earlier_schedule, earlier_date
