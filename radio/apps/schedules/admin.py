@@ -106,8 +106,8 @@ class FullcalendarAdmin(admin.ModelAdmin):
         return custom_urls + urls
 
     def response_change(self, request, obj):
-        msg = _(
-            '%(obj)s was changed successfully.') % {'obj': force_unicode(obj)}
+        msg = _('{obj} was changed successfully.'.format(
+            obj=force_unicode(obj)))
         if '_continue' in request.POST:
             return HttpResponseRedirect(request.path)
         else:

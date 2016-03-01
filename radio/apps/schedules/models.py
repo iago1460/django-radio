@@ -67,12 +67,13 @@ class ScheduleBoard(models.Model):
                         'end date must be greater than '
                         'or equal to start date.'))
                 # check date collision
-                qs = ScheduleBoard.objects.filter(
-                    start_date__lte=self.end_date,
-                    end_date__isnull=True
-                ) | ScheduleBoard.objects.filter(
-                    start_date__lte=self.end_date,
-                    end_date__gte=self.start_date)
+                qs = (
+                    ScheduleBoard.objects.filter(
+                        start_date__lte=self.end_date,
+                        end_date__isnull=True) |
+                    ScheduleBoard.objects.filter(
+                        start_date__lte=self.end_date,
+                        end_date__gte=self.start_date))
 
                 if self.pk is not None:
                     qs = qs.exclude(pk=self.pk)
@@ -82,10 +83,12 @@ class ScheduleBoard(models.Model):
 
             else:
                 # start_date != None and end_date == None only one can exist
-                qs = ScheduleBoard.objects.filter(
-                    start_date__isnull=False,
-                    end_date__isnull=True
-                ) | ScheduleBoard.objects.filter(end_date__gte=self.start_date)
+                qs = (
+                    ScheduleBoard.objects.filter(
+                        start_date__isnull=False,
+                        end_date__isnull=True) |
+                    ScheduleBoard.objects.filter(
+                        end_date__gte=self.start_date))
                 if self.pk is not None:
                     qs = qs.exclude(pk=self.pk)
                 if qs.exists():
@@ -112,9 +115,10 @@ class ScheduleBoard(models.Model):
 
     @classmethod
     def get_current(cls, dt):
-        schedule_board = (cls.objects.filter(
-            start_date__lte=dt,
-            end_date__isnull=True).order_by('-start_date') |
+        schedule_board = (
+            cls.objects.filter(
+                start_date__lte=dt,
+                end_date__isnull=True).order_by('-start_date') |
             cls.objects.filter(
                 start_date__lte=dt,
                 end_date__gte=dt).order_by('-start_date'))
@@ -335,9 +339,8 @@ class Schedule(models.Model):
         return closer_schedule, closer_date
 
     def __unicode__(self):
-        return ' '.join(
+        return ' - '.join(
             self.get_day_display(),
-            '-',
             self.start_hour.strftime('%H:%M'))
 
     class Meta:

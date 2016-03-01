@@ -49,8 +49,8 @@ def schedule_list(request):
 def feed_schedules(request):
     start = datetime.datetime.strptime(request.GET.get('start'), '%Y-%m-%d')
     end = datetime.datetime.strptime(request.GET.get('end'), '%Y-%m-%d')
-    return HttpResponse(json.dumps(
-        __get_events(after=start, before=end, json_mode=True)),
+    return HttpResponse(
+        json.dumps(__get_events(after=start, before=end, json_mode=True)),
         content_type='application/json')
 
 
@@ -89,14 +89,13 @@ def __get_events(after, before, json_mode=False):
             episodes.append(episode)
 
             if episode:
-                url = reverse(
-                    'programmes:episode_detail', args=(
-                        schedule.programme.slug,
-                        episode.season,
-                        episode.number_in_season,))
+                url = reverse('programmes:episode_detail', args=(
+                    schedule.programme.slug,
+                    episode.season,
+                    episode.number_in_season,))
             else:
-                url = reverse(
-                    'programmes:detail', args=(schedule.programme.slug,))
+                url = reverse('programmes:detail', args=(
+                    schedule.programme.slug,))
 
             event_entry = {
                 'id': schedule.id,
