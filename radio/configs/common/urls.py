@@ -75,6 +75,7 @@ urlpatterns = patterns('',
 
     url(r'^api/1/recording_schedules/$', 'apps.radio.views.recording_schedules', name="recording_schedules"),
     url(r'^api/1/submit_recorder/$', 'apps.radio.views.submit_recorder', name="submit_recorder"),
+    url(r'^api/2/', include('apps.api.urls', namespace="api"))
 )
 
 if settings.DEBUG and 'debug_toolbar' in settings.INSTALLED_APPS:
