@@ -25,11 +25,13 @@ build/
 /dist/
 /django_radio.egg-info/
 sitepackages/
+pip-selfcheck.json
 
 # virtualenv
 bin/
 include/
 lib/
+lib64
 local/
 
 # Installer logs

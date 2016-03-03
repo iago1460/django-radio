@@ -42,6 +42,10 @@ class ProgrammeModelTests(TestCase):
     def test_runtime(self):
         self.assertEqual(datetime.timedelta(hours=+9), self.programme.runtime)
 
+    def test_runtime_not_set(self):
+        programme = Programme()
+        self.assertEqual(datetime.timedelta(0), programme.runtime)
+
     def test_save_episode(self):
         date_published = datetime.datetime(2014, 1, 31, 0, 0, 0, 0)
         episode = Episode.create_episode(

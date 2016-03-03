@@ -160,58 +160,56 @@ class Schedule(models.Model):
     def runtime(self):
         return self.programme.runtime
 
-    def __get_rrule(self):
-        start_date = self.programme.start_date
-        if (self.schedule_board.start_date and
-                start_date < self.schedule_board.start_date):
-            start_date = self.schedule_board.start_date
-        if self.programme.end_date:
-            end_date = self.programme.end_date
-            if (self.schedule_board.end_date and
-                    end_date > self.schedule_board.end_date):
-                end_date = self.schedule_board.end_date
-            # Due to rrule we need to add 1 day
-            end_date = end_date + datetime.timedelta(days=1)
-            return rrule.rrule(
-                rrule.WEEKLY,
-                byweekday=[self.day],
-                dtstart=datetime.datetime.combine(start_date, self.start_hour),
-                until=end_date)
+    @property
+    def start_date(self):
+        if not self.schedule_board.start_date:
+            base_date = self.programme.start_date
         else:
-            end_date = self.schedule_board.end_date
-            if end_date:
-                # Due to rrule we need to add 1 day
-                end_date = end_date + datetime.timedelta(days=1)
-                return rrule.rrule(
-                    rrule.WEEKLY,
-                    byweekday=[self.day],
-                    dtstart=datetime.datetime.combine(
-                        start_date, self.start_hour),
-                    until=end_date)
-            else:
-                return rrule.rrule(
-                    rrule.WEEKLY,
-                    byweekday=[self.day],
-                    dtstart=datetime.datetime.combine(
-                        start_date, self.start_hour))
+            base_date = max(
+                self.programme.start_date, self.schedule_board.start_date)
+
+        weekday_distance = self.day - base_date.weekday()
+        if (weekday_distance < 0):
+            weekday_distance += 7
+
+        return datetime.datetime.combine(
+            base_date + datetime.timedelta(days=weekday_distance),
+            self.start_hour)
+
+    @property
+    def end_date(self):
+        def base_date():
+            if not self.schedule_board.end_date:
+                return self.programme.end_date
+            if not self.programme.end_date:
+                return self.schedule_board.end_date
+            return min(self.programme.end_date, self.schedule_board.end_date)
+
+        base_date = base_date()
+        if not base_date:
+            return None
+        return datetime.datetime.combine(base_date, datetime.time(23, 59, 59))
 
     def dates_between(self, after, before):
         '''
             Return a sorted list of dates between after and before
         '''
-        dates = self.__get_rrule().between(after, before, True)
         # add date if the programme hasn't finished
-        start_date = self.date_before(after)
-        if start_date and start_date != after:
-            if start_date + self.runtime > after:
-                dates.insert(0, start_date)
+        after -= self.runtime
+
+        dates = self.programme.recurrences.between(
+            after, before,
+            dtstart=self.start_date,
+            inc=True)
         return dates
 
     def date_before(self, dt):
-        return self.__get_rrule().before(dt, True)
+        return self.programme.recurrences.before(
+            dt, dtstart=self.start_date, inc=True)
 
     def date_after(self, dt):
-        return self.__get_rrule().after(dt, True)
+        return self.programme.recurrences.after(
+            dt, dtstart=self.start_date, inc=True)
 
     def clean(self):
         now = datetime.datetime.now()

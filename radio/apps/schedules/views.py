@@ -100,7 +100,7 @@ def __get_events(after, before, json_mode=False):
             event_entry = {
                 'id': schedule.id,
                 'start': str(date),
-                'end': str(date + schedule.runtime()),
+                'end': str(date + schedule.runtime),
                 'allDay': False,
                 'title':  schedule.programme.name,
                 'type': schedule.type,

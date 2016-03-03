@@ -84,6 +84,8 @@ class Programme(models.Model):
 
     @property
     def runtime(self):
+        if not self._runtime:
+            return datetime.timedelta(0)
         return datetime.timedelta(minutes=self._runtime)
 
     @runtime.setter

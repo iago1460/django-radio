@@ -16,6 +16,7 @@
 
 
 import datetime
+import recurrence
 
 from dateutil.relativedelta import relativedelta
 from django.core.exceptions import ValidationError
@@ -31,16 +32,18 @@ class ScheduleModelTests(TestCase):
 
     def setUp(self):
         self.schedule_board = ScheduleBoard.objects.create(
-            name='Board', start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0))
+            name='Board', start_date=datetime.date(2014, 1, 1))
 
         self.schedule = Schedule.objects.create(
             programme=Programme.objects.create(
                 name="Programme 14:00 - 15:00",
                 synopsis="This is a description",
-                start_date=datetime.datetime(2014, 1, 1),
-                end_date=datetime.datetime(2014, 1, 31),
+                start_date=datetime.date(2014, 1, 1),
+                end_date=datetime.date(2014, 1, 31),
                 current_season=1,
-                runtime=60),
+                runtime=60,
+                recurrences=recurrence.Recurrence(
+                    rrules=[recurrence.Rule(recurrence.WEEKLY)])),
             day=MO,
             start_hour=datetime.time(14, 0, 0),
             type='L',
@@ -51,6 +54,71 @@ class ScheduleModelTests(TestCase):
 
     def test_runtime(self):
         self.assertEqual(datetime.timedelta(hours=+1), self.schedule.runtime)
+
+    def test_runtime_not_set(self):
+        schedule = Schedule(programme=Programme())
+        self.assertEqual(datetime.timedelta(0), schedule.runtime)
+
+    def test_start_date(self):
+        self.assertEqual(
+            self.schedule.start_date, datetime.datetime(2014, 1, 6, 14, 0))
+
+    def test_start_date_programme_gt_schedule(self):
+        schedule = Schedule(
+            day=MO,
+            start_hour=datetime.time(9, 0),
+            programme=Programme(start_date=datetime.date(2014, 1, 7)),
+            schedule_board=ScheduleBoard(start_date=datetime.date(2014, 1, 1)))
+        self.assertEqual(
+            schedule.start_date, datetime.datetime(2014, 1, 13, 9, 0))
+
+    def test_start_date_programme_lt_schedule(self):
+        schedule = Schedule(
+            day=MO,
+            start_hour=datetime.time(9, 0),
+            programme=Programme(start_date=datetime.date(2014, 1, 1)),
+            schedule_board=ScheduleBoard(start_date=datetime.date(2014, 1, 7)))
+        self.assertEqual(
+            schedule.start_date, datetime.datetime(2014, 1, 13, 9, 0))
+
+    def test_start_date_schedule_board_none(self):
+        schedule = Schedule(
+            day=MO,
+            start_hour=datetime.time(9, 0),
+            programme=Programme(start_date=datetime.date(2014, 1, 1)),
+            schedule_board=ScheduleBoard())
+        self.assertEqual(
+            schedule.start_date, datetime.datetime(2014, 1, 6, 9, 0))
+
+    def test_end_date(self):
+        self.assertEqual(
+            self.schedule.end_date, datetime.datetime(2014, 1, 31, 23, 59, 59))
+
+    def test_end_date_programme_gt_schedule(self):
+        schedule = Schedule(
+            programme=Programme(end_date=datetime.date(2014, 1, 2)),
+            schedule_board=ScheduleBoard(end_date=datetime.date(2014, 1, 1)))
+        self.assertEqual(
+            schedule.end_date, datetime.datetime(2014, 1, 1, 23, 59, 59))
+
+    def test_end_date_programme_lt_schedule(self):
+        schedule = Schedule(
+            programme=Programme(end_date=datetime.date(2014, 1, 1)),
+            schedule_board=ScheduleBoard(end_date=datetime.date(2014, 1, 2)))
+        self.assertEqual(
+            schedule.end_date, datetime.datetime(2014, 1, 1, 23, 59, 59))
+
+    def test_end_date_propgramme_none(self):
+        schedule = Schedule(
+            programme=Programme(),
+            schedule_board=ScheduleBoard(end_date=datetime.date(2014, 1, 1)))
+        self.assertEqual(
+            schedule.end_date, datetime.datetime(2014, 1, 1, 23, 59, 59))
+
+    def test_end_date_none(self):
+        schedule = Schedule(
+            programme=Programme(), schedule_board=ScheduleBoard())
+        self.assertIsNone(schedule.end_date)
 
     def test_date_before(self):
         self.assertEqual(
@@ -69,11 +137,51 @@ class ScheduleModelTests(TestCase):
             [datetime.datetime(2014, 1, 6, 14, 0),
              datetime.datetime(2014, 1, 13, 14, 0)])
 
+    def test_dates_between_complex_ruleset(self):
+        rrules = [recurrence.Rule(recurrence.DAILY, interval=2)]
+        exrules = [recurrence.Rule(
+            recurrence.WEEKLY, byday=[recurrence.MO, recurrence.TU])]
+        schedule = Schedule(
+            programme=Programme(
+                name="Programme 14:00 - 15:00",
+                start_date=datetime.date(2014, 1, 1),
+                recurrences=recurrence.Recurrence(
+                    rrules=rrules, exrules=exrules)),
+            day=TH,
+            start_hour=datetime.time(14, 0, 0),
+            schedule_board=self.schedule_board)
+        self.assertEqual(
+            schedule.dates_between(
+                datetime.datetime(2014, 1, 1), datetime.datetime(2014, 1, 9)),
+            [datetime.datetime(2014, 1, 2, 14, 0),
+             datetime.datetime(2014, 1, 4, 14, 0),
+             datetime.datetime(2014, 1, 8, 14, 0)])
+
+    def test_dates_between_later_start_by_ruleset(self):
+        rrules = [recurrence.Rule(
+            recurrence.WEEKLY, byday=[recurrence.MO, recurrence.TU])]
+        schedule = Schedule(
+            programme=Programme(
+                name="Programme 14:00 - 15:00",
+                start_date=datetime.date(2014, 1, 1),
+                recurrences=recurrence.Recurrence(rrules=rrules)),
+            day=WE,
+            start_hour=datetime.time(14, 0, 0),
+            schedule_board=self.schedule_board)
+        self.assertEqual(
+            schedule.dates_between(
+                datetime.datetime(2014, 1, 1), datetime.datetime(2014, 1, 9)),
+            [datetime.datetime(2014, 1, 1, 14, 0),
+             # XXX http://www.kanzaki.com/docs/ical/dtstart.html, this is not
+             # valid for our use case, think about solution...
+             datetime.datetime(2014, 1, 6, 14, 0),
+             datetime.datetime(2014, 1, 7, 14, 0)])
+
     def test_dates_between_not_before_after(self):
         schedule = Schedule(
             programme=Programme(
                 name="Programme 14:00 - 15:00",
-                start_date=datetime.datetime(2014, 1, 2)),
+                start_date=datetime.date(2014, 1, 2)),
             day=WE,
             start_hour=datetime.time(14, 0, 0),
             schedule_board=self.schedule_board)
@@ -86,7 +194,7 @@ class ScheduleModelTests(TestCase):
         schedule = Schedule(
             programme=Programme(
                 name="Programme 14:00 - 15:00",
-                start_date=datetime.datetime(2014, 1, 1, 0, 0, 0)),
+                start_date=datetime.date(2014, 1, 1)),
             day=WE,
             start_hour=datetime.time(14, 0, 0),
             schedule_board=self.schedule_board)
@@ -100,7 +208,7 @@ class ScheduleModelTests(TestCase):
         schedule = Schedule(
             programme=Programme(
                 name="Programme 14:00 - 15:00",
-                start_date=datetime.datetime(2014, 1, 1, 0, 0, 0),
+                start_date=datetime.date(2014, 1, 1),
                 runtime=60),
             day=WE,
             start_hour=datetime.time(14, 0, 0),
@@ -117,32 +225,39 @@ class ScheduleModelTests(TestCase):
 
 class ScheduleClassModelTests(TestCase):
     def setUp(self):
+        daily = recurrence.Recurrence(
+            rrules=[recurrence.Rule(recurrence.DAILY)])
+
+        weekly = recurrence.Recurrence(
+            rrules=[recurrence.Rule(recurrence.WEEKLY)])
+
         self.schedule_board = ScheduleBoard.objects.create(
             name='Board', start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0))
 
         midnight_programme = Programme.objects.create(
             name="Programme 00:00 - 09:00",
             synopsis="This is a description",
-            start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0),
-            end_date=datetime.datetime(2014, 1, 31, 12, 0, 0, 0),
+            start_date=datetime.date(2014, 1, 1),
+            end_date=datetime.date(2014, 1, 31),
             current_season=1,
-            runtime=540)
+            runtime=540,
+            recurrences=daily)
+
+        Schedule.objects.create(
+            programme=midnight_programme,
+            day=WE,
+            start_hour=datetime.time(0, 0, 0),
+            type='L',
+            schedule_board=self.schedule_board)
 
         programme = Programme.objects.create(
             name="Programme 09:00 - 10:00",
             synopsis="This is a description",
-            start_date=datetime.datetime(2014, 1, 1),
-            end_date=datetime.datetime(2014, 1, 31),
+            start_date=datetime.date(2014, 1, 1),
+            end_date=datetime.date(2014, 1, 31),
             current_season=1,
-            runtime=60)
-
-        for day in (MO, TU, WE, TH, FR, SA, SU):
-            Schedule.objects.create(
-                programme=midnight_programme,
-                day=day,
-                start_hour=datetime.time(0, 0, 0),
-                type='L',
-                schedule_board=self.schedule_board)
+            runtime=60,
+            recurrences=weekly)
 
         for day in (MO, WE, FR):
             Schedule.objects.create(
@@ -155,9 +270,11 @@ class ScheduleClassModelTests(TestCase):
         programme = Programme.objects.create(
             name="Programme 10:00 - 12:00",
             synopsis="This is a description",
-            start_date=datetime.datetime(2014, 1, 1),
-            end_date=datetime.datetime(2014, 1, 31),
-            current_season=1, runtime=120)
+            start_date=datetime.date(2014, 1, 1),
+            end_date=datetime.date(2014, 1, 31),
+            current_season=1,
+            runtime=120,
+            recurrences=weekly)
 
         for day in (MO, WE, FR):
             Schedule.objects.create(
@@ -173,31 +290,27 @@ class ScheduleClassModelTests(TestCase):
     def test_day_schedule(self):
         schedules, dates = Schedule.between(
             datetime.datetime(2014, 1, 6), datetime.datetime(2014, 1, 7))
-        self.assertEqual(4, len(schedules))
+        self.assertEqual(3, len(schedules))
 
         schedule_1 = Schedule.objects.get(
             programme=Programme.objects.get(name="Programme 00:00 - 09:00"),
-            day=MO)
+            day=WE)
         schedule_2 = Schedule.objects.get(
             programme=Programme.objects.get(name="Programme 09:00 - 10:00"),
             day=MO)
         schedule_3 = Schedule.objects.get(
             programme=Programme.objects.get(name="Programme 10:00 - 12:00"),
             day=MO)
-        schedule_4 = Schedule.objects.get(
-            programme=Programme.objects.get(name="Programme 00:00 - 09:00"),
-            day=TU)
         self.assertTrue(schedule_1 in schedules)
         self.assertTrue(schedule_2 in schedules)
         self.assertTrue(schedule_3 in schedules)
-        self.assertTrue(schedule_4 in schedules)
 
     def test_now_playing_1(self):
         now_mock = datetime.datetime(2014, 1, 6, 0, 0, 0, 0)
         schedule, date = Schedule.schedule(now_mock)
         schedule_1 = Schedule.objects.get(
             programme=Programme.objects.get(name="Programme 00:00 - 09:00"),
-            day=MO)
+            day=WE)
         self.assertEqual(schedule_1, schedule)
         self.assertEqual(
             datetime.datetime.combine(now_mock, schedule_1.start_hour), date)
@@ -207,7 +320,7 @@ class ScheduleClassModelTests(TestCase):
         schedule, date = Schedule.schedule(now_mock)
         schedule_1 = Schedule.objects.get(
             programme=Programme.objects.get(name="Programme 00:00 - 09:00"),
-            day=TU)
+            day=WE)
         self.assertEqual(schedule_1, schedule)
         self.assertEqual(
             datetime.datetime.combine(now_mock, schedule_1.start_hour), date)
@@ -215,29 +328,32 @@ class ScheduleClassModelTests(TestCase):
     def test_between(self):
         schedules, dates = Schedule.between(
             datetime.datetime(2014, 1, 1), datetime.datetime(2014, 1, 2))
-        self.assertEqual(dates, [[datetime.datetime(2014, 1, 1, 0, 0)],
-                                 [datetime.datetime(2014, 1, 2, 0, 0)],
-                                 [datetime.datetime(2014, 1, 1, 9, 0)],
-                                 [datetime.datetime(2014, 1, 1, 10, 0)]])
+        self.assertEqual(dates, [
+            [datetime.datetime(2014, 1, 1, 0, 0),
+             datetime.datetime(2014, 1, 2, 0, 0)],
+            [datetime.datetime(2014, 1, 1, 9, 0)],
+            [datetime.datetime(2014, 1, 1, 10, 0)]])
 
     def test_between_live(self):
         schedules, dates = Schedule.between(
             datetime.datetime(2014, 1, 1),
             datetime.datetime(2014, 1, 2),
             live=True)
-        self.assertEqual(dates, [[datetime.datetime(2014, 1, 1, 0, 0)],
-                                 [datetime.datetime(2014, 1, 2, 0, 0)],
-                                 [datetime.datetime(2014, 1, 1, 9, 0)]])
+        self.assertEqual(dates, [
+            [datetime.datetime(2014, 1, 1, 0, 0),
+             datetime.datetime(2014, 1, 2, 0, 0)],
+            [datetime.datetime(2014, 1, 1, 9, 0)]])
 
     def test_between_schedule_board(self):
         schedules, dates = Schedule.between(
             datetime.datetime(2014, 1, 1),
             datetime.datetime(2014, 1, 2),
             schedule_board=self.schedule_board)
-        self.assertEqual(dates, [[datetime.datetime(2014, 1, 1, 0, 0)],
-                                 [datetime.datetime(2014, 1, 2, 0, 0)],
-                                 [datetime.datetime(2014, 1, 1, 9, 0)],
-                                 [datetime.datetime(2014, 1, 1, 10, 0)]])
+        self.assertEqual(dates, [
+            [datetime.datetime(2014, 1, 1, 0, 0),
+             datetime.datetime(2014, 1, 2, 0, 0)],
+            [datetime.datetime(2014, 1, 1, 9, 0)],
+            [datetime.datetime(2014, 1, 1, 10, 0)]])
 
     def test_between_emtpy_schedule_board(self):
         schedules, dates = Schedule.between(
@@ -256,9 +372,10 @@ class ScheduleClassModelTests(TestCase):
             datetime.datetime(2014, 1, 1),
             datetime.datetime(2014, 1, 2),
             exclude=schedule)
-        self.assertEqual(dates, [[datetime.datetime(2014, 1, 1, 0, 0)],
-                                 [datetime.datetime(2014, 1, 2, 0, 0)],
-                                 [datetime.datetime(2014, 1, 1, 10, 0)]])
+        self.assertEqual(dates, [
+            [datetime.datetime(2014, 1, 1, 0, 0),
+             datetime.datetime(2014, 1, 2, 0, 0)],
+            [datetime.datetime(2014, 1, 1, 10, 0)]])
 
     def test_schedule(self):
         schedule, date = Schedule.schedule(datetime.datetime(2014, 1, 2, 4, 0))
@@ -276,7 +393,7 @@ class ScheduleClassModelTests(TestCase):
         programme = Programme.objects.get(name="Programme 00:00 - 09:00")
         schedule = Schedule.objects.get(
             programme=programme,
-            day=TH,
+            day=WE,
             start_hour=datetime.time(0, 0))
         schedule, date = Schedule.schedule(
             datetime.datetime(2014, 1, 2, 4, 0),
