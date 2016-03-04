@@ -16,9 +16,9 @@
 
 
 import os
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SITE_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
@@ -111,7 +111,6 @@ TEMPLATES = [
 
 ROOT_URLCONF = 'radio.configs.common.urls'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
@@ -135,7 +134,6 @@ USE_L10N = True
 
 USE_TZ = False
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
@@ -148,7 +146,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(SITE_ROOT, 'static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
-
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -175,7 +172,6 @@ FILEBROWSER_VERSIONS = {
 FILEBROWSER_ADMIN_VERSIONS = [
     'thumb', 'small', 'medium', 'large',
 ]
-
 
 # RadioCo Settings
 # http://django-radio.readthedocs.org/en/latest/reference/configuration.html
@@ -208,4 +204,3 @@ try:
     from local_settings import *
 except ImportError:
     pass
-

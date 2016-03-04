@@ -4,9 +4,7 @@
 
 {% block page_title %}{{ programme.name }}{% endblock %}
 
-
 {% block programmes_class %}class="active"{% endblock %}
-
 
 {% block content %}
     <div class="container mb">
@@ -15,21 +13,25 @@
                 <img class="center-block img-responsive" src="{{ programme.photo.url }}" alt="...">
             </div>
 
-
             <div class="col-lg-5 col-lg-offset-1 spacing">
-		 		<h4>{{ programme.name }}</h4>
-		 		<p>{{programme.synopsis|safe}}</p>
-		 	</div>
+                <h4>{{ programme.name }}</h4>
+                <p>{{ programme.synopsis|safe }}</p>
+            </div>
 
-		 	<div class="col-lg-4 col-lg-offset-1 spacing">
-		 		<h4>{% trans 'Programme Details' %}</h4>
-		 		<div class="hline"></div>
-		 		<p><b>Language:</b> {{ language }}</p>
-		 		<p><b>Category:</b> {{ programme.get_category_display }}</p>
-		 		<p><b>RSS:</b> <a href="{% url 'programmes:rss' programme.slug %}"><i class="fa fa-rss-square fa-2x"></i></a></p>
-		 	</div>
+            <div class="col-lg-4 col-lg-offset-1 spacing">
+                <h4>{% trans 'Programme Details' %}</h4>
+                <div class="hline"></div>
+                <p><b>Language:</b> {{ language }}</p>
+                <p><b>Category:</b> {{ programme.get_category_display }}</p>
+                <p>
+                    <b>RSS:</b>
+                    <a href="{% url 'programmes:rss' programme.slug %}">
+                        <i class="fa fa-rss-square fa-2x"></i>
+                    </a>
+                </p>
+            </div>
 
-        </div><! --/row -->
+        </div>
         {% if settings.DISQUS_ENABLE %}
             <div class="row mhb">
                 <div class="col-lg-10 col-lg-offset-1 centered">
@@ -51,10 +53,14 @@
                     {% ifchanged episode.season %}
                         {% if not forloop.first %}</div> {% endif %}
                         <div class="col-lg-3">
-                            <h4>{% trans "Season" %} {{episode.season}}</h4>
+                            <h4>{% trans "Season" %} {{ episode.season }}</h4>
                             <div class="hline"></div>
                     {% endifchanged %}
-                    <p><a href="{% url 'programmes:episode_detail' programme.slug episode.season episode.number_in_season %}">{{ episode }}</a></p>
+                    <p>
+                        <a href="{% url 'programmes:episode_detail' programme.slug episode.season episode.number_in_season %}">
+                            {{ episode }}
+                        </a>
+                    </p>
                     {% if forloop.last %}</div>{% endif %}
 
                 {% endfor %}

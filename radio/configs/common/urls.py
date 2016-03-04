@@ -17,7 +17,6 @@
 
 from django.conf import settings
 from django.conf.urls import patterns, include, url
-from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
@@ -26,15 +25,9 @@ from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 from filebrowser.sites import site
 
-
-# Not necessary in Django > 1.7
-# admin.autodiscover()
 admin.site.logout_template = 'radio/logged_out.html'
-# admin.site.login_form = 'radio/login.html'
 admin.site.site_header = _('RadioCo administration')
 admin.site.site_title = _('RadioCo site admin')
-# admin.site.index_title = _('Site administration')
-
 
 
 def handler400(request):
@@ -42,15 +35,18 @@ def handler400(request):
     response.status_code = 400
     return response
 
+
 def handler404(request):
     response = render_to_response('radio/404.html', {}, context_instance=RequestContext(request))
     response.status_code = 404
     return response
 
+
 def handler403(request):
     response = render_to_response('radio/403.html', {}, context_instance=RequestContext(request))
     response.status_code = 403
     return response
+
 
 def handler500(request):
     response = render_to_response('radio/500.html', {}, context_instance=RequestContext(request))
@@ -79,19 +75,13 @@ urlpatterns = patterns('',
 
 if settings.DEBUG and 'debug_toolbar' in settings.INSTALLED_APPS:
     import debug_toolbar
+
     urlpatterns += patterns('',
         url(r'^__debug__/', include(debug_toolbar.urls)),
     )
-
 
 # Media
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Static
 urlpatterns += staticfiles_urlpatterns()
-
-
-"""
-from django.utils.translation import activate
-activate('es')
-"""

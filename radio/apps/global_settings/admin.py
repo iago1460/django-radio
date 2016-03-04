@@ -22,7 +22,6 @@ from django.utils.translation import ugettext as _
 
 from apps.global_settings.models import SiteConfiguration, PodcastConfiguration, CalendarConfiguration
 
-
 try:
     from django.utils.encoding import force_unicode
 except ImportError:
@@ -46,14 +45,18 @@ class SingletonModelAdmin(admin.ModelAdmin):
             'model_name': self.model._meta.model_name,
         }
         custom_urls = patterns('',
-            url(r'^history/$',
+            url(
+                r'^history/$',
                 self.admin_site.admin_view(self.history_view),
                 {'object_id': '1'},
-                name='%s_history' % url_name_prefix),
-            url(r'^$',
+                name='%s_history' % url_name_prefix
+            ),
+            url(
+                r'^$',
                 self.admin_site.admin_view(self.change_view),
                 {'object_id': '1'},
-                name='%s_change' % url_name_prefix),
+                name='%s_change' % url_name_prefix
+            ),
         )
         # By inserting the custom URLs first, we overwrite the standard URLs.
         return custom_urls + urls
@@ -78,10 +81,10 @@ class SingletonModelAdmin(admin.ModelAdmin):
         )
 
 
-
 class PodcastConfigurationAdmin(SingletonModelAdmin):
     readonly_fields = ['recorder_token']
     pass
+
 
 admin.site.register(SiteConfiguration, SingletonModelAdmin)
 admin.site.register(CalendarConfiguration, SingletonModelAdmin)

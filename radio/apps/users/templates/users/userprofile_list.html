@@ -4,21 +4,19 @@
 
 {% block page_title %}{% trans "People" %}{% endblock %}
 
-
 {% block users_class %}class="active"{% endblock %}
-
 
 {% block content %}
 
     <div class="container mb">
-	 	<div class="row">
-		 	<div class="col-lg-8 col-lg-offset-2 centered">
-		 		<h2>{% trans 'The people who made this possible' %}</h2>
-		 		<br>
-		 		<div class="hline"></div>
-		 	</div>
-	 	</div>
-	 </div><! --/container -->
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 centered">
+                <h2>{% trans 'The people who made this possible' %}</h2>
+                <br>
+                <div class="hline"></div>
+            </div>
+        </div>
+    </div><! --/container -->
 
     {% if userprofile_list %}
         <div id="portfoliowrap">
@@ -26,21 +24,24 @@
                 <div class="recentitems portfolio">
 
                     {% for userprofile in userprofile_list %}
-                    <div class="portfolio-item graphic-design">
-                        <div class="he-wrap tpl6">
-{#                            <a href="{% url 'users:detail' userprofile.slug %}">#}
+                        <div class="portfolio-item graphic-design">
+                            <div class="he-wrap tpl6">
                                 <img class="img-responsive" src="{% version userprofile.avatar 'item_overlap' %}">
-{#                            </a>#}
 
-                            <div class="he-view">
-                                <div class="bg a0" data-animate="fadeIn">
-                                    <h3 class="a1" data-animate="fadeInDown">{% firstof userprofile.user.get_full_name userprofile.user %}</h3>
-                                    <a href="{% url 'users:detail' userprofile.slug %}" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
-                                <h5>{{ userprofile.bio|truncatewords_html:12|safe }}</h5>
-                                </div><!-- he bg -->
-                            </div><!-- he view -->
-                        </div><!-- he wrap -->
-                    </div><!-- end col-12 -->
+                                <div class="he-view">
+                                    <div class="bg a0" data-animate="fadeIn">
+                                        <h3 class="a1" data-animate="fadeInDown">
+                                            {% firstof userprofile.user.get_full_name userprofile.user %}
+                                        </h3>
+                                        <a href="{% url 'users:detail' userprofile.slug %}" class="dmbutton a2"
+                                           data-animate="fadeInUp">
+                                            <i class="fa fa-search"></i>
+                                        </a>
+                                        <h5>{{ userprofile.bio|truncatewords_html:12|safe }}</h5>
+                                    </div><!-- he bg -->
+                                </div><!-- he view -->
+                            </div><!-- he wrap -->
+                        </div><!-- end col-12 -->
                     {% endfor %}
 
                 </div>
@@ -49,6 +50,5 @@
     {% else %}
         <h1>{% trans "No userprofiles are available" %}</h1>
     {% endif %}
-
 
 {% endblock %}

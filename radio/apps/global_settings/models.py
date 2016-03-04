@@ -24,7 +24,6 @@ from django.utils.translation import ugettext as _u
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.authtoken.models import Token
 
-from ckeditor.fields import RichTextField
 from apps.schedules.models import WEEKDAY_CHOICES
 
 
@@ -32,6 +31,7 @@ class SingletonModelManager(models.Manager):
     def get(self, *args, **kwargs):
         obj, created = super(SingletonModelManager, self).get_or_create(**kwargs)
         return obj
+
 
 class SingletonModel(models.Model):
     objects = SingletonModelManager()
@@ -56,7 +56,11 @@ class SiteConfiguration(SingletonModel):
     site_name = models.CharField(max_length=255, default='RadioCo', verbose_name=_("Site Name"))
     about_footer = models.TextField(blank=True, default="", verbose_name=_("Footer"))
     more_about_us = models.TextField(blank=True, default="", verbose_name=_("More info"))
-    google_analytics_id = models.CharField(max_length=255, blank=True, default="", verbose_name=_("Google Analytics ID"), help_text=_('Example "%(value)s"') % {'value': 'UA-00000-0', })
+    google_analytics_id = models.CharField(
+        max_length=255, blank=True, default="",
+        verbose_name=_("Google Analytics ID"),
+        help_text=_('Example "%(value)s"') % {'value': 'UA-00000-0'}
+    )
     address = models.TextField(blank=True, default="", verbose_name=_("Address"), help_text=_('Can contain raw HTML.'))
 
     twitter_address = models.CharField(max_length=255, verbose_name=_('Twitter address'), blank=True, null=True)
@@ -72,10 +76,21 @@ class SiteConfiguration(SingletonModel):
 
 
 class PodcastConfiguration(SingletonModel):
-    url_source = models.CharField(blank=True, default="", max_length=500, verbose_name=_("URL Source"), help_text=_("The source url where the recordings will be available after the upload. For example: \"http://RadioCo.org/recordings/\""))
-    start_delay = models.PositiveIntegerField(default=0, verbose_name=_("start delay"), help_text=_("In seconds. Initial delay of recordings"))
+    url_source = models.CharField(
+        blank=True, default="", max_length=500, verbose_name=_("URL Source"),
+        help_text=_(
+            "The source url where the recordings will be available after the upload. For example: \"http://RadioCo.org/recordings/\""
+        )
+    )
+    start_delay = models.PositiveIntegerField(
+        default=0, verbose_name=_("start delay"),
+        help_text=_("In seconds. Initial delay of recordings")
+    )
     end_delay = models.PositiveIntegerField(default=0, verbose_name=_("end delay"), help_text=_("In seconds."))
-    next_events = models.PositiveIntegerField(default=32, verbose_name=_("next events"), help_text=_("In hours. The next events supplied to the recorder program"))
+    next_events = models.PositiveIntegerField(
+        default=32, verbose_name=_("next events"),
+        help_text=_("In hours. The next events supplied to the recorder program")
+    )
 
     @property
     def recorder_token(self):
@@ -101,10 +116,26 @@ class PodcastConfiguration(SingletonModel):
 
 
 class CalendarConfiguration(SingletonModel):
-    scroll_time = models.TimeField(default=datetime.time(0, 0, 0), verbose_name=_('scroll time'), help_text=_("Determines how far down the scroll pane is initially scrolled down."))
-    first_day = models.IntegerField(choices=WEEKDAY_CHOICES, default=0, verbose_name=_('first day'), help_text=_('The day that the calendar begins'))
-    min_time = models.TimeField(default=datetime.time(0, 0, 0), verbose_name=_('min time'), help_text=_("Determines the starting time that will be displayed, even when the scrollbars have been scrolled all the way up."))
-    max_time = models.TimeField(default=datetime.time(23, 59, 59), verbose_name=_('max time'), help_text=_("Determines the end time (exclusively) that will be displayed, even when the scrollbars have been scrolled all the way down."))
+    scroll_time = models.TimeField(
+        default=datetime.time(0, 0, 0), verbose_name=_('scroll time'),
+        help_text=_("Determines how far down the scroll pane is initially scrolled down.")
+    )
+    first_day = models.IntegerField(
+        choices=WEEKDAY_CHOICES, default=0, verbose_name=_('first day'),
+        help_text=_('The day that the calendar begins')
+    )
+    min_time = models.TimeField(
+        default=datetime.time(0, 0, 0), verbose_name=_('min time'),
+        help_text=_(
+            "Determines the starting time that will be displayed, even when the scrollbars have been scrolled all the way up."
+        )
+    )
+    max_time = models.TimeField(
+        default=datetime.time(23, 59, 59), verbose_name=_('max time'),
+        help_text=_(
+            "Determines the end time (exclusively) that will be displayed, even when the scrollbars have been scrolled all the way down."
+        )
+    )
 
     def __unicode__(self):
         return _u('Calendar Configuration')

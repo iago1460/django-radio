@@ -18,19 +18,13 @@
 import datetime
 import json
 
-from dateutil import rrule
-from dateutil.relativedelta import relativedelta
-from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
 from django.shortcuts import render
-from django.utils.translation import ugettext_lazy as _
 
-from apps.programmes.models import Programme, Episode
-from apps.schedules.models import Schedule
 from apps.global_settings.models import CalendarConfiguration
+from apps.programmes.models import Episode
+from apps.schedules.models import Schedule
 
 
 def schedule_list(request):
@@ -40,8 +34,8 @@ def schedule_list(request):
         'min_time': calendar_configuration.min_time.strftime('%H:%M:%S'),
         'max_time': calendar_configuration.max_time.strftime('%H:%M:%S'),
         'first_day': calendar_configuration.first_day + 1,
-        'language' : request.LANGUAGE_CODE,
-        'feed_schedules' : reverse('schedules:feed_schedules'),
+        'language': request.LANGUAGE_CODE,
+        'feed_schedules': reverse('schedules:feed_schedules'),
     }
     return render(request, 'schedules/schedules_list.html', context)
 
@@ -49,12 +43,15 @@ def schedule_list(request):
 def feed_schedules(request):
     start = datetime.datetime.strptime(request.GET.get('start'), '%Y-%m-%d')
     end = datetime.datetime.strptime(request.GET.get('end'), '%Y-%m-%d')
-    return HttpResponse(json.dumps(__get_events(after=start, before=end, json_mode=True)), content_type='application/json')
+    return HttpResponse(
+        json.dumps(__get_events(after=start, before=end, json_mode=True)),
+        content_type='application/json'
+    )
 
 
+background_colours = {"L": "#F9AD81", "B": "#C4DF9B", "S": "#8493CA"}
+text_colours = {"L": "black", "B": "black", "S": "black"}
 
-background_colours = { "L": "#F9AD81", "B": "#C4DF9B", "S": "#8493CA" }
-text_colours = { "L": "black", "B": "black", "S": "black" }
 
 def __get_events(after, before, json_mode=False):
     next_schedules, next_dates = Schedule.between(after=after, before=before)
@@ -88,24 +85,26 @@ def __get_events(after, before, json_mode=False):
             episodes.append(episode)
 
             if episode:
-                url = reverse('programmes:episode_detail', args=(schedule.programme.slug, episode.season, episode.number_in_season,))
+                url = reverse(
+                    'programmes:episode_detail',
+                    args=(schedule.programme.slug, episode.season, episode.number_in_season,)
+                )
             else:
                 url = reverse('programmes:detail', args=(schedule.programme.slug,))
 
-
-            event_entry = {'id':schedule.id, 'start':str(date), 'end':str(date + schedule.runtime()),
-                'allDay':False, 'title': schedule.programme.name, 'type':schedule.type,
-                'textColor':text_colours[schedule.type],
-                'backgroundColor':background_colours[schedule.type],
-                'url':url}
+            event_entry = {
+                'id': schedule.id, 'start': str(date), 'end': str(date + schedule.runtime()),
+                'allDay': False, 'title': schedule.programme.name, 'type': schedule.type,
+                'textColor': text_colours[schedule.type],
+                'backgroundColor': background_colours[schedule.type],
+                'url': url
+            }
             event_list.append(event_entry)
 
     if json_mode:
         return event_list
     else:
-        if (schedules):
+        if schedules:
             dates, schedules, episodes = (list(t) for t in zip(*sorted(zip(dates, schedules, episodes))))
             return zip(schedules, dates, episodes)
         return None
-
-

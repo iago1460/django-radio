@@ -20,50 +20,83 @@ import datetime
 from dateutil.relativedelta import relativedelta
 from django.core.exceptions import ValidationError
 from django.test import TestCase
-from mock import patch
 
-from apps.programmes.models import Programme, Episode
+from apps.programmes.models import Programme
 from apps.schedules.models import ScheduleBoard, Schedule, MO, TU, WE, TH, FR, SA, SU
 
 
 def to_relativedelta(tdelta):
-    return relativedelta(seconds=int(tdelta.total_seconds()),
-                         microseconds=tdelta.microseconds)
+    return relativedelta(
+        seconds=int(tdelta.total_seconds()),
+        microseconds=tdelta.microseconds
+    )
+
 
 class ProgrammeMethodTests(TestCase):
-
     def setUp(self):
-        midnight_programme = Programme.objects.create(name="Programme 00:00 - 09:00", synopsis="This is a description",
-                                                      start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0),
-                                                      end_date=datetime.datetime(2014, 1, 31, 12, 0, 0, 0),
-                                                      current_season=1, runtime=540)
+        midnight_programme = Programme.objects.create(
+            name="Programme 00:00 - 09:00", synopsis="This is a description",
+            start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0),
+            end_date=datetime.datetime(2014, 1, 31, 12, 0, 0, 0),
+            current_season=1, runtime=540
+        )
 
         schedule_board = ScheduleBoard(name='Board', start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0))
         schedule_board.save()
         start_hour = datetime.time(0, 0, 0)
-        Schedule.objects.create(programme=midnight_programme, day=MO, start_hour=start_hour, type='L', schedule_board=schedule_board)
-        Schedule.objects.create(programme=midnight_programme, day=TU, start_hour=start_hour, type='L', schedule_board=schedule_board)
-        Schedule.objects.create(programme=midnight_programme, day=WE, start_hour=start_hour, type='L', schedule_board=schedule_board)
-        Schedule.objects.create(programme=midnight_programme, day=TH, start_hour=start_hour, type='L', schedule_board=schedule_board)
-        Schedule.objects.create(programme=midnight_programme, day=FR, start_hour=start_hour, type='L', schedule_board=schedule_board)
-        Schedule.objects.create(programme=midnight_programme, day=SA, start_hour=start_hour, type='L', schedule_board=schedule_board)
-        Schedule.objects.create(programme=midnight_programme, day=SU, start_hour=start_hour, type='L', schedule_board=schedule_board)
+        Schedule.objects.create(
+            programme=midnight_programme, day=MO, start_hour=start_hour, type='L', schedule_board=schedule_board
+        )
+        Schedule.objects.create(
+            programme=midnight_programme, day=TU, start_hour=start_hour, type='L', schedule_board=schedule_board
+        )
+        Schedule.objects.create(
+            programme=midnight_programme, day=WE, start_hour=start_hour, type='L', schedule_board=schedule_board
+        )
+        Schedule.objects.create(
+            programme=midnight_programme, day=TH, start_hour=start_hour, type='L', schedule_board=schedule_board
+        )
+        Schedule.objects.create(
+            programme=midnight_programme, day=FR, start_hour=start_hour, type='L', schedule_board=schedule_board
+        )
+        Schedule.objects.create(
+            programme=midnight_programme, day=SA, start_hour=start_hour, type='L', schedule_board=schedule_board
+        )
+        Schedule.objects.create(
+            programme=midnight_programme, day=SU, start_hour=start_hour, type='L', schedule_board=schedule_board
+        )
 
-        programme = Programme.objects.create(name="Programme 09:00 - 10:00", synopsis="This is a description",
-                                                     start_date=datetime.datetime(2014, 1, 1),
-                                                     end_date=datetime.datetime(2014, 1, 31),
-                                                     current_season=1, runtime=60)
-        Schedule.objects.create(programme=programme, day=MO, start_hour=datetime.time(9, 0, 0), type='L', schedule_board=schedule_board)
-        Schedule.objects.create(programme=programme, day=WE, start_hour=datetime.time(9, 0, 0), type='L', schedule_board=schedule_board)
-        Schedule.objects.create(programme=programme, day=FR, start_hour=datetime.time(9, 0, 0), type='L', schedule_board=schedule_board)
+        programme = Programme.objects.create(
+            name="Programme 09:00 - 10:00", synopsis="This is a description",
+            start_date=datetime.datetime(2014, 1, 1),
+            end_date=datetime.datetime(2014, 1, 31),
+            current_season=1, runtime=60
+        )
+        Schedule.objects.create(
+            programme=programme, day=MO, start_hour=datetime.time(9, 0, 0), type='L', schedule_board=schedule_board
+        )
+        Schedule.objects.create(
+            programme=programme, day=WE, start_hour=datetime.time(9, 0, 0), type='L', schedule_board=schedule_board
+        )
+        Schedule.objects.create(
+            programme=programme, day=FR, start_hour=datetime.time(9, 0, 0), type='L', schedule_board=schedule_board
+        )
 
-        programme = Programme.objects.create(name="Programme 10:00 - 12:00", synopsis="This is a description",
-                                                     start_date=datetime.datetime(2014, 1, 1),
-                                                     end_date=datetime.datetime(2014, 1, 31),
-                                                     current_season=1, runtime=120)
-        Schedule.objects.create(programme=programme, day=MO, start_hour=datetime.time(10, 0, 0), type='L', schedule_board=schedule_board)
-        Schedule.objects.create(programme=programme, day=WE, start_hour=datetime.time(10, 0, 0), type='L', schedule_board=schedule_board)
-        Schedule.objects.create(programme=programme, day=FR, start_hour=datetime.time(10, 0, 0), type='L', schedule_board=schedule_board)
+        programme = Programme.objects.create(
+            name="Programme 10:00 - 12:00", synopsis="This is a description",
+            start_date=datetime.datetime(2014, 1, 1),
+            end_date=datetime.datetime(2014, 1, 31),
+            current_season=1, runtime=120
+        )
+        Schedule.objects.create(
+            programme=programme, day=MO, start_hour=datetime.time(10, 0, 0), type='L', schedule_board=schedule_board
+        )
+        Schedule.objects.create(
+            programme=programme, day=WE, start_hour=datetime.time(10, 0, 0), type='L', schedule_board=schedule_board
+        )
+        Schedule.objects.create(
+            programme=programme, day=FR, start_hour=datetime.time(10, 0, 0), type='L', schedule_board=schedule_board
+        )
 
         for schedule in Schedule.objects.all():
             schedule.clean()
@@ -99,13 +132,17 @@ class ProgrammeMethodTests(TestCase):
         self.assertEqual(datetime.datetime.combine(now_mock, schedule_1.start_hour), date)
 
 
-
-
 class ScheduleBoardMethodTests(TestCase):
     def setUp(self):
-        ScheduleBoard.objects.create(name="january", start_date=datetime.datetime(2014, 1, 1), end_date=datetime.datetime(2014, 1, 31))
-        ScheduleBoard.objects.create(name="1_14_february", start_date=datetime.datetime(2014, 2, 1), end_date=datetime.datetime(2014, 2, 14))
-        ScheduleBoard.objects.create(name="after_14_february", start_date=datetime.datetime(2014, 2, 15))
+        ScheduleBoard.objects.create(
+            name="january", start_date=datetime.datetime(2014, 1, 1), end_date=datetime.datetime(2014, 1, 31)
+        )
+        ScheduleBoard.objects.create(
+            name="1_14_february", start_date=datetime.datetime(2014, 2, 1), end_date=datetime.datetime(2014, 2, 14)
+        )
+        ScheduleBoard.objects.create(
+            name="after_14_february", start_date=datetime.datetime(2014, 2, 15))
+
         for schedule_board in ScheduleBoard.objects.all():
             schedule_board.clean()
 
@@ -124,10 +161,13 @@ class ScheduleBoardMethodTests(TestCase):
         self.assertEqual(after_board, ScheduleBoard.get_current(datetime.datetime(2014, 6, 1, 0, 0, 0, 0)))
 
     def test_validation_exception_1(self):
-        schedule_board = ScheduleBoard.objects.create(name="2_14_february", start_date=datetime.datetime(2014, 2, 2), end_date=datetime.datetime(2014, 2, 14))
+        schedule_board = ScheduleBoard.objects.create(
+            name="2_14_february", start_date=datetime.datetime(2014, 2, 2), end_date=datetime.datetime(2014, 2, 14)
+        )
         self.assertRaises(ValidationError, schedule_board.clean)
 
     def test_validation_exception_2(self):
-        schedule_board = ScheduleBoard.objects.create(name="after_18_february", start_date=datetime.datetime(2014, 2, 18))
+        schedule_board = ScheduleBoard.objects.create(
+            name="after_18_february", start_date=datetime.datetime(2014, 2, 18)
+        )
         self.assertRaises(ValidationError, schedule_board.clean)
-
