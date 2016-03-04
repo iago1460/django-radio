@@ -1,13 +1,11 @@
-from rest_framework import routers
 from django.conf.urls import url, include
-
+from rest_framework import routers
 import views
 
 
-router = routers.DefaultRouter()
+router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'programmes', views.ProgrammeViewSet)
+router.register(r'schedules', views.ScheduleViewSet, base_name='schedule')
 
 
-urlpatterns = [
-    url(r'^', include(router.urls))
-]
+urlpatterns = router.urls
