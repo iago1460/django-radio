@@ -59,10 +59,8 @@ class ScheduleBoardAdmin(admin.ModelAdmin):
                 obj_copy.save()
                 # Live Schedules lives must be created first
                 schedules = []
-                schedules.extend(Schedule.objects.filter(
-                    schedule_board=obj, type='L'))
-                schedules.extend(Schedule.objects.filter(
-                    schedule_board=obj).exclude(type='L'))
+                schedules.extend(Schedule.objects.filter(schedule_board=obj, type='L'))
+                schedules.extend(Schedule.objects.filter(schedule_board=obj).exclude(type='L'))
                 for schedule in schedules:
                     schedule_copy = copy.copy(schedule)
                     schedule_copy.id = None
@@ -110,8 +108,7 @@ class FullcalendarAdmin(admin.ModelAdmin):
         return custom_urls + urls
 
     def response_change(self, request, obj):
-        msg = _('{obj} was changed successfully.'.format(
-            obj=force_unicode(obj)))
+        msg = _('{obj} was changed successfully.'.format(obj=force_unicode(obj)))
         if '_continue' in request.POST:
             return HttpResponseRedirect(request.path)
         else:

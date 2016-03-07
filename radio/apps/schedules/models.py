@@ -85,18 +85,15 @@ class ScheduleBoard(models.Model):
                 pass
 
         elif self.end_date:
-            raise ValidationError(
-                _('start date cannot be null if end date exists'))
+            raise ValidationError(_('start date cannot be null if end date exists'))
 
     def save(self, *args, **kwargs):
         # rearrange episodes
         if self.pk is not None:
             orig = ScheduleBoard.objects.get(pk=self.pk)
-            if (orig.start_date != self.start_date or
-                    orig.end_date != self.end_date):  # Field has changed
+            if (orig.start_date != self.start_date or orig.end_date != self.end_date):  # Field has changed
                 super(ScheduleBoard, self).save(*args, **kwargs)
-                Episode.rearrange_episodes(
-                    programme=None, after=datetime.datetime.now())
+                Episode.rearrange_episodes(programme=None, after=datetime.datetime.now())
             else:
                 super(ScheduleBoard, self).save(*args, **kwargs)
         else:
@@ -139,13 +136,11 @@ class Schedule(models.Model):
 
     def __get_rrule(self):
         start_date = self.programme.start_date
-        if (self.schedule_board.start_date and
-                start_date < self.schedule_board.start_date):
+        if (self.schedule_board.start_date and start_date < self.schedule_board.start_date):
             start_date = self.schedule_board.start_date
         if self.programme.end_date:
             end_date = self.programme.end_date
-            if (self.schedule_board.end_date and
-                    end_date > self.schedule_board.end_date):
+            if (self.schedule_board.end_date and end_date > self.schedule_board.end_date):
                 end_date = self.schedule_board.end_date
             # Due to rrule we need to add 1 day
             end_date = end_date + datetime.timedelta(days=1)
@@ -190,8 +185,7 @@ class Schedule(models.Model):
     def clean(self):
         now = datetime.datetime.now()
         if self.schedule_board.start_date:
-            dt = datetime.datetime.combine(
-                self.schedule_board.start_date, datetime.time(0, 0))
+            dt = datetime.datetime.combine(self.schedule_board.start_date, datetime.time(0, 0))
             if now > dt:
                 dt = now
             # get the next emission date
@@ -217,7 +211,7 @@ class Schedule(models.Model):
                                     )
                                 )
 
-                        index = index + 1
+                        index += 1
 
     def save(self, *args, **kwargs):
         # convert dates due MySQL
@@ -234,8 +228,7 @@ class Schedule(models.Model):
         if live:
             list_schedules = list_schedules.filter(type='L')
         if schedule_board:
-            list_schedules = list_schedules.filter(
-                schedule_board=schedule_board)
+            list_schedules = list_schedules.filter(schedule_board=schedule_board)
         else:
             list_schedules = (
                 list_schedules.filter(schedule_board__start_date__lte=before, schedule_board__end_date__isnull=True) |
@@ -273,9 +266,7 @@ class Schedule(models.Model):
             if date and (earlier_date is None or date > earlier_date):
                 earlier_date = date
                 earlier_schedule = schedule
-        if (earlier_schedule is None or
-                dt > earlier_date + earlier_schedule.runtime()):
-            # XXX Todo: check
+        if (earlier_schedule is None or dt > earlier_date + earlier_schedule.runtime()):  # Todo: check
             return None, None
         return earlier_schedule, earlier_date
 
@@ -297,13 +288,12 @@ class Schedule(models.Model):
             if date and (closer_date is None or date < closer_date):
                 closer_date = date
                 closer_schedule = schedule
-        if closer_schedule is None:  # XXX Todo: check
+        if closer_schedule is None:  # Todo: check
             return None, None
         return closer_schedule, closer_date
 
     def __unicode__(self):
-        return ' - '.join([self.get_day_display(),
-                           self.start_hour.strftime('%H:%M')])
+        return ' - '.join([self.get_day_display(), self.start_hour.strftime('%H:%M')])
 
     class Meta:
         verbose_name = _('schedule')

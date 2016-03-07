@@ -82,26 +82,16 @@ class ProgrammeMethodTests(TestCase):
 
     def test_runtime(self):
         programme = Programme.objects.get(name="Programme 00:00 - 09:00")
-        self.assertEqual(
-            relativedelta(hours=+9), to_relativedelta(programme.runtime))
+        self.assertEqual(relativedelta(hours=+9), to_relativedelta(programme.runtime))
 
     def test_day_schedule(self):
-        schedules, dates = Schedule.between(
-            datetime.datetime(2014, 1, 6), datetime.datetime(2014, 1, 7))
+        schedules, dates = Schedule.between(datetime.datetime(2014, 1, 6), datetime.datetime(2014, 1, 7))
         self.assertEqual(4, len(schedules))
 
-        schedule_1 = Schedule.objects.get(
-            programme=Programme.objects.get(name="Programme 00:00 - 09:00"),
-            day=MO)
-        schedule_2 = Schedule.objects.get(
-            programme=Programme.objects.get(name="Programme 09:00 - 10:00"),
-            day=MO)
-        schedule_3 = Schedule.objects.get(
-            programme=Programme.objects.get(name="Programme 10:00 - 12:00"),
-            day=MO)
-        schedule_4 = Schedule.objects.get(
-            programme=Programme.objects.get(name="Programme 00:00 - 09:00"),
-            day=TU)
+        schedule_1 = Schedule.objects.get(programme=Programme.objects.get(name="Programme 00:00 - 09:00"), day=MO)
+        schedule_2 = Schedule.objects.get(programme=Programme.objects.get(name="Programme 09:00 - 10:00"), day=MO)
+        schedule_3 = Schedule.objects.get(programme=Programme.objects.get(name="Programme 10:00 - 12:00"), day=MO)
+        schedule_4 = Schedule.objects.get(programme=Programme.objects.get(name="Programme 00:00 - 09:00"), day=TU)
         self.assertTrue(schedule_1 in schedules)
         self.assertTrue(schedule_2 in schedules)
         self.assertTrue(schedule_3 in schedules)
@@ -110,19 +100,14 @@ class ProgrammeMethodTests(TestCase):
     def test_now_playing_1(self):
         now_mock = datetime.datetime(2014, 1, 6, 0, 0, 0, 0)
         schedule, date = Schedule.schedule(now_mock)
-        schedule_1 = Schedule.objects.get(
-            programme=Programme.objects.get(name="Programme 00:00 - 09:00"),
-            day=MO)
+        schedule_1 = Schedule.objects.get(programme=Programme.objects.get(name="Programme 00:00 - 09:00"), day=MO)
         self.assertEqual(schedule_1, schedule)
-        self.assertEqual(
-            datetime.datetime.combine(now_mock, schedule_1.start_hour), date)
+        self.assertEqual(datetime.datetime.combine(now_mock, schedule_1.start_hour), date)
 
     def test_now_playing_2(self):
         now_mock = datetime.datetime(2014, 1, 7, 0, 0, 0, 0)
         schedule, date = Schedule.schedule(now_mock)
-        schedule_1 = Schedule.objects.get(
-            programme=Programme.objects.get(name="Programme 00:00 - 09:00"),
-            day=TU)
+        schedule_1 = Schedule.objects.get(programme=Programme.objects.get(name="Programme 00:00 - 09:00"), day=TU)
         self.assertEqual(schedule_1, schedule)
         self.assertEqual(datetime.datetime.combine(now_mock, schedule_1.start_hour), date)
 
@@ -146,22 +131,14 @@ class ScheduleBoardMethodTests(TestCase):
         february_board = ScheduleBoard.objects.get(name="1_14_february")
         after_board = ScheduleBoard.objects.get(name="after_14_february")
 
-        self.assertEqual(None, ScheduleBoard.get_current(
-            datetime.datetime(2013, 12, 1, 0, 0, 0, 0)))
-        self.assertEqual(january_board, ScheduleBoard.get_current(
-            datetime.datetime(2014, 1, 1, 0, 0, 0, 0)))
-        self.assertEqual(january_board, ScheduleBoard.get_current(
-            datetime.datetime(2014, 1, 31, 0, 0, 0, 0)))
-        self.assertEqual(january_board, ScheduleBoard.get_current(
-            datetime.datetime(2014, 1, 31, 12, 0, 0, 0)))
-        self.assertEqual(february_board, ScheduleBoard.get_current(
-            datetime.datetime(2014, 2, 1, 0, 0, 0, 0)))
-        self.assertEqual(february_board, ScheduleBoard.get_current(
-            datetime.datetime(2014, 2, 14, 0, 0, 0, 0)))
-        self.assertEqual(after_board, ScheduleBoard.get_current(
-            datetime.datetime(2014, 2, 15, 0, 0, 0, 0)))
-        self.assertEqual(after_board, ScheduleBoard.get_current(
-            datetime.datetime(2014, 6, 1, 0, 0, 0, 0)))
+        self.assertEqual(None, ScheduleBoard.get_current(datetime.datetime(2013, 12, 1, 0, 0, 0, 0)))
+        self.assertEqual(january_board, ScheduleBoard.get_current(datetime.datetime(2014, 1, 1, 0, 0, 0, 0)))
+        self.assertEqual(january_board, ScheduleBoard.get_current(datetime.datetime(2014, 1, 31, 0, 0, 0, 0)))
+        self.assertEqual(january_board, ScheduleBoard.get_current(datetime.datetime(2014, 1, 31, 12, 0, 0, 0)))
+        self.assertEqual(february_board, ScheduleBoard.get_current(datetime.datetime(2014, 2, 1, 0, 0, 0, 0)))
+        self.assertEqual(february_board, ScheduleBoard.get_current(datetime.datetime(2014, 2, 14, 0, 0, 0, 0)))
+        self.assertEqual(after_board, ScheduleBoard.get_current(datetime.datetime(2014, 2, 15, 0, 0, 0, 0)))
+        self.assertEqual(after_board, ScheduleBoard.get_current(datetime.datetime(2014, 6, 1, 0, 0, 0, 0)))
 
     def test_validation_exception_1(self):
         schedule_board = ScheduleBoard.objects.create(
