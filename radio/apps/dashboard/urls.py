@@ -16,7 +16,6 @@
 
 
 from django.conf.urls import patterns, url
-from apps.dashboard import views
 
 urlpatterns = patterns('',
     url(r'^schedule_editor/$', 'apps.dashboard.views.full_calendar', name="schedule_editor"),

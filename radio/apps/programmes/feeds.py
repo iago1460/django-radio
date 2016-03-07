@@ -16,19 +16,23 @@
 
 
 import datetime
+
 from django.contrib.syndication.views import Feed
 from django.shortcuts import get_object_or_404
 from django.utils import feedgenerator
+
 from apps.programmes.models import Programme, Podcast
 
+
 class iTunesFeed(feedgenerator.Rss201rev2Feed):
-
     def __init__(self, title, link, description, language=None, author_email=None,
-            author_name=None, author_link=None, subtitle=None, categories=None,
-            feed_url=None, feed_copyright=None, feed_guid=None, ttl=None, **kwargs):
+                 author_name=None, author_link=None, subtitle=None, categories=None,
+                 feed_url=None, feed_copyright=None, feed_guid=None, ttl=None, **kwargs):
         self.programme = kwargs['programme']
-        feedgenerator.Rss201rev2Feed.__init__(self, title, link, description, self.programme.language.lower(), author_email, author_name, author_link, subtitle, categories, feed_url, feed_copyright, feed_guid, ttl)
-
+        feedgenerator.Rss201rev2Feed.__init__(
+            self, title, link, description, self.programme.language.lower(), author_email, author_name,
+            author_link, subtitle, categories, feed_url, feed_copyright, feed_guid, ttl
+        )
 
     def rss_attributes(self):
         attrs = super(iTunesFeed, self).rss_attributes()
@@ -52,7 +56,6 @@ class iTunesFeed(feedgenerator.Rss201rev2Feed):
 
 
 class ProgrammeFeed(Feed):
-
     def title(self, programme):
         return programme.name
 
@@ -69,10 +72,12 @@ class ProgrammeFeed(Feed):
     # feed_copyright = podcast_config.copyright
 
     def feed_extra_kwargs(self, programme):
-        return {'programme':programme}
+        return {'programme': programme}
 
     def items(self, programme):
-        return Podcast.objects.filter(episode__programme=programme).order_by('-episode__issue_date').select_related('episode')
+        return Podcast.objects.filter(
+            episode__programme=programme
+        ).order_by('-episode__issue_date').select_related('episode')
 
     def item_title(self, podcast):
         return podcast.episode
@@ -95,7 +100,6 @@ class ProgrammeFeed(Feed):
     def item_keywords(self, podcast):
         return podcast.keywords
 
-
     def item_extra_kwargs(self, podcast):
         extra = {}
         extra["podcast"] = podcast
@@ -105,14 +109,8 @@ class ProgrammeFeed(Feed):
 class RssProgrammeFeed(ProgrammeFeed):
     feed_type = iTunesFeed
 
-
     def item_guid(self, episode):
         return None
 
     def description(self, programme):
         return programme.synopsis
-
-
-
-
-

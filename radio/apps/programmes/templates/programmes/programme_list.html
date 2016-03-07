@@ -4,9 +4,7 @@
 
 {% block page_title %}{% trans "Programme list" %}{% endblock %}
 
-
 {% block programmes_class %}class="active"{% endblock %}
-
 
 {% block content %}
     {% for programme in programme_list %}
@@ -21,9 +19,12 @@
                 <div class="col-lg-6">
                     <h4>{{ programme.name }}</h4>
                     <p>{{ programme.synopsis|truncatewords_html:130|safe }}</p>
-                    <p><br/><a href="{{ programme.get_absolute_url }}" class="btn btn-theme">{% trans 'More Info' %}</a></p>
+                    <p>
+                        <br/>
+                        <a href="{{ programme.get_absolute_url }}" class="btn btn-theme">{% trans 'More Info' %}</a>
+                    </p>
                 </div>
-            </div><! --/row -->
+            </div>
         </div><! --/container -->
     {% empty %}
         <h1>{% trans "No programmes are available"|upper %}</h1>

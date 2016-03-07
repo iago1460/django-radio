@@ -34,52 +34,35 @@ except ImportError:
     from django.utils.encoding import force_text as force_unicode
 
 
-
-########### User ###########
+# USER
 
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
     can_delete = False
     exclude = ('slug',)
 
+
 class UserProfileAdmin(UserAdmin):
     inlines = (UserProfileInline,)
-
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups', 'userprofile__display_personal_page')
 
-    '''
-    # FIXME: User has no field named 'userprofile__display_personal_page'
-    
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'userprofile__display_personal_page') 
-    actions = ['make_public']
-
-    def make_public(self, request, queryset):
-        rows_updated = queryset.update(userprofile__display_personal_page=True)
-        if rows_updated == 1:
-            message_bit = _("1 profile was successfully marked as public.")
-        else:
-            message_bit = _('%(obj)s profiles were successfully marked as public') % {'obj': rows_updated}
-
-        self.message_user(request, message_bit)
-    make_public.short_description = _("Mark selected user profiles as public")
-    '''
 
 # Re-register UserAdmin
 admin.site.unregister(User)
 admin.site.register(User, UserProfileAdmin)
 
 
-
-########### Profile ###########
+# PROFILE
 
 class NonStaffUserProfileForm(forms.ModelForm):
-
-    username = forms.CharField(label=_('username'), max_length=30,
+    username = forms.CharField(
+        label=_('username'), max_length=30,
         help_text=_('Required. 30 characters or fewer. Letters, numbers and '
                     '@/./+/-/_ characters'),
         validators=[
             validators.RegexValidator(re.compile('^[\w.@+-]+$'), _('Enter a valid username.'), 'invalid')
-        ])
+        ]
+    )
     first_name = forms.CharField(label=_('first name'), max_length=30, required=False)
     last_name = forms.CharField(label=_('last name'), max_length=30, required=False)
     email = forms.EmailField(label=_('email address'), required=False)
@@ -92,7 +75,6 @@ class NonStaffUserProfileForm(forms.ModelForm):
             self.fields['first_name'].initial = self.instance.user.first_name
             self.fields['last_name'].initial = self.instance.user.last_name
             self.fields['email'].initial = self.instance.user.email
-
 
     def save(self, force_insert=False, force_update=False, commit=True):
         instance = super(NonStaffUserProfileForm, self).save(commit=False)
@@ -115,14 +97,13 @@ class NonStaffUserProfileForm(forms.ModelForm):
 
 class SingletonProfileAdmin(admin.ModelAdmin):
     form = NonStaffUserProfileForm
-    fields = ['username', 'first_name', 'last_name', 'email' , 'bio', 'avatar', 'display_personal_page']
+    fields = ['username', 'first_name', 'last_name', 'email', 'bio', 'avatar', 'display_personal_page']
 
     def save_model(self, request, obj, form, change):
         if obj.pk:
             user = obj.user
             user.save()
             obj.save()
-
 
     def has_add_permission(self, request):
         return False
@@ -140,11 +121,13 @@ class SingletonProfileAdmin(admin.ModelAdmin):
             url(r'^history/$',
                 self.admin_site.admin_view(self.history_view),
                 {'object_id': '-1'},
-                name='%s_history' % url_name_prefix),
+                name='%s_history' % url_name_prefix
+            ),
             url(r'^$',
                 self.admin_site.admin_view(self.change_view),
                 {'object_id': '-1'},
-                name='%s_change' % url_name_prefix),
+                name='%s_change' % url_name_prefix
+            ),
         )
         # By inserting the custom URLs first, we overwrite the standard URLs.
         return custom_urls + urls
@@ -167,7 +150,5 @@ class SingletonProfileAdmin(admin.ModelAdmin):
             extra_context=extra_context,
         )
 
+
 admin.site.register(UserProfile, SingletonProfileAdmin)
-
-
-

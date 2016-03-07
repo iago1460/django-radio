@@ -19,10 +19,8 @@ import copy
 
 from django.conf.urls import url, patterns
 from django.contrib import admin
-from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response, redirect
 from django.utils.translation import ugettext_lazy as _
 
 from apps.schedules.models import Schedule, ScheduleBoard
@@ -53,6 +51,10 @@ class ScheduleBoardAdmin(admin.ModelAdmin):
             try:
                 if ScheduleBoard.objects.get(name=copy_name):
                     pass
+                    # Don't work
+                    # self.message_user(
+                    # request, _('There is already a calendar with this name \"%s\"') % copy_name, level=messages.ERROR
+                    # )
             except ScheduleBoard.DoesNotExist:
                 obj_copy.save()
                 # Live Schedules lives must be created first
@@ -69,11 +71,9 @@ class ScheduleBoardAdmin(admin.ModelAdmin):
                     if schedule_copy.source:
                         source = schedule_copy.source
                         source_copy = Schedule.objects.get(
-                            schedule_board=obj_copy,
-                            day=source.day,
-                            start_hour=source.start_hour,
-                            type=source.type,
-                            programme=source.programme)
+                            schedule_board=obj_copy, day=source.day, start_hour=source.start_hour,
+                            type=source.type, programme=source.programme
+                        )
                         schedule_copy.source = source_copy
                     schedule_copy.save()
 
@@ -96,12 +96,16 @@ class FullcalendarAdmin(admin.ModelAdmin):
             'app_name': self.model._meta.app_label,
             'model_name': self.model._meta.model_name,
         }
-        custom_urls = patterns('', url(
-            r'^$',
-            self.admin_site.admin_view(self.schedule_detail),
-            {},
-            name='%s_change' % url_name_prefix))
-
+        custom_urls = patterns(
+            '', url(
+                r'^$',
+                self.admin_site.admin_view(self.schedule_detail),
+                {},
+                # self.admin_site.admin_view(self.change_view),
+                # {'object_id': '2'},
+                name='%s_change' % url_name_prefix
+            ),
+        )
         # By inserting the custom URLs first, we overwrite the standard URLs.
         return custom_urls + urls
 
@@ -112,14 +116,7 @@ class FullcalendarAdmin(admin.ModelAdmin):
             return HttpResponseRedirect(request.path)
         else:
             return HttpResponseRedirect("../../")
-    '''
-    def change_view(self, request, object_id, extra_context=None):
-        return super(FullcalendarAdmin, self).change_view(
-            request,
-            object_id,
-            extra_context=extra_context,
-        )
-    '''
+
 
 admin.site.register(ScheduleBoard, ScheduleBoardAdmin)
 admin.site.register(Schedule, FullcalendarAdmin)

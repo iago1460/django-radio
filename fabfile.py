@@ -1,6 +1,5 @@
 from fabric.api import env, local, require
 
-
 env.heroku_project_name = 'radioco'
 env.python = 'python2.7'
 env.heroku_config_path = 'radio/configs/heroku'
@@ -10,6 +9,7 @@ def quickstart():
     local('python manage.py migrate')
     local('python manage.py create_example_data')
     local('python manage.py runserver')
+
 
 def master():
     env.branch = 'master'
