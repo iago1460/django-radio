@@ -91,7 +91,7 @@ class ScheduleBoard(models.Model):
         # rearrange episodes
         if self.pk is not None:
             orig = ScheduleBoard.objects.get(pk=self.pk)
-            if (orig.start_date != self.start_date or orig.end_date != self.end_date):  # Field has changed
+            if orig.start_date != self.start_date or orig.end_date != self.end_date:  # Field has changed
                 super(ScheduleBoard, self).save(*args, **kwargs)
                 Episode.rearrange_episodes(programme=None, after=datetime.datetime.now())
             else:
@@ -136,11 +136,11 @@ class Schedule(models.Model):
 
     def __get_rrule(self):
         start_date = self.programme.start_date
-        if (self.schedule_board.start_date and start_date < self.schedule_board.start_date):
+        if self.schedule_board.start_date and start_date < self.schedule_board.start_date:
             start_date = self.schedule_board.start_date
         if self.programme.end_date:
             end_date = self.programme.end_date
-            if (self.schedule_board.end_date and end_date > self.schedule_board.end_date):
+            if self.schedule_board.end_date and end_date > self.schedule_board.end_date:
                 end_date = self.schedule_board.end_date
             # Due to rrule we need to add 1 day
             end_date = end_date + datetime.timedelta(days=1)
@@ -210,7 +210,6 @@ class Schedule(models.Model):
                                         end_date=end_date.strftime("%H:%M %d/%m/%Y")
                                     )
                                 )
-
                         index += 1
 
     def save(self, *args, **kwargs):
@@ -266,7 +265,7 @@ class Schedule(models.Model):
             if date and (earlier_date is None or date > earlier_date):
                 earlier_date = date
                 earlier_schedule = schedule
-        if (earlier_schedule is None or dt > earlier_date + earlier_schedule.runtime()):  # Todo: check
+        if earlier_schedule is None or dt > earlier_date + earlier_schedule.runtime():  # Todo: check
             return None, None
         return earlier_schedule, earlier_date
 
