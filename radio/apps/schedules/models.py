@@ -26,7 +26,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.programmes.models import Programme, Episode
 
-
 emission_type = (
     ("L", _("live")),
     ("B", _("broadcast")),
@@ -147,7 +146,8 @@ class Schedule(models.Model):
             return rrule.rrule(
                 rrule.WEEKLY, byweekday=[self.day],
                 dtstart=datetime.datetime.combine(start_date, self.start_hour),
-                until=end_date)
+                until=end_date
+            )
         else:
             end_date = self.schedule_board.end_date
             if end_date:
