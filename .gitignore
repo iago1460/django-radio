@@ -1,5 +1,10 @@
-#django collectstatic files
+# django collectstatic files
 radio/media/_versions/
+radio/components/
+radio/static/
+
+# bower
+node_modules/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -48,6 +48,7 @@ INSTALLED_APPS = (
 
     'grappelli',
     'filebrowser',
+    'djangobower',
 
     'django.contrib.admin',
     'django.contrib.sitemaps',
@@ -149,11 +150,19 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(SITE_ROOT, 'static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
+BOWER_COMPONENTS_ROOT = os.path.join(SITE_ROOT, 'components')
+
+BOWER_PATH = os.path.join(SITE_ROOT, '..', 'node_modules', '.bin', 'bower')
+
+BOWER_INSTALLED_APPS = (
+    'fullcalendar',
+)
 
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'djangobower.finders.BowerFinder',
 )
 
 SITE_ID = 1
