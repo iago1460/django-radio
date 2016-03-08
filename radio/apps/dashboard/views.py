@@ -19,7 +19,7 @@ import datetime
 import json
 
 from django.conf import settings
-from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, render
@@ -27,15 +27,15 @@ from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 
 from apps.dashboard.forms import ScheduleForm
+from apps.global_settings.models import CalendarConfiguration
 from apps.programmes.models import Programme, Episode
 from apps.schedules.models import Schedule, ScheduleBoard
-from apps.global_settings.models import CalendarConfiguration
-
 
 
 # FullCalendar
 def ajax_view(f):
     """Return a valid ajax response"""
+
     def vista(request, *args, **kwargs):
         if not settings.DEBUG and not request.is_ajax():
             return HttpResponseBadRequest()
@@ -60,17 +60,22 @@ def ajax_view(f):
             }),
             content_type='application/json; charset=utf8'
         )
+
     return vista
 
+
 def schedule_permissions(user):
-    return user.has_perm('schedules.add_schedule') and user.has_perm('schedules.change_schedule') and user.has_perm('schedules.delete_schedule')
+    return user.has_perm('schedules.add_schedule') and user.has_perm('schedules.change_schedule') \
+           and user.has_perm('schedules.delete_schedule')
 
 
 @login_required
 @user_passes_test(schedule_permissions)
 def change_broadcast(request, pk):
     schedule = get_object_or_404(Schedule.objects.select_related('schedule_board', 'programme'), pk=pk)
-    queryset = Schedule.objects.filter(schedule_board=schedule.schedule_board, programme=schedule.programme, type='L').order_by('day', 'start_hour')
+    queryset = Schedule.objects.filter(
+        schedule_board=schedule.schedule_board, programme=schedule.programme, type='L'
+    ).order_by('day', 'start_hour')
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
@@ -86,10 +91,9 @@ def change_broadcast(request, pk):
     else:
         form = ScheduleForm(queryset=queryset)
         if schedule.source:
-            form = ScheduleForm(queryset=queryset, initial={'source': schedule.source.pk })
+            form = ScheduleForm(queryset=queryset, initial={'source': schedule.source.pk})
 
-    return render(request, 'dashboard/item_edit_form.html', {'form': form, 'schedule':schedule})
-
+    return render(request, 'dashboard/item_edit_form.html', {'form': form, 'schedule': schedule})
 
 
 @login_required
@@ -101,16 +105,27 @@ def full_calendar(request):
                 ScheduleBoard.objects.create(name="Unnamed")
                 schedule_boards = ScheduleBoard.objects.all()
             calendar_configuration = CalendarConfiguration.objects.get()
-            context = {'scheduleBoards' : schedule_boards,
-                       'scroll_time': calendar_configuration.scroll_time.strftime('%H:%M:%S'),
-                       'first_day': calendar_configuration.first_day + 1,
-                       'language' : request.LANGUAGE_CODE,
-                       'current_scheduleBoard':ScheduleBoard.get_current(datetime.datetime.now())}
+            context = {
+                'scheduleBoards': schedule_boards,
+                'scroll_time': calendar_configuration.scroll_time.strftime('%H:%M:%S'),
+                'first_day': calendar_configuration.first_day + 1,
+                'language': request.LANGUAGE_CODE,
+                'current_scheduleBoard': ScheduleBoard.get_current(datetime.datetime.now())
+            }
             return render(request, 'dashboard/fullcalendar.html', context)
         else:
-            return render(request, 'dashboard/fullcalendar_error.html', {'error_info':_('Sorry, you don\'t have enough permissions. Please contact your administrator.')})
+            return render(
+                request,
+                'dashboard/fullcalendar_error.html',
+                {'error_info': _('Sorry, you don\'t have enough permissions. Please contact your administrator.')}
+            )
     except CalendarConfiguration.DoesNotExist:
-        return render(request, 'dashboard/fullcalendar_error.html', {'error_info':_('Calendar Configuration not found. Please contact your administrator.')})
+        return render(
+            request,
+            'dashboard/fullcalendar_error.html',
+            {'error_info': _('Calendar Configuration not found. Please contact your administrator.')}
+        )
+
 
 @ajax_view
 @login_required
@@ -150,8 +165,9 @@ def change_event(request):
     '''
 
 
-background_colours = { "L": "#F9AD81", "B": "#C4DF9B", "S": "#8493CA" }
-text_colours = { "L": "black", "B": "black", "S": "black" }
+background_colours = {"L": "#F9AD81", "B": "#C4DF9B", "S": "#8493CA"}
+text_colours = {"L": "black", "B": "black", "S": "black"}
+
 
 @ajax_view
 @login_required
@@ -165,12 +181,19 @@ def create_schedule(request):
     schedule_board_id = int(request.POST.get('scheduleBoardId'))
     scheduleBoard = get_object_or_404(ScheduleBoard, id=schedule_board_id)
 
-    schedule = Schedule(programme=programme, schedule_board=scheduleBoard, day=start.weekday(), start_hour=start.time(), type=emission_type)
+    schedule = Schedule(
+        programme=programme, schedule_board=scheduleBoard, day=start.weekday(), start_hour=start.time(),
+        type=emission_type
+    )
     schedule.clean()
     schedule.save()
 
     Episode.rearrange_episodes(programme, datetime.datetime.now())
-    return {'scheduleId': schedule.id, 'backgroundColor':background_colours[schedule.type], 'textColor':text_colours[schedule.type], 'type':schedule.type}
+    return {
+        'scheduleId': schedule.id, 'backgroundColor': background_colours[schedule.type],
+        'textColor': text_colours[schedule.type], 'type': schedule.type
+    }
+
 
 @ajax_view
 @login_required
@@ -180,6 +203,7 @@ def delete_schedule(request):
     schedule = get_object_or_404(Schedule.objects.select_related('programme'), id=schedule_id)
     schedule.delete()
     Episode.rearrange_episodes(schedule.programme, datetime.datetime.now())
+
 
 @ajax_view
 @login_required
@@ -193,7 +217,7 @@ def programmes(request):
     programmes = Programme.actives(start_date, scheduleBoard.end_date).order_by('name')
     response_data = []
     for programme in programmes:
-        response_data.append({'title' : programme.name, 'runtime' : programme._runtime, 'programmeId' : programme.id})
+        response_data.append({'title': programme.name, 'runtime': programme._runtime, 'programmeId': programme.id})
     return response_data
 
 
@@ -213,11 +237,12 @@ def all_events(request):
         if day < first_day:
             day = day + 7
         date = datetime.datetime.combine(datetime.date(2011, 8, day), schedule.start_hour)
-        json_entry = {'id':schedule.id, 'start':str(date), 'end':str(date + schedule.runtime()),
-                      'allDay':False, 'title': schedule.programme.name, 'type':schedule.type,
-                      'textColor':text_colours[schedule.type],
-                      'backgroundColor':background_colours[schedule.type]}
+        json_entry = {
+            'id': schedule.id, 'start': str(date), 'end': str(date + schedule.runtime()),
+            'allDay': False, 'title': schedule.programme.name, 'type': schedule.type,
+            'textColor': text_colours[schedule.type],
+            'backgroundColor': background_colours[schedule.type]
+        }
         json_list.append(json_entry)
 
     return HttpResponse(json.dumps(json_list), content_type='application/json')
-

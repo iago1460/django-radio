@@ -1,18 +1,18 @@
 import datetime
+
 from django.contrib.auth.models import User
+
 from apps.global_settings.models import SiteConfiguration
 from apps.programmes.models import Programme, Episode, Role, CONTRIBUTOR, Podcast
 from apps.schedules.models import Schedule, ScheduleBoard, MO, TU, WE, TH, FR, SA, SU
-from django.templatetags.static import static
-from apps.users.models import UserProfile
 
 
 def create_example_data():
     # Create administrator
     user, created = User.objects.get_or_create(
         username='admin', defaults={
-            'is_superuser':True,
-            'is_staff':True,
+            'is_superuser': True,
+            'is_staff': True,
         }
     )
     if created:
@@ -44,13 +44,13 @@ def create_example_data():
     '''
     programme, created = Programme.objects.get_or_create(
         name='Morning News', defaults={
-            'start_date':start_date,
-            'synopsis':synopsis,
-            'language':'en',
-            'photo':'defaults/example/radio_1.jpg',
-            'current_season':1,
-            'category':'News & Politics',
-            '_runtime':60,
+            'start_date': start_date,
+            'synopsis': synopsis,
+            'language': 'en',
+            'photo': 'defaults/example/radio_1.jpg',
+            'current_season': 1,
+            'category': 'News & Politics',
+            '_runtime': 60,
         }
     )
 
@@ -99,8 +99,8 @@ def create_example_data():
             person=user,
             programme=programme,
             defaults={
-                'role':CONTRIBUTOR,
-                'description':synopsis,
+                'role': CONTRIBUTOR,
+                'description': synopsis,
             }
         )
 

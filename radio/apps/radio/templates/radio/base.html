@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="{% static "radio/img/favicon.ico" %}">
 
     <link rel="stylesheet" href="{% static "radio/css/bootstrap.css" %}">
-    <link href="{% static "radio/css/font-awesome.min.css" %}" rel="stylesheet" type="text/css" />
+    <link href="{% static "radio/css/font-awesome.min.css" %}" rel="stylesheet" type="text/css"/>
     <link href="{% static "radio/css/style.css" %}" rel="stylesheet">
 
     <link href='//fonts.googleapis.com/css?family=Open+Sans:400,700,600,800' rel='stylesheet' type='text/css'>
@@ -40,110 +40,125 @@
 
 
 <body>
-    {% block intro %} {% endblock %}
+{% block intro %} {% endblock %}
 
-    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle Navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="{% url 'home' %}">{{ site_config.site_name }}</a>
-            </div>
-
-            <div class="navbar-collapse collapse navbar-right">
-                <ul class="nav navbar-nav">
-                    <li {% block index_class %}{% endblock %}><a href="{% url 'home' %}">{% trans "home"|title %}</a></li>
-                    <li {% block schedules_class %}{% endblock %}><a href="{% url 'schedules:list' %}">{% trans "schedules"|title %}</a></li>
-                    <li {% block programmes_class %}{% endblock %}><a href="{% url 'programmes:list' %}">{% trans "programmes"|title %}</a></li>
-                    <li {% block users_class %}{% endblock %}><a href="{% url 'users:list' %}">{% trans "people"|title %}</a></li>
-                    <li class="separator"></li>
-                    {% if user.is_authenticated %}
-                        <li><a href="{% url 'admin:index' %}">{% trans "admin"|title %}</a></li>
-                        <li><a href="{% url 'logout' %}">{% trans "logout"|title %}</a></li>
-                    {% else %}
-                        <li><a href="{% url 'admin:index' %}">{% trans "login"|title %}</a></li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    {% block page_title_wrapper%}
-        <div id="blue">
-            <div class="container">
-                <div class="row">
-                    <h3>{% block page_title %}{% endblock %}</h3>
-                </div><!-- /row -->
-            </div> <!-- /container -->
-        </div>
-    {% endblock %}
-
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container">
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="alert alert-dismissable alert-{{ message.tags }}" data-alert="alert">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle Navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'home' %}">{{ site_config.site_name }}</a>
+        </div>
+
+        <div class="navbar-collapse collapse navbar-right">
+            <ul class="nav navbar-nav">
+                <li {% block index_class %}{% endblock %}>
+                    <a href="{% url 'home' %}">{% trans "home"|title %}</a>
+                </li>
+                <li {% block schedules_class %}{% endblock %}>
+                    <a href="{% url 'schedules:list' %}">{% trans "schedules"|title %}</a>
+                </li>
+                <li {% block programmes_class %}{% endblock %}>
+                    <a href="{% url 'programmes:list' %}">{% trans "programmes"|title %}</a>
+                </li>
+                <li {% block users_class %}{% endblock %}>
+                    <a href="{% url 'users:list' %}">{% trans "people"|title %}</a>
+                </li>
+                <li class="separator"></li>
+                {% if user.is_authenticated %}
+                    <li>
+                        <a href="{% url 'admin:index' %}">{% trans "admin"|title %}</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'logout' %}">{% trans "logout"|title %}</a>
+                    </li>
+                {% else %}
+                    <li>
+                        <a href="{% url 'admin:index' %}">{% trans "login"|title %}</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
     </div>
+</div>
 
-    {% block content%}{% endblock %}
-
-    <div id="footerwrap">
+{% block page_title_wrapper %}
+    <div id="blue">
         <div class="container">
             <div class="row">
-                {% if site_config.about_footer %}
-                    <div class="col-lg-4">
-                        <h4>{% trans 'About' %}</h4>
-                        <div class="hline-w"></div>
-                        <p>
-                            {{ site_config.about_footer }}
-                        </p>
-                    </div>
-                {% endif %}
-                {% if site_config.twitter_address or site_config.facebook_address %}
-                    <div class="col-lg-4">
-                        <h4>{% trans 'Social Links' %}</h4>
-                        <div class="hline-w"></div>
-                        <p>
-                            {% if site_config.facebook_address %}
-                                <a href="{{ site_config.facebook_address }}">
-                                    <i class="fa fa-facebook"></i></a>
-                                </a>
-                            {% endif %}
-                            {% if site_config.twitter_address %}
-                                <a href="{{ site_config.twitter_address }}">
-                                    <i class="fa fa-twitter"></i></a>
-                                </a>
-                            {% endif %}
-                        </p>
-                    </div>
-                {% endif %}
-                {% if site_config.address %}
-                    <div class="col-lg-4">
-                        <h4>{% trans 'Our Address' %}</h4>
-                        <div class="hline-w"></div>
-                        <p>
-                            {{ site_config.address }}
-                        </p>
-                    </div>
-                {% endif %}
-		 	</div><! --/row -->
-            <div class="row">
-                <p class="site-info text-center">
-                    {% blocktrans with url='<a href="http://radioco.org" target="_blank">RadioCo</a>' %}This website is running {{ url }}{% endblocktrans%}
-                </p>
-            </div>
-	 	</div><! --/container -->
-	 </div><! --/footerwrap -->
+                <h3>{% block page_title %}{% endblock %}</h3>
+            </div><!-- /row -->
+        </div> <!-- /container -->
+    </div>
+{% endblock %}
+
+<div class="container">
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert alert-dismissable alert-{{ message.tags }}" data-alert="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+{% block content %}{% endblock %}
+
+<div id="footerwrap">
+    <div class="container">
+        <div class="row">
+            {% if site_config.about_footer %}
+                <div class="col-lg-4">
+                    <h4>{% trans 'About' %}</h4>
+                    <div class="hline-w"></div>
+                    <p>
+                        {{ site_config.about_footer }}
+                    </p>
+                </div>
+            {% endif %}
+            {% if site_config.twitter_address or site_config.facebook_address %}
+                <div class="col-lg-4">
+                    <h4>{% trans 'Social Links' %}</h4>
+                    <div class="hline-w"></div>
+                    <p>
+                        {% if site_config.facebook_address %}
+                            <a href="{{ site_config.facebook_address }}">
+                                <i class="fa fa-facebook"></i></a>
+                            </a>
+                        {% endif %}
+                        {% if site_config.twitter_address %}
+                            <a href="{{ site_config.twitter_address }}">
+                                <i class="fa fa-twitter"></i></a>
+                            </a>
+                        {% endif %}
+                    </p>
+                </div>
+            {% endif %}
+            {% if site_config.address %}
+                <div class="col-lg-4">
+                    <h4>{% trans 'Our Address' %}</h4>
+                    <div class="hline-w"></div>
+                    <p>
+                        {{ site_config.address }}
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+        <div class="row">
+            <p class="site-info text-center">
+                {% blocktrans with url='<a href="http://radioco.org" target="_blank">RadioCo</a>' %}This website is
+                    running {{ url }}{% endblocktrans %}
+            </p>
+        </div>
+    </div>
+</div>
 
 <!-- Core JavaScript Files -->
 <!-- Placed at the end of the document so the pages load faster -->
@@ -157,13 +172,13 @@
 <script src="{% static "radio/js/custom.js" %}"></script>
 <script>
     // Portfolio
-    (function($) {
+    (function ($) {
         "use strict";
         var $container = $('.portfolio'),
                 $items = $container.find('.portfolio-item'),
                 portfolioLayout = 'fitRows';
 
-        if( $container.hasClass('portfolio-centered') ) {
+        if ($container.hasClass('portfolio-centered')) {
             portfolioLayout = 'masonry';
         }
 
@@ -176,18 +191,17 @@
                 easing: 'linear',
                 queue: false
             },
-            masonry: {
-            }
+            masonry: {}
         }, refreshWaypoints());
 
         function refreshWaypoints() {
-            setTimeout(function() {
+            setTimeout(function () {
             }, 1000);
         }
 
-        $('nav.portfolio-filter ul a').on('click', function() {
+        $('nav.portfolio-filter ul a').on('click', function () {
             var selector = $(this).attr('data-filter');
-            $container.isotope({ filter: selector }, refreshWaypoints());
+            $container.isotope({filter: selector}, refreshWaypoints());
             $('nav.portfolio-filter ul a').removeClass('active');
             $(this).addClass('active');
             return false;
@@ -216,9 +230,9 @@
                     columnNumber = getColumnNumber(),
                     itemWidth = Math.floor(winWidth / columnNumber);
 
-            $container.find('.portfolio-item').each(function() {
-                $(this).css( {
-                    width : itemWidth + 'px'
+            $container.find('.portfolio-item').each(function () {
+                $(this).css({
+                    width: itemWidth + 'px'
                 });
             });
         }
