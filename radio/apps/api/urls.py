@@ -6,6 +6,7 @@ import views
 
 router = routers.DefaultRouter()
 router.register(r'programmes', views.ProgrammeViewSet)
+router.register(r'schedules', views.ScheduleViewSet)
 
 
 urlpatterns = [
