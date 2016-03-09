@@ -9,7 +9,8 @@ class TestSerializers(TestCase):
         serializer = serializers.ProgrammeSerializer()
         self.assertEqual(
             serializer.fields.keys(),
-            ['url', 'name', 'synopsis', 'photo', 'language', 'category'])
+            ['url', 'name', 'synopsis', 'photo', 'language', 'category']
+        )
 
 
 class TestAPI(TestCase):
