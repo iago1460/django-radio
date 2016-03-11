@@ -28,7 +28,8 @@ class TestSerializers(TestCase):
         serializer = serializers.ProgrammeSerializer()
         self.assertEqual(
             serializer.fields.keys(),
-            ['url', 'name', 'synopsis', 'photo', 'language', 'category'])
+            ['id', 'url', 'name', 'synopsis', 'runtime',
+             'photo', 'language', 'category'])
 
     def test_schedule(self):
         serializer = serializers.ScheduleSerializer()
@@ -36,7 +37,7 @@ class TestSerializers(TestCase):
             serializer.fields.keys(),
             ['id', 'programme', 'schedule_board', 'day', 'start_hour',
              'start', 'end', 'allDay', 'title', 'type',
-             'textColor', 'backgroundColor'])
+             'textColor', 'backgroundColor', 'source'])
 
     def test_schedule_title(self):
         serializer = serializers.ScheduleSerializer(self.schedule)
@@ -95,35 +96,72 @@ class TestAPI(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_programmes_get_all(self):
-        response = self.client.get('/api/2/programmes/')
+        response = self.client.get('/api/2/programmes')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_programmes_post(self):
-        response = self.client.post('/api/2/programmes/')
+        response = self.client.post('/api/2/programmes')
         self.assertEqual(
             response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_programmes_put(self):
-        response = self.client.put('/api/2/programmes/')
+        response = self.client.put('/api/2/programmes')
         self.assertEqual(
             response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_programmes_delete(self):
-        response = self.client.delete('/api/2/programmes/')
+        response = self.client.delete('/api/2/programmes')
         self.assertEqual(
             response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_schedules_get_all(self):
-        response = self.client.get('/api/2/schedules/')
+        response = self.client.get('/api/2/schedules')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_schedules_get_by_programme(self):
+        response = self.client.get(
+            '/api/2/schedules?programme={}'.format(self.programme.id))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['title'], self.programme.name)
+
+    def test_schedules_get_by_nonexisting_programme(self):
+        response = self.client.get('/api/2/schedules?programme=4223')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
+    def test_schedules_get_by_board(self):
+        response = self.client.get('/api/2/schedules?schedule_board={}'.format(
+            self.schedule_board.id))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(
+            response.data[0]['schedule_board'], self.schedule_board.id)
+
+    def test_schedules_get_by_nonexisting_board(self):
+        response = self.client.get('/api/2/schedules?schedule_board=4223')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
+    def test_schedules_get_by_type(self):
+        response = self.client.get('/api/2/schedules?type=L')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(
+            response.data[0]['schedule_board'], self.schedule_board.id)
+
+    def test_schedules_get_by_nonexiting_type(self):
+        response = self.client.get('/api/2/schedules?type=B')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
     def test_schedules_post(self):
-        response = self.client.post('/api/2/schedules/')
+        response = self.client.post('/api/2/schedules')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_schedules_post_authenticated_no_permission(self):
         self.client.login(username="someone", password="topsecret")
-        response = self.client.post('/api/2/schedules/')
+        response = self.client.post('/api/2/schedules')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_schedules_post_authenticated(self):
@@ -132,5 +170,5 @@ class TestAPI(APITestCase):
             "programme": self.programme.id,
             "schedule_board": self.schedule_board.id,
             "day": 0, "start_hour": "07:30:00", "type": "L"}
-        response = self.client.post('/api/2/schedules/', data)
+        response = self.client.post('/api/2/schedules', data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

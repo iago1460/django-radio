@@ -23,6 +23,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 
+from apps.programmes.models import Programme
 from apps.schedules.models import Schedule, ScheduleBoard
 
 try:
@@ -78,6 +79,19 @@ class ScheduleBoardAdmin(admin.ModelAdmin):
     copy_ScheduleBoard.short_description = _("Make a Copy of calendar")
 
 
+@admin.register(Schedule)
+class ScheduleAdmin(admin.ModelAdmin):
+    change_list_template = "admin/schedules/calendar.html"
+
+    def changelist_view(self, request, extra_context=dict()):
+        extra_context['scheduleBoards'] = ScheduleBoard.objects.all()
+        #extra_context['programmes'] = Programme.objects.all()   # XXX only programmes for given schedule board
+        return super(ScheduleAdmin, self).changelist_view(request, extra_context=extra_context)
+
+    def has_add_permission(self, request):
+        return False
+
+
 class FullcalendarAdmin(admin.ModelAdmin):
     def schedule_detail(self, request):
         return HttpResponseRedirect(reverse("dashboard:schedule_editor"))
@@ -116,4 +130,5 @@ class FullcalendarAdmin(admin.ModelAdmin):
 
 
 admin.site.register(ScheduleBoard, ScheduleBoardAdmin)
-admin.site.register(Schedule, FullcalendarAdmin)
+#admin.site.register(Schedule, ScheduleAdmin)
+#admin.site.register(Schedule, FullcalendarAdmin)

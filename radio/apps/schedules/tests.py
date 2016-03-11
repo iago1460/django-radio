@@ -18,7 +18,9 @@
 import datetime
 
 from dateutil.relativedelta import relativedelta
+from django.contrib.auth.models import User, Permission
 from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 from apps.programmes.models import Programme, Episode
@@ -151,3 +153,24 @@ class ScheduleBoardMethodTests(TestCase):
             name="after_18_february", start_date=datetime.datetime(2014, 2, 18)
         )
         self.assertRaises(ValidationError, schedule_board.clean)
+
+
+class ScheduleViewTests(TestCase):
+    def setUp(self):
+        admin = User.objects.create_user(
+            username='admin', password='topsecret')
+        admin.user_permissions.add(
+            Permission.objects.get(codename='change_schedule'))
+
+        schedule_board = ScheduleBoard.objects.create(
+            name='Board',
+            start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0))
+
+        programme = Programme.objects.create(
+            name="Test-Programme", current_season=1, runtime=540,
+            start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0))
+
+        self.schedule = Schedule.objects.create(
+            schedule_board=schedule_board, programme=programme,
+            start_hour=datetime.time(0, 0, 0), day=WE, type='L')
+

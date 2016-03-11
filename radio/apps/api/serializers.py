@@ -11,7 +11,7 @@ class ProgrammeSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Programme
-        fields = ('url', 'name', 'synopsis', 'photo', 'language', 'category')
+        fields = ('id', 'url', 'name', 'synopsis', 'runtime', 'photo', 'language', 'category')
 
 
 class ScheduleSerializer(serializers.ModelSerializer):
@@ -24,8 +24,9 @@ class ScheduleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Schedule
-        fields = ('id', 'programme', 'schedule_board', 'day', 'start_hour', 'start', 'end',
-                  'allDay', 'title', 'type', 'textColor', 'backgroundColor')
+        fields = ('id', 'programme', 'schedule_board', 'day', 'start_hour',
+                  'start', 'end', 'allDay', 'title', 'type',
+                  'textColor', 'backgroundColor', 'source')
 
     def get_start(self, schedule):
         return datetime.datetime.combine(schedule.programme.start_date, schedule.start_hour)

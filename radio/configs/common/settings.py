@@ -58,11 +58,12 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'disqus',
+    'djangobower',
 
     # Local Project Apps
+    'apps.api',
     'apps.users',
     'apps.programmes',
-    'apps.dashboard',
     'apps.schedules',
     'apps.global_settings',
     'apps.radio',
@@ -146,10 +147,20 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(SITE_ROOT, 'static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
+BOWER_COMPONENTS_ROOT = os.path.join(SITE_ROOT, 'components')
+
+BOWER_PATH = os.path.join(SITE_ROOT, '..', 'node_modules', '.bin', 'bower')
+
+BOWER_INSTALLED_APPS = (
+    'jqueryui#1.11.4',
+    'jquery#2.2.1',
+    'fullcalendar#2.6.1',
+)
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'djangobower.finders.BowerFinder',
 )
 
 SITE_ID = 1

@@ -1,11 +1,13 @@
 Django>=1.8, <1.9
 Pillow
+django-bootstrap3
+django-bower
+django-ckeditor==5.0.2
+django-disqus
+django-filebrowser>=3.6.1
+django-filter
+django-grappelli>=2.7.3
+djangorestframework
+fabric
 python-dateutil
 pytz
-django-grappelli>=2.7.3
-django-filebrowser>=3.6.1
-djangorestframework
-django-bootstrap3
-django-ckeditor==5.0.2
-fabric
-django-disqus
