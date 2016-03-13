@@ -21,12 +21,11 @@ import json
 from django.contrib.auth.decorators import permission_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render
 
 from apps.global_settings.models import CalendarConfiguration
 from apps.programmes.models import Episode
 from apps.schedules.models import Schedule
-from apps.schedules.forms import SourceForm
 
 
 def schedule_list(request):
