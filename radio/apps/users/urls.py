@@ -19,7 +19,6 @@ from django.conf.urls import patterns, url
 
 from apps.users import views
 
-
 urlpatterns = patterns('',
     url(r'^$', views.UsersView.as_view(), name='list'),
     url(r'^(?P<slug>[-\w]+)/$', views.userprofile_detail, name='detail'),

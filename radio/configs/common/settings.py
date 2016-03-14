@@ -16,9 +16,9 @@
 
 
 import os
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SITE_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
@@ -62,9 +62,9 @@ INSTALLED_APPS = (
     'recurrence',
 
     # Local Project Apps
+    'apps.api',
     'apps.users',
     'apps.programmes',
-    'apps.dashboard',
     'apps.schedules',
     'apps.global_settings',
     'apps.radio',
@@ -113,7 +113,6 @@ TEMPLATES = [
 
 ROOT_URLCONF = 'radio.configs.common.urls'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
@@ -137,7 +136,6 @@ USE_L10N = True
 
 USE_TZ = False
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
@@ -155,9 +153,10 @@ BOWER_COMPONENTS_ROOT = os.path.join(SITE_ROOT, 'components')
 BOWER_PATH = os.path.join(SITE_ROOT, '..', 'node_modules', '.bin', 'bower')
 
 BOWER_INSTALLED_APPS = (
-    'fullcalendar',
+    'jqueryui#1.11.4',
+    'jquery#2.2.1',
+    'fullcalendar#2.6.1',
 )
-
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -185,7 +184,6 @@ FILEBROWSER_VERSIONS = {
 FILEBROWSER_ADMIN_VERSIONS = [
     'thumb', 'small', 'medium', 'large',
 ]
-
 
 # RadioCo Settings
 # http://django-radio.readthedocs.org/en/latest/reference/configuration.html
@@ -218,4 +216,3 @@ try:
     from local_settings import *
 except ImportError:
     pass
-

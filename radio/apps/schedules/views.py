@@ -18,19 +18,14 @@
 import datetime
 import json
 
-from dateutil import rrule
-from dateutil.relativedelta import relativedelta
-from django.conf import settings
-from django.core.exceptions import ValidationError
+from django.contrib.auth.decorators import permission_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
 from django.shortcuts import render
-from django.utils.translation import ugettext_lazy as _
 
-from apps.programmes.models import Programme, Episode
-from apps.schedules.models import Schedule
 from apps.global_settings.models import CalendarConfiguration
+from apps.programmes.models import Episode
+from apps.schedules.models import Schedule
 
 
 def schedule_list(request):
@@ -51,7 +46,8 @@ def feed_schedules(request):
     end = datetime.datetime.strptime(request.GET.get('end'), '%Y-%m-%d')
     return HttpResponse(
         json.dumps(__get_events(after=start, before=end, json_mode=True)),
-        content_type='application/json')
+        content_type='application/json'
+    )
 
 
 def __get_events(after, before, json_mode=False):
@@ -89,13 +85,12 @@ def __get_events(after, before, json_mode=False):
             episodes.append(episode)
 
             if episode:
-                url = reverse('programmes:episode_detail', args=(
-                    schedule.programme.slug,
-                    episode.season,
-                    episode.number_in_season,))
+                url = reverse(
+                    'programmes:episode_detail',
+                    args=(schedule.programme.slug, episode.season, episode.number_in_season,)
+                )
             else:
-                url = reverse('programmes:detail', args=(
-                    schedule.programme.slug,))
+                url = reverse('programmes:detail', args=(schedule.programme.slug,))
 
             event_entry = {
                 'id': schedule.id,
@@ -106,14 +101,14 @@ def __get_events(after, before, json_mode=False):
                 'type': schedule.type,
                 'textColor': text_colours[schedule.type],
                 'backgroundColor': background_colours[schedule.type],
-                'url': url}
+                'url': url
+            }
             event_list.append(event_entry)
 
     if json_mode:
         return event_list
     else:
-        if (schedules):
-            dates, schedules, episodes = (list(t) for t in zip(
-                *sorted(zip(dates, schedules, episodes))))
+        if schedules:
+            dates, schedules, episodes = (list(t) for t in zip(*sorted(zip(dates, schedules, episodes))))
             return zip(schedules, dates, episodes)
         return None

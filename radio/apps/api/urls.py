@@ -4,8 +4,9 @@ from django.conf.urls import url, include
 import views
 
 
-router = routers.DefaultRouter()
+router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'programmes', views.ProgrammeViewSet)
+router.register(r'schedules', views.ScheduleViewSet)
 
 
 urlpatterns = [

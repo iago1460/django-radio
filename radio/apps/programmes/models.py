@@ -24,29 +24,26 @@ from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models.signals import post_save, pre_save
-from django.dispatch.dispatcher import receiver
 from django.template.defaultfilters import slugify
-from django.templatetags.static import static
 from django.utils.translation import ugettext_lazy as _
 from recurrence.fields import RecurrenceField
-
 
 if hasattr(settings, 'PROGRAMME_LANGUAGES'):
     PROGRAMME_LANGUAGES = settings.PROGRAMME_LANGUAGES
 else:
     PROGRAMME_LANGUAGES = settings.LANGUAGES
 
-
 PRESENTER = 'PR'
 INFORMER = 'IN'
 CONTRIBUTOR = 'CO'
 NOT_SPECIFIED = 'NO'
 
-ROLES = ((NOT_SPECIFIED, _("Not specified")),
+ROLES = (
+    (NOT_SPECIFIED, _("Not specified")),
     (PRESENTER, _("Presenter")),
     (INFORMER, _("Informer")),
-    (CONTRIBUTOR, _("Contributor")))
+    (CONTRIBUTOR, _("Contributor"))
+)
 
 
 class Programme(models.Model):
@@ -69,17 +66,34 @@ class Programme(models.Model):
         ('TV & Film', _('TV & Film')),
     )
 
-    name = models.CharField(max_length=100, unique=True, verbose_name=_("name"), help_text=_("Please DON'T change this value. It's used to build URL's."))
+    name = models.CharField(
+        max_length=100, unique=True, verbose_name=_("name"),
+        help_text=_("Please DON'T change this value. It's used to build URL's.")
+    )
     start_date = models.DateField(verbose_name=_('start date'))
-    end_date = models.DateField(blank=True, null=True, verbose_name=_('end date'), help_text=_("This field can be null."))
-    announcers = models.ManyToManyField(User, blank=True, null=True, through='Role', verbose_name=_("announcers"))
+    end_date = models.DateField(
+        blank=True, null=True, verbose_name=_('end date'), help_text=_("This field can be null.")
+    )
+    announcers = models.ManyToManyField(
+        User, blank=True, null=True, through='Role', verbose_name=_("announcers")
+    )
     synopsis = RichTextField(blank=True, verbose_name=_("synopsis"))
-    photo = models.ImageField(upload_to='photos/', default='defaults/default-programme-photo.jpg', verbose_name=_("photo"))
-    language = models.CharField(default=PROGRAMME_LANGUAGES[0][0], verbose_name=_("language"), choices=map(lambda (k, v): (k, _(v)), PROGRAMME_LANGUAGES), max_length=7)
-    current_season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("current season"))
-    category = models.CharField(blank=True, null=True, max_length=50, choices=CATEGORY_CHOICES, verbose_name=_("category"))
+    photo = models.ImageField(
+        upload_to='photos/', default='defaults/default-programme-photo.jpg', verbose_name=_("photo")
+    )
+    language = models.CharField(
+        default=PROGRAMME_LANGUAGES[0][0], verbose_name=_("language"),
+        choices=map(lambda (k, v): (k, _(v)), PROGRAMME_LANGUAGES), max_length=7
+    )
+    current_season = models.PositiveIntegerField(
+        validators=[MinValueValidator(1)], verbose_name=_("current season")
+    )
+    category = models.CharField(
+        blank=True, null=True, max_length=50, choices=CATEGORY_CHOICES, verbose_name=_("category")
+    )
     slug = models.SlugField(max_length=100, unique=True)
-    _runtime = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("runtime"), help_text=_("In minutes."))
+    _runtime = models.PositiveIntegerField(
+        validators=[MinValueValidator(1)], verbose_name=_("runtime"), help_text=_("In minutes."))
     recurrences = RecurrenceField()
 
     @property
@@ -111,10 +125,13 @@ class Programme(models.Model):
         else:
             super(Programme, self).save(*args, **kwargs)
 
-
     @classmethod
     def actives(cls, start_date, end_date=None):
-        programme_list = cls.objects.filter(end_date__isnull=True).order_by('-start_date') | cls.objects.filter(end_date__gte=start_date).order_by('-start_date')
+        programme_list = cls.objects.filter(
+            end_date__isnull=True
+        ).order_by('-start_date') | cls.objects.filter(
+            end_date__gte=start_date
+        ).order_by('-start_date')
         if end_date:
             programme_list = programme_list.filter(start_date__lte=end_date)
         return programme_list
@@ -133,17 +150,14 @@ class Programme(models.Model):
         return u"%s" % (self.name)
 
 
-
 class Episode(models.Model):
     title = models.CharField(max_length=100, blank=True, null=True, verbose_name=_("title"))
     people = models.ManyToManyField(User, blank=True, null=True, through='Participant', verbose_name=_("people"))
     programme = models.ForeignKey(Programme, verbose_name=_("programme"))
     summary = RichTextField(blank=True, verbose_name=_("summary"))
-    # issue_date = models.DateTimeField(db_index=True, unique=True, verbose_name=_('issue date'))
     issue_date = models.DateTimeField(blank=True, null=True, db_index=True, verbose_name=_('issue date'))
     season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("season"))
     number_in_season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("No. in season"))
-    # slug = models.SlugField(max_length=100)
 
     @property
     def runtime(self):
@@ -170,10 +184,14 @@ class Episode(models.Model):
             episode.season = season
             episode.number_in_season = number_in_season
         else:
-            episode = Episode(programme=programme, issue_date=date, season=season, number_in_season=number_in_season)
+            episode = Episode(
+                programme=programme, issue_date=date, season=season, number_in_season=number_in_season
+            )
         episode.save()
         for role in Role.objects.filter(programme=programme):
-            Participant.objects.create(person=role.person, episode=episode, role=role.role, description=role.description)
+            Participant.objects.create(
+                person=role.person, episode=episode, role=role.role, description=role.description
+            )
         return episode
 
     @classmethod
@@ -202,19 +220,11 @@ class Episode(models.Model):
             else:
                 episode.issue_date = None
             episode.save()
-        '''
-        print '########################'
-        my_list_len = len(next_episodes) - 1
-        for i in range(my_list_len, -1, -1):
-            print next_episodes[i].issue_date
-            print ' , '
-            next_episodes[i].save()
-        '''
 
     @classmethod
     def next_episodes(cls, programme, hour, after=None):
         # TODO: improve query
-        if after == None:
+        if after is None:
             after = datetime.datetime.now()
         episodes = Episode.objects.filter(programme=programme, issue_date__gte=after).order_by('issue_date')
         next_episodes = []
@@ -225,7 +235,9 @@ class Episode(models.Model):
 
     @classmethod
     def get_last_episode(cls, programme):
-        return cls.objects.filter(programme=programme).order_by('-season', '-number_in_season').select_related('programme').first()
+        return cls.objects.filter(
+            programme=programme
+        ).order_by('-season', '-number_in_season').select_related('programme').first()
 
     def get_absolute_url(self):
         return reverse('programmes:episode_detail', args=[self.programme.slug, self.season, self.number_in_season])
@@ -248,16 +260,6 @@ class Episode(models.Model):
             return u"%sx%s %s" % (self.season, self.number_in_season, self.title)
         return u"%sx%s %s" % (self.season, self.number_in_season, self.programme)
 
-'''
-# participants added in post_save signal
-def model_created(sender, **kwargs):
-    the_instance = kwargs['instance']
-    if kwargs['created']:
-        for role in Role.objects.filter(programme=the_instance.programme):
-            Participant.objects.create(person=role.person, episode=the_instance, role=role.role, description=role.description)
-
-post_save.connect(model_created, sender=Episode)
-'''
 
 class Participant(models.Model):
     person = models.ForeignKey(User, verbose_name=_("person"))
@@ -275,8 +277,6 @@ class Participant(models.Model):
 
     def __unicode__(self):
         return str(self.episode) + ": " + self.person.username
-
-
 
 
 class Role(models.Model):
@@ -307,5 +307,3 @@ class Podcast(models.Model):
 
     def get_absolute_url(self):
         return self.episode.get_absolute_url()
-
-

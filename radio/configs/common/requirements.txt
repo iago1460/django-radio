@@ -5,6 +5,7 @@ django-bower
 django-ckeditor==5.0.2
 django-disqus
 django-filebrowser>=3.6.1
+django-filter
 django-grappelli>=2.7.3
 django-recurrence>=1.2.0
 djangorestframework

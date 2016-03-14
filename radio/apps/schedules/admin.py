@@ -19,12 +19,11 @@ import copy
 
 from django.conf.urls import url, patterns
 from django.contrib import admin
-from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response, redirect
 from django.utils.translation import ugettext_lazy as _
 
+from apps.programmes.models import Programme
 from apps.schedules.models import Schedule, ScheduleBoard
 
 try:
@@ -53,14 +52,16 @@ class ScheduleBoardAdmin(admin.ModelAdmin):
             try:
                 if ScheduleBoard.objects.get(name=copy_name):
                     pass
+                    # Don't work
+                    # self.message_user(
+                    # request, _('There is already a calendar with this name \"%s\"') % copy_name, level=messages.ERROR
+                    # )
             except ScheduleBoard.DoesNotExist:
                 obj_copy.save()
                 # Live Schedules lives must be created first
                 schedules = []
-                schedules.extend(Schedule.objects.filter(
-                    schedule_board=obj, type='L'))
-                schedules.extend(Schedule.objects.filter(
-                    schedule_board=obj).exclude(type='L'))
+                schedules.extend(Schedule.objects.filter(schedule_board=obj, type='L'))
+                schedules.extend(Schedule.objects.filter(schedule_board=obj).exclude(type='L'))
                 for schedule in schedules:
                     schedule_copy = copy.copy(schedule)
                     schedule_copy.id = None
@@ -69,15 +70,26 @@ class ScheduleBoardAdmin(admin.ModelAdmin):
                     if schedule_copy.source:
                         source = schedule_copy.source
                         source_copy = Schedule.objects.get(
-                            schedule_board=obj_copy,
-                            day=source.day,
-                            start_hour=source.start_hour,
-                            type=source.type,
-                            programme=source.programme)
+                            schedule_board=obj_copy, day=source.day, start_hour=source.start_hour,
+                            type=source.type, programme=source.programme
+                        )
                         schedule_copy.source = source_copy
                     schedule_copy.save()
 
     copy_ScheduleBoard.short_description = _("Make a Copy of calendar")
+
+
+@admin.register(Schedule)
+class ScheduleAdmin(admin.ModelAdmin):
+    change_list_template = "admin/schedules/calendar.html"
+
+    def changelist_view(self, request, extra_context=dict()):
+        extra_context['scheduleBoards'] = ScheduleBoard.objects.all()
+        #extra_context['programmes'] = Programme.objects.all()   # XXX only programmes for given schedule board
+        return super(ScheduleAdmin, self).changelist_view(request, extra_context=extra_context)
+
+    def has_add_permission(self, request):
+        return False
 
 
 class FullcalendarAdmin(admin.ModelAdmin):
@@ -96,30 +108,27 @@ class FullcalendarAdmin(admin.ModelAdmin):
             'app_name': self.model._meta.app_label,
             'model_name': self.model._meta.model_name,
         }
-        custom_urls = patterns('', url(
-            r'^$',
-            self.admin_site.admin_view(self.schedule_detail),
-            {},
-            name='%s_change' % url_name_prefix))
-
+        custom_urls = patterns(
+            '', url(
+                r'^$',
+                self.admin_site.admin_view(self.schedule_detail),
+                {},
+                # self.admin_site.admin_view(self.change_view),
+                # {'object_id': '2'},
+                name='%s_change' % url_name_prefix
+            ),
+        )
         # By inserting the custom URLs first, we overwrite the standard URLs.
         return custom_urls + urls
 
     def response_change(self, request, obj):
-        msg = _('{obj} was changed successfully.'.format(
-            obj=force_unicode(obj)))
+        msg = _('{obj} was changed successfully.'.format(obj=force_unicode(obj)))
         if '_continue' in request.POST:
             return HttpResponseRedirect(request.path)
         else:
             return HttpResponseRedirect("../../")
-    '''
-    def change_view(self, request, object_id, extra_context=None):
-        return super(FullcalendarAdmin, self).change_view(
-            request,
-            object_id,
-            extra_context=extra_context,
-        )
-    '''
+
 
 admin.site.register(ScheduleBoard, ScheduleBoardAdmin)
-admin.site.register(Schedule, FullcalendarAdmin)
+#admin.site.register(Schedule, ScheduleAdmin)
+#admin.site.register(Schedule, FullcalendarAdmin)
