@@ -14,4 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import utils
+from apps.programmes.models import Programme, Episode
+from apps.schedules.models import Schedule, ScheduleBoard
 
+
+class TestDataMixin(object):
+    def setUp(self):
+        utils.create_example_data()
+        self.programme = Programme.objects.filter(name="Classic hits").get()
+        self.schedule_board = ScheduleBoard.objects.filter(name="Example").get()
+        self.schedule = self.programme.schedule_set.first()

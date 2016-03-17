@@ -86,17 +86,16 @@ class NonStaffRoleInline(admin.StackedInline):
 
 
 class NonStaffProgrammeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'start_date', 'end_date')
-    list_filter = ['start_date']
+    list_display = ('name',)
     search_fields = ['name']
     inlines = [NonStaffRoleInline]
 
     def get_form(self, request, obj=None, **kwargs):
-        kwargs['fields'] = ['name', 'start_date', 'end_date', 'synopsis', 'category', 'current_season', 'photo', 'language', '_runtime', 'recurrences']
+        kwargs['fields'] = ['name', 'synopsis', 'category', 'current_season', 'photo', 'language', '_runtime']
         if not obj or request.user.has_perm('programmes.add_programme'):
             self.exclude = ['slug', ]
         else:
-            self.exclude = ['slug', 'start_date', 'end_date', '_runtime']
+            self.exclude = ['slug', '_runtime']
         return super(NonStaffProgrammeAdmin, self).get_form(request, obj, **kwargs)
 
     def save_formset(self, request, form, formset, change):

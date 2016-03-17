@@ -14,14 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-import datetime
-import recurrence
-from django.test import TestCase
-from django.contrib.admin.sites import AdminSite
+from apps.programmes.models import Programme, Episode, EpisodeManager, Role
+from apps.radio.tests import TestDataMixin
 from django.contrib.admin.options import ModelAdmin
-
-from apps.programmes.models import Programme, Episode
+from django.contrib.admin.sites import AdminSite
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError, FieldError
+from django.core.urlresolvers import reverse
+from django.test import TestCase
+import datetime
 
 
 class ProgrammeModelTests(TestCase):
@@ -31,38 +32,49 @@ class ProgrammeModelTests(TestCase):
             name="Test programme",
             synopsis="This is a description",
             _runtime=540,
-            start_date=datetime.date(2014, 1, 31),
-            end_date=datetime.datetime(2014, 1, 31, 12, 0, 0, 0),
             current_season=1)
 
     def test_save_programme(self):
         self.assertEqual(
             self.programme, Programme.objects.get(id=self.programme.id))
 
+    def test_slug(self):
+        self.assertEqual(self.programme.slug, "test-programme")
+
     def test_runtime(self):
         self.assertEqual(datetime.timedelta(hours=+9), self.programme.runtime)
 
+    def test_runtime_not_get(self):
+        programme = Programme(name="foo", current_season=1)
+        with self.assertRaises(FieldError):
+            programme.runtime
+
     def test_runtime_not_set(self):
-        programme = Programme()
-        self.assertEqual(datetime.timedelta(0), programme.runtime)
+        programme = Programme(name="foo", current_season=1, slug="foo")
+        with self.assertRaises(ValidationError):
+            programme.clean_fields()
 
-    def test_save_episode(self):
-        date_published = datetime.datetime(2014, 1, 31, 0, 0, 0, 0)
-        episode = Episode.create_episode(
-            date=date_published, programme=self.programme)
+    def test_runtime_is_zero(self):
+        programme = Programme(name="foo", current_season=1, slug="foo")
+        programme.runtime = 0
+        with self.assertRaises(ValidationError):
+            programme.clean_fields()
 
-        self.assertEqual(episode, Episode.objects.get(id=episode.id))
+    def test_absolute_url(self):
         self.assertEqual(
-            episode.programme, Programme.objects.get(id=episode.programme.id))
+            self.programme.get_absolute_url(), "/programmes/test-programme/")
 
-    def test_recurrence_is_empty(self):
-        self.assertFalse(self.programme.recurrences.rrules)
+    def test_str(self):
+        self.assertEqual(str(self.programme), "Test programme")
 
-    def test_recurrences_contains_rrules(self):
-        rrule = recurrence.Rule(recurrence.DAILY)
-        self.programme.recurrences=recurrence.Recurrence(rrules=[rrule])
-        self.assertEqual(
-            self.programme.recurrences.rrules[0].to_text(), 'daily')
+#    def test_save_episode(self):
+#        date_published = datetime.datetime(2014, 1, 31, 0, 0, 0, 0)
+#        episode = Episode.create_episode(
+#            date=date_published, programme=self.programme)
+#
+#        self.assertEqual(episode, Episode.objects.get(id=episode.id))
+#        self.assertEqual(
+#            episode.programme, Programme.objects.get(id=episode.programme.id))
 
 
 class ProgrammeModelAdminTests(TestCase):
@@ -73,5 +85,74 @@ class ProgrammeModelAdminTests(TestCase):
         ma = ModelAdmin(Programme, self.site)
         self.assertEqual(
             ma.get_fields(None), 
-            ['name', 'start_date', 'end_date', 'synopsis', 'photo', 'language',
-             'current_season', 'category', 'slug', '_runtime', 'recurrences'])
+            ['name', 'synopsis', 'photo', 'language', 'current_season', 'category', 'slug', '_runtime'])
+
+
+class EpisodeManagerTests(TestDataMixin, TestCase):
+    def setUp(self):
+        super(EpisodeManagerTests, self).setUp()
+        self.manager = EpisodeManager()
+
+        self.episode = self.manager.create_episode(
+            datetime.datetime(2014, 6, 14, 10, 0, 0), self.programme)
+
+    def test_create_episode(self):
+        self.assertIsInstance(self.episode, Episode)
+
+    def test_season(self):
+        self.assertEqual(self.episode.season, self.programme.current_season)
+
+    def test_number_in_season(self):
+        self.assertEqual(self.episode.number_in_season, 6)
+
+    def test_programme(self):
+        self.assertEqual(self.episode.programme, self.programme)
+
+    def test_issue_date(self):
+        self.assertEqual(
+            self.episode.issue_date, datetime.datetime(2014, 6, 14, 10, 0, 0))
+
+#    def test_people(self):
+#        self.assertQuerysetEqual(
+#            self.episode.people.all(), self.programme.announcers.all())
+
+    # XXX test_last
+
+    def test_last_none(self):
+        episode = self.manager.last(Programme())
+        self.assertIsNone(episode)
+
+    def test_unfinished(self):
+        episodes = self.manager.unfinished(
+            self.programme, datetime.datetime(2015, 6, 1))
+        self.assertIsNotNone(episodes.next())
+
+    def test_unfinished_none(self):
+        episodes = self.manager.unfinished(Programme())
+        with self.assertRaises(StopIteration):
+            episodes.next()
+
+
+class EpisodeModelTests(TestCase):
+    def setUp(self):
+        self.programme = Programme.objects.create(
+            name="Test programme",
+            synopsis="This is a description",
+            _runtime=540,
+            current_season=8)
+
+        self.episode = Episode.objects.create_episode(
+            datetime.datetime(2014, 1, 14, 10, 0, 0), self.programme)
+
+    def test_model_manager(self):
+        self.assertIsInstance(self.episode, Episode)
+
+    def test_runtime(self):
+        self.assertEqual(self.episode.runtime, datetime.timedelta(0, 32400))
+
+    def test_absoulte_url(self):
+        self.assertEqual(
+            self.episode.get_absolute_url(), "/programmes/test-programme/8x1/")
+
+    def test_str(self):
+        self.assertEqual(str(self.episode), "8x1 Test programme")

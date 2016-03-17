@@ -1,4 +1,5 @@
 from apps.programmes.models import Programme, Episode
+from apps.radio.tests import TestDataMixin
 from apps.schedules.models import ScheduleBoard, Schedule
 from apps.schedules.models import WE
 from django.contrib.auth.models import User, Permission
@@ -10,20 +11,7 @@ import serializers
 import datetime
 
 
-class TestSerializers(TestCase):
-    def setUp(self):
-        self.programme = Programme(
-            name="Test-Programme", current_season=1, runtime=540,
-            start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0))
-
-        schedule_board = ScheduleBoard(
-            name='Board',
-            start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0))
-
-        self.schedule = Schedule(
-            schedule_board=schedule_board, programme=self.programme,
-            start_hour=datetime.time(0, 0, 0), day=WE, type='L')
-
+class TestSerializers(TestDataMixin, TestCase):
     def test_programme(self):
         serializer = serializers.ProgrammeSerializer()
         self.assertEqual(
@@ -35,9 +23,8 @@ class TestSerializers(TestCase):
         serializer = serializers.ScheduleSerializer()
         self.assertEqual(
             serializer.fields.keys(),
-            ['id', 'programme', 'schedule_board', 'day', 'start_hour',
-             'start', 'end', 'allDay', 'title', 'type',
-             'textColor', 'backgroundColor', 'source'])
+            ['id', 'programme', 'schedule_board', 'start', 'end', 'title',
+             'type', 'textColor', 'backgroundColor', 'source'])
 
     def test_schedule_title(self):
         serializer = serializers.ScheduleSerializer(self.schedule)
@@ -46,16 +33,11 @@ class TestSerializers(TestCase):
     def test_schedule_start(self):
         serializer = serializers.ScheduleSerializer(self.schedule)
         self.assertEqual(
-            serializer.data['start'], datetime.datetime(2014, 1, 1, 0, 0))
+            serializer.data['start'], datetime.datetime(2015, 1, 1, 14, 0))
 
     def test_schedule_end(self):
         serializer = serializers.ScheduleSerializer(self.schedule)
-        self.assertEqual(
-            serializer.data['end'], datetime.datetime(2014, 1, 1, 9, 0))
-
-    def test_schedule_allDay(self):
-        serializer = serializers.ScheduleSerializer(self.schedule)
-        self.assertEqual(serializer.data['allDay'], False)
+        self.assertIsNone(serializer.data['end'])
 
     def test_schedule_textColor(self):
         serializer = serializers.ScheduleSerializer(self.schedule)
@@ -66,30 +48,16 @@ class TestSerializers(TestCase):
         self.assertEqual(serializer.data['backgroundColor'], '#F9AD81')
 
 
-class TestAPI(APITestCase):
+class TestAPI(TestDataMixin, APITestCase):
     def setUp(self):
+        super(TestAPI, self).setUp()
         admin = User.objects.create_user(
-            username='admin', password='topsecret')
+            username='klaus', password='topsecret')
         admin.user_permissions.add(
             Permission.objects.get(codename='add_schedule'))
 
         someone = User.objects.create_user(
             username='someone', password='topsecret')
-
-        self.programme = Programme.objects.create(
-            name="Test-Programme",
-            start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0),
-            current_season=1,
-            runtime=540)
-
-        self.schedule_board = ScheduleBoard.objects.create(
-            name='Board',
-            start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0))
-
-        self.schedule = Schedule.objects.create(
-            programme=self.programme,
-            schedule_board=self.schedule_board,
-            day=WE, start_hour=datetime.time(0, 0, 0), type='L')
 
     def test_api(self):
         response = self.client.get('/api/2/')
@@ -134,7 +102,7 @@ class TestAPI(APITestCase):
         response = self.client.get('/api/2/schedules?schedule_board={}'.format(
             self.schedule_board.id))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data), 5)
         self.assertEqual(
             response.data[0]['schedule_board'], self.schedule_board.id)
 
@@ -146,7 +114,7 @@ class TestAPI(APITestCase):
     def test_schedules_get_by_type(self):
         response = self.client.get('/api/2/schedules?type=L')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data), 5)
         self.assertEqual(
             response.data[0]['schedule_board'], self.schedule_board.id)
 
@@ -165,7 +133,7 @@ class TestAPI(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_schedules_post_authenticated(self):
-        self.client.login(username="admin", password="topsecret")
+        self.client.login(username="klaus", password="topsecret")
         data = {
             "programme": self.programme.id,
             "schedule_board": self.schedule_board.id,

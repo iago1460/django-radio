@@ -15,27 +15,22 @@ class ProgrammeSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ScheduleSerializer(serializers.ModelSerializer):
-    start = serializers.SerializerMethodField()
-    end = serializers.SerializerMethodField()
-    allDay = serializers.SerializerMethodField()
+#    start = serializers.SerializerMethodField()
+#    end = serializers.SerializerMethodField()
     title = serializers.SerializerMethodField()
     textColor = serializers.SerializerMethodField()
     backgroundColor = serializers.SerializerMethodField()
 
     class Meta:
         model = Schedule
-        fields = ('id', 'programme', 'schedule_board', 'day', 'start_hour',
-                  'start', 'end', 'allDay', 'title', 'type',
-                  'textColor', 'backgroundColor', 'source')
+        fields = ('id', 'programme', 'schedule_board', 'start', 'end', 'title', 
+                  'type', 'textColor', 'backgroundColor', 'source')
 
-    def get_start(self, schedule):
-        return datetime.datetime.combine(schedule.programme.start_date, schedule.start_hour)
-
-    def get_end(self, schedule):
-        return self.get_start(schedule) + schedule.runtime
-
-    def get_allDay(self, schedule):
-        return False
+#    def get_start(self, schedule):
+#        return datetime.datetime.combine(schedule.programme.start_date, schedule.start_hour)
+#
+#    def get_end(self, schedule):
+#        return self.get_start(schedule) + schedule.runtime
 
     def get_title(self, schedule):
         return schedule.programme.name
