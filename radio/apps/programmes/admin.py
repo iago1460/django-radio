@@ -27,11 +27,8 @@ from apps.programmes.models import Programme, Podcast, Episode, Role, Participan
 from apps.schedules.models import Schedule
 
 
-
-########### Programme ###########
-
+# PROGRAMME
 class NonStaffRoleInlineForm(forms.ModelForm):
-
     def __init__(self, *args, **kwargs):
         if 'instance' in kwargs:
             self.instance = kwargs['instance']
@@ -57,13 +54,6 @@ class NonStaffRoleInlineForm(forms.ModelForm):
             raise ValidationError(_('This user has already a role in this programme.'))
         return cleaned_data
 
-    '''
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.person = self.request.user
-        self.object.full_clean()
-    '''
-
 
 class NonStaffRoleInlineFormset(forms.models.BaseInlineFormSet):
     def _construct_form(self, i, **kwargs):
@@ -74,19 +64,10 @@ class NonStaffRoleInlineFormset(forms.models.BaseInlineFormSet):
 class NonStaffRoleInline(admin.StackedInline):
     model = Role
     extra = 0
-    # fields = ['role', 'description']
     form = NonStaffRoleInlineForm
     formset = NonStaffRoleInlineFormset
     list_select_related = True
-    # readonly_fields = ['person']
 
-    '''
-    def get_form(self, request, obj=None, **kwargs):
-        form_class = super(NonStaffRoleInline, self).get_form(request, obj, **kwargs)
-        form_class.person = request.user
-        return form_class
-        # return functools.partial(form_class, person=request.user)
-    '''
     def get_formset(self, request, obj=None, **kwargs):
         kwargs['fields'] = ['person', 'role', 'description']
         if not request.user.has_perm('programmes.see_all_roles'):
@@ -96,15 +77,7 @@ class NonStaffRoleInline(admin.StackedInline):
         formset = super(NonStaffRoleInline, self).get_formset(request, obj, **kwargs)
         formset.person = request.user
         return formset
-    '''
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.person = self.request.user
-        self.object.full_clean()
-    def save_model(self, request, obj, form, change):
-        obj.person = request.user
-        super(NonStaffRoleInline, self).save_model(request, obj, form, change)
-    '''
+
     def get_queryset(self, request):
         qs = super(NonStaffRoleInline, self).get_queryset(request).select_related('programme', 'person')
         if not request.user.has_perm('programmes.see_all_roles'):
@@ -117,21 +90,12 @@ class NonStaffProgrammeAdmin(admin.ModelAdmin):
     list_filter = ['start_date']
     search_fields = ['name']
     inlines = [NonStaffRoleInline]
-    # form = NonStaffProgrammeForm
-    # fields = ['name', 'start_date', 'end_date', 'synopsis', 'current_season', 'photo', 'language', '_runtime']
 
-    '''
     def get_form(self, request, obj=None, **kwargs):
-            # hide every other field apart from url
-            # if we are adding
-            if obj is None:
-                # obj = Programme(start_date=datetime.datetime.now())
-                return NonStaffProgrammeForm
-            else:
-                return NonStaffProgrammeminimumForm
-    '''
-    def get_form(self, request, obj=None, **kwargs):
-        kwargs['fields'] = ['name', 'start_date', 'end_date', 'synopsis', 'category', 'current_season', 'photo', 'language', '_runtime']
+        kwargs['fields'] = [
+            'name', 'start_date', 'end_date', 'synopsis', 'category', 'current_season',
+            'photo', 'language', '_runtime'
+        ]
         if not obj or request.user.has_perm('programmes.add_programme'):
             self.exclude = ['slug', ]
         else:
@@ -139,8 +103,6 @@ class NonStaffProgrammeAdmin(admin.ModelAdmin):
         return super(NonStaffProgrammeAdmin, self).get_form(request, obj, **kwargs)
 
     def save_formset(self, request, form, formset, change):
-        # if formset.model != InlineModel:
-        #   return super(NonStaffProgrammeAdmin, self).save_formset(request, form, formset, change)
         instances = formset.save(commit=False)
         for instance in instances:
             # if no person field is displayed
@@ -148,33 +110,7 @@ class NonStaffProgrammeAdmin(admin.ModelAdmin):
                 instance.person = request.user
             instance.save()
         formset.save_m2m()
-    '''
-    def save_formset(self, request, form, formset, change):
-        formset.save()
-        if not change:
-            for f in formset.forms:
-                obj = f.instance
-                obj.person = request.user
-                obj.save()
-    def save_formset(self, request, form, formset, change):
-        for f in formset.forms:
-            obj = f.instance
-            obj.person = request.user
-            obj.save()
-        # if formset.model != InlineModel:
-        #   return super(NonStaffProgrammeAdmin, self).save_formset(request, form, formset, change)
-        instances = formset.save(commit=False)
-        for instance in instances:
-            if not instance.pk:
-                instance.person = request.user
-            instance.save()
-        formset.save_m2m()
-    def get_fieldsets(self, request, obj=None):
-        if request.user.has_perm('programmes.manage_his_programme'):
-            return [(None, {'fields': self.non_staff_fields})]
-        else:
-            return super(NonStaffProgrammeAdmin, self).get_fieldsets(request, obj)
-    '''
+
     def get_queryset(self, request):
         qs = super(NonStaffProgrammeAdmin, self).get_queryset(request)
         if not request.user.has_perm('programmes.see_all_programmes'):
@@ -182,11 +118,8 @@ class NonStaffProgrammeAdmin(admin.ModelAdmin):
         return qs
 
 
-
-########### Episode ###########
-
+# EPISODE
 class NonStaffParticipantInlineForm(forms.ModelForm):
-
     def __init__(self, *args, **kwargs):
         if 'instance' in kwargs:
             self.instance = kwargs['instance']
@@ -207,7 +140,6 @@ class NonStaffParticipantInlineForm(forms.ModelForm):
         if qs.count() > 0:
             raise ValidationError(_('This user has already a role in this episode.'))
         return super(NonStaffParticipantInlineForm, self).clean()
-
 
 
 class NonStaffParticipantInlineFormset(forms.models.BaseInlineFormSet):
@@ -239,28 +171,8 @@ class NonStaffParticipantInline(admin.StackedInline):
             qs = qs.filter(person=request.user)
         return qs
 
-'''
-class NonStaffEpisodeAdminAddForm(forms.ModelForm):
-    class Meta:
-        fields = ['title', 'summary', 'season']
-        model = Episode
 
-    def __init__(self, *args, **kwargs):
-        super(NonStaffEpisodeAdminAddForm, self).__init__(*args, **kwargs)
-        self.fields['season'] = forms.CharField(required=False, initial='9', label=_("season"))
-        self.fields['season'].widget.attrs['readonly'] = True
-
-        # We can't assume that kwargs['initial'] exists!
-        if not 'initial' in kwargs:
-            kwargs['initial'] = {}
-        kwargs['initial'].update({'season': 'get_default_content()'})
-        super(NonStaffEpisodeAdminAddForm, self).__init__(*args, **kwargs)
-        self.fields['title'].initial = 'zzzz'
-        # self.fields['season'].initial = 'zzzz'
-        # self.readonly_fields['season'].initial = 'zzzz'
-'''
 class NonStaffEpisodeAdminForm(forms.ModelForm):
-
     class Meta:
         model = Episode
         fields = '__all__'
@@ -287,23 +199,6 @@ class NonStaffEpisodeAdminForm(forms.ModelForm):
                 raise forms.ValidationError(_('There are no available schedules.'))
         return programme
 
-    '''
-    def clean(self):
-        cleaned_data = super(NonStaffEpisodeAdminForm, self).clean()
-        programme = cleaned_data.get("programme")
-        last_episode = Episode.get_last_episode(programme)
-        if last_episode:
-                if last_episode.issue_date:
-                    after = last_episode.issue_date + programme.runtime
-                else:
-                    raise forms.ValidationError(_('There are no available schedules.'))
-            else:
-                after = datetime.datetime.now()
-        schedule, date = Schedule.get_next_date(programme=programme, after=after)
-        if not date:
-            raise ValidationError(_('There are no available schedules.'))
-        return cleaned_data
-    '''
 
 class OwnEpisodeProgrammeListFilter(admin.SimpleListFilter):
     '''
@@ -323,6 +218,7 @@ class OwnEpisodeProgrammeListFilter(admin.SimpleListFilter):
             return queryset.filter(programme__id=self.value())
         else:
             return queryset
+
 
 class OwnEpisodeIssueDateListFilter(admin.SimpleListFilter):
     title = _('issue date')
@@ -363,19 +259,6 @@ class NonStaffEpisodeAdmin(admin.ModelAdmin):
     inlines = [NonStaffParticipantInline, PodcastInline]
     fields = ['programme', 'title', 'summary', 'issue_date', 'season', 'number_in_season']
     form = NonStaffEpisodeAdminForm
-    '''
-    def queryset(self, request):
-        return super(NonStaffEpisodeAdmin, self).queryset(request).select_related('programme')
-    '''
-    def get_form(self, request, obj=None, **kwargs):
-        # request._obj_ = obj
-        return super(NonStaffEpisodeAdmin, self).get_form(request, obj, **kwargs)
-        '''
-        form = NonStaffEpisodeAdminForm
-        if not obj:
-            form = NonStaffEpisodeAdminAddForm
-        return form
-        '''
 
     def save_model(self, request, obj, form, change):
         if not obj.pk:
@@ -402,38 +285,10 @@ class NonStaffEpisodeAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
-            return['programme', 'issue_date', 'season', 'number_in_season']
+            return ['programme', 'issue_date', 'season', 'number_in_season']
         else:
             return ['issue_date', 'season', 'number_in_season']
 
-    def __init__(self, *args, **kwargs):
-        # if not 'initial' in kwargs:
-        #   kwargs['initial'] = {}
-
-        # kwargs['initial'].update({'description': 'get_default_content()'})
-        super(NonStaffEpisodeAdmin, self).__init__(*args, **kwargs)
-    '''
-    def __init__(self, *args, **kwargs):
-        super(NonStaffEpisodeAdmin, self).__init__(*args, **kwargs)
-        self.fields['issue_date'].initial = 'something'
-        if 'initial' in kwargs:
-            pass
-        else:
-            kwargs['initial'] = {'title': 'tomorrow', 'issue_date': 'tomorrow'}
-        self.initial['issue_date'] = 'tomorrow'
-        # kwargs['initial'].update({'issue_date': 'tomorrow'})
-    '''
-    '''
-    def get_object(self, request, object_id):
-        obj = super(NonStaffEpisodeAdmin, self).get_object(request, object_id)
-        if obj is None:
-
-            obj.title = '5'
-            obj.season = '5'
-        obj.title = '5'
-        obj.season = '5'
-        return obj
-    '''
     def save_formset(self, request, form, formset, change):
         # if formset.model != InlineModel:
         #   return super(NonStaffProgrammeAdmin, self).save_formset(request, form, formset, change)
@@ -451,7 +306,5 @@ class NonStaffEpisodeAdmin(admin.ModelAdmin):
         return qs
 
 
-
 admin.site.register(Programme, NonStaffProgrammeAdmin)
 admin.site.register(Episode, NonStaffEpisodeAdmin)
-

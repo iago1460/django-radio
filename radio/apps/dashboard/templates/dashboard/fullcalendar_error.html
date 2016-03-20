@@ -4,15 +4,12 @@
 {% load admin_urls %}
 
 
-
-
-
 {% block extrastyle %}
-	<link rel="stylesheet" href="{% static "radio/css/bootstrap.min.css" %}" type="text/css" />
+    <link rel="stylesheet" href="{% static "radio/css/bootstrap.min.css" %}" type="text/css"/>
 {% endblock %}
 
 {% block content %}
-	<h1>{% trans "Schedule Editor"|upper %}</h1>
-	
-	<div class="alert alert-danger">{{ error_info }}</div>
+    <h1>{% trans "Schedule Editor"|upper %}</h1>
+
+    <div class="alert alert-danger">{{ error_info }}</div>
 {% endblock %}

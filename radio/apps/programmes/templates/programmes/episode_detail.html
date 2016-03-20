@@ -1,11 +1,10 @@
 {% extends "radio/base.html" %}
 {% load staticfiles i18n disqus_tags %}
 
+
 {% block page_title %}{{ episode }}{% endblock %}
 
-
 {% block programmes_class %}class="active"{% endblock %}
-
 
 {% block content %}
     <div class="container mb">
@@ -14,44 +13,56 @@
                 <img class="center-block img-responsive" src="{{ programme.photo.url }}" alt="...">
             </div>
 
-
             <div class="col-lg-5 col-lg-offset-1 spacing">
-                    <h4>{% firstof episode.title|upper episode|upper %}</h4>
+                <h4>{% firstof episode.title|upper episode|upper %}</h4>
 
-                    <p>{% firstof episode.summary|safe episode.programme.synopsis|safe '' %}</p>
+                <p>{% firstof episode.summary|safe episode.programme.synopsis|safe '' %}</p>
 
-                    <h4>{% trans "Podcast" %}</h4>
-                    <p>
-                        {% if episode.podcast %}
-                            <audio src="{{episode.podcast.url}}"  type="{{episode.podcast.mime_type}}" controls>
-                                {% trans "Your browser does not support the audio element." %}
-                            </audio>
+                <h4>{% trans "Podcast" %}</h4>
+                <p>
+                    {% if episode.podcast %}
+                        <audio src="{{ episode.podcast.url }}" type="{{ episode.podcast.mime_type }}" controls>
+                            {% trans "Your browser does not support the audio element." %}
+                        </audio>
+                    {% else %}
+                        {% if not episode_end_date or now > episode_end_date %}
+                            {% trans "Sorry, this podcast isn't available yet" %}
                         {% else %}
-                            {% if not episode_end_date or now > episode_end_date %}
-                                {% trans "Sorry, this podcast isn't available yet" %}
-                            {% else %}
-                                {% trans "The podcast will be available in" %} {{  episode_end_date|timeuntil }}
-                            {% endif %}
+                            {% trans "The podcast will be available in" %} {{ episode_end_date|timeuntil }}
                         {% endif %}
-                    </p>
+                    {% endif %}
+                </p>
             </div>
 
             <div class="col-lg-4 col-lg-offset-1 spacing">
-                    <h4>{% trans 'Programme Details' %}</h4>
-                    <div class="hline"></div>
-                    <p><b>{% trans 'Date:' %}</b>
-                        {% if episode.issue_date %}
-                            {{episode.issue_date|date:"DATETIME_FORMAT"}}
-                        {% else %}
-                            {% trans "Schedule pending" %}
-                        {% endif %}
-                    </p>
-                    <p><b>{% trans 'Programme:' %}</b> <a href="{% url 'programmes:detail' programme.slug %}">{{ programme.name }}</a></p>
-                    <p><b>{% trans 'Category:' %}</b> {{ programme.get_category_display }}</p>
-                    <p><b>{% trans 'RSS:' %}</b> <a href="{% url 'programmes:rss' programme.slug %}"><i class="fa fa-rss-square fa-2x"></i></a></p>
+                <h4>{% trans 'Programme Details' %}</h4>
+                <div class="hline"></div>
+                <p>
+                    <b>{% trans 'Date:' %}</b>
+                    {% if episode.issue_date %}
+                        {{ episode.issue_date|date:"DATETIME_FORMAT" }}
+                    {% else %}
+                        {% trans "Schedule pending" %}
+                    {% endif %}
+                </p>
+                <p>
+                    <b>{% trans 'Programme:' %}</b>
+                    <a href="{% url 'programmes:detail' programme.slug %}">{{ programme.name }}</a>
+                </p>
+                <p>
+                    <b>{% trans 'Category:' %}</b>
+                    {{ programme.get_category_display }}
+                </p>
+                <p>
+                    <b>{% trans 'RSS:' %}</b>
+                    <a href="{% url 'programmes:rss' programme.slug %}">
+                        <i class="fa fa-rss-square fa-2x"></i>
+                    </a>
+                </p>
             </div>
 
-        </div><! --/row -->
+        </div>
+        <! --/row -->
         {% if settings.DISQUS_ENABLE %}
             <div class="row">
                 <div class="col-lg-10 col-lg-offset-1 centered">

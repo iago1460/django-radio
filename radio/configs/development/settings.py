@@ -17,7 +17,6 @@
 
 from radio.configs.common.settings import *
 
-
 INSTALLED_APPS += (
     'debug_toolbar',
 )
@@ -36,10 +35,8 @@ DATABASES = {
     }
 }
 
-
 # Import local settings
 try:
     from local_settings import *
 except ImportError:
     pass
-
