@@ -9,4 +9,5 @@ class ProgrammeSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Programme
-        fields = ('url', 'name', 'synopsis', 'photo', 'language', 'category')
+        fields = (
+            'url', 'slug', 'name', 'synopsis', 'photo', 'language', 'category')
