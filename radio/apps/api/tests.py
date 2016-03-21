@@ -19,10 +19,9 @@ def mock_now():
 class TestSerializers(TestDataMixin, TestCase):
     def test_programme(self):
         serializer = serializers.ProgrammeSerializer(self.programme)
-        self.assertEqual(
-            serializer.fields.keys(),
-            ['id', 'url', 'name', 'synopsis', 'runtime',
-             'photo', 'language', 'category'])
+        self.assertListEqual(
+            serializer.data.keys(),
+            ['slug', 'name', 'synopsis', 'runtime', 'photo', 'language', 'category'])
 
     def test_schedule(self):
         serializer = serializers.ScheduleSerializer(self.schedule)

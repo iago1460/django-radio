@@ -11,6 +11,7 @@ import serializers
 class ProgrammeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Programme.objects.all()
     serializer_class = serializers.ProgrammeSerializer
+    lookup_field = 'slug'
 
 
 class ScheduleViewSet(viewsets.ModelViewSet):

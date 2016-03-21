@@ -4,14 +4,10 @@ from rest_framework import serializers
 import datetime
 
 
-class ProgrammeSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name='programmes:detail',
-        lookup_field='slug')
-
+class ProgrammeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Programme
-        fields = ('id', 'url', 'name', 'synopsis', 'runtime', 'photo', 'language', 'category')
+        fields = ('slug', 'name', 'synopsis', 'runtime', 'photo', 'language', 'category')
 
 
 class ScheduleSerializer(serializers.ModelSerializer):
