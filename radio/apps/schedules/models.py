@@ -17,10 +17,12 @@
 from apps.programmes.models import Programme, Episode
 from dateutil import rrule
 from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
+from django.utils import six
 from django.utils.translation import ugettext_lazy as _
 from recurrence.fields import RecurrenceField
 import datetime
@@ -129,6 +131,10 @@ def delete_ScheduleBoard_handler(sender, **kwargs):
 
 
 class Schedule(models.Model):
+    class Meta:
+        verbose_name = _('schedule')
+        verbose_name_plural = _('schedules')
+
     programme = models.ForeignKey(Programme, verbose_name=_("programme"))
     type = models.CharField(verbose_name=_("type"), choices=EMISSION_TYPE, max_length=1)
     schedule_board = models.ForeignKey(ScheduleBoard, verbose_name=_("schedule board"))
@@ -226,60 +232,114 @@ class Schedule(models.Model):
 #                                )
 #                        index += 1
 
-    @classmethod
-    def between(cls, after, before, exclude=None, live=False, schedule_board=None):
-        list_schedules = (
-            cls.objects.filter(programme__start_date__lte=before, programme__end_date__isnull=True) |
-            cls.objects.filter(programme__start_date__lte=before, programme__end_date__gte=after)
-        )
-        if live:
-            list_schedules = list_schedules.filter(type='L')
-        if schedule_board:
-            list_schedules = list_schedules.filter(schedule_board=schedule_board)
-        else:
-            list_schedules = (
-                list_schedules.filter(schedule_board__start_date__lte=before, schedule_board__end_date__isnull=True) |
-                list_schedules.filter(schedule_board__start_date__lte=before, schedule_board__end_date__gte=after)
-            )
-        if exclude:
-            list_schedules = list_schedules.exclude(id=exclude.id)
-
-        list_schedules = list_schedules.order_by('-programme__start_date').select_related(
-            'programme', 'schedule_board', 'source__programme', 'source__schedule_board'
-        )
-
-        dates = []
-        schedules = []
-        for schedule in list_schedules:
-            list_dates = schedule.dates_between(after, before)
-            if list_dates:
-                schedules.append(schedule)
-                dates.append(list_dates)
-        return schedules, dates
-
-    @classmethod
-    def schedule(cls, dt, exclude=None):
-        list_schedules = (
-            cls.objects.filter(programme__start_date__lte=dt, programme__end_date__isnull=True) |
-            cls.objects.filter(programme__start_date__lte=dt, programme__end_date__gte=dt)
-        )
-        if exclude:
-            list_schedules = list_schedules.exclude(id=exclude.id)
-        list_schedules = list_schedules.select_related('programme', 'schedule_board')
-        earlier_date = None
-        earlier_schedule = None
-        for schedule in list_schedules:
-            date = schedule.date_before(dt)
-            if date and (earlier_date is None or date > earlier_date):
-                earlier_date = date
-                earlier_schedule = schedule
-        if earlier_schedule is None or dt > earlier_date + earlier_schedule.runtime:  # Todo: check
-            return None, None
-        return earlier_schedule, earlier_date
-
     def __unicode__(self):
         return ' - '.join([self.start.strftime('%A'), self.start.strftime('%X')])
 
-    class Meta:
-        verbose_name = _('schedule')
-        verbose_name_plural = _('schedules')
+
+# XXX entry point for transmission details (episode, recordings, ...)
+class Transmission(object):
+    def __init__(self, schedule, date):
+        self.schedule = schedule
+        self.start = date
+
+    @property
+    def programme(self):
+        return self.schedule.programme
+
+    @property
+    def name(self):
+        return self.programme.name
+
+    @property
+    def end(self):
+        return self.start + self.schedule.runtime
+
+    @property
+    def slug(self):
+        return self.programme.slug
+
+    @property
+    def url(self):
+        return reverse('programmes:detail', args=[self.programme.slug])
+
+    @classmethod
+    def at(cls, at):
+        # XXX filter board, filter schedule start / end
+        schedules = Schedule.objects.all()
+        for schedule in schedules:
+            date = schedule.date_before(at)
+            if date is None:
+                continue
+            if at < date + schedule.runtime:
+                yield cls(schedule, date)
+
+    @classmethod
+    def between(cls, after, before):
+        # XXX filter board, filter schedule start / end
+        schedules = Schedule.objects.all()
+        for schedule in schedules:
+            for date in schedule.dates_between(after, before):
+                yield cls(schedule, date)
+
+#def __get_events(after, before, json_mode=False):
+#    background_colours = {"L": "#F9AD81", "B": "#C4DF9B", "S": "#8493CA"}
+#    text_colours = {"L": "black", "B": "black", "S": "black"}
+#
+#    next_schedules, next_dates = Schedule.between(after=after, before=before)
+#    schedules = []
+#    dates = []
+#    episodes = []
+#    event_list = []
+#    for x in range(len(next_schedules)):
+#        for y in range(len(next_dates[x])):
+#            # next_events.append([next_schedules[x], next_dates[x][y]])
+#            schedule = next_schedules[x]
+#            schedules.append(schedule)
+#            date = next_dates[x][y]
+#            dates.append(date)
+#
+#            episode = None
+#            # if schedule == live
+#            if next_schedules[x].type == 'L':
+#                try:
+#                    episode = Episode.objects.get(issue_date=date)
+#                except Episode.DoesNotExist:
+#                    pass
+#            # broadcast
+#            elif next_schedules[x].source:
+#                try:
+#                    source_date = next_schedules[x].source.date_before(date)
+#                    if source_date:
+#                        episode = Episode.objects.get(issue_date=source_date)
+#                except Episode.DoesNotExist:
+#                    pass
+#            episodes.append(episode)
+#
+#            if episode:
+#                url = reverse(
+#                    'programmes:episode_detail',
+#                    args=(schedule.programme.slug, episode.season, episode.number_in_season,)
+#                )
+#            else:
+#                url = reverse('programmes:detail', args=(schedule.programme.slug,))
+#
+#            event_entry = {
+#                'id': schedule.id,
+#                'start': str(date),
+#                'end': str(date + schedule.runtime),
+#                'allDay': False,
+#                'title':  schedule.programme.name,
+#                'type': schedule.type,
+#                'textColor': text_colours[schedule.type],
+#                'backgroundColor': background_colours[schedule.type],
+#                'url': url
+#            }
+#            event_list.append(event_entry)
+#
+#    if json_mode:
+#        return event_list
+#    else:
+#        if schedules:
+#            dates, schedules, episodes = (list(t) for t in zip(*sorted(zip(dates, schedules, episodes))))
+#            return zip(schedules, dates, episodes)
+#        return None

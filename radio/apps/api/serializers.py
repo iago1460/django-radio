@@ -1,5 +1,5 @@
 from apps.programmes.models import Programme
-from apps.schedules.models import Schedule
+from apps.schedules.models import Schedule, Transmission
 from rest_framework import serializers
 import datetime
 
@@ -15,8 +15,6 @@ class ProgrammeSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ScheduleSerializer(serializers.ModelSerializer):
-#    start = serializers.SerializerMethodField()
-#    end = serializers.SerializerMethodField()
     title = serializers.SerializerMethodField()
     textColor = serializers.SerializerMethodField()
     backgroundColor = serializers.SerializerMethodField()
@@ -25,12 +23,6 @@ class ScheduleSerializer(serializers.ModelSerializer):
         model = Schedule
         fields = ('id', 'programme', 'schedule_board', 'start', 'end', 'title', 
                   'type', 'textColor', 'backgroundColor', 'source')
-
-#    def get_start(self, schedule):
-#        return datetime.datetime.combine(schedule.programme.start_date, schedule.start_hour)
-#
-#    def get_end(self, schedule):
-#        return self.get_start(schedule) + schedule.runtime
 
     def get_title(self, schedule):
         return schedule.programme.name
@@ -42,3 +34,11 @@ class ScheduleSerializer(serializers.ModelSerializer):
     def get_backgroundColor(self, schedule):
         background_colours = {"L": "#F9AD81", "B": "#C4DF9B", "S": "#8493CA"}
         return background_colours[schedule.type]
+
+
+class TransmissionSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=100)
+    slug =serializers.SlugField(max_length=100)
+    start = serializers.DateTimeField()
+    end = serializers.DateTimeField()
+    url = serializers.URLField()

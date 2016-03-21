@@ -18,6 +18,7 @@ from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import User, Permission
 from django.core.exceptions import ValidationError, FieldError
 from django.core.urlresolvers import reverse
+from django.db import models
 from django.test import TestCase
 import datetime
 import recurrence
@@ -26,7 +27,8 @@ from apps.programmes.models import Programme, Episode
 from apps.radio.tests import TestDataMixin
 from apps.schedules import utils
 from apps.schedules.models import MO, TU, WE, TH, FR, SA, SU
-from apps.schedules.models import ScheduleBoard, Schedule, ScheduleBoardManager
+from apps.schedules.models import ScheduleBoard, ScheduleBoardManager
+from apps.schedules.models import Schedule, Transmission
 
 
 class ScheduleModelTests(TestCase):
@@ -391,22 +393,53 @@ class ScheduleBoardModelTests(TestCase):
 #        with self.assertRaises(ValidationError):
 #            board.clean_fields()
 
-#    def test_now_playing_1(self):
-#        now_mock = datetime.datetime(2014, 1, 6, 0, 0, 0, 0)
-#        schedule, date = Schedule.schedule(now_mock)
-#        schedule_1 = Schedule.objects.get(programme=Programme.objects.get(name="Programme 00:00 - 09:00"), day=WE)
-#        self.assertEqual(schedule_1, schedule)
-#        self.assertEqual(datetime.datetime.combine(now_mock, schedule_1.start_hour), date)
-#
-#    def test_now_playing_2(self):
-#        now_mock = datetime.datetime(2014, 1, 7, 0, 0, 0, 0)
-#        schedule, date = Schedule.schedule(now_mock)
-#        schedule_1 = Schedule.objects.get(programme=Programme.objects.get(name="Programme 00:00 - 09:00"), day=WE)
-#        self.assertEqual(schedule_1, schedule)
-#        self.assertEqual(datetime.datetime.combine(now_mock, schedule_1.start_hour), date)
-#
     def test_str(self):
         self.assertEqual(str(self.board), "january")
+
+
+
+class TransmissionModelTests(TestDataMixin, TestCase):
+    def setUp(self):
+        super(TransmissionModelTests, self).setUp()
+        self.transmission = Transmission(
+            self.schedule, datetime.datetime(2015, 1, 6, 14, 0, 0))
+
+    def test_name(self):
+        self.assertEqual(
+            self.transmission.name, self.schedule.programme.name)
+
+    def test_start(self):
+        self.assertEqual(
+            self.transmission.start, datetime.datetime(2015, 1, 6, 14, 0, 0))
+
+    def test_end(self):
+        self.assertEqual(
+            self.transmission.end, datetime.datetime(2015, 1, 6, 15, 0, 0))
+
+    def test_slug(self):
+        self.assertEqual(
+            self.transmission.slug, self.schedule.programme.slug)
+
+    def test_url(self):
+        self.assertEqual(
+            self.transmission.url,
+            reverse('programmes:detail', args=[self.schedule.programme.slug]))
+
+    def test_at(self):
+        now = Transmission.at(datetime.datetime(2015, 1, 6, 14, 30, 0))
+        self.assertListEqual(
+            map(lambda t: (t.slug, t.start), list(now)),
+            [(u'classic-hits', datetime.datetime(2015, 1, 6, 14, 0))])
+
+    def test_between(self):
+        between = Transmission.between(
+            datetime.datetime(2015, 1, 6, 12, 0, 0),
+            datetime.datetime(2015, 1, 6, 15, 0, 0))
+        self.assertListEqual(
+            map(lambda t: (t.slug, t.start), list(between)),
+            [(u'the-best-wine', datetime.datetime(2015, 1, 6, 12, 0)),
+             (u'local-gossips', datetime.datetime(2015, 1, 6, 13, 0)),
+             (u'classic-hits', datetime.datetime(2015, 1, 6, 14, 0))])
 
 
 #class ScheduleViewTests(TestCase):

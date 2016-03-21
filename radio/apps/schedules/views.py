@@ -36,79 +36,15 @@ def schedule_list(request):
         'max_time': calendar_configuration.max_time.strftime('%H:%M:%S'),
         'first_day': calendar_configuration.first_day + 1,
         'language': request.LANGUAGE_CODE,
-        'feed_schedules': reverse('schedules:feed_schedules'),
+        'transmissions': reverse('api:transmission-list'),
     }
     return render(request, 'schedules/schedules_list.html', context)
 
 
-def feed_schedules(request):
-    start = datetime.datetime.strptime(request.GET.get('start'), '%Y-%m-%d')
-    end = datetime.datetime.strptime(request.GET.get('end'), '%Y-%m-%d')
-    return HttpResponse(
-        json.dumps(__get_events(after=start, before=end, json_mode=True)),
-        content_type='application/json'
-    )
-
-
-def __get_events(after, before, json_mode=False):
-    background_colours = {"L": "#F9AD81", "B": "#C4DF9B", "S": "#8493CA"}
-    text_colours = {"L": "black", "B": "black", "S": "black"}
-
-    next_schedules, next_dates = Schedule.between(after=after, before=before)
-    schedules = []
-    dates = []
-    episodes = []
-    event_list = []
-    for x in range(len(next_schedules)):
-        for y in range(len(next_dates[x])):
-            # next_events.append([next_schedules[x], next_dates[x][y]])
-            schedule = next_schedules[x]
-            schedules.append(schedule)
-            date = next_dates[x][y]
-            dates.append(date)
-
-            episode = None
-            # if schedule == live
-            if next_schedules[x].type == 'L':
-                try:
-                    episode = Episode.objects.get(issue_date=date)
-                except Episode.DoesNotExist:
-                    pass
-            # broadcast
-            elif next_schedules[x].source:
-                try:
-                    source_date = next_schedules[x].source.date_before(date)
-                    if source_date:
-                        episode = Episode.objects.get(issue_date=source_date)
-                except Episode.DoesNotExist:
-                    pass
-            episodes.append(episode)
-
-            if episode:
-                url = reverse(
-                    'programmes:episode_detail',
-                    args=(schedule.programme.slug, episode.season, episode.number_in_season,)
-                )
-            else:
-                url = reverse('programmes:detail', args=(schedule.programme.slug,))
-
-            event_entry = {
-                'id': schedule.id,
-                'start': str(date),
-                'end': str(date + schedule.runtime),
-                'allDay': False,
-                'title':  schedule.programme.name,
-                'type': schedule.type,
-                'textColor': text_colours[schedule.type],
-                'backgroundColor': background_colours[schedule.type],
-                'url': url
-            }
-            event_list.append(event_entry)
-
-    if json_mode:
-        return event_list
-    else:
-        if schedules:
-            dates, schedules, episodes = (list(t) for t in zip(*sorted(zip(dates, schedules, episodes))))
-            return zip(schedules, dates, episodes)
-        return None
+#def feed_schedules(request):
+#    start = datetime.datetime.strptime(request.GET.get('start'), '%Y-%m-%d')
+#    end = datetime.datetime.strptime(request.GET.get('end'), '%Y-%m-%d')
+#    return HttpResponse(
+#        json.dumps(__get_events(after=start, before=end, json_mode=True)),
+#        content_type='application/json'
+#    )

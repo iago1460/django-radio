@@ -14,14 +14,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import utils
 from apps.programmes.models import Programme, Episode
 from apps.schedules.models import Schedule, ScheduleBoard
+from django.core.urlresolvers import reverse
+from django.test import TestCase
+import utils
 
 
 class TestDataMixin(object):
-    def setUp(self):
+    @classmethod
+    def setUpTestData(cls):
         utils.create_example_data()
-        self.programme = Programme.objects.filter(name="Classic hits").get()
-        self.schedule_board = ScheduleBoard.objects.filter(name="Example").get()
-        self.schedule = self.programme.schedule_set.first()
+        cls.programme = Programme.objects.filter(name="Classic hits").get()
+        cls.schedule_board = ScheduleBoard.objects.filter(name="Example").get()
+        cls.schedule = cls.programme.schedule_set.first()
+
+
+class RadioIntegrationTests(TestDataMixin, TestCase):
+    def test_index(self):
+        response = self.client.get(reverse("home"))
+        self.assertEqual(response.status_code, 200)
+
