@@ -43,6 +43,12 @@ lib/
 lib64
 local/
 
+# virtualenv
+bin/
+include/
+lib/
+local/
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
