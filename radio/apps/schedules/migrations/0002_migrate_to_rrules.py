@@ -6,6 +6,15 @@ import datetime
 import recurrence
 
 
+def migrate_schedules(apps, schema_editor):
+    Schedule = apps.get_model("schedules", "Schedule")
+    for schedule in Schedule.objects.all():
+        day = datetime.date(2016, 1, 4) + datetime.timedelta(days=schedule.day)
+        hour = schedule.start_hour
+        schedule.recurrences.dtstart = datetime.datetime.combine(day, hour)
+        schedule.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -13,6 +22,15 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.AddField(
+            model_name='schedule',
+            name='recurrences',
+            field=recurrence.fields.RecurrenceField(
+                default=recurrence.Recurrence(
+                    rrules=[recurrence.Rule(recurrence.WEEKLY)])),
+            preserve_default=False,
+        ),
+        migrations.RunPython(migrate_schedules),
         migrations.RemoveField(
             model_name='schedule',
             name='day',
@@ -20,14 +38,5 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name='schedule',
             name='start_hour',
-        ),
-        migrations.AddField(
-            model_name='schedule',
-            name='recurrences',
-            # XXX clean migration dstart
-            field=recurrence.fields.RecurrenceField(
-                default=recurrence.Recurrence(
-                    rrules=[recurrence.Rule(recurrence.WEEKLY)])),
-            preserve_default=False,
         ),
     ]
