@@ -164,7 +164,6 @@ class EpisodeManager(models.Manager):
         if not after:
             after = datetime.datetime.now()
 
-        # XXX also list episodes without issue_date
         episodes = (programme.episode_set
                     .order_by("season", "number_in_season")
                     .filter(Q(issue_date__gte=after) | Q(issue_date=None)))
@@ -174,12 +173,10 @@ class EpisodeManager(models.Manager):
 
 class Episode(models.Model):
     class Meta:
-        unique_together = (('season', 'number_in_season', 'programme'))
+        unique_together = (('season', 'number_in_season', 'programme'),)
         verbose_name = _('episode')
         verbose_name_plural = _('episodes')
-        permissions = (
-            ("see_all_episodes", "Can see all episodes"),
-        )
+        permissions = (("see_all_episodes", "Can see all episodes"),)
 
     objects = EpisodeManager()
 
@@ -196,18 +193,8 @@ class Episode(models.Model):
     def runtime(self):
         return self.programme.runtime
 
-#    @property
-#    def issue_date_str(self):
-#        if self.issue_date:
-#            return str(self.issue_date)
-#        return str(None)
-
     def get_absolute_url(self):
         return reverse('programmes:episode_detail', args=[self.programme.slug, self.season, self.number_in_season])
-
-#    def save(self, *args, **kwargs):
-#        # self.slug = slugify(self.title)
-#        super(Episode, self).save(*args, **kwargs)
 
     def __unicode__(self):
         if self.title:
@@ -215,7 +202,6 @@ class Episode(models.Model):
         return u"%sx%s %s" % (self.season, self.number_in_season, self.programme)
 
 
-# XXX sub-class of role???
 class Participant(models.Model):
     person = models.ForeignKey(User, verbose_name=_("person"))
     episode = models.ForeignKey(Episode, verbose_name=_("episode"))

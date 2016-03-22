@@ -21,6 +21,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.test import TestCase
 import datetime
+import mock
 import recurrence
 
 from apps.programmes.models import Programme, Episode
@@ -31,12 +32,28 @@ from apps.schedules.models import ScheduleBoard, ScheduleBoardManager
 from apps.schedules.models import Schedule, Transmission
 
 
-class ScheduleModelTests(TestCase):
+def mock_now():
+    return datetime.datetime(2014, 1, 1, 13, 30, 0)
+
+
+class ScheduleValidationTests(TestDataMixin, TestCase):
+    def test_fields(self):
+        schedule = Schedule()
+        with self.assertRaisesMessage(
+            ValidationError,
+            "{'schedule_board': [u'This field cannot be null.'], "
+            "'type': [u'This field cannot be blank.'], "
+            "'programme': [u'This field cannot be null.']}"):
+            schedule.clean_fields()
+
+
+
+class ScheduleModelTests(TestDataMixin, TestCase):
     def setUp(self):
         self.schedule_board = ScheduleBoard.objects.create(
             name='Board',
             start_date=datetime.date(2014, 1, 1),
-            end_date=datetime.date(2014, 6, 1))
+            end_date=datetime.date(2015, 6, 1))
 
         self.recurrences = recurrence.Recurrence(
             dtstart=datetime.datetime(2014, 1, 6, 14, 0, 0),
@@ -44,11 +61,7 @@ class ScheduleModelTests(TestCase):
             rrules=[recurrence.Rule(recurrence.WEEKLY)])
 
         self.schedule = Schedule.objects.create(
-            programme=Programme.objects.create(
-                name="Programme 14:00 - 15:00",
-                synopsis="This is a description",
-                current_season=1,
-                runtime=60),
+            programme=self.programme,
             type='L',
             recurrences=self.recurrences,
             schedule_board=self.schedule_board)
@@ -128,12 +141,6 @@ class ScheduleModelTests(TestCase):
                 datetime.datetime(2014, 1, 6, 14, 0), inc=False),
             datetime.datetime(2014, 1, 13, 14, 0))
 
-# XXX see Schedule._merge_after
-#    def test_date_after_running(self):
-#        self.assertEqual(
-#            self.schedule.date_after(datetime.datetime(2014, 1, 6, 14, 30)),
-#            datetime.datetime(2014, 1, 6, 14, 0))
-
     def test_date_after_later_start_by_board(self):
         self.schedule_board.start_date = datetime.date(2014, 1, 7)
         self.assertEqual(
@@ -178,16 +185,17 @@ class ScheduleModelTests(TestCase):
                 datetime.datetime(2014, 1, 1), datetime.datetime(2014, 1, 14)),
             [datetime.datetime(2014, 1, 6, 14, 0)])
 
-# XXX see Schedule._merge_after
-#    def test_dates_between_running(self):
-#        self.assertEqual(
-#            self.schedule.dates_between(
-#                datetime.datetime(2014, 1, 6, 14, 30),
-#                datetime.datetime(2014, 1, 7)),
-#            [datetime.datetime(2014, 1, 6, 14, 0)])
-
     def test_unicode(self):
         self.assertEqual(unicode(self.schedule), 'Monday - 14:00:00')
+
+    @mock.patch('django.utils.timezone.now', mock_now)
+    def test_save_rearange_episodes(self):
+        self.assertEqual(
+            self.episode.issue_date, datetime.datetime(2015, 1, 1, 14, 0))
+        self.schedule.save()
+        self.episode.refresh_from_db()
+        self.assertEqual(
+            self.episode.issue_date, datetime.datetime(2014, 1, 6, 14, 0))
 
 
 #class ScheduleClassModelTests(TestCase):
@@ -346,7 +354,6 @@ class ScheduleModelTests(TestCase):
 
 class ScheduleBoardManagerTests(TestDataMixin, TestCase):
     def setUp(self):
-        super(ScheduleBoardManagerTests, self).setUp()
         self.manager = ScheduleBoardManager()
 
     def test_current(self):
@@ -357,45 +364,48 @@ class ScheduleBoardManagerTests(TestDataMixin, TestCase):
         self.assertIsInstance(self.manager.current(), ScheduleBoard)
 
 
-class ScheduleBoardModelTests(TestCase):
-    def setUp(self):
-        self.board = ScheduleBoard.objects.create(
-            name="january", start_date=datetime.datetime(2014, 1, 1), end_date=datetime.datetime(2014, 1, 31)
-        )
-        ScheduleBoard.objects.create(
-            name="1_14_february", start_date=datetime.datetime(2014, 2, 1), end_date=datetime.datetime(2014, 2, 14)
-        )
-        ScheduleBoard.objects.create(
-            name="after_14_february", start_date=datetime.datetime(2014, 2, 15))
+class ScheduleBoardValidationTests(TestCase):
+    def test_name_required(self):
+        board = ScheduleBoard()
+        with self.assertRaisesMessage(
+                ValidationError, "{'name': [u'This field cannot be blank.']}"):
+            board.full_clean()
 
-        for schedule_board in ScheduleBoard.objects.all():
-            schedule_board.clean()
+    def test_start_date_gt_end_date(self):
+        board = ScheduleBoard(
+            name="test",
+            start_date=datetime.date(2015, 1, 14),
+            end_date=datetime.date(2015, 1, 1))
+        with self.assertRaisesMessage(
+                ValidationError,
+                "[u'end date must be greater than or equal to start date.']"):
+            board.clean()
 
-    def test_runtime(self):
-        january_board = ScheduleBoard.objects.get(name="january")
-        february_board = ScheduleBoard.objects.get(name="1_14_february")
-        after_board = ScheduleBoard.objects.get(name="after_14_february")
 
-#        self.assertEqual(None, ScheduleBoard.get_current(datetime.datetime(2013, 12, 1, 0, 0, 0, 0)))
-#        self.assertEqual(january_board, ScheduleBoard.get_current(datetime.datetime(2014, 1, 1, 0, 0, 0, 0)))
-#        self.assertEqual(january_board, ScheduleBoard.get_current(datetime.datetime(2014, 1, 31, 0, 0, 0, 0)))
-#        self.assertEqual(january_board, ScheduleBoard.get_current(datetime.datetime(2014, 1, 31, 12, 0, 0, 0)))
-#        self.assertEqual(february_board, ScheduleBoard.get_current(datetime.datetime(2014, 2, 1, 0, 0, 0, 0)))
-#        self.assertEqual(february_board, ScheduleBoard.get_current(datetime.datetime(2014, 2, 14, 0, 0, 0, 0)))
-#        self.assertEqual(after_board, ScheduleBoard.get_current(datetime.datetime(2014, 2, 15, 0, 0, 0, 0)))
-#        self.assertEqual(after_board, ScheduleBoard.get_current(datetime.datetime(2014, 6, 1, 0, 0, 0, 0)))
-
-#    def test_end_before_start(self):
-#        board = ScheduleBoard(
-#            name="foo",
-#            start_date=datetime.datetime(2014, 1, 31),
-#            end_date=datetime.datetime(2014, 1, 1))
-#        with self.assertRaises(ValidationError):
-#            board.clean_fields()
+class ScheduleBoardModelTests(TestDataMixin, TestCase):
 
     def test_str(self):
-        self.assertEqual(str(self.board), "january")
+        self.assertEqual(str(self.schedule_board), "Example")
 
+    @mock.patch('django.utils.timezone.now', mock_now)
+    def test_save_rearange_episodes(self):
+        self.assertEqual(
+            self.episode.issue_date, datetime.datetime(2015, 1, 1, 14, 0))
+        self.schedule_board.start_date = datetime.date(2015, 1, 14)
+        self.schedule_board.save()
+        self.episode.refresh_from_db()
+        self.assertEqual(
+            self.episode.issue_date, datetime.datetime(2015, 1, 14, 14, 0, 0))
+
+    # XXX https://docs.djangoproject.com/en/1.9/topics/testing/tools/#django.test.TestCase.setUpTestData
+    def test_save_no_rearange_on_non_relevant_changes(self):
+        self.assertEqual(
+            self.episode.issue_date, datetime.datetime(2015, 1, 1, 14, 0))
+        # self.schedule_board.name = "Foo"
+        self.schedule_board.save()
+        self.episode.refresh_from_db()
+        self.assertEqual(
+            self.episode.issue_date, datetime.datetime(2015, 1, 1, 14, 0))
 
 
 class TransmissionModelTests(TestDataMixin, TestCase):

@@ -1,6 +1,7 @@
 from apps.global_settings.models import SiteConfiguration
 from apps.programmes.models import Programme, Episode, Role, CONTRIBUTOR, Podcast
 from apps.schedules.models import Schedule, ScheduleBoard, MO, TU, WE, TH, FR, SA, SU
+from apps.schedules.utils import rearrange_episodes
 from django.contrib.auth.models import User
 import datetime
 import recurrence
@@ -139,3 +140,6 @@ def create_example_data():
                     season=season,
                     number_in_season=number,
                 )
+
+    for programme in Programme.objects.all():
+        rearrange_episodes(programme, datetime.datetime(1970, 1, 1))

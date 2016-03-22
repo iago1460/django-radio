@@ -26,8 +26,9 @@ class TestDataMixin(object):
     def setUpTestData(cls):
         utils.create_example_data()
         cls.programme = Programme.objects.filter(name="Classic hits").get()
-        cls.schedule_board = ScheduleBoard.objects.filter(name="Example").get()
         cls.schedule = cls.programme.schedule_set.first()
+        cls.schedule_board = cls.schedule.schedule_board
+        cls.episode = cls.programme.episode_set.first()
 
 
 class RadioIntegrationTests(TestDataMixin, TestCase):

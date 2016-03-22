@@ -90,7 +90,6 @@ class ProgrammeModelAdminTests(TestCase):
 
 class EpisodeManagerTests(TestDataMixin, TestCase):
     def setUp(self):
-        super(EpisodeManagerTests, self).setUp()
         self.manager = EpisodeManager()
 
         self.episode = self.manager.create_episode(
@@ -112,11 +111,14 @@ class EpisodeManagerTests(TestDataMixin, TestCase):
         self.assertEqual(
             self.episode.issue_date, datetime.datetime(2014, 6, 14, 10, 0, 0))
 
-#    def test_people(self):
-#        self.assertQuerysetEqual(
-#            self.episode.people.all(), self.programme.announcers.all())
+    def test_people(self):
+        self.assertQuerysetEqual(
+            self.episode.people.all(), self.programme.announcers.all())
 
-    # XXX test_last
+    def test_last(self):
+        episode = self.manager.last(self.programme)
+        self.assertEqual(episode.season, 7)
+        self.assertEqual(episode.number_in_season, 6)
 
     def test_last_none(self):
         episode = self.manager.last(Programme())
@@ -124,8 +126,9 @@ class EpisodeManagerTests(TestDataMixin, TestCase):
 
     def test_unfinished(self):
         episodes = self.manager.unfinished(
-            self.programme, datetime.datetime(2015, 6, 1))
-        self.assertIsNotNone(episodes.next())
+            self.programme, datetime.datetime(2015, 1, 1))
+        self.assertEqual(
+            episodes.next().issue_date, datetime.datetime(2015, 1, 1, 14, 0))
 
     def test_unfinished_none(self):
         episodes = self.manager.unfinished(Programme())

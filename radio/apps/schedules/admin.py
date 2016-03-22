@@ -32,12 +32,12 @@ except ImportError:
     from django.utils.encoding import force_text as force_unicode
 
 
+@admin.register(ScheduleBoard)
 class ScheduleBoardAdmin(admin.ModelAdmin):
     list_display = ('name', 'start_date', 'end_date')
     list_filter = ['start_date', 'end_date']
     search_fields = ['name']
     ordering = ['start_date']
-    inlines = []
     actions = ['copy_ScheduleBoard']
 
     def copy_ScheduleBoard(self, request, queryset):
@@ -129,6 +129,5 @@ class FullcalendarAdmin(admin.ModelAdmin):
             return HttpResponseRedirect("../../")
 
 
-admin.site.register(ScheduleBoard, ScheduleBoardAdmin)
 #admin.site.register(Schedule, ScheduleAdmin)
 #admin.site.register(Schedule, FullcalendarAdmin)

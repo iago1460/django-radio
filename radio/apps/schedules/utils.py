@@ -6,9 +6,10 @@ def available_dates(programme, after):
     schedules = Schedule.objects.filter(programme=programme, type='L')
 
     while True:
-        candidates = map(
-            lambda s: s.date_after(after, inc=False), filter(
-                lambda s: s is not None, schedules))
+        candidates = (
+            filter(lambda s: s is not None,
+                   map(lambda s: s.date_after(after, inc=False),
+                       schedules)))
         try:
             # XXX there may be two parallel slots, use reduce
             next = min(candidates)

@@ -26,6 +26,7 @@ from django.utils import six
 from django.utils.translation import ugettext_lazy as _
 from recurrence.fields import RecurrenceField
 import datetime
+import django.utils.timezone
 
 
 EMISSION_TYPE = (
@@ -77,49 +78,35 @@ class ScheduleBoard(models.Model):
     start_date = models.DateField(blank=True, null=True, verbose_name=_('start date'))
     end_date = models.DateField(blank=True, null=True, verbose_name=_('end date'))
 
-# XXX Form validation != model validation
-#    def clean(self):
-#        if self.start_date:
-#            if self.end_date:
-#                if self.start_date > self.end_date:
-#                    raise ValidationError(_('end date must be greater than or equal to start date.'))
-#                # check date collision
-#                qs = (
-#                    ScheduleBoard.objects.filter(start_date__lte=self.end_date, end_date__isnull=True) |
-#                    ScheduleBoard.objects.filter(start_date__lte=self.end_date, end_date__gte=self.start_date)
-#                )
-#
-#                if self.pk is not None:
-#                    qs = qs.exclude(pk=self.pk)
-#                if qs.exists():
-#                    raise ValidationError(_('there is another object between this dates.'))
-#
-#            else:
-#                # start_date != None and end_date == None only one can exist
-#                qs = (
-#                    ScheduleBoard.objects.filter(start_date__isnull=False, end_date__isnull=True) |
-#                    ScheduleBoard.objects.filter(end_date__gte=self.start_date)
-#                )
-#                if self.pk is not None:
-#                    qs = qs.exclude(pk=self.pk)
-#                if qs.exists():
-#                    raise ValidationError(_('there is another object without end_date'))
-#                pass
-#
-#        elif self.end_date:
-#            raise ValidationError(_('start date cannot be null if end date exists'))
+    def clean(self):
+        if self.start_date is None:
+            return
+        if self.end_date is None:
+            return
+        if self.start_date > self.end_date:
+            raise ValidationError(
+                _('end date must be greater than or equal to start date.'),
+                code='date missmatch')
 
     def save(self, *args, **kwargs):
+        import utils
+
         # rearrange episodes
         if self.pk is not None:
             orig = ScheduleBoard.objects.get(pk=self.pk)
-            if orig.start_date != self.start_date or orig.end_date != self.end_date:  # Field has changed
+            if (orig.start_date == self.start_date and
+                orig.end_date == self.end_date and
+                orig.schedule_set == self.schedule_set):
+                # no relevant fields have changed
+
                 super(ScheduleBoard, self).save(*args, **kwargs)
-                Episode.rearrange_episodes(programme=None, after=datetime.datetime.now())
-            else:
-                super(ScheduleBoard, self).save(*args, **kwargs)
-        else:
-            super(ScheduleBoard, self).save(*args, **kwargs)
+                return
+
+        super(ScheduleBoard, self).save(*args, **kwargs)
+        # XXX filter unique programmes
+        for schedule in self.schedule_set.all():
+            utils.rearrange_episodes(
+                schedule.programme, django.utils.timezone.now())
 
     def __unicode__(self):
         return u"%s" % (self.name)
@@ -187,50 +174,22 @@ class Schedule(models.Model):
     def date_after(self, after, inc=True):
         return self.recurrences.after(self._merge_after(after), inc)
 
+    def save(self, *args, **kwargs):
+        import utils
+        super(Schedule, self).save(*args, **kwargs)
+        utils.rearrange_episodes(self.programme, django.utils.timezone.now())
+
     def _merge_before(self, before):
         if not self.end:
             return before
         return min(before, self.end)
 
     def _merge_after(self, after):
-        # XXX add date if the programme hasn't finished
-        # after -= self.runtime
-
         if not self.schedule_board.start_date:
             return after
 
         return max(after, datetime.datetime.combine(
             self.schedule_board.start_date, datetime.time(0)))
-
-#    def clean(self):
-#        now = datetime.datetime.now()
-#        if self.schedule_board.start_date:
-#            dt = datetime.datetime.combine(self.schedule_board.start_date, datetime.time(0, 0))
-#            if now > dt:
-#                dt = now
-#            # get the next emission date
-#            first_date_start = self.date_after(dt)
-#            if first_date_start:
-#                first_date_end = first_date_start + self.runtime
-#                schedules, dates_list_list = Schedule.between(
-#                    after=first_date_start, before=first_date_end, exclude=self, schedule_board=self.schedule_board
-#                )
-#                index = 0
-#                if schedules:
-#                    for date_list in dates_list_list:
-#                        for date in date_list:
-#                            if date != first_date_end:
-#                                schedule = schedules[index]
-#                                start_date = date
-#                                end_date = start_date + schedule.runtime()
-#                                raise ValidationError(
-#                                    _('This settings collides with: {name} [{start_date} - {end_date}]').format(
-#                                        name=schedule.programme.name,
-#                                        start_date=start_date.strftime("%H:%M %d/%m/%Y"),
-#                                        end_date=end_date.strftime("%H:%M %d/%m/%Y")
-#                                    )
-#                                )
-#                        index += 1
 
     def __unicode__(self):
         return ' - '.join([self.start.strftime('%A'), self.start.strftime('%X')])
