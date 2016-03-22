@@ -11,7 +11,7 @@ def migrate_schedules(apps, schema_editor):
     for schedule in Schedule.objects.all():
         day = datetime.date(2016, 1, 4) + datetime.timedelta(days=schedule.day)
         hour = schedule.start_hour
-        schedule.start = datetime.datetime.combine(day, hour)
+        schedule.recurrences.dtstart = datetime.datetime.combine(day, hour)
         schedule.save()
 
 
