@@ -142,6 +142,7 @@ class Schedule(models.Model):
         else:
             start_date_board = datetime.datetime.combine(
                 self.schedule_board.start_date, datetime.time(0))
+        # XXX this does not make any sense
         if not self.recurrences.dtstart:
             return start_date_board
         return max(start_date_board, self.recurrences.dtstart)
@@ -233,9 +234,10 @@ class Transmission(object):
                 yield cls(schedule, date)
 
     @classmethod
-    def between(cls, after, before):
-        # XXX filter board, filter schedule start / end
-        schedules = Schedule.objects.all()
+    def between(cls, after, before, schedules=None):
+        if schedules is None:
+            schedules = Schedule.objects.all()
+
         for schedule in schedules:
             for date in schedule.dates_between(after, before):
                 yield cls(schedule, date)

@@ -125,36 +125,73 @@
                 eventStartEditable: true,
                 allDaySlot: false,
                 //firstDay: {{first_day}},
-                //defaultDate: '2011-08-0{{first_day}}',
+                defaultDate: '2016-01-04',
                 axisFormat: 'HH:mm',
                 timezone: false,
                 //scrollTime: '{{scroll_time}}',
-                lazyFetching: false,
                 header: {
-                    left: '',
-                    center: '',
-                    right: ''
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'agendaMonth,agendaWeek,agendaDay'
                 },
                 columnFormat: {
-                    month: 'ddd',    // Mon
-                    week: 'dddd',        // Monday
-                    day: 'dddd'     
+                    month: 'ddd',
+                    week: 'dddd',
+                    day: 'dddd'
                 },
                 defaultView: 'agendaWeek',
-
-                events: {
+                eventSources: [
+                  {
                     url: '{% url "api:schedule-list" %}',
-                    data: function() { // a function that returns an object
-                        return {
-                                scheduleBoardId: $( "#select-board" ).val(),
-                                //firstDay: {{first_day}}
-                        };
+                    data: function() {
+                      return { schedule_board: $("#select-board").val() }
                     },
-
                     error: function() {
-                        alert('{% trans "There was an error while fetching programmes" %}');
+                        alert('{% trans "There was an error while fetching schedules" %}');
                     },
-                },
+                    eventDataTransform: function(schedule) {
+                      var event = {
+                        id: schedule.id,
+                        title: schedule.title,
+                        start: schedule.start,
+                        end: schedule.end,
+                        backgroundColor: function() {
+                          var BackgroundColor = Object.freeze({
+                            L: "#F9AD81",
+                            B: "#C4DF9B",
+                            S: "#8493CA"
+                          });
+                          return BackgroundColor[schedule.type];
+                        }(),
+                      };
+                      return event;
+                    },
+                    editable: true,
+                    borderColor: "#000",
+                    allDayDefault: false
+                  },{
+                    url: '{% url "api:transmission-list" %}',
+                    contentType: 'application/json',
+                    startParam: 'after',
+                    endParam: 'before',
+                    data: function() {
+                      return { schedule_board: $("#select-board").val() }
+                    },
+                    error: function() {
+                        alert('{% trans "There was an error while fetching transmissions" %}');
+                    },
+                    eventDataTransform: function(transmission) {
+                      var event = {
+                        id: transmission.slug,
+                        title: transmission.name,
+                        start: transmission.start,
+                        end: transmission.end
+                      };
+                      return event;
+                    },
+                    editable: false,
+                    allDayDefault: false
+                  } ],
                 droppable: true, // this allows things to be dropped onto the calendar !!!
                 drop: function (date) { // this function is called when something is dropped
 
@@ -347,12 +384,12 @@
             <h2>{% trans "Schedule board" %}</h2>
             <div class="grp-module">
                 <select id="select-board" class="form-control">
-                    {% for scheduleBoard in scheduleBoards %}
-                    <option value="{{scheduleBoard.id}}"
-                            {% if scheduleBoard == current_scheduleBoard %}
+                    {% for schedule_board in schedule_boards %}
+                    <option value="{{schedule_board.name}}"
+                            {% if schedule_board == current_scheduleBoard %}
                                     selected="selected"
                             {% endif %}>
-                            {{scheduleBoard.name}}
+                            {{schedule_board.name}}
                     </option>
                     {% endfor %}
                 </select>

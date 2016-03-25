@@ -26,10 +26,10 @@ class TestSerializers(TestDataMixin, TestCase):
     def test_schedule(self):
         serializer = serializers.ScheduleSerializer(self.schedule)
         self.assertDictEqual(serializer.data, {
-            'end': None, 'title': u'Classic hits',
-            'start': datetime.datetime(2015, 1, 1, 14, 0), 'source': None,
-            'backgroundColor': '#F9AD81', 'schedule_board': 1,
-            'textColor': 'black', 'type': 'L', 'id': 5, 'programme': 5})
+            'title': u'Classic hits', 'source': None,
+            'start': datetime.datetime(2015, 1, 1, 14, 0),
+            'end': datetime.datetime(2015, 1, 1, 15, 0),
+            'schedule_board': 1, 'type': 'L', 'id': 5, 'programme': 5})
 
     def test_transmission(self):
         serializer = serializers.TransmissionSerializer(Transmission(
@@ -46,27 +46,9 @@ class TestViews(TestDataMixin, TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
 
-    @mock.patch('django.utils.timezone.now', mock_now)
-    def test_transmission_list(self):
-        view = views.TransmissionViewSet()
-        response = view.list(self.factory.get('/'))
-        self.assertIsNotNone(response.data)
-
-    @mock.patch('django.utils.timezone.now', mock_now)
-    def test_transmission_now(self):
-        view = views.TransmissionViewSet()
-        response = view.now(self.factory.get('/'))
-        self.assertListEqual(response.data, [{
-            'start': '2015-01-06T14:00:00',
-            'end': '2015-01-06T15:00:00',
-            'name': u'Classic hits',
-            'slug': u'classic-hits',
-            'url': u'/programmes/classic-hits/'}])
-
 
 class TestAPI(TestDataMixin, APITestCase):
     def setUp(self):
-        super(TestAPI, self).setUp()
         admin = User.objects.create_user(
             username='klaus', password='topsecret')
         admin.user_permissions.add(
@@ -104,26 +86,28 @@ class TestAPI(TestDataMixin, APITestCase):
 
     def test_schedules_get_by_programme(self):
         response = self.client.get(
-            '/api/2/schedules?programme={}'.format(self.programme.id))
+            '/api/2/schedules', {'programme': self.programme.slug})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data), 2)
         self.assertEqual(response.data[0]['title'], self.programme.name)
 
     def test_schedules_get_by_nonexisting_programme(self):
-        response = self.client.get('/api/2/schedules?programme=4223')
+        response = self.client.get(
+            '/api/2/schedules', {'programme': 'foo'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
 
     def test_schedules_get_by_board(self):
-        response = self.client.get('/api/2/schedules?schedule_board={}'.format(
-            self.schedule_board.id))
+        response = self.client.get(
+            '/api/2/schedules', {'schedule_board': self.schedule_board.name})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(
             response.data[0]['schedule_board'], self.schedule_board.id)
 
     def test_schedules_get_by_nonexisting_board(self):
-        response = self.client.get('/api/2/schedules?schedule_board=4223')
+        response = self.client.get(
+            '/api/2/schedules', {'schedule_board': 'foobar'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
 
@@ -148,19 +132,57 @@ class TestAPI(TestDataMixin, APITestCase):
         response = self.client.post('/api/2/schedules')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_schedules_post_authenticated(self):
-        self.client.login(username="klaus", password="topsecret")
-        data = {
-            "programme": self.programme.id,
-            "schedule_board": self.schedule_board.id,
-            "day": 0, "start_hour": "07:30:00", "type": "L"}
-        response = self.client.post('/api/2/schedules', data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+#    def test_schedules_post_authenticated(self):
+#        self.client.login(username="klaus", password="topsecret")
+#        data = {
+#            "programme": self.programme.id,
+#            "schedule_board": self.schedule_board.id,
+#            "start": "2015-01-01T07:30:00", "type": "L"}
+#        response = self.client.post('/api/2/schedules', data)
+#        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    @mock.patch('django.utils.timezone.now', mock_now)
     def test_transmissions(self):
         response = self.client.get('/api/2/transmissions')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(len(response.data)>20)
 
-    def test_transmissions_now(self):
+    @mock.patch('django.utils.timezone.now', mock_now)
+    def test_transmission_list_filter_board(self):
+        response = self.client.get(
+            '/api/2/transmissions', {'schedule_board': 'Another'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertListEqual(
+            map(lambda t: (t['slug'], t['start']), response.data),
+            [(u'classic-hits', '2015-01-06T16:30:00')])
+
+    def test_transmission_after(self):
+        response = self.client.get(
+            '/api/2/transmissions', {'after': datetime.date(2015, 02, 01)})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            sorted(response.data, key=lambda t: t['start'])[0]['start'],
+            '2015-02-01T08:00:00')
+
+    @mock.patch('django.utils.timezone.now', mock_now)
+    def test_transmission_before(self):
+        response = self.client.get(
+            '/api/2/transmissions', {'before': datetime.date(2015, 01, 14)})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            sorted(response.data, key=lambda t: t['start'])[-1]['start'],
+            '2015-01-14T14:00:00')
+
+    @mock.patch('django.utils.timezone.now', mock_now)
+    def test_transmission_now(self):
         response = self.client.get('/api/2/transmissions/now')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertListEqual(
+            map(lambda t: (t['slug'], t['start']), response.data),
+            [(u'classic-hits', '2015-01-06T14:00:00')])
+
+    def test_transmissions_filter_board_nonexistend(self):
+        response = self.client.get(
+            '/api/2/transmissions', {'schedule_board': 'Foo'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)

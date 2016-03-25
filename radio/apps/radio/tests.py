@@ -18,6 +18,7 @@ from apps.programmes.models import Programme, Episode
 from apps.schedules.models import Schedule, ScheduleBoard
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+import datetime
 import utils
 
 
@@ -29,6 +30,11 @@ class TestDataMixin(object):
         cls.schedule = cls.programme.schedule_set.first()
         cls.schedule_board = cls.schedule.schedule_board
         cls.episode = cls.programme.episode_set.first()
+        cls.another_board = ScheduleBoard.objects.create(name="Another")
+        cls.another_board.schedule_set.add(Schedule(
+            programme=cls.programme,
+            type='S',
+            start=datetime.datetime(2015, 1, 6, 16, 30, 0)))
 
 
 class RadioIntegrationTests(TestDataMixin, TestCase):

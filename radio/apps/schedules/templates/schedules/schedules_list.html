@@ -46,25 +46,22 @@
                 },
                 defaultView: 'agendaWeek',
                 droppable: false,
-                events: function(start, end, timezone, callback) {
-                    $.ajax({
-                        url: '{{transmissions}}',
-                        success: function(transmissions) {
-                            console.log(transmissions);
-                            var events = [];
-                            transmissions.forEach(function(transmission) {
-                                events.push({
-                                    id: transmission.slug,
-                                    title: transmission.name,
-                                    start: transmission.start,
-                                    end: transmission.end,
-                                    url: transmission.url,
-                                    allDay: false
-                                });
-                            });
-                            callback(events);
-                        }
-                    });
+                events: {
+                  url: '{% url "api:transmission-list" %}',
+                  contentType: 'application/json',
+                  startParam: 'after',
+                  endParam: 'before',
+                  eventDataTransform: function(transmission) {
+                    var event = {
+                      id: transmission.slug,
+                      title: transmission.name,
+                      start: transmission.start,
+                      end: transmission.end
+                    };
+                    return event;
+                  },
+                  editable: false,
+                  allDayDefault: false
                 }
             })
 

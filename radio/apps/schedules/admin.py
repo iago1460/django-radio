@@ -84,7 +84,7 @@ class ScheduleAdmin(admin.ModelAdmin):
     change_list_template = "admin/schedules/calendar.html"
 
     def changelist_view(self, request, extra_context=dict()):
-        extra_context['scheduleBoards'] = ScheduleBoard.objects.all()
+        extra_context['schedule_boards'] = ScheduleBoard.objects.all()
         #extra_context['programmes'] = Programme.objects.all()   # XXX only programmes for given schedule board
         return super(ScheduleAdmin, self).changelist_view(request, extra_context=extra_context)
 

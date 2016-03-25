@@ -410,7 +410,6 @@ class ScheduleBoardModelTests(TestDataMixin, TestCase):
 
 class TransmissionModelTests(TestDataMixin, TestCase):
     def setUp(self):
-        super(TransmissionModelTests, self).setUp()
         self.transmission = Transmission(
             self.schedule, datetime.datetime(2015, 1, 6, 14, 0, 0))
 
@@ -444,13 +443,23 @@ class TransmissionModelTests(TestDataMixin, TestCase):
     def test_between(self):
         between = Transmission.between(
             datetime.datetime(2015, 1, 6, 12, 0, 0),
-            datetime.datetime(2015, 1, 6, 15, 0, 0))
+            datetime.datetime(2015, 1, 6, 17, 0, 0))
         self.assertListEqual(
             map(lambda t: (t.slug, t.start), list(between)),
             [(u'the-best-wine', datetime.datetime(2015, 1, 6, 12, 0)),
              (u'local-gossips', datetime.datetime(2015, 1, 6, 13, 0)),
-             (u'classic-hits', datetime.datetime(2015, 1, 6, 14, 0))])
+             (u'classic-hits', datetime.datetime(2015, 1, 6, 14, 0)),
+             (u'classic-hits', datetime.datetime(2015, 1, 6, 16, 30))])
 
+    def test_between_by_queryset(self):
+        between = Transmission.between(
+            datetime.datetime(2015, 1, 6, 12, 0, 0),
+            datetime.datetime(2015, 1, 6, 17, 0, 0),
+            schedules=Schedule.objects.filter(
+                schedule_board=self.another_board).all())
+        self.assertListEqual(
+            map(lambda t: (t.slug, t.start), list(between)),
+            [(u'classic-hits', datetime.datetime(2015, 1, 6, 16, 30, 0))])
 
 #class ScheduleViewTests(TestCase):
 #    def setUp(self):
