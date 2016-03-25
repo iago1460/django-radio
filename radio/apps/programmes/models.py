@@ -74,7 +74,7 @@ class Programme(models.Model):
         blank=True, null=True, verbose_name=_('end date'), help_text=_("This field can be null.")
     )
     announcers = models.ManyToManyField(
-        User, blank=True, null=True, through='Role', verbose_name=_("announcers")
+        User, blank=True, through='Role', verbose_name=_("announcers")
     )
     synopsis = RichTextField(blank=True, verbose_name=_("synopsis"))
     photo = models.ImageField(
@@ -149,7 +149,7 @@ class Programme(models.Model):
 
 class Episode(models.Model):
     title = models.CharField(max_length=100, blank=True, null=True, verbose_name=_("title"))
-    people = models.ManyToManyField(User, blank=True, null=True, through='Participant', verbose_name=_("people"))
+    people = models.ManyToManyField(User, blank=True, through='Participant', verbose_name=_("people"))
     programme = models.ForeignKey(Programme, verbose_name=_("programme"))
     summary = RichTextField(blank=True, verbose_name=_("summary"))
     issue_date = models.DateTimeField(blank=True, null=True, db_index=True, verbose_name=_('issue date'))
