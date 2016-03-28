@@ -22,6 +22,7 @@ from django.db import models
 from django.db.models import Q
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
+from django.template.defaultfilters import slugify
 from django.utils import six
 from django.utils.translation import ugettext_lazy as _
 from recurrence.fields import RecurrenceField
@@ -75,6 +76,7 @@ class ScheduleBoard(models.Model):
         verbose_name_plural = _('schedule board')
 
     name = models.CharField(max_length=255, unique=True, verbose_name=_("name"))
+    slug = models.SlugField(max_length=255, unique=True)
     start_date = models.DateField(blank=True, null=True, verbose_name=_('start date'))
     end_date = models.DateField(blank=True, null=True, verbose_name=_('end date'))
 

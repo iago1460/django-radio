@@ -34,7 +34,7 @@ def create_example_data():
 
     # Example schedule
     schedule_board, created = ScheduleBoard.objects.get_or_create(
-        name='Example', start_date=datetime.date(2015, 1, 1))
+        name='Example', slug='example', start_date=datetime.date(2015, 1, 1))
 
     # Another example schedule
     ScheduleBoard.objects.get_or_create(

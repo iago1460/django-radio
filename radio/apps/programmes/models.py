@@ -106,6 +106,7 @@ class Programme(models.Model):
     def runtime(self, value):
         self._runtime = value
 
+    # XXX form
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         super(Programme, self).save(*args, **kwargs)

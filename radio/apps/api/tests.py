@@ -29,7 +29,9 @@ class TestSerializers(TestDataMixin, TestCase):
             'title': u'Classic hits', 'source': None,
             'start': datetime.datetime(2015, 1, 1, 14, 0),
             'end': datetime.datetime(2015, 1, 1, 15, 0),
-            'schedule_board': 1, 'type': 'L', 'id': 5, 'programme': 5})
+            'schedule_board': u'example',
+            'type': 'L', 'id': 5,
+            'programme': u'classic-hits'})
 
     def test_transmission(self):
         serializer = serializers.TransmissionSerializer(Transmission(
@@ -103,7 +105,7 @@ class TestAPI(TestDataMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(
-            response.data[0]['schedule_board'], self.schedule_board.id)
+            response.data[0]['schedule_board'], self.schedule_board.slug)
 
     def test_schedules_get_by_nonexisting_board(self):
         response = self.client.get(
@@ -116,7 +118,7 @@ class TestAPI(TestDataMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(
-            response.data[0]['schedule_board'], self.schedule_board.id)
+            response.data[0]['schedule_board'], self.schedule_board.slug)
 
     def test_schedules_get_by_nonexiting_type(self):
         response = self.client.get('/api/2/schedules?type=B')

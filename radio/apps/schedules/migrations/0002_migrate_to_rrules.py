@@ -27,7 +27,8 @@ class Migration(migrations.Migration):
             name='recurrences',
             field=recurrence.fields.RecurrenceField(
                 default=recurrence.Recurrence(
-                    rrules=[recurrence.Rule(recurrence.WEEKLY)])),
+                    rrules=[recurrence.Rule(recurrence.WEEKLY)]),
+                verbose_name='recurrences'),
             preserve_default=False,
         ),
         migrations.RunPython(migrate_schedules),

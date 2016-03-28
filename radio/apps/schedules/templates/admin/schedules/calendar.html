@@ -196,23 +196,21 @@
                 drop: function (date) { // this function is called when something is dropped
 
                     var Event = {};
-                    Event.programme = $(this).data('id');
+                    Event.programme = $(this).data('slug');
                     Event.title = $(this).data('title');
                     Event.runtime = $(this).data('runtime');
 
                     // assign it the date that was reported
                     Event.start = date;
-                    Event.end = moment(date).add(Event.runtime, 'minutes');
+                    var programme = $(this).data('slug');
 
                     // create the event 
                     $.ajax({
                         type: "POST",
                         url: "{% url 'api:schedule-list' %}",
                         data: {
-                            programme: $(this).data('id'),
                             schedule_board: $("#select-board").val(),
-                            start_hour: date.format("H:mm"),
-                            day: date.day(),
+// XXX                            start: date,
                             type: $("input[name='group1']:checked").val()
                         },
                         success: function(schedule) {
@@ -302,9 +300,9 @@
 
                         $("<div>").append(programme.name)
                             .addClass("programme grp-row")
-                            .data('id', programme.id)
+                            .data('slug', programme.slug)
                             .data('title', programme.name)
-                            .data('runtime', programme.runtime / 60)
+                            .data('runtime', programme.runtime)
                             .draggable({
                                 zIndex: 999,
                                 revert: true, // will cause the event to go back to its
@@ -385,7 +383,7 @@
             <div class="grp-module">
                 <select id="select-board" class="form-control">
                     {% for schedule_board in schedule_boards %}
-                    <option value="{{schedule_board.name}}"
+                    <option value="{{schedule_board.slug}}"
                             {% if schedule_board == current_scheduleBoard %}
                                     selected="selected"
                             {% endif %}>
