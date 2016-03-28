@@ -1,10 +1,22 @@
 {% extends "admin/change_list.html" %}
 {% load static %}
 {% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 
 {% block extrastyle %}
         <link rel="stylesheet" href="{% static "fullcalendar/dist/fullcalendar.min.css" %}" type="text/css" />
         <link rel="stylesheet" href="{% static "fullcalendar/dist/fullcalendar.print.css" %}" type="text/css" media='print'/>
+        <style type="text/css" media="all">
+          button {
+            margin: unset;
+            padding: unset;
+            width: unset;
+            height: unset;
+          }
+          tbody.fc-body table{
+            margin: unset !important;
+          }
+        </style>
 {% endblock %}
 
 {% block extrahead %}
@@ -94,50 +106,20 @@
             reloadProgrammes();
 
             $("#select-board").change(function() {
-                    $('#calendar').fullCalendar( 'removeEvents')
                     $('#calendar').fullCalendar( 'refetchEvents')
-                    reloadProgrammes()
-            });
-
-            $("#sources").submit(function(event) {
-                $.ajax({
-                    type: "PATCH",  // XXX this is just for transition, we want to have a PUT here
-                    url: "{% url 'api:schedule-list' %}/" + $("#sources").data("schedule"),
-                    data: {
-                        source: $("#schedules").val()
-                    },
-                    success: function (res) {
-                        success('Successfully added source for broadcast');
-                    },
-                    error: function (data) {
-                        alert('{% trans "There was an error in the request" %}');
-                    },
-                });
-                event.preventDefault();
             });
 
             var calendar = $('#calendar').fullCalendar({
                 height: 'auto',
                 contentHeight: 'auto',
-                aspectRatio: 1.35,
-                lang: '{{language}}',
+                lang: '{{ LANGUAGE_CODE }}',
                 eventDurationEditable: false,
                 eventStartEditable: true,
                 allDaySlot: false,
-                //firstDay: {{first_day}},
-                defaultDate: '2016-01-04',
-                axisFormat: 'HH:mm',
-                timezone: false,
-                //scrollTime: '{{scroll_time}}',
                 header: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'agendaMonth,agendaWeek,agendaDay'
-                },
-                columnFormat: {
-                    month: 'ddd',
-                    week: 'dddd',
-                    day: 'dddd'
+                    right: 'month,agendaWeek,agendaDay'
                 },
                 defaultView: 'agendaWeek',
                 eventSources: [
@@ -219,11 +201,6 @@
                           alert('{% trans "There was an error while creating schedule" %}');
                       }
                     });
-                },
-
-                //remove all events (dropped events)
-                viewRender: function( view, element ){
-                        $('#calendar').fullCalendar( 'removeEvents')
                 },
 
                 eventClick: function (calEvent, jsEvent, view) {
@@ -332,13 +309,6 @@
     </div>
     <div class="c-2 grp-group grp-stacked">
         <h2>Schedules</h2>
-        <form  class="grp-module" id="sources" style="display:none">
-            <label for="schedules" class="grp-row">Source
-                <select id="schedules" class="form-control">
-                </select>
-            <input class="grp-button grp-default" type="submit" name="_source" value="Save" />
-            </label>
-        </form>
         <div id='calendar'></div>
     </div>
   </div>
