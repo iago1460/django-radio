@@ -155,6 +155,8 @@
                         title: schedule.title,
                         start: schedule.start,
                         end: schedule.end,
+                        type: schedule.type,
+                        source: schedule.source,
                         backgroundColor: function() {
                           var BackgroundColor = Object.freeze({
                             L: "#F9AD81",
@@ -163,6 +165,7 @@
                           });
                           return BackgroundColor[schedule.type];
                         }(),
+                        url: "{% url 'admin:schedules_schedule_changelist' %}" + schedule.id,
                       };
                       return event;
                     },
@@ -194,40 +197,28 @@
                   } ],
                 droppable: true, // this allows things to be dropped onto the calendar !!!
                 drop: function (date) { // this function is called when something is dropped
+                  var programme = $(this).data('slug');
+                  var schedule_board = $("#select-board").val();
+                  var type = $("input[name='group1']:checked").val();
 
-                    var Event = {};
-                    Event.programme = $(this).data('slug');
-                    Event.title = $(this).data('title');
-                    Event.runtime = $(this).data('runtime');
-
-                    // assign it the date that was reported
-                    Event.start = date;
-                    var programme = $(this).data('slug');
-
-                    // create the event 
-                    $.ajax({
-                        type: "POST",
-                        url: "{% url 'api:schedule-list' %}",
-                        data: {
-                            schedule_board: $("#select-board").val(),
-// XXX                            start: date,
-                            type: $("input[name='group1']:checked").val()
-                        },
-                        success: function(schedule) {
-                            Event.id = schedule.id;
-                            Event.backgroundColor = schedule.backgroundColor;
-                            Event.textColor = schedule.textColor;
-                            Event.type = schedule.type;
-                            Event.source = schedule.source;
-                            // render the event on the calendar
-                            // the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
-                            $('#calendar').fullCalendar('renderEvent', Event, true);
-                        },
-                        error: function (data) {
-                            alert('{% trans "There was an error while creating schedule" %}');
-                        },
+                  // create the event 
+                  $.ajax({
+                      type: "POST",
+                      url: "{% url 'api:schedule-list' %}",
+                      contentType: 'application/json',
+                      data: JSON.stringify({
+                          schedule_board: schedule_board,
+                          programme: programme,
+                          start: date,
+                          type: type
+                      }),
+                      success: function(schedule) {
+                        $('#calendar').fullCalendar('refetchEvents');
+                      },
+                      error: function (data) {
+                          alert('{% trans "There was an error while creating schedule" %}');
+                      }
                     });
-
                 },
 
                 //remove all events (dropped events)
@@ -236,55 +227,25 @@
                 },
 
                 eventClick: function (calEvent, jsEvent, view) {
-                    if (calEvent.type == 'B') {
-                        $('#sources').data("schedule", calEvent.id);
-                        reloadSourceSchedules(calEvent);
-                        $('#sources').slideDown();
-                        jsEvent.preventDefault();
-                    } else {
-                        $('#sources').removeData("schedule");
-                        $('#sources').slideUp();
-                    }
                 },
-
 
                 eventDrop: function (event, delta, revertFunc) {
                     $.ajax({
                         type: "PATCH",  // XXX this is just for transition, we want to have a PUT here
                         url: "{% url 'api:schedule-list' %}/" + event.id,
-                        data: {
-                            id: event.id,
-                            start_hour: event.start.format("HH:mm"),
-                            day: event.start.day(),
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            start: event.start,
+                        }),
+                        success: function (res) {
+                          $('#calendar').fullCalendar('refetchEvents');
                         },
-                        success: function (res) { },
                         error: function (data) {
                             revertFunc();
                             alert('{% trans "There was an error in the request" %}');
                         },
                     });
                 },
-
-                eventDragStop: function(event, jsEvent, ui, view) { 
-                     if (isElemOverDiv(jsEvent, $('#programmes'))) {
-                         $.ajax({
-                             type: "POST",
-                             url: "delete_schedule",
-                             data: 'scheduleId=' + event.id,
-                             success: function (res) {
-                                 if (res.error) {
-                                     alert("Error en la peticion " + res.error);
-                                 } else {
-                                         calendar.fullCalendar('removeEvents', event.id);
-                                 }
-                             },
-                             error: function (data) {
-                                 revertFunc();
-                                 alert('{% trans "There was an error in the request" %}');
-                             },
-                         });
-                     }
-                 },
             })
 
         });
@@ -293,7 +254,6 @@
             $('#programmes').empty();
             $.getJSON({
                 url: "{% url 'api:programme-list' %}",
-                data: { scheduleBoardId: $( "#select-board" ).val() },
                 success: function(programmes) {
                     for (var i=0; i<programmes.length; i++) {
                         var programme = programmes[i];
@@ -313,56 +273,9 @@
                     info('{% trans "Programmes reloaded" %}');
                 },
                 error: function (data) {
-                    alert('{% trans "There was an error in the request" %}');
-                    revertFunc();
+                    alert('{% trans "There was an error while reloding programmes" %}');
                 },
          });
-        }
-
-        function reloadSourceSchedules(schedule) {
-            $('#schedules').empty();
-            $.getJSON({
-                url: "{%url 'api:schedule-list' %}",
-                data: {
-                    schedule_board: $("#select-board").val(),
-                    programme: schedule.programme,
-                    type: 'L'
-                },
-                success: function(schedules) {
-                    $("<option>").append("Without reference")
-                        .addClass("source")
-                        .attr('value', '')
-                        .appendTo('#schedules');
-
-                    for (var i=0; i<schedules.length; i++) {
-                        var schedule = schedules[i];
-                        $("<option>").append(schedule.start)
-                            .addClass("source")
-                            .attr('value', schedule.id)
-                            .appendTo('#schedules');
-                    }
-
-                    $('#schedules').val(schedule.source); // XXX fixme
-                }
-            });
-        }
-
-
-        var isElemOverDiv = function(draggedItem, dropArea) {
-            var draggedX = draggedItem.pageX;
-            var draggedY = draggedItem.pageY;
-
-            var b = $(dropArea);
-            var limitX = parseInt(b.offset().left) + parseInt(b.outerWidth());
-            var limitY = parseInt(b.offset().top) + parseInt(b.outerHeight());
-
-            // Compare
-            if ( limitY >=   parseInt(draggedY) 
-                && limitX >=   parseInt(draggedX) ) 
-            { 
-                return true; 
-            }
-            return false;
         }
         </script>
 {% endblock %}

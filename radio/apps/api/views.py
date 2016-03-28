@@ -23,7 +23,7 @@ class ScheduleFilter(filters.FilterSet):
         model = Schedule
         fields = ('programme', 'schedule_board', 'type')
 
-    schedule_board = django_filters.CharFilter(name="schedule_board__name")
+    schedule_board = django_filters.CharFilter(name="schedule_board__slug")
     programme = django_filters.CharFilter(name="programme__slug")
 
 

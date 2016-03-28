@@ -93,6 +93,8 @@ class ScheduleBoard(models.Model):
     def save(self, *args, **kwargs):
         import utils
 
+        self.slug = slugify(self.name)
+
         # rearrange episodes
         if self.pk is not None:
             orig = ScheduleBoard.objects.get(pk=self.pk)
@@ -140,29 +142,42 @@ class Schedule(models.Model):
     @property
     def start(self):
         if not self.schedule_board.start_date:
-            return self.recurrences.dtstart
+            return self.rr_start
         else:
             start_date_board = datetime.datetime.combine(
                 self.schedule_board.start_date, datetime.time(0))
         # XXX this does not make any sense
-        if not self.recurrences.dtstart:
+        if not self.rr_start:
             return start_date_board
-        return max(start_date_board, self.recurrences.dtstart)
+        return max(start_date_board, self.rr_start)
 
     @start.setter
     def start(self, start_date):
-        self.recurrences.dtstart = start_date
+        self.rr_start = start_date
 
     @property
     def end(self):
         if not self.schedule_board.end_date:
-            return self.recurrences.dtend
+            return self.rr_end
         else:
             end_date_board = datetime.datetime.combine(
                 self.schedule_board.end_date, datetime.time(23, 59, 59))
-        if not self.recurrences.dtend:
+        if not self.rr_end:
             return end_date_board
-        return min(end_date_board, self.recurrences.dtend)
+        return min(end_date_board, self.rr_end)
+
+    @property
+    def rr_start(self):
+        return self.recurrences.dtstart
+
+    @rr_start.setter
+    def rr_start(self, start_date):
+        self.recurrences.dtstart = start_date
+
+    @property
+    def rr_end(self):
+        return self.recurrences.dtend
+
 
     def dates_between(self, after, before):
         """

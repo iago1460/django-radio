@@ -1,5 +1,5 @@
 from apps.programmes.models import Programme
-from apps.schedules.models import Schedule, Transmission
+from apps.schedules.models import Schedule, ScheduleBoard, Transmission
 from rest_framework import serializers
 import datetime
 
@@ -15,9 +15,12 @@ class ProgrammeSerializer(serializers.ModelSerializer):
 
 class ScheduleSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
-    programme = serializers.SerializerMethodField()
-    schedule_board = serializers.SerializerMethodField()
-    start = serializers.SerializerMethodField()
+    programme = serializers.SlugRelatedField(
+        slug_field='slug', queryset=Programme.objects.all())
+    schedule_board = serializers.SlugRelatedField(
+        slug_field='slug', queryset=ScheduleBoard.objects.all())
+    # XXX this is a bit hacky...
+    start = serializers.DateTimeField(source='rr_start')
     end = serializers.SerializerMethodField()
 
     class Meta:
@@ -28,19 +31,10 @@ class ScheduleSerializer(serializers.ModelSerializer):
     def get_title(self, schedule):
         return schedule.programme.name
 
-    def get_programme(self, schedule):
-        return schedule.programme.slug
-
-    def get_schedule_board(self, schedule):
-        return schedule.schedule_board.slug
-
-    def get_start(self, schedule):
-        return schedule.recurrences.dtstart
-
     def get_end(self, schedule):
         # XXX temp workaround while dtstart not mandatory
         try:
-            return self.get_start(schedule) + schedule.runtime
+            return schedule.recurrences.dtstart + schedule.runtime
         except TypeError:
             return None
 

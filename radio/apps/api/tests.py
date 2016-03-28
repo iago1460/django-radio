@@ -27,7 +27,7 @@ class TestSerializers(TestDataMixin, TestCase):
         serializer = serializers.ScheduleSerializer(self.schedule)
         self.assertDictEqual(serializer.data, {
             'title': u'Classic hits', 'source': None,
-            'start': datetime.datetime(2015, 1, 1, 14, 0),
+            'start': '2015-01-01T14:00:00',
             'end': datetime.datetime(2015, 1, 1, 15, 0),
             'schedule_board': u'example',
             'type': 'L', 'id': 5,
@@ -101,7 +101,7 @@ class TestAPI(TestDataMixin, APITestCase):
 
     def test_schedules_get_by_board(self):
         response = self.client.get(
-            '/api/2/schedules', {'schedule_board': self.schedule_board.name})
+            '/api/2/schedules', {'schedule_board': self.schedule_board.slug})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(
@@ -152,7 +152,7 @@ class TestAPI(TestDataMixin, APITestCase):
     @mock.patch('django.utils.timezone.now', mock_now)
     def test_transmission_list_filter_board(self):
         response = self.client.get(
-            '/api/2/transmissions', {'schedule_board': 'Another'})
+            '/api/2/transmissions', {'schedule_board': 'another'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertListEqual(
             map(lambda t: (t['slug'], t['start']), response.data),
