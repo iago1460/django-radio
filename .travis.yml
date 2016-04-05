@@ -20,8 +20,11 @@ branches:
 install:
   - pip install $DJANGO
   - pip install -r radio/configs/common/requirements.txt
+  - pip install coverage coveralls
 
-script: python manage.py test
+script:
+  - python manage.py test
+  - coverage run manage.py test
 
 after_success:
   coveralls
