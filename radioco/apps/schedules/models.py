@@ -118,7 +118,10 @@ class ScheduleBoard(models.Model):
 
 @receiver(post_delete, sender=ScheduleBoard)
 def delete_ScheduleBoard_handler(sender, **kwargs):
-    Episode.rearrange_episodes(programme=None, after=datetime.datetime.now())
+    import utils
+    now = django.utils.timezone.now()
+    for programme in Programme.objects.all():
+        utils.rearrange_episodes(programme, now)
 
 
 class Schedule(models.Model):

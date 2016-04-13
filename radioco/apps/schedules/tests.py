@@ -19,6 +19,7 @@ from django.contrib.auth.models import User, Permission
 from django.core.exceptions import ValidationError, FieldError
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models.signals import post_delete
 from django.forms import modelform_factory
 from django.test import TestCase
 import datetime
@@ -434,6 +435,16 @@ class ScheduleBoardModelTests(TestDataMixin, TestCase):
         self.episode.refresh_from_db()
         self.assertEqual(
             self.episode.issue_date, datetime.datetime(2015, 1, 1, 14, 0))
+
+    @mock.patch('django.utils.timezone.now', mock_now)
+    @mock.patch('radioco.apps.schedules.utils.rearrange_episodes')
+    def test_delete(self, rearrange_episodes):
+        def calls():
+            for programme in Programme.objects.all():
+                yield mock.call(programme, mock_now())
+
+        post_delete.send(ScheduleBoard, instance=self.schedule_board)
+        rearrange_episodes.assert_has_calls(calls(), any_order=True)
 
 
 class TransmissionModelTests(TestDataMixin, TestCase):
