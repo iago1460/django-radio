@@ -23,6 +23,11 @@ class TestSerializers(TestDataMixin, TestCase):
             serializer.data.keys(),
             ['slug', 'name', 'synopsis', 'runtime', 'photo', 'language', 'category'])
 
+    def test_programme_photo_url(self):
+        serializer = serializers.ProgrammeSerializer(self.programme)
+        self.assertEqual(
+            serializer.data['photo'], "/media/defaults/example/radio_5.jpg")
+
     def test_schedule(self):
         serializer = serializers.ScheduleSerializer(self.schedule)
         self.assertDictEqual(serializer.data, {

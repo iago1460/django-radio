@@ -6,7 +6,7 @@ import datetime
 
 class ProgrammeSerializer(serializers.ModelSerializer):
     runtime = serializers.DurationField()
-    photo = serializers.URLField()
+    photo = serializers.ImageField()
 
     class Meta:
         model = Programme
