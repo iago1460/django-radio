@@ -44,4 +44,5 @@ class TransmissionSerializer(serializers.Serializer):
     slug =serializers.SlugField(max_length=100)
     start = serializers.DateTimeField()
     end = serializers.DateTimeField()
+    schedule = serializers.IntegerField(source='schedule.id')
     url = serializers.URLField()

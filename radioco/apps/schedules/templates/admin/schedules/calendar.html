@@ -172,7 +172,8 @@
                         id: transmission.slug,
                         title: transmission.name,
                         start: transmission.start,
-                        end: transmission.end
+                        end: transmission.end,
+                        url: "{% url 'admin:schedules_schedule_changelist' %}" + transmission.schedule
                       };
                       return event;
                     },

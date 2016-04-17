@@ -44,14 +44,10 @@ class TestSerializers(TestDataMixin, TestCase):
         self.assertDictEqual(serializer.data, {
             'start': '2015-01-06T14:00:00',
             'end': '2015-01-06T15:00:00',
+            'schedule': 5,
             'name': u'Classic hits',
             'slug': u'classic-hits',
             'url': u'/programmes/classic-hits/'})
-
-
-class TestViews(TestDataMixin, TestCase):
-    def setUp(self):
-        self.factory = APIRequestFactory()
 
 
 class TestAPI(TestDataMixin, APITestCase):
