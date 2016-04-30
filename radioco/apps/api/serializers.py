@@ -1,4 +1,4 @@
-from radioco.apps.programmes.models import Programme
+from radioco.apps.programmes.models import Programme, Episode
 from radioco.apps.schedules.models import Schedule, ScheduleBoard, Transmission
 from rest_framework import serializers
 import datetime
@@ -11,6 +11,15 @@ class ProgrammeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Programme
         fields = ('slug', 'name', 'synopsis', 'runtime', 'photo', 'language', 'category')
+
+
+class EpisodeSerializer(serializers.ModelSerializer):
+    programme = serializers.SlugRelatedField(
+        slug_field='slug', queryset=Programme.objects.all())
+    class Meta:
+        model = Episode
+        fields = ('title', 'programme', 'summary',
+                  'issue_date', 'season', 'number_in_season')
 
 
 class ScheduleSerializer(serializers.ModelSerializer):

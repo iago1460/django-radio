@@ -28,6 +28,16 @@ class TestSerializers(TestDataMixin, TestCase):
         self.assertEqual(
             serializer.data['photo'], "/media/defaults/example/radio_5.jpg")
 
+    def test_episode(self):
+        serializer = serializers.EpisodeSerializer(self.episode)
+        self.assertListEqual(
+            serializer.data.keys(),
+            ['title', 'programme', 'summary', 'issue_date', 'season', 'number_in_season'])
+
+    def test_episode_programme(self):
+        serializer = serializers.EpisodeSerializer(self.episode)
+        self.assertEqual(serializer.data['programme'], "classic-hits")
+
     def test_schedule(self):
         serializer = serializers.ScheduleSerializer(self.schedule)
         self.assertDictEqual(serializer.data, {
@@ -80,6 +90,31 @@ class TestAPI(TestDataMixin, APITestCase):
 
     def test_programmes_delete(self):
         response = self.client.delete('/api/2/programmes')
+        self.assertEqual(
+            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_episodes_get_all(self):
+        response = self.client.get('/api/2/episodes')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_episodes_get_by_programme(self):
+        response = self.client.get(
+            '/api/2/episodes', {'programme': self.programme.slug})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]['programme'], self.programme.slug)
+
+    def test_episodes_post(self):
+        response = self.client.post('/api/2/episodes')
+        self.assertEqual(
+            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_episodes_put(self):
+        response = self.client.put('/api/2/episodes')
+        self.assertEqual(
+            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_episodes_delete(self):
+        response = self.client.delete('/api/2/episodes')
         self.assertEqual(
             response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 

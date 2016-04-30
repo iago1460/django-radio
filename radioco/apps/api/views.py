@@ -1,4 +1,4 @@
-from radioco.apps.programmes.models import Programme
+from radioco.apps.programmes.models import Programme, Episode
 from radioco.apps.schedules.models import ScheduleBoard, Schedule, Transmission
 from django import forms
 from django import utils
@@ -16,6 +16,21 @@ class ProgrammeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Programme.objects.all()
     serializer_class = serializers.ProgrammeSerializer
     lookup_field = 'slug'
+
+
+class EpisodeFilter(filters.FilterSet):
+    class Meta:
+        model = Episode
+        fields = ('programme',)
+
+    programme = django_filters.CharFilter(name="programme__slug")
+
+
+class EpisodeViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Episode.objects.all()
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = EpisodeFilter
+    serializer_class = serializers.EpisodeSerializer
 
 
 class ScheduleFilter(filters.FilterSet):
