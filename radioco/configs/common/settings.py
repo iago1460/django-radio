@@ -144,6 +144,8 @@ LOCALE_PATHS = (
     os.path.join(SITE_ROOT, 'locale'),
 )
 
+LOGIN_URL = 'admin:index'
+
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(SITE_ROOT, 'static')
 MEDIA_URL = '/media/'
