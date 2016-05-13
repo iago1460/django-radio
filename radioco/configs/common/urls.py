@@ -57,6 +57,7 @@ admin.site.site_title = _('RadioCo site admin')
 
 
 urlpatterns = patterns('',
+    url(r'^$', 'radioco.apps.radio.views.index', name="home"),
     url(r'^login/$', 'radioco.apps.radio.views.user_login', name="login"),
     url(r'^logout/$', 'radioco.apps.radio.views.user_logout', name="logout"),
     url(r'^grappelli/', include('grappelli.urls')),
