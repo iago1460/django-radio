@@ -1,0 +1,161 @@
+{% extends "radio/base.html" %}
+{% load i18n staticfiles %}
+{% load global_settings_extras fb_versions %}
+{% get_global_model 'global_settings.SiteConfiguration' as site_config %}
+
+
+{% block meta_title %}{% trans "Home" %}{% endblock %}
+
+{% block page_title_wrapper %}{% endblock %}
+
+{% block content %}
+
+    <!-- *****************************************************************************************************************
+	 HEADERWRAP
+	 ***************************************************************************************************************** -->
+    <div id="headerwrap">
+        <div class="container">
+            <div class="row">
+                {% if transmission %}
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <h1>{% trans "On air"|upper %}</h1>
+                        <h3>
+                            <a href="{% url 'programmes:detail' transmission.slug %}">
+                                {{ transmission.name }}
+                            </a>
+                        </h3>
+                        <h5>
+                            <strong>{{ transmission.start|date:"G:i" }} - {{ transmission.end|date:"G:i" }}</strong>
+                        </h5>
+
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-success" role="progressbar"
+                                 aria-valuenow="{{ percentage }}" aria-valuemin="0" aria-valuemax="100"
+                                 style="width: {{ percentage }}%">
+                                <span class="sr-only">{{ percentage }}% Complete (success)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-lg-offset-2 himg">
+                        <a href="{% url 'programmes:detail' transmission.slug %}">
+                            <img src="{{ transmission.programme.photo.url }}" class="img-responsive img-thumbnail">
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <h3>{% trans 'There are currently no programmes on air' %}</h3>
+                        <h1>{% trans 'Check all our programmes' %}</h1>
+                        <h5><a href="{% url 'programmes:list' %}" class="btn btn-theme">{% trans 'See all' %}</a></h5>
+                    </div>
+                {% endif %}
+            </div><!-- /row -->
+        </div> <!-- /container -->
+    </div><!-- /headerwrap -->
+
+    <!-- *****************************************************************************************************************
+     SERVICE LOGOS
+     ***************************************************************************************************************** -->
+    <div id="service">
+        <div class="container">
+            <div class="row centered">
+                <div class="col-md-12">
+
+                    <h1>{% trans "playlist"|upper %} {{ now|date:"DATE_FORMAT"|upper }}</h1>
+
+                    <ul class="list-group">
+                        {% if schedule_now %}
+                            <li class="list-group-item list-group-item-info">
+                                <h4>
+                                    <span class="label label-danger">{% trans "Now"|upper %}</span>
+                                    <a href="{% url 'programmes:detail' schedule_now.programme.slug %}">
+                                        {{ schedule_now.programme.name }}
+                                    </a>
+                                </h4>
+                            </li>
+                        {% endif %}
+
+                        {% for schedule, date, episode in next_events %}
+                            <li class="list-group-item">
+                                <h4>
+                                    <span class="label label-success">{{ date|date:"G:i" }}</span>
+                                    {% if episode %}
+                                        <a href="{% url 'programmes:episode_detail' schedule.programme.slug episode.season episode.number_in_season %}">{{ schedule.programme.name }}</a>
+                                    {% else %}
+                                        <a href="{% url 'programmes:detail' schedule.programme.slug %}">{{ schedule.programme.name }}</a>
+                                    {% endif %}
+                                </h4>
+                            </li>
+                        {% endfor %}
+                        {% if not next_events and not schedule_now %}
+                            <h4>{% trans "There are currently no programmes"|upper %}</h4>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div><! --/service -->
+
+    <!-- *****************************************************************************************************************
+     PORTFOLIO SECTION
+     ***************************************************************************************************************** -->
+    {% if other_programmes %}
+        <div id="portfoliowrap">
+            {% trans 'Our programmes' as our_programmes %}
+            <h3>{{ our_programmes|upper }}</h3>
+
+            <div class="portfolio-centered">
+                <div class="recentitems portfolio">
+
+                    {% for programme in other_programmes %}
+                        <div class="portfolio-item ">
+                            <div class="he-wrap tpl6">
+                                <img src="{% version programme.photo 'item_overlap' %}" alt="">
+                                <div class="he-view">
+                                    <div class="bg a0" data-animate="fadeIn">
+                                        <h3 class="a1" data-animate="fadeInDown">{{ programme.name }}</h3>
+                                        <a href="{{ programme.get_absolute_url }}" class="dmbutton a2" data-animate="fadeInLeft">
+                                            <i class="fa fa-search"></i>
+                                        </a>
+                                        <a href="{% url 'programmes:rss' programme.slug %}" class="dmbutton a2" data-animate="fadeInRight">
+                                            <i class="fa fa-rss"></i>
+                                        </a>
+                                        <h5 class="a1" data-animate="fadeInUp">{{ programme.get_category_display }}</h5>
+                                    </div><!-- he bg -->
+                                </div><!-- he view -->
+                            </div><!-- he wrap -->
+                        </div><!-- end col-12 -->
+                    {% endfor %}
+
+                </div><!-- portfolio -->
+            </div><!-- portfolio container -->
+        </div><!--/Portfoliowrap -->
+    {% endif %}
+
+
+    <!-- *****************************************************************************************************************
+     MIDDLE CONTENT
+     ***************************************************************************************************************** -->
+
+    <div class="container mtb">
+        <div class="row">
+            <div class="col-lg-4 col-lg-offset-1">
+                <h4>{% trans 'More About Us.' %}</h4>
+                <p> {{ site_config.more_about_us }}</p>
+            </div>
+
+            <div class="col-lg-4 col-lg-offset-1">
+                <h4>{% trans 'Latest Episodes' %}</h4>
+                <div class="hline"></div>
+                {% for episode in latest_episodes %}
+                    <p>
+                        <a href="{{ episode.get_absolute_url }}">{% firstof episode.title|title episode|title %}</a>
+                    </p>
+                {% empty %}
+                    <p>{% trans "There are currently no podcast" %}</p>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div><! --/container -->
+
+{% endblock %}

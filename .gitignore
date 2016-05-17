@@ -1,5 +1,14 @@
-#django collectstatic files
-radio/media/_versions/
+# django collectstatic files
+radioco/media/_versions/
+radioco/components/
+radioco/static/
+
+# bower
+node_modules/
+
+# bower / js libs
+node_modules/
+radioco/components/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -22,14 +31,19 @@ local_settings.py
 env/
 venv/
 build/
-/dist/
-/django_radio.egg-info/
+dist/
+django_radio.egg-info/
+radioco.egg-info/
 sitepackages/
+pip-selfcheck.json
 
-#virtualenv
+# virtualenv
 bin/
+develop-eggs/
+eggs/
 include/
 lib/
+lib64
 local/
 
 # Installer logs
