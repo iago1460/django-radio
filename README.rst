@@ -2,6 +2,16 @@
 RadioCo
 ############
 
+.. image:: https://travis-ci.org/iago1460/django-radio.svg
+   :target: https://travis-ci.org/iago1460/django-radio
+
+.. image:: https://coveralls.io/repos/github/iago1460/django-radio/badge.svg?branch=master
+   :target: https://coveralls.io/github/iago1460/django-radio?branch=master
+
+.. image:: https://requires.io/github/iago1460/django-radio/requirements.svg?branch=master
+   :target: https://requires.io/github/iago1460/django-radio/requirements/?branch=master
+   :alt: Requirements Status
+
 RadioCo is a radio management application that makes easy scheduling, live recording, publishing...
 
 ********

@@ -1,0 +1,30 @@
+language: python
+sudo: false
+
+services:
+  - postgresql
+
+python:
+  - "2.7"
+
+env:
+  - DJANGO="django>=1.9,<1.10"
+  - DJANGO="django>=1.8,<1.9"
+  - DJANGO="django>=1.7,<1.8"
+
+branches:
+  only:
+    - master
+    - develop
+
+install:
+  - pip install $DJANGO
+  - pip install -r radio/configs/common/requirements.txt
+  - pip install coverage coveralls
+
+script:
+  - python manage.py test
+  - coverage run manage.py test
+
+after_success:
+  coveralls
