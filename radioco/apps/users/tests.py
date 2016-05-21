@@ -20,8 +20,8 @@ import datetime
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from apps.programmes.models import Programme, Role
-from apps.users.models import UserProfile
+from radioco.apps.programmes.models import Programme, Role
+from radioco.apps.users.models import UserProfile
 
 
 class UserProfileMethodTests(TestCase):
@@ -38,8 +38,7 @@ class UserProfileMethodTests(TestCase):
         user_profile = UserProfile(user=user, bio='my bio')
         user_profile.save()
         programme = Programme.objects.create(
-            name="Test programme", synopsis="This is a description", current_season=1,
-            _runtime=60, start_date=datetime.date(2014, 1, 31)
+            name="Test programme", synopsis="This is a description", current_season=1, _runtime=60
         )
         role = Role.objects.create(person=user, programme=programme)
         self.assertEqual(programme, Programme.objects.get(id=programme.id))

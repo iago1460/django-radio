@@ -20,7 +20,7 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 
-from apps.global_settings.models import SiteConfiguration, PodcastConfiguration, CalendarConfiguration
+from radioco.apps.global_settings.models import SiteConfiguration, PodcastConfiguration, CalendarConfiguration
 
 try:
     from django.utils.encoding import force_unicode

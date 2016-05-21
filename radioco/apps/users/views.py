@@ -18,8 +18,8 @@
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
 
-from apps.programmes.models import Role, NOT_SPECIFIED
-from apps.users.models import UserProfile
+from radioco.apps.programmes.models import Role, NOT_SPECIFIED
+from radioco.apps.users.models import UserProfile
 
 
 class UsersView(generic.ListView):

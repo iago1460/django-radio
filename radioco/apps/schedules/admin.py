@@ -23,7 +23,8 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 
-from apps.schedules.models import Schedule, ScheduleBoard
+from radioco.apps.programmes.models import Programme
+from radioco.apps.schedules.models import Schedule, ScheduleBoard
 
 try:
     from django.utils.encoding import force_unicode
@@ -31,12 +32,12 @@ except ImportError:
     from django.utils.encoding import force_text as force_unicode
 
 
+@admin.register(ScheduleBoard)
 class ScheduleBoardAdmin(admin.ModelAdmin):
     list_display = ('name', 'start_date', 'end_date')
     list_filter = ['start_date', 'end_date']
     search_fields = ['name']
     ordering = ['start_date']
-    inlines = []
     actions = ['copy_ScheduleBoard']
 
     def copy_ScheduleBoard(self, request, queryset):
@@ -78,42 +79,13 @@ class ScheduleBoardAdmin(admin.ModelAdmin):
     copy_ScheduleBoard.short_description = _("Make a Copy of calendar")
 
 
-class FullcalendarAdmin(admin.ModelAdmin):
-    def schedule_detail(self, request):
-        return HttpResponseRedirect(reverse("dashboard:schedule_editor"))
+@admin.register(Schedule)
+class ScheduleAdmin(admin.ModelAdmin):
+    change_list_template = "admin/schedules/calendar.html"
+
+    def changelist_view(self, request, extra_context=dict()):
+        extra_context['schedule_boards'] = ScheduleBoard.objects.all()
+        return super(ScheduleAdmin, self).changelist_view(request, extra_context=extra_context)
 
     def has_add_permission(self, request):
         return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-    def get_urls(self):
-        urls = super(FullcalendarAdmin, self).get_urls()
-        url_name_prefix = '%(app_name)s_%(model_name)s' % {
-            'app_name': self.model._meta.app_label,
-            'model_name': self.model._meta.model_name,
-        }
-        custom_urls = patterns(
-            '', url(
-                r'^$',
-                self.admin_site.admin_view(self.schedule_detail),
-                {},
-                # self.admin_site.admin_view(self.change_view),
-                # {'object_id': '2'},
-                name='%s_change' % url_name_prefix
-            ),
-        )
-        # By inserting the custom URLs first, we overwrite the standard URLs.
-        return custom_urls + urls
-
-    def response_change(self, request, obj):
-        msg = _('{obj} was changed successfully.'.format(obj=force_unicode(obj)))
-        if '_continue' in request.POST:
-            return HttpResponseRedirect(request.path)
-        else:
-            return HttpResponseRedirect("../../")
-
-
-admin.site.register(ScheduleBoard, ScheduleBoardAdmin)
-admin.site.register(Schedule, FullcalendarAdmin)

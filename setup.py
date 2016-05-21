@@ -19,7 +19,7 @@ import os
 
 from setuptools import setup, find_packages
 
-import radio
+import radioco
 
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
@@ -27,8 +27,8 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 setup(
     author='Iago Veloso Abalo',
     author_email='author@radioco.org',
-    name='django-radio',
-    version=radio.__version__,
+    name='radioco',
+    version=radioco.__version__,
     description='This app provides an easy way to set up your radio',
     long_description=open(os.path.join(os.path.dirname(__file__), 'README.rst')).read(),
     url='http://radioco.org/',
@@ -53,12 +53,18 @@ setup(
         'Topic :: Software Development :: Libraries :: Application Frameworks',
     ],
     install_requires=[
-        'Django>=1.7',
+        'Django<1.9',
         'Pillow',
+        'django-bootstrap3',
+        'django-bower',
+        'django-ckeditor',
+        'django-disqus',
+        'django-filebrowser',
+        'django-filter',
+        'django-grappelli',
+        'django-recurrence',
+        'djangorestframework',
         'python-dateutil',
         'pytz',
-        'django-bootstrap3',
-        'djangorestframework',
-        'django-ckeditor',
     ],
 )

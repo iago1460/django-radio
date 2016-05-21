@@ -15,6 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+# XXX this code was missed to review, assume there are several bugs. REVIEW!
+# Delete me when done!
+
+
 import datetime
 
 from dateutil.relativedelta import relativedelta
@@ -23,8 +27,9 @@ from django.contrib import admin
 from django.forms import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
-from apps.programmes.models import Programme, Podcast, Episode, Role, Participant
-from apps.schedules.models import Schedule
+from radioco.apps.programmes.models import Programme, Podcast, Episode, Role, Participant
+from radioco.apps.schedules.models import Schedule
+from radioco.apps.schedules import utils
 
 
 # PROGRAMME
@@ -86,20 +91,16 @@ class NonStaffRoleInline(admin.StackedInline):
 
 
 class NonStaffProgrammeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'start_date', 'end_date')
-    list_filter = ['start_date']
+    list_display = ('name',)
     search_fields = ['name']
     inlines = [NonStaffRoleInline]
 
     def get_form(self, request, obj=None, **kwargs):
-        kwargs['fields'] = [
-            'name', 'start_date', 'end_date', 'synopsis', 'category', 'current_season',
-            'photo', 'language', '_runtime'
-        ]
+        kwargs['fields'] = ['name', 'synopsis', 'category', 'current_season', 'photo', 'language', '_runtime']
         if not obj or request.user.has_perm('programmes.add_programme'):
             self.exclude = ['slug', ]
         else:
-            self.exclude = ['slug', 'start_date', 'end_date', '_runtime']
+            self.exclude = ['slug', '_runtime']
         return super(NonStaffProgrammeAdmin, self).get_form(request, obj, **kwargs)
 
     def save_formset(self, request, form, formset, change):
@@ -184,7 +185,7 @@ class NonStaffEpisodeAdminForm(forms.ModelForm):
         programme = self.cleaned_data['programme']
         now = datetime.datetime.now()
         if not self.instance.pk:
-            last_episode = Episode.get_last_episode(programme)
+            last_episode = Episode.objects.last(programme)
             if last_episode:
                 if last_episode.issue_date:
                     after = last_episode.issue_date + programme.runtime
@@ -194,8 +195,10 @@ class NonStaffEpisodeAdminForm(forms.ModelForm):
                     raise forms.ValidationError(_('There are no available schedules.'))
             else:
                 after = now
-            schedule, date = Schedule.get_next_date(programme=programme, after=after)
-            if not date:
+
+            try:
+                utils.available_dates(programme, after).next()
+            except StopIteration:
                 raise forms.ValidationError(_('There are no available schedules.'))
         return programme
 
@@ -263,7 +266,7 @@ class NonStaffEpisodeAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not obj.pk:
             programme = obj.programme
-            last_episode = Episode.get_last_episode(programme)
+            last_episode = Episode.objects.last(programme)
             now = datetime.datetime.now()
             if last_episode:
                 after = last_episode.issue_date + programme.runtime
@@ -271,8 +274,10 @@ class NonStaffEpisodeAdmin(admin.ModelAdmin):
                     after = now
             else:
                 after = now
-            schedule, date = Schedule.get_next_date(programme=programme, after=after)
-            Episode.create_episode(episode=obj, date=date, programme=programme, last_episode=last_episode)
+            date = utils.available_dates(programme, after).next()
+            Episode.objects.create_episode(
+                episode=obj, last_episode=last_episode,
+                date=date, programme=programme)
         else:
             obj.save()
 

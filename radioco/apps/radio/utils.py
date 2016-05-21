@@ -1,10 +1,10 @@
-import datetime
-
+from radioco.apps.global_settings.models import SiteConfiguration
+from radioco.apps.programmes.models import Programme, Episode, Role, CONTRIBUTOR, Podcast
+from radioco.apps.schedules.models import Schedule, ScheduleBoard, MO, TU, WE, TH, FR, SA, SU
+from radioco.apps.schedules.utils import rearrange_episodes
 from django.contrib.auth.models import User
-
-from apps.global_settings.models import SiteConfiguration
-from apps.programmes.models import Programme, Episode, Role, CONTRIBUTOR, Podcast
-from apps.schedules.models import Schedule, ScheduleBoard, MO, TU, WE, TH, FR, SA, SU
+import datetime
+import recurrence
 
 
 def create_example_data():
@@ -33,8 +33,12 @@ def create_example_data():
     site_config.save()
 
     # Example schedule
-    start_date = datetime.date(2015, 1, 1)
-    schedule_board, created = ScheduleBoard.objects.get_or_create(name='Example', start_date=start_date)
+    schedule_board, created = ScheduleBoard.objects.get_or_create(
+        name='Example', slug='example', start_date=datetime.date(2015, 1, 1))
+
+    # Another example schedule
+    ScheduleBoard.objects.get_or_create(
+        name='Another example', start_date=datetime.date(2015, 6, 1))
 
     # Programme 1
     synopsis = '''
@@ -44,7 +48,6 @@ def create_example_data():
     '''
     programme, created = Programme.objects.get_or_create(
         name='Morning News', defaults={
-            'start_date': start_date,
             'synopsis': synopsis,
             'language': 'en',
             'photo': 'defaults/example/radio_1.jpg',
@@ -54,16 +57,16 @@ def create_example_data():
         }
     )
 
-    start_hour = datetime.time(8, 00, 00)
+    recurrences = recurrence.Recurrence(
+        dtstart=datetime.datetime(2015, 1, 1, 8, 0, 0),
+        rrules=[recurrence.Rule(recurrence.DAILY)])
 
-    for day in [MO, TU, WE, TH, FR, SA, SU]:
-        Schedule.objects.get_or_create(
-            programme=programme,
-            day=day,
-            start_hour=start_hour,
-            type='L',
-            schedule_board=schedule_board
-        )
+
+    Schedule.objects.get_or_create(
+        programme=programme,
+        type='L',
+        schedule_board=schedule_board,
+        recurrences=recurrences)
 
     for number in range(1, 4):
         episode, created = Episode.objects.get_or_create(
@@ -109,27 +112,24 @@ def create_example_data():
     for programme_counter in range(1, 5):
         programme, created = Programme.objects.get_or_create(
             name=titles[programme_counter],
-            start_date=start_date,
             synopsis=synopsis,
             language='en',
             photo='defaults/example/radio_%s.jpg' % str(programme_counter + 1),
-            current_season=1,
+            current_season=7,
             category='News & Politics',
             _runtime=60
         )
 
-        start_date = datetime.datetime(2015, 1, 1, 10, 00, 00)
-        start_hour = start_date + datetime.timedelta(hours=programme_counter)
-        start_hour = start_hour.time()
+        recurrences = recurrence.Recurrence(
+            dtstart=(datetime.datetime(2015, 1, 1, 10, 0, 0) +
+                datetime.timedelta(hours=programme_counter)),
+            rrules=[recurrence.Rule(recurrence.DAILY)])
 
-        for day in [MO, TU, WE, TH, FR, SA, SU]:
-            Schedule.objects.get_or_create(
-                programme=programme,
-                day=day,
-                start_hour=start_hour,
-                type='L',
-                schedule_board=schedule_board
-            )
+        Schedule.objects.get_or_create(
+            programme=programme,
+            type='L',
+            schedule_board=schedule_board,
+            recurrences=recurrences)
 
         for season in range(1, 8):
             for number in range(1, 6):
@@ -140,3 +140,6 @@ def create_example_data():
                     season=season,
                     number_in_season=number,
                 )
+
+    for programme in Programme.objects.all():
+        rearrange_episodes(programme, datetime.datetime(1970, 1, 1))

@@ -23,6 +23,7 @@ from django.conf import settings
 from django.contrib.auth import (
     login, logout, authenticate
 )
+from django import utils
 from django.contrib.auth.decorators import user_passes_test
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
@@ -32,32 +33,37 @@ from rest_framework.authentication import BasicAuthentication, TokenAuthenticati
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
-from apps.global_settings.models import PodcastConfiguration
-from apps.programmes.models import Podcast, Programme, Episode
-from apps.radio.forms import LoginForm
-from apps.schedules.models import Schedule
-from apps.schedules.views import __get_events
+from radioco.apps.global_settings.models import PodcastConfiguration
+from radioco.apps.programmes.models import Podcast, Programme, Episode
+from radioco.apps.radio.forms import LoginForm
+from radioco.apps.schedules.models import Schedule, Transmission
 
 
 def index(request):
-    now = datetime.datetime.now()
-    schedule_now, start_time = Schedule.schedule(now)
-    if schedule_now:
-        end_time = start_time + schedule_now.runtime()
-        percentage = str(round((now - start_time).total_seconds() / schedule_now.runtime().total_seconds() * 100))
-    else:
+    now = utils.timezone.now()
+    transmissions = Transmission.at(now)
+    try:
+        transmission = transmissions.next()
+        end_time = transmission.end
+        percentage = round(
+            (now - transmission.start).total_seconds() /
+            (transmission.end - transmission.start).total_seconds() * 100)
+
+    except StopIteration:
+        transmission = None
         end_time = now
         percentage = None
 
-    next_events = __get_events(end_time, end_time + relativedelta(hours=+16))
+    next_transmissions = Transmission.between(
+        end_time, end_time + datetime.timedelta(hours=+16))
 
     other_programmes = Programme.objects.order_by('?').all()[:10]
     latest_episodes = Episode.objects.filter(podcast__isnull=False).order_by('-issue_date')[:5]
 
     context = {
-        'schedule_now': schedule_now, 'start_time': start_time, 'percentage': percentage,
-        'end_time': end_time, 'now': now, 'next_events': next_events, 'other_programmes': other_programmes,
-        'latest_episodes': latest_episodes
+        'now': now, 'percentage': percentage,
+        'transmission': transmission, 'next_transmissions': next_transmissions,
+        'other_programmes': other_programmes, 'latest_episodes': latest_episodes
     }
     return render(request, 'radio/index.html', context)
 

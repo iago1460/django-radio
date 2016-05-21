@@ -18,7 +18,7 @@ def change_photo_url(apps, schema_editor):
 # LookupError: No installed app with label 'users'.
 
 def change_avatar_url(apps, schema_editor):
-    UserProfile = apps.get_model("users", "UserProfile")
+    UserProfile = radioco.apps.get_model("users", "UserProfile")
     for user in UserProfile.objects.all():
         if user.avatar.name == '/static/radio/images/default-userprofile-avatar.jpg':
             user.avatar = static('radio/images/default-userprofile-avatar.jpg')

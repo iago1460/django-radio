@@ -18,9 +18,9 @@
 from django.conf.urls import patterns, url
 from django.views.generic import ListView
 
-from apps.programmes import views
-from apps.programmes.feeds import RssProgrammeFeed
-from apps.programmes.models import Programme
+from radioco.apps.programmes import views
+from radioco.apps.programmes.feeds import RssProgrammeFeed
+from radioco.apps.programmes.models import Programme
 
 urlpatterns = patterns('',
    url(

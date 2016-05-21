@@ -24,7 +24,7 @@ from django.utils.translation import ugettext as _u
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.authtoken.models import Token
 
-from apps.schedules.models import WEEKDAY_CHOICES
+from radioco.apps.schedules.models import WEEKDAY_CHOICES
 
 
 class SingletonModelManager(models.Manager):

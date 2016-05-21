@@ -19,7 +19,7 @@ import datetime
 
 from django.shortcuts import render, get_object_or_404
 
-from apps.programmes.models import Episode, Programme, Role, Participant, NOT_SPECIFIED
+from radioco.apps.programmes.models import Episode, Programme, Role, Participant, NOT_SPECIFIED
 
 
 def programme_detail(request, slug):

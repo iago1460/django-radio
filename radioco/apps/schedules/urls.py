@@ -17,9 +17,8 @@
 
 from django.conf.urls import patterns, url
 
-from apps.schedules import views
+from radioco.apps.schedules import views
 
 urlpatterns = [
     url(r'^$', views.schedule_list, name='list'),
-    url(r'^feed_schedules/', views.feed_schedules, name='feed_schedules'),
 ]

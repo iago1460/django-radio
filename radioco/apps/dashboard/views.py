@@ -26,10 +26,10 @@ from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 
-from apps.dashboard.forms import ScheduleForm
-from apps.global_settings.models import CalendarConfiguration
-from apps.programmes.models import Programme, Episode
-from apps.schedules.models import Schedule, ScheduleBoard
+from radioco.apps.dashboard.forms import ScheduleForm
+from radioco.apps.global_settings.models import CalendarConfiguration
+from radioco.apps.programmes.models import Programme, Episode
+from radioco.apps.schedules.models import Schedule, ScheduleBoard
 
 
 # FullCalendar

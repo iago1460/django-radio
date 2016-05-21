@@ -48,6 +48,7 @@ INSTALLED_APPS = (
 
     'grappelli',
     'filebrowser',
+    'djangobower',
 
     'django.contrib.admin',
     'django.contrib.sitemaps',
@@ -58,24 +59,25 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'disqus',
+    'recurrence',
 
     # Local Project Apps
-    'apps.users',
-    'apps.programmes',
-    'apps.dashboard',
-    'apps.schedules',
-    'apps.global_settings',
-    'apps.radio',
+    'radioco.apps.api',
+    'radioco.apps.users',
+    'radioco.apps.programmes',
+    'radioco.apps.schedules',
+    'radioco.apps.global_settings',
+    'radioco.apps.radio',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -86,7 +88,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.tz',
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
-    'apps.radio.context_processors.settings',
+    'radioco.apps.radio.context_processors.settings',
 )
 
 TEMPLATE_LOADERS = (
@@ -109,7 +111,7 @@ TEMPLATES = [
     },
 ]
 
-ROOT_URLCONF = 'radio.configs.common.urls'
+ROOT_URLCONF = 'radioco.configs.common.urls'
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
@@ -142,14 +144,26 @@ LOCALE_PATHS = (
     os.path.join(SITE_ROOT, 'locale'),
 )
 
+LOGIN_URL = 'admin:index'
+
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(SITE_ROOT, 'static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
+BOWER_COMPONENTS_ROOT = os.path.join(SITE_ROOT, 'components')
+
+BOWER_PATH = os.path.join(SITE_ROOT, '..', 'node_modules', '.bin', 'bower')
+
+BOWER_INSTALLED_APPS = (
+    'jqueryui#1.11.4',
+    'jquery#2.2.1',
+    'fullcalendar#2.6.1',
+)
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'djangobower.finders.BowerFinder',
 )
 
 SITE_ID = 1
