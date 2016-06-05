@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from radio.configs.common.settings import *
+from radioco.configs.common.settings import *
 
 INSTALLED_APPS += (
     'debug_toolbar',

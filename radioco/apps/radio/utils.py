@@ -57,16 +57,16 @@ def create_example_data():
         }
     )
 
-    recurrences = recurrence.Recurrence(
-        dtstart=datetime.datetime(2015, 1, 1, 8, 0, 0),
-        rrules=[recurrence.Rule(recurrence.DAILY)])
-
-
-    Schedule.objects.get_or_create(
-        programme=programme,
-        type='L',
-        schedule_board=schedule_board,
-        recurrences=recurrences)
+    # recurrences = recurrence.Recurrence(
+    #     dtstart=datetime.datetime(2015, 1, 1, 8, 0, 0),
+    #     rrules=[recurrence.Rule(recurrence.DAILY)])
+    #
+    #
+    # Schedule.objects.get_or_create(
+    #     programme=programme,
+    #     type='L',
+    #     schedule_board=schedule_board,
+    #     recurrences=recurrences)
 
     for number in range(1, 4):
         episode, created = Episode.objects.get_or_create(
@@ -112,34 +112,36 @@ def create_example_data():
     for programme_counter in range(1, 5):
         programme, created = Programme.objects.get_or_create(
             name=titles[programme_counter],
-            synopsis=synopsis,
-            language='en',
-            photo='defaults/example/radio_%s.jpg' % str(programme_counter + 1),
-            current_season=7,
-            category='News & Politics',
-            _runtime=60
+            defaults={
+                'synopsis': synopsis,
+                'language': 'en',
+                'photo': 'defaults/example/radio_%s.jpg' % str(programme_counter + 1),
+                'current_season': 7,
+                'category': 'News & Politics',
+                '_runtime': 60
+            }
         )
 
-        recurrences = recurrence.Recurrence(
-            dtstart=(datetime.datetime(2015, 1, 1, 10, 0, 0) +
-                datetime.timedelta(hours=programme_counter)),
-            rrules=[recurrence.Rule(recurrence.DAILY)])
-
-        Schedule.objects.get_or_create(
-            programme=programme,
-            type='L',
-            schedule_board=schedule_board,
-            recurrences=recurrences)
-
-        for season in range(1, 8):
-            for number in range(1, 6):
-                Episode.objects.get_or_create(
-                    title='Episode %s' % number,
-                    programme=programme,
-                    summary=synopsis,
-                    season=season,
-                    number_in_season=number,
-                )
+        # recurrences = recurrence.Recurrence(
+        #     dtstart=(datetime.datetime(2015, 1, 1, 10, 0, 0) +
+        #         datetime.timedelta(hours=programme_counter)),
+        #     rrules=[recurrence.Rule(recurrence.DAILY)])
+        #
+        # Schedule.objects.get_or_create(
+        #     programme=programme,
+        #     type='L',
+        #     schedule_board=schedule_board,
+        #     recurrences=recurrences)
+        if created:
+            for season in range(1, 8):
+                for number in range(1, 6):
+                    Episode.objects.get_or_create(
+                        title='Episode %s' % number,
+                        programme=programme,
+                        summary=synopsis,
+                        season=season,
+                        number_in_season=number,
+                    )
 
     for programme in Programme.objects.all():
         rearrange_episodes(programme, datetime.datetime(1970, 1, 1))

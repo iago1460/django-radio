@@ -1,0 +1,14 @@
+Django>=1.8, <1.9
+Pillow
+python-dateutil
+pytz
+django-grappelli>=2.7.3
+django-filebrowser>=3.6.1
+djangorestframework
+django-bootstrap3
+django-ckeditor==5.0.2
+fabric
+django-disqus
+django-bower==5.1.0
+django-filter==0.13.0
+django-recurrence==1.2.0
