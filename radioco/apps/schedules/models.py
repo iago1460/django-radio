@@ -254,7 +254,7 @@ class Transmission(object):
                 yield cls(schedule, date)
 
     @classmethod
-    def between(cls, after, before, schedules=None):
+    def between(cls, after, before, schedules=None):  # FIXME: the results should be sorted by date?
         if schedules is None:
             schedules = Schedule.objects.all()
 

@@ -57,16 +57,16 @@ def create_example_data():
         }
     )
 
-    # recurrences = recurrence.Recurrence(
-    #     dtstart=datetime.datetime(2015, 1, 1, 8, 0, 0),
-    #     rrules=[recurrence.Rule(recurrence.DAILY)])
-    #
-    #
-    # Schedule.objects.get_or_create(
-    #     programme=programme,
-    #     type='L',
-    #     schedule_board=schedule_board,
-    #     recurrences=recurrences)
+    recurrences = recurrence.Recurrence(
+        dtstart=datetime.datetime(2015, 1, 1, 8, 0, 0),
+        rrules=[recurrence.Rule(recurrence.DAILY)])
+
+
+    Schedule.objects.get_or_create(
+        programme=programme,
+        type='L',
+        schedule_board=schedule_board,
+        recurrences=recurrences)
 
     for number in range(1, 4):
         episode, created = Episode.objects.get_or_create(
@@ -122,20 +122,21 @@ def create_example_data():
             }
         )
 
-        # recurrences = recurrence.Recurrence(
-        #     dtstart=(datetime.datetime(2015, 1, 1, 10, 0, 0) +
-        #         datetime.timedelta(hours=programme_counter)),
-        #     rrules=[recurrence.Rule(recurrence.DAILY)])
-        #
-        # Schedule.objects.get_or_create(
-        #     programme=programme,
-        #     type='L',
-        #     schedule_board=schedule_board,
-        #     recurrences=recurrences)
+        recurrences = recurrence.Recurrence(
+            dtstart=(datetime.datetime(2015, 1, 1, 10, 0, 0) +
+                datetime.timedelta(hours=programme_counter)),
+            rrules=[recurrence.Rule(recurrence.DAILY)])
+
+        Schedule.objects.get_or_create(
+            programme=programme,
+            type='L',
+            schedule_board=schedule_board,
+            recurrences=recurrences)
+
         if created:
             for season in range(1, 8):
                 for number in range(1, 6):
-                    Episode.objects.get_or_create(
+                    Episode.objects.create(
                         title='Episode %s' % number,
                         programme=programme,
                         summary=synopsis,

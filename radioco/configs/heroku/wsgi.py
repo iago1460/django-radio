@@ -20,6 +20,6 @@ import os
 from django.core.wsgi import get_wsgi_application
 from dj_static import Cling
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "radio.configs.heroku.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "radioco.configs.heroku.settings")
 
 application = Cling(get_wsgi_application())
