@@ -546,12 +546,15 @@ class ScheduleUtilsTests(TestDataMixin, TestCase):
     def test_rearrenge_episodes(self):
         utils.rearrange_episodes(self.programme, datetime.datetime(2015, 1, 1))
         self.assertListEqual(
-            map(lambda e: e.issue_date, self.programme.episode_set.all()[:5]),
-            [datetime.datetime(2015, 1, 1, 14, 0),
-             datetime.datetime(2015, 1, 2, 14, 0),
-             datetime.datetime(2015, 1, 3, 14, 0),
-             datetime.datetime(2015, 1, 4, 14, 0),
-             datetime.datetime(2015, 1, 5, 14, 0)])
+            map(lambda e: e.issue_date, self.programme.episode_set.all().order_by('issue_date')[:5]),
+            [
+                datetime.datetime(2015, 1, 1, 14, 0),
+                datetime.datetime(2015, 1, 2, 14, 0),
+                datetime.datetime(2015, 1, 3, 14, 0),
+                datetime.datetime(2015, 1, 4, 14, 0),
+                datetime.datetime(2015, 1, 5, 14, 0)
+            ]
+        )
 
     def test_rearrenge_episodes_new_schedule(self):
         Schedule.objects.create(
@@ -565,9 +568,12 @@ class ScheduleUtilsTests(TestDataMixin, TestCase):
 
         utils.rearrange_episodes(self.programme, datetime.datetime(2015, 1, 1))
         self.assertListEqual(
-            map(lambda e: e.issue_date, self.programme.episode_set.all()[:5]),
-            [datetime.datetime(2015, 1, 1, 14, 0),
-             datetime.datetime(2015, 1, 2, 14, 0),
-             datetime.datetime(2015, 1, 3, 14, 0),
-             datetime.datetime(2015, 1, 3, 16, 0),
-             datetime.datetime(2015, 1, 4, 14, 0)])
+            map(lambda e: e.issue_date, self.programme.episode_set.all().order_by('issue_date')[:5]),
+            [
+                datetime.datetime(2015, 1, 1, 14, 0),
+                datetime.datetime(2015, 1, 2, 14, 0),
+                datetime.datetime(2015, 1, 3, 14, 0),
+                datetime.datetime(2015, 1, 3, 16, 0),
+                datetime.datetime(2015, 1, 4, 14, 0)
+            ]
+        )
