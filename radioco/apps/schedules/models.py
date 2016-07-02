@@ -13,6 +13,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import heapq
+from functools import partial
+from itertools import imap
 
 from radioco.apps.programmes.models import Programme, Episode
 from dateutil import rrule
@@ -254,13 +257,24 @@ class Transmission(object):
                 yield cls(schedule, date)
 
     @classmethod
-    def between(cls, after, before, schedules=None):  # FIXME: the results should be sorted by date?
+    def between(cls, after, before, schedules=None):
+        """
+        Return a list of Transmissions sorted by date
+        """
         if schedules is None:
             schedules = Schedule.objects.all()
 
-        for schedule in schedules:
-            for date in schedule.dates_between(after, before):
-                yield cls(schedule, date)
+        transmission_dates = [
+            imap(partial(_return_tuple, item2=schedule), schedule.dates_between(after, before))
+            for schedule in schedules
+        ]
+        sorted_transmission_dates = heapq.merge(*transmission_dates)
+        for sorted_transmission_date, schedule in sorted_transmission_dates:
+            yield cls(schedule, sorted_transmission_date)
+
+
+def _return_tuple(item1, item2):
+    return item1, item2
 
 #def __get_events(after, before, json_mode=False):
 #    background_colours = {"L": "#F9AD81", "B": "#C4DF9B", "S": "#8493CA"}

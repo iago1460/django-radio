@@ -40,21 +40,24 @@ class TestSerializers(TestDataMixin, TestCase):
 
     def test_schedule(self):
         serializer = serializers.ScheduleSerializer(self.schedule)
+        schedule_id = self.schedule.id
         self.assertDictEqual(serializer.data, {
             'title': u'Classic hits', 'source': None,
             'start': '2015-01-01T14:00:00',
             'end': datetime.datetime(2015, 1, 1, 15, 0),
             'schedule_board': u'example',
-            'type': 'L', 'id': 5,
+            'type': 'L', 'id': schedule_id,
             'programme': u'classic-hits'})
 
     def test_transmission(self):
-        serializer = serializers.TransmissionSerializer(Transmission(
-            self.schedule, datetime.datetime(2015, 1, 6, 14, 0, 0)))
+        serializer = serializers.TransmissionSerializer(
+            Transmission(self.schedule, datetime.datetime(2015, 1, 6, 14, 0, 0))
+        )
+        schedule_id = self.schedule.id
         self.assertDictEqual(serializer.data, {
             'start': '2015-01-06T14:00:00',
             'end': '2015-01-06T15:00:00',
-            'schedule': 5,
+            'schedule': schedule_id,
             'name': u'Classic hits',
             'slug': u'classic-hits',
             'url': u'/programmes/classic-hits/'})
