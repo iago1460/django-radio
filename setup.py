@@ -55,7 +55,6 @@ setup(
     install_requires=[
         'Django<1.9',
         'Pillow',
-        'django-bootstrap3',
         'django-bower',
         'django-ckeditor',
         'django-disqus',

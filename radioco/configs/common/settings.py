@@ -55,7 +55,6 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
 
     'ckeditor',
-    'bootstrap3',
     'rest_framework',
     'rest_framework.authtoken',
     'disqus',
