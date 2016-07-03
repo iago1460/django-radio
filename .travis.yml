@@ -13,7 +13,7 @@ branches:
     - develop
 
 install:
-  - pip install -r radio/configs/common/requirements.txt
+  - pip install -r radioco/configs/common/requirements.txt
   - pip install coverage coveralls
 
 script:
