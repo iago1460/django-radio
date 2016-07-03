@@ -6,6 +6,8 @@ env.heroku_config_path = 'radio/configs/heroku'
 
 
 def quickstart():
+    local('npm install bower')  # UBUNTU FIX: sudo apt-get install nodejs-legacy
+    local('python manage.py bower install')
     local('python manage.py migrate')
     local('python manage.py create_example_data')
     local('python manage.py runserver')
