@@ -273,7 +273,7 @@ class Participant(models.Model):
         )
 
     def __unicode__(self):
-        return str(self.episode) + ": " + self.person.username
+        return u"%s: %s" % (self.episode, self.person.username)
 
 
 class Role(models.Model):
@@ -292,7 +292,7 @@ class Role(models.Model):
         )
 
     def __unicode__(self):
-        return self.programme.name + ": " + self.person.username
+        return u"%s: %s" % (self.programme.name, self.person.username)
 
 
 class Podcast(models.Model):
