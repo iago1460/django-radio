@@ -1,3 +1,6 @@
+from recurrence import Recurrence
+
+from radioco.apps.api.viewsets import ModelViewSetWithoutCreate
 from radioco.apps.programmes.models import Programme, Episode
 from radioco.apps.schedules.models import ScheduleBoard, Schedule, Transmission
 from django import forms
@@ -80,11 +83,10 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
         data.is_valid()
 
         transmissions = Transmission.between(
-            datetime.datetime.combine(
-                data.cleaned_data.get('after'), datetime.time(0)),
-            datetime.datetime.combine(
-                data.cleaned_data.get('before'), datetime.time(23, 59, 59)),
-            schedules=self.filter_queryset(self.get_queryset()))
+            datetime.datetime.combine(data.cleaned_data.get('after'), datetime.time(0)),
+            datetime.datetime.combine(data.cleaned_data.get('before'), datetime.time(23, 59, 59)),
+            schedules=self.filter_queryset(self.get_queryset())
+        )
         serializer = self.serializer_class(transmissions, many=True)
         return Response(serializer.data)
 
@@ -95,3 +97,48 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = serializers.TransmissionSerializer(
             transmissions, many=True)
         return Response(serializer.data)
+
+
+class TransmissionOperationViewSet(ModelViewSetWithoutCreate):
+    permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
+    serializer_class = serializers.TransmissionSerializerLight
+    queryset = Schedule.objects.all()
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response('ok')
+
+    def perform_update(self, serializer):
+        schedule = serializer.instance
+        start = serializer.validated_data['start']
+        new_start = serializer.validated_data['new_start']
+        if start == new_start:
+            return
+
+        schedule_excluded = schedule.date_is_excluded(new_start)
+        if schedule_excluded:
+            schedule_excluded.include_date(new_start)
+            schedule_excluded.save()
+
+            if schedule.has_recurrences():
+                schedule.exclude_date(start)
+                schedule.save()
+            else:
+                schedule.delete()
+        else:
+            if schedule.has_recurrences():
+                schedule.exclude_date(start)
+                schedule.save()
+                new_schedule = Schedule.objects.get(id=schedule.id)
+                new_schedule.id = None
+            else:
+                new_schedule = schedule
+
+            new_schedule.start_date = new_start
+            new_schedule.recurrences = Recurrence()
+            new_schedule.from_collection = schedule
+            new_schedule.save()

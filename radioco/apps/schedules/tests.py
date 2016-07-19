@@ -49,7 +49,6 @@ class ScheduleValidationTests(TestDataMixin, TestCase):
             schedule.clean_fields()
 
 
-
 class ScheduleModelTests(TestDataMixin, TestCase):
     def setUp(self):
         self.schedule_board = ScheduleBoard.objects.create(

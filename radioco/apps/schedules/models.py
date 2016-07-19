@@ -136,6 +136,14 @@ class Schedule(models.Model):
     type = models.CharField(verbose_name=_("type"), choices=EMISSION_TYPE, max_length=1)
     schedule_board = models.ForeignKey(ScheduleBoard, verbose_name=_("schedule board"))
     recurrences = RecurrenceField(verbose_name=_("recurrences"))
+
+    start_date = models.DateTimeField(verbose_name=_('start date'))
+    end_date = models.DateTimeField(blank=True, null=True, verbose_name=_('end date'))
+
+    from_collection = models.ForeignKey(
+        'self', blank=True, null=True, on_delete=models.SET_NULL, related_name='child_schedules'
+    )
+
     source = models.ForeignKey(
         'self', blank=True, null=True, on_delete=models.SET_NULL, verbose_name=_("source"),
         help_text=_("It is used when is a broadcast.")
@@ -145,21 +153,36 @@ class Schedule(models.Model):
     def runtime(self):
         return self.programme.runtime
 
+    def date_is_excluded(self, date):
+        for schedule in Schedule.objects.filter(programme=self.programme, type=self.type):
+            if date in schedule.recurrences.exdates:
+                return schedule
+        return None
+
+    def exclude_date(self, date):
+        self.recurrences.exdates.append(date)
+
+    def include_date(self, date):
+        self.recurrences.exdates.remove(date)
+
+    def has_recurrences(self):
+        return self.recurrences
+
     @property
     def start(self):
         if not self.schedule_board.start_date:
-            return self.rr_start
+            return self.start_date
         else:
             start_date_board = datetime.datetime.combine(
                 self.schedule_board.start_date, datetime.time(0))
         # XXX this does not make any sense
-        if not self.rr_start:
+        if not self.start_date:
             return start_date_board
-        return max(start_date_board, self.rr_start)
+        return max(start_date_board, self.start_date)
 
     @start.setter
     def start(self, start_date):
-        self.rr_start = start_date
+        self.start_date = start_date
 
     @property
     def end(self):
@@ -173,30 +196,21 @@ class Schedule(models.Model):
         return min(end_date_board, self.rr_end)
 
     @property
-    def rr_start(self):
-        return self.recurrences.dtstart
-
-    @rr_start.setter
-    def rr_start(self, start_date):
-        self.recurrences.dtstart = start_date
-
-    @property
     def rr_end(self):
         return self.recurrences.dtend
-
 
     def dates_between(self, after, before):
         """
             Return a sorted list of dates between after and before
         """
         return self.recurrences.between(
-            self._merge_after(after), self._merge_before(before), inc=True)
+            self._merge_after(after), self._merge_before(before), inc=True, dtstart=self.start_date)
 
     def date_before(self, before):
-        return self.recurrences.before(self._merge_before(before), inc=True)
+        return self.recurrences.before(self._merge_before(before), inc=True, dtstart=self.start_date)
 
     def date_after(self, after, inc=True):
-        return self.recurrences.after(self._merge_after(after), inc)
+        return self.recurrences.after(self._merge_after(after), inc, dtstart=self.start_date)
 
     def save(self, *args, **kwargs):
         import utils

@@ -1,7 +1,6 @@
 from radioco.apps.programmes.models import Programme, Episode
-from radioco.apps.schedules.models import Schedule, ScheduleBoard, Transmission
+from radioco.apps.schedules.models import Schedule, ScheduleBoard
 from rest_framework import serializers
-import datetime
 
 
 class ProgrammeSerializer(serializers.ModelSerializer):
@@ -14,8 +13,8 @@ class ProgrammeSerializer(serializers.ModelSerializer):
 
 
 class EpisodeSerializer(serializers.ModelSerializer):
-    programme = serializers.SlugRelatedField(
-        slug_field='slug', queryset=Programme.objects.all())
+    programme = serializers.SlugRelatedField(slug_field='slug', queryset=Programme.objects.all)
+
     class Meta:
         model = Episode
         fields = ('title', 'programme', 'summary',
@@ -24,18 +23,16 @@ class EpisodeSerializer(serializers.ModelSerializer):
 
 class ScheduleSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
-    programme = serializers.SlugRelatedField(
-        slug_field='slug', queryset=Programme.objects.all())
-    schedule_board = serializers.SlugRelatedField(
-        slug_field='slug', queryset=ScheduleBoard.objects.all())
-    # XXX this is a bit hacky...
-    start = serializers.DateTimeField(source='rr_start')
+    programme = serializers.SlugRelatedField(slug_field='slug', queryset=Programme.objects.all())
+    schedule_board = serializers.SlugRelatedField(slug_field='slug', queryset=ScheduleBoard.objects.all())
+    start = serializers.DateTimeField(source='start_date')
     end = serializers.SerializerMethodField()
 
     class Meta:
         model = Schedule
-        fields = ('id', 'programme', 'schedule_board', 'start', 'end', 'title',
-                  'type','source')
+        fields = (
+            'id', 'programme', 'schedule_board', 'start', 'end', 'title', 'type', 'source'
+        )
 
     def get_title(self, schedule):
         return schedule.programme.name
@@ -49,9 +46,18 @@ class ScheduleSerializer(serializers.ModelSerializer):
 
 
 class TransmissionSerializer(serializers.Serializer):
+    id = serializers.IntegerField(source='schedule.id')
     name = serializers.CharField(max_length=100)
-    slug =serializers.SlugField(max_length=100)
+    slug = serializers.SlugField(max_length=100)
     start = serializers.DateTimeField()
     end = serializers.DateTimeField()
     schedule = serializers.IntegerField(source='schedule.id')
     url = serializers.URLField()
+    type = serializers.CharField(max_length=1, source='schedule.type')
+    source = serializers.IntegerField(source='schedule.source')
+
+
+class TransmissionSerializerLight(serializers.Serializer):  # WARNING: Hack to save changes
+    id = serializers.IntegerField(source='schedule.id')
+    start = serializers.DateTimeField()
+    new_start = serializers.DateTimeField(allow_null=True)
