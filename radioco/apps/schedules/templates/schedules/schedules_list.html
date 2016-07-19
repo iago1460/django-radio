@@ -1,0 +1,71 @@
+{% extends "radio/base.html" %}
+{% load static %}
+{% load staticfiles i18n %}
+
+
+{% block schedules_class %}class="active"{% endblock %}
+
+{% block page_title %}{% trans "Schedule" %}{% endblock %}
+
+{% block javascript %}
+    <script>
+        $(document).ready(function () {
+
+            var calendar = $('#calendar').fullCalendar({
+                height: 'auto',
+                contentHeight: 'auto',
+                aspectRatio: 1.35,
+                lang: '{{language}}',
+                eventDurationEditable: false,
+                eventStartEditable: false,
+                allDaySlot: false,
+                firstDay: {{first_day}},
+                minTime: '{{min_time}}',
+                maxTime: '{{max_time}}',
+                axisFormat: 'HH:mm',
+                timezone: false,
+                scrollTime: '{{scroll_time}}',
+
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'agendaWeek,agendaDay'
+                },
+                columnFormat: {
+                    month: 'ddd',    // Mon
+                    week: 'dddd',	 // Monday
+                    day: 'dddd'
+                },
+                defaultView: 'agendaWeek',
+                droppable: false,
+                events: {
+                    url: '{% url "api:transmission-list" %}',
+                    contentType: 'application/json',
+                    startParam: 'after',
+                    endParam: 'before',
+                    eventDataTransform: function(transmission) {
+                        var event = {
+                            id: transmission.slug,
+                            title: transmission.name,
+                            start: transmission.start,
+                            end: transmission.end
+                        };
+                        return event;
+                    },
+                    editable: false,
+                    allDayDefault: false
+                }
+            })
+
+        });
+    </script>
+{% endblock %}
+
+
+{% block content %}
+    <div class="container mb">
+        <div class="row">
+            <div class="col-xs-12" id='calendar'></div>
+        </div>
+    </div>
+{% endblock %}

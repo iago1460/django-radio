@@ -45,7 +45,7 @@ Open a terminal and introduce the following commands::
     cd django-radio
     virtualenv venv
     source venv/bin/activate
-    pip install -r radio/configs/common/requirements.txt
+    pip install -r radioco/configs/common/requirements.txt
     fab quickstart
     
     

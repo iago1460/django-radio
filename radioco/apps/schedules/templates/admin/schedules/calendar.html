@@ -1,0 +1,252 @@
+{% extends "admin/change_list.html" %}
+{% load static %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+
+
+{% block extrastyle %}
+    <link rel="stylesheet" href="{% static "bootstrap/dist/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" href="{% static "fullcalendar/dist/fullcalendar.min.css" %}" type="text/css" />
+    <link rel="stylesheet" href="{% static "fullcalendar/dist/fullcalendar.print.css" %}" type="text/css" media='print'/>
+    <link rel="stylesheet" href="{% static "radio/css/calendar.css" %}" type="text/css"/>
+    <style type="text/css" media="all">
+        button {
+            margin: unset;
+            padding: unset;
+            width: unset;
+            height: unset;
+        }
+        tbody.fc-body table {
+            margin: unset !important;
+        }
+    </style>
+{% endblock %}
+
+{% block extrahead %}
+    <script src="{% static "jquery/dist/jquery.min.js" %}" type="text/javascript"></script>
+    <script src="{% static "jquery-ui/jquery-ui.min.js" %}" type="text/javascript"></script>
+    <script src="{% static "lib/django-csrf.js" %}" type="text/javascript"></script>
+    <script src="{% static "bootstrap/dist/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "moment/min/moment.min.js" %}" type="text/javascript"></script>
+    <script src="{% static "fullcalendar/dist/fullcalendar.js" %}" type="text/javascript"></script>
+    <script src="{% static "fullcalendar/dist/lang-all.js" %}" type="text/javascript"></script>
+
+    <script>
+        function alert(msg) {
+            message(msg, "error");
+        }
+
+        function info(msg) {
+            message(msg, "info");
+        }
+
+        function success(msg) {
+            message(msg, "success");
+        }
+
+
+        function message(msg, tag) {
+            $("<li>").append(msg)
+                .addClass("grp-" + tag)
+                .fadeIn(800).delay(5000).fadeOut(800, function() {
+                    this.remove();
+                    if (!$("#messages>li").size()) $("#messages").slideUp();
+                })
+                .appendTo("#messages");
+            $("#messages").slideDown();
+        }
+
+
+
+        $(document).ready(function () {
+            reloadProgrammes();
+
+            $("#select-board").change(function() {
+                    $('#calendar').fullCalendar( 'refetchEvents')
+            });
+
+            var previous_date = null;
+            var calendar = $('#calendar').fullCalendar({
+                height: 'auto',
+                contentHeight: 'auto',
+                lang: '{{ LANGUAGE_CODE }}',
+                eventDurationEditable: false,
+                eventStartEditable: true,
+                allDaySlot: false,
+                slotDuration: '00:10:00',
+                axisFormat: 'HH:mm',
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                defaultView: 'agendaWeek',
+                eventSources: [{
+                    url: '{% url "api:transmission-list" %}',
+                    contentType: 'application/json',
+                    startParam: 'after',
+                    endParam: 'before',
+                    data: function() {
+                        return { schedule_board: $("#select-board").val() }
+                    },
+                    error: function() {
+                        alert('{% trans "There was an error while fetching transmissions" %}');
+                    },
+                    eventDataTransform: function(transmission) {
+                        var event = {
+                            id: transmission.id,
+                            title: transmission.name,
+                            start: transmission.start,
+                            end: transmission.end,
+                            url: "{% url 'admin:schedules_schedule_changelist' %}" + transmission.schedule,
+                            type: transmission.type,
+                            source: transmission.source,
+                            backgroundColor: function() {
+                                var BackgroundColor = Object.freeze({
+                                    L: "#F9AD81",
+                                    B: "#C4DF9B",
+                                    S: "#8493CA"
+                                });
+                                return BackgroundColor[transmission.type];
+                            }(),
+                        };
+                        return event;
+                    },
+                    editable: true,
+                    borderColor: "#000",
+                    allDayDefault: false
+                }],
+                droppable: true, // this allows things to be dropped onto the calendar !!!
+                drop: function (date) { // this function is called when something is dropped
+                    var programme = $(this).data('slug');
+                    var schedule_board = $("#select-board").val();
+                    var type = $("input[name='group1']:checked").val();
+
+                    // create the event
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url 'api:schedule-list' %}",
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            schedule_board: schedule_board,
+                            programme: programme,
+                            start: date,
+                            type: type
+                        }),
+                        success: function(schedule) {
+                            $('#calendar').fullCalendar('refetchEvents');
+                        },
+                        error: function (data) {
+                            alert('{% trans "There was an error while creating schedule" %}');
+                        }
+                    });
+                },
+
+                eventClick: function (calEvent, jsEvent, view) {
+                },
+                eventDragStart: function(event) {
+                    previous_date = new Date(event.start);
+                },
+                eventDrop: function (event, delta, revertFunc) {
+                    $.ajax({
+                        type: "PATCH",
+                        url: "{% url 'api:operation-list' %}/" + event.id,
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            id:  event.id,
+                            start: previous_date,
+                            new_start: event.start,
+                        }),
+                        success: function (res) {
+                          $('#calendar').fullCalendar('refetchEvents');
+                        },
+                        error: function (data) {
+                            revertFunc();
+                            alert('{% trans "There was an error in the request" %}');
+                        },
+                    });
+                },
+            })
+
+        });
+
+        function reloadProgrammes() {
+            $('#external-events').empty();
+            $.getJSON({
+                url: "{% url 'api:programme-list' %}",
+                success: function(programmes) {
+                    for (var i=0; i<programmes.length; i++) {
+                        var programme = programmes[i];
+
+                        $("<div>").append(programme.name)
+                            .addClass("external-event")
+                            .data('slug', programme.slug)
+                            .data('title', programme.name)
+                            .data('runtime', programme.runtime)
+                            .draggable({
+                                zIndex: 999,
+                                revert: true, // will cause the event to go back to its
+                                revertDuration: 0
+                            })
+                            .appendTo('#external-events');
+                    }
+                    info('{% trans "Programmes reloaded" %}');
+                },
+                error: function (data) {
+                    alert('{% trans "There was an error while reloding programmes" %}');
+                },
+            });
+        }
+    </script>
+{% endblock %}
+
+{% block messages %}
+    <ul id="messages" class="grp-messagelist" style="display:{% if messages %}block{% else %}none{% endif %}">
+        {% for message in messages %}
+            <li{% if message.tags %} class="grp-{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+{% block content %}
+    <div class="row shedude-manager">
+        <div class="col-xs-2">
+            <select id="select-board" class="form-control">
+                {% for schedule_board in schedule_boards %}
+                    <option value="{{schedule_board.slug}}"
+                            {% if schedule_board == current_scheduleBoard %}
+                            selected="selected"
+                            {% endif %}>
+                        {{schedule_board.name}}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <h3>{% trans "Programmes" %}</h3>
+            <div id="external-events"></div>
+
+            <h4>{% trans "Programme type" %}</h4>
+            <div class="radio">
+                <label for="live">
+                    <input type="radio" name="group1" id="live" value="L" checked />
+                    {% trans "live" %}
+                </label>
+            </div>
+            <div class="radio">
+                <label for="broadcast">
+                    <input type="radio" name="group1" id="broadcast" value="B" />
+                    {% trans "broadcast" %}
+                </label>
+            </div>
+            <div class="radio">
+                <label for="broadcast-syn">
+                    <input type="radio" name="group1" id="broadcast-syn" value="S">
+                    {% trans "broadcast syndication" %}
+                </label>
+            </div>
+        </div>
+        <div class="col-xs-10">
+            <div id='calendar'></div>
+        </div>
+    </div>
+{% endblock %}
