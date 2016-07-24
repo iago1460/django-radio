@@ -35,8 +35,6 @@ SECRET_KEY = '(h_$1pj(&usx%kw^m6$7*x9pnar+t_136g!3)g#+eje5r^3(!+'
 
 DEBUG = True
 
-TEMPLATE_DEBUG = True
-
 # Application definition
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -78,33 +76,26 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
-    'django.core.context_processors.static',
-    'django.core.context_processors.tz',
-    'django.core.context_processors.request',
-    'django.contrib.messages.context_processors.messages',
-    'apps.radio.context_processors.settings',
-)
-
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
-
-TEMPLATE_DIRS = (
-    os.path.join(SITE_ROOT, 'templates'),
-)
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': TEMPLATE_DIRS,
+        'DIRS': [
+	    os.path.join(SITE_ROOT, 'templates'),
+	],
+	'APP_DIRS': True,
         'OPTIONS': {
-            'context_processors': TEMPLATE_CONTEXT_PROCESSORS,
-            'loaders': TEMPLATE_LOADERS,
+            'context_processors': [
+		'apps.radio.context_processors.settings',
+		'django.core.context_processors.request',
+		'django.contrib.auth.context_processors.auth',
+		'django.template.context_processors.debug',
+		'django.core.context_processors.i18n',
+		'django.core.context_processors.media',
+		'django.core.context_processors.static',
+		'django.core.context_processors.tz',
+		'django.contrib.messages.context_processors.messages',
+	    ],
+	    'debug': DEBUG,
         },
     },
 ]
