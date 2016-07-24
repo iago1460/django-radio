@@ -3,6 +3,47 @@ from radioco.apps.schedules.models import Schedule, ScheduleBoard
 from rest_framework import serializers
 
 
+class DateTimeFieldTz(serializers.DateTimeField):
+
+    def to_representation(self, date, tz):
+        date_in_new_tz = date.astimezone(tz)
+        return super(DateTimeFieldTz, self).to_representation(date_in_new_tz)
+
+
+class TimezoneSerializer(serializers.Serializer):
+    """
+    Same as Serializer but it will store a timezone and it will send it to DateTimeFieldTz fields
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.timezone = kwargs.pop('timezone')
+        super(TimezoneSerializer, self).__init__(*args, **kwargs)
+
+    def to_representation(self, instance):
+        """
+        Object instance -> Dict of primitive datatypes.
+        """
+        ret = serializers.OrderedDict()
+        fields = self._readable_fields
+
+        for field in fields:
+            try:
+                attribute = field.get_attribute(instance)
+            except serializers.SkipField:
+                continue
+
+            if attribute is None:
+                # We skip `to_representation` for `None` values so that
+                # fields do not have to explicitly deal with that case.
+                ret[field.field_name] = None
+            elif type(field) is DateTimeFieldTz:
+                ret[field.field_name] = field.to_representation(attribute, self.timezone)
+            else:
+                ret[field.field_name] = field.to_representation(attribute)
+
+        return ret
+
+
 class ProgrammeSerializer(serializers.ModelSerializer):
     runtime = serializers.DurationField()
     photo = serializers.ImageField()
@@ -24,33 +65,25 @@ class EpisodeSerializer(serializers.ModelSerializer):
 class ScheduleSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
     programme = serializers.SlugRelatedField(slug_field='slug', queryset=Programme.objects.all())
-    schedule_board = serializers.SlugRelatedField(slug_field='slug', queryset=ScheduleBoard.objects.all())
     start = serializers.DateTimeField(source='start_date')
-    end = serializers.SerializerMethodField()
+    runtime = serializers.ReadOnlyField()
 
     class Meta:
         model = Schedule
         fields = (
-            'id', 'programme', 'schedule_board', 'start', 'end', 'title', 'type', 'source'
+            'id', 'programme', 'schedule_board', 'start', 'runtime', 'title', 'type', 'source'
         )
 
     def get_title(self, schedule):
         return schedule.programme.name
 
-    def get_end(self, schedule):
-        # XXX temp workaround while dtstart not mandatory
-        try:
-            return schedule.recurrences.dtstart + schedule.runtime
-        except TypeError:
-            return None
 
-
-class TransmissionSerializer(serializers.Serializer):
+class TransmissionSerializer(TimezoneSerializer):
     id = serializers.IntegerField(source='schedule.id')
     name = serializers.CharField(max_length=100)
     slug = serializers.SlugField(max_length=100)
-    start = serializers.DateTimeField()
-    end = serializers.DateTimeField()
+    start = DateTimeFieldTz()
+    end = DateTimeFieldTz()
     schedule = serializers.IntegerField(source='schedule.id')
     url = serializers.URLField()
     type = serializers.CharField(max_length=1, source='schedule.type')

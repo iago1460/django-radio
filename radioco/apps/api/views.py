@@ -1,5 +1,7 @@
+import pytz
 from recurrence import Recurrence
 
+from apps.radio.tz_utils import convert_date_to_datetime
 from radioco.apps.api.viewsets import ModelViewSetWithoutCreate
 from radioco.apps.programmes.models import Programme, Episode
 from radioco.apps.schedules.models import ScheduleBoard, Schedule, Transmission
@@ -41,7 +43,6 @@ class ScheduleFilter(filters.FilterSet):
         model = Schedule
         fields = ('programme', 'schedule_board', 'type')
 
-    schedule_board = django_filters.CharFilter(name="schedule_board__slug")
     programme = django_filters.CharFilter(name="programme__slug")
 
 
@@ -57,6 +58,7 @@ class TransmissionForm(forms.Form):
     after = forms.DateField(required=False)
     before = forms.DateField(required=False)
     schedule_board = forms.CharField(required=False)
+    timezone = forms.ChoiceField(choices=[(x, x) for x in pytz.all_timezones])
 
     def clean_after(self):
         after = self.cleaned_data.get('after')
@@ -71,6 +73,10 @@ class TransmissionForm(forms.Form):
             return self.clean_after() + datetime.timedelta(days=31)
         return before
 
+    def clean_timezone(self):
+        timezone = self.cleaned_data.get('timezone')
+        return pytz.timezone(timezone)
+
 
 class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Schedule.objects.all()
@@ -81,13 +87,17 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
     def list(self, request, *args, **kwargs):
         data = TransmissionForm(request.query_params)
         data.is_valid()
+        requested_timezone = data.cleaned_data.get('timezone')
+
+        after_date = convert_date_to_datetime(data.cleaned_data.get('after'), tz=pytz.utc)
+        before_date = convert_date_to_datetime(data.cleaned_data.get('before'), time=datetime.time(23, 59, 59), tz=pytz.utc)
 
         transmissions = Transmission.between(
-            datetime.datetime.combine(data.cleaned_data.get('after'), datetime.time(0)),
-            datetime.datetime.combine(data.cleaned_data.get('before'), datetime.time(23, 59, 59)),
+            after_date,
+            before_date,
             schedules=self.filter_queryset(self.get_queryset())
         )
-        serializer = self.serializer_class(transmissions, many=True)
+        serializer = self.serializer_class(transmissions, timezone=requested_timezone, many=True)
         return Response(serializer.data)
 
     @list_route()

@@ -18,6 +18,7 @@
 import datetime
 
 from django.shortcuts import render, get_object_or_404
+from django.utils import timezone
 
 from radioco.apps.programmes.models import Episode, Programme, Role, Participant, NOT_SPECIFIED
 
@@ -46,7 +47,7 @@ def episode_detail(request, slug, season_number, episode_number):
     except:
         pass
     context = {
-        'episode': episode, 'programme': programme, 'now': datetime.datetime.now(),
+        'episode': episode, 'programme': programme, 'now': timezone.now(),
         'episode_end_date': episode_end_date,
         'role_list': Participant.objects.filter(episode=episode).select_related('person__userprofile'),
         'unspecified': NOT_SPECIFIED

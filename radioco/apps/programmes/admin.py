@@ -25,6 +25,7 @@ from dateutil.relativedelta import relativedelta
 from django import forms
 from django.contrib import admin
 from django.forms import ValidationError
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from radioco.apps.programmes.models import Programme, Podcast, Episode, Role, Participant
@@ -94,11 +95,20 @@ class NonStaffProgrammeAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ['name']
     inlines = [NonStaffRoleInline]
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'slug', 'synopsis', 'category', 'current_season', 'photo', 'language', '_runtime')
+        }),
+        (_('Advanced options'), {
+            'classes': ('collapse',),
+            'fields': ('start_date', 'end_date'),
+        }),
+    )
 
     def get_form(self, request, obj=None, **kwargs):
-        kwargs['fields'] = ['name', 'synopsis', 'category', 'current_season', 'photo', 'language', '_runtime']
         if not obj or request.user.has_perm('programmes.add_programme'):
-            self.exclude = ['slug', ]
+            self.exclude = []
+            self.prepopulated_fields = {"slug": ("name",)}
         else:
             self.exclude = ['slug', '_runtime']
         return super(NonStaffProgrammeAdmin, self).get_form(request, obj, **kwargs)
@@ -183,7 +193,7 @@ class NonStaffEpisodeAdminForm(forms.ModelForm):
 
     def clean_programme(self):
         programme = self.cleaned_data['programme']
-        now = datetime.datetime.now()
+        now = timezone.now()
         if not self.instance.pk:
             last_episode = Episode.objects.last(programme)
             if last_episode:
@@ -236,7 +246,7 @@ class OwnEpisodeIssueDateListFilter(admin.SimpleListFilter):
         )
 
     def queryset(self, request, queryset):
-        now = datetime.datetime.now()
+        now = timezone.now()
         if self.value() == 'next':
             return queryset.filter(issue_date__gte=now) | queryset.filter(issue_date__isnull=True)
         elif self.value() == 'lastweek':
@@ -267,7 +277,7 @@ class NonStaffEpisodeAdmin(admin.ModelAdmin):
         if not obj.pk:
             programme = obj.programme
             last_episode = Episode.objects.last(programme)
-            now = datetime.datetime.now()
+            now = timezone.now()
             if last_episode:
                 after = last_episode.issue_date + programme.runtime
                 if after < now:

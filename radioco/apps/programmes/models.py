@@ -23,6 +23,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Q
 from django.template.defaultfilters import slugify
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 import datetime
 
@@ -71,8 +72,7 @@ class Programme(models.Model):
     )
 
     name = models.CharField(
-        max_length=100, unique=True, verbose_name=_("name"),
-        help_text=_("Please DON'T change this value. It's used to build URL's.")
+        max_length=100, unique=True, verbose_name=_("name")
     )
     announcers = models.ManyToManyField(
         User, blank=True, null=True, through='Role', verbose_name=_("announcers")
@@ -92,9 +92,13 @@ class Programme(models.Model):
     category = models.CharField(
         blank=True, null=True, max_length=50, choices=CATEGORY_CHOICES, verbose_name=_("category")
     )
-    slug = models.SlugField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=100, unique=True,
+        help_text=_("Please DON'T change this value. It's used to build URL's."))
     _runtime = models.PositiveIntegerField(
         validators=[MinValueValidator(1)], verbose_name=_("runtime"), help_text=_("In minutes."))
+
+    start_date = models.DateField(blank=True, null=True, verbose_name=_('start date'))
+    end_date = models.DateField(blank=True, null=True, verbose_name=_('end date'))
 
     @property
     def runtime(self):
@@ -163,7 +167,7 @@ class EpisodeManager(models.Manager):
 
     def unfinished(self, programme, after=None):
         if not after:
-            after = datetime.datetime.now()
+            after = timezone.now()
 
         episodes = (programme.episode_set
                     .order_by("season", "number_in_season")

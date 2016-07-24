@@ -1,10 +1,12 @@
+import datetime
+
+import recurrence
+from django.contrib.auth.models import User
+
 from radioco.apps.global_settings.models import SiteConfiguration
 from radioco.apps.programmes.models import Programme, Episode, Role, CONTRIBUTOR, Podcast
-from radioco.apps.schedules.models import Schedule, ScheduleBoard, MO, TU, WE, TH, FR, SA, SU
+from radioco.apps.schedules.models import Schedule, ScheduleBoard
 from radioco.apps.schedules.utils import rearrange_episodes
-from django.contrib.auth.models import User
-import datetime
-import recurrence
 
 
 def create_example_data():

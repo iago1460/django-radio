@@ -19,6 +19,7 @@ import copy
 
 from django.conf.urls import url, patterns
 from django.contrib import admin
+from django.core.checks import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
@@ -34,11 +35,21 @@ except ImportError:
 
 @admin.register(ScheduleBoard)
 class ScheduleBoardAdmin(admin.ModelAdmin):
-    list_display = ('name', 'start_date', 'end_date')
-    list_filter = ['start_date', 'end_date']
+    list_display = ('name', 'is_active')
+    list_filter = ['is_active']
     search_fields = ['name']
-    ordering = ['start_date']
+    ordering = ['name']
     actions = ['copy_ScheduleBoard']
+
+    def set_active(self, request, queryset):
+        if queryset.count() == 1:
+            active_boards = ScheduleBoard.objects.filter(is_active=True)
+            active_boards.update(is_active=False)
+            queryset.update(is_active=True)
+            self.message_user(request, _('Board marked as active'))
+        else:
+            self.message_user(request, _('You cannot mark more than 1 schedule as active'), level=messages.ERROR)
+    set_active.short_description = _("Set a calendar active")
 
     def copy_ScheduleBoard(self, request, queryset):
         for obj in queryset:
@@ -47,10 +58,14 @@ class ScheduleBoardAdmin(admin.ModelAdmin):
             obj_copy.pk = None
             copy_name = _('Copy of ') + obj.name
             obj_copy.name = copy_name
-            obj_copy.start_date = None
-            obj_copy.end_date = None
+            obj_copy.is_active = False
             try:
                 if ScheduleBoard.objects.get(name=copy_name):
+                    self.message_user(
+                        request,
+                        _('A calendar with the name %(obj)s already exists') % {'obj': force_unicode(obj)},
+                        level=messages.ERROR
+                    )
                     pass
                     # Don't work
                     # self.message_user(

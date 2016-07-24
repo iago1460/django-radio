@@ -67,6 +67,7 @@
 
             var previous_date = null;
             var calendar = $('#calendar').fullCalendar({
+                timezone: '{{ settings.TIME_ZONE }}',
                 height: 'auto',
                 contentHeight: 'auto',
                 lang: '{{ LANGUAGE_CODE }}',
@@ -213,8 +214,8 @@
         <div class="col-xs-2">
             <select id="select-board" class="form-control">
                 {% for schedule_board in schedule_boards %}
-                    <option value="{{schedule_board.slug}}"
-                            {% if schedule_board == current_scheduleBoard %}
+                    <option value="{{schedule_board.id}}"
+                            {% if schedule_board.is_active %}
                             selected="selected"
                             {% endif %}>
                         {{schedule_board.name}}

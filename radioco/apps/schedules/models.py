@@ -17,6 +17,10 @@ import heapq
 from functools import partial
 from itertools import imap
 
+import pytz
+from recurrence.base import normalize_offset_awareness, localtz
+
+from apps.radio.tz_utils import transform_datetime_tz, convert_date_to_datetime
 from radioco.apps.programmes.models import Programme, Episode
 from dateutil import rrule
 from django.core.exceptions import ValidationError
@@ -79,41 +83,7 @@ class ScheduleBoard(models.Model):
         verbose_name_plural = _('schedule board')
 
     name = models.CharField(max_length=255, unique=True, verbose_name=_("name"))
-    slug = models.SlugField(max_length=255, unique=True)
-    start_date = models.DateField(blank=True, null=True, verbose_name=_('start date'))
-    end_date = models.DateField(blank=True, null=True, verbose_name=_('end date'))
-
-    def clean(self):
-        if self.start_date is None:
-            return
-        if self.end_date is None:
-            return
-        if self.start_date > self.end_date:
-            raise ValidationError(
-                _('end date must be greater than or equal to start date.'),
-                code='date missmatch')
-
-    def save(self, *args, **kwargs):
-        import utils
-
-        self.slug = slugify(self.name)
-
-        # rearrange episodes
-        if self.pk is not None:
-            orig = ScheduleBoard.objects.get(pk=self.pk)
-            if (orig.start_date == self.start_date and
-                orig.end_date == self.end_date and
-                orig.schedule_set == self.schedule_set):
-                # no relevant fields have changed
-
-                super(ScheduleBoard, self).save(*args, **kwargs)
-                return
-
-        super(ScheduleBoard, self).save(*args, **kwargs)
-        # XXX filter unique programmes
-        for schedule in self.schedule_set.all():
-            utils.rearrange_episodes(
-                schedule.programme, django.utils.timezone.now())
+    is_active = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u"%s" % (self.name)
@@ -138,7 +108,11 @@ class Schedule(models.Model):
     recurrences = RecurrenceField(verbose_name=_("recurrences"))
 
     start_date = models.DateTimeField(verbose_name=_('start date'))
-    end_date = models.DateTimeField(blank=True, null=True, verbose_name=_('end date'))
+
+    end_date = models.DateTimeField(
+        blank=True, null=True, verbose_name=_('end date'),
+        help_text=_('This field is dynamically generated to improve performance')
+    )
 
     from_collection = models.ForeignKey(
         'self', blank=True, null=True, on_delete=models.SET_NULL, related_name='child_schedules'
@@ -149,88 +123,122 @@ class Schedule(models.Model):
         help_text=_("It is used when is a broadcast.")
     )
 
+    def save(self, *args, **kwargs):
+        # FIXME: Saving clean dates in widget
+        self.recurrences.rdates = [convert_date_to_datetime(_dt.date(), time=self.start_date.time()) for _dt in self.recurrences.rdates]
+        self.recurrences.exdates = [convert_date_to_datetime(_dt.date(), time=self.start_date.time()) for _dt in self.recurrences.exdates]
+
+        # Calculation of end_date to improve performance
+        end_date = self.start_date + self.runtime
+        rdates = [_dt for _dt in self.recurrences.rdates]
+        rrules_until_dates = [_rrule.until for _rrule in self.recurrences.rrules]
+        for date in rdates + rrules_until_dates:
+            if not date:
+                # We cannot know the end date of a recurrence because at least one rule doesn't have an end date
+                end_date = None
+                break
+            # WARNING: Cleaning dates from field (issue with recurrence library)
+            cleaned_date = convert_date_to_datetime(date.date(), time=self.start_date.time()) + self.runtime
+            if cleaned_date > end_date:
+                end_date = cleaned_date
+
+        self.end_date = end_date
+
+        import utils
+        super(Schedule, self).save(*args, **kwargs)
+        utils.rearrange_episodes(self.programme, django.utils.timezone.now())
+
     @property
     def runtime(self):
         return self.programme.runtime
 
-    def date_is_excluded(self, date):
+    def date_is_excluded(self, dt):
+        date = transform_datetime_tz(dt)
         for schedule in Schedule.objects.filter(programme=self.programme, type=self.type):
             if date in schedule.recurrences.exdates:
                 return schedule
         return None
 
-    def exclude_date(self, date):
+    def exclude_date(self, dt):
+        date = transform_datetime_tz(dt)
         self.recurrences.exdates.append(date)
 
-    def include_date(self, date):
+    def include_date(self, dt):
+        date = transform_datetime_tz(dt)
         self.recurrences.exdates.remove(date)
 
     def has_recurrences(self):
         return self.recurrences
 
-    @property
-    def start(self):
-        if not self.schedule_board.start_date:
-            return self.start_date
-        else:
-            start_date_board = datetime.datetime.combine(
-                self.schedule_board.start_date, datetime.time(0))
-        # XXX this does not make any sense
-        if not self.start_date:
-            return start_date_board
-        return max(start_date_board, self.start_date)
-
-    @start.setter
-    def start(self, start_date):
-        self.start_date = start_date
+    # @property
+    # def start(self):
+    #     if not self.programme.start_date:
+    #         return self.start_date
+    #     start_date_board = datetime.datetime.combine(
+    #         self.programme.start_date, datetime.time(0)
+    #     )
+    #     return max(start_date_board, self.start_date)
+    #
+    # @start.setter
+    # def start(self, start_date):
+    #     self.start_date = start_date
 
     @property
     def end(self):
-        if not self.schedule_board.end_date:
-            return self.rr_end
-        else:
-            end_date_board = datetime.datetime.combine(
-                self.schedule_board.end_date, datetime.time(23, 59, 59))
-        if not self.rr_end:
+        if not self.programme.end_date:
+            return self.end_date
+        end_date_board = datetime.datetime.combine(self.programme.end_date, datetime.time(23, 59, 59))
+        if not self.end_date:
             return end_date_board
-        return min(end_date_board, self.rr_end)
-
-    @property
-    def rr_end(self):
-        return self.recurrences.dtend
+        else:
+            return min(end_date_board, self.end_date)
 
     def dates_between(self, after, before):
         """
             Return a sorted list of dates between after and before
         """
-        return self.recurrences.between(
-            self._merge_after(after), self._merge_before(before), inc=True, dtstart=self.start_date)
+        after_date = transform_datetime_tz(self._merge_after(after))
+        before_date = transform_datetime_tz(self._merge_before(before))
+        start_date = transform_datetime_tz(self.start_date)
+        recurrence_dates_between = self.recurrences.between(after_date, before_date, inc=True, dtstart=start_date)
+        for date in recurrence_dates_between:
+            yield self._fix_datetime(date)
 
-    def date_before(self, before):
-        return self.recurrences.before(self._merge_before(before), inc=True, dtstart=self.start_date)
+    def date_before(self, before): #FIXME: probably broken
+        return self._fix_datetime(
+            self.recurrences.before(self._merge_before(before), inc=True, dtstart=transform_datetime_tz(self.start_date))
+        )
 
-    def date_after(self, after, inc=True):
-        return self.recurrences.after(self._merge_after(after), inc, dtstart=self.start_date)
+    def date_after(self, after, inc=True): #FIXME: probably broken
+        return self._fix_datetime(
+            self.recurrences.after(self._merge_after(after), inc, dtstart=transform_datetime_tz(self.start_date))
+        )
 
-    def save(self, *args, **kwargs):
-        import utils
-        super(Schedule, self).save(*args, **kwargs)
-        utils.rearrange_episodes(self.programme, django.utils.timezone.now())
+    def _fix_datetime(self, dt): #FIXME
+        """
+        The recurrence library only work with dates, we need to add the correct time
+        """
+        return dt
 
     def _merge_before(self, before):
+        """
+        Return the smaller last date taking into account the programme constraints
+        """
         if not self.end:
             return before
         return min(before, self.end)
 
     def _merge_after(self, after):
-        if not self.schedule_board.start_date:
+        """
+        Return the greater first date taking into account the programme constraints
+        """
+        if not self.programme.start_date:
             return after
-
-        return max(after, datetime.datetime.combine(
-            self.schedule_board.start_date, datetime.time(0)))
+        programme_start_date = convert_date_to_datetime(self.programme.start_date, tz=pytz.utc)
+        return max(after, programme_start_date)
 
     def __unicode__(self):
-        return ' - '.join([self.start.strftime('%A'), self.start.strftime('%X')])
+        return ' - '.join([self.start_date.strftime('%A'), self.start_date.strftime('%X')])
 
 
 # XXX entry point for transmission details (episode, recordings, ...)

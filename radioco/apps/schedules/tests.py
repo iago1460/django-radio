@@ -25,6 +25,7 @@ from django.test import TestCase
 import datetime
 import mock
 import recurrence
+from django.utils import timezone
 
 from radioco.apps.programmes.models import Programme, Episode
 from radioco.apps.radio.tests import TestDataMixin
@@ -538,7 +539,7 @@ class ScheduleUtilsTests(TestDataMixin, TestCase):
         self.assertEqual(dates.next(), datetime.datetime(2015, 1, 6, 16, 0))
 
     def test_available_dates_none(self):
-        dates = utils.available_dates(Programme(), datetime.datetime.now())
+        dates = utils.available_dates(Programme(), timezone.now())
         with self.assertRaises(StopIteration):
             dates.next()
 

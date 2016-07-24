@@ -24,6 +24,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from radioco.apps.dashboard.forms import ScheduleForm
@@ -110,7 +111,7 @@ def full_calendar(request):
                 'scroll_time': calendar_configuration.scroll_time.strftime('%H:%M:%S'),
                 'first_day': calendar_configuration.first_day + 1,
                 'language': request.LANGUAGE_CODE,
-                'current_scheduleBoard': ScheduleBoard.get_current(datetime.datetime.now())
+                'current_scheduleBoard': ScheduleBoard.get_current(timezone.now())
             }
             return render(request, 'dashboard/fullcalendar.html', context)
         else:
@@ -149,7 +150,7 @@ def change_event(request):
     schedule.day = start.weekday()
     schedule.clean()
     schedule.save()
-    Episode.rearrange_episodes(schedule.programme, datetime.datetime.now())
+    Episode.rearrange_episodes(schedule.programme, timezone.now())
     '''
     # modify date of next episodes
     if len(next_episodes) > 0:
@@ -188,7 +189,7 @@ def create_schedule(request):
     schedule.clean()
     schedule.save()
 
-    Episode.rearrange_episodes(programme, datetime.datetime.now())
+    Episode.rearrange_episodes(programme, timezone.now())
     return {
         'scheduleId': schedule.id, 'backgroundColor': background_colours[schedule.type],
         'textColor': text_colours[schedule.type], 'type': schedule.type
@@ -202,7 +203,7 @@ def delete_schedule(request):
     schedule_id = int(request.POST.get('scheduleId'))
     schedule = get_object_or_404(Schedule.objects.select_related('programme'), id=schedule_id)
     schedule.delete()
-    Episode.rearrange_episodes(schedule.programme, datetime.datetime.now())
+    Episode.rearrange_episodes(schedule.programme, timezone.now())
 
 
 @ajax_view
@@ -211,7 +212,7 @@ def delete_schedule(request):
 def programmes(request):
     schedule_board_id = int(request.POST.get('scheduleBoardId'))
     scheduleBoard = get_object_or_404(ScheduleBoard, id=schedule_board_id)
-    start_date = datetime.datetime.now().date()
+    start_date = timezone.now().date()
     if scheduleBoard.start_date and scheduleBoard.start_date > start_date:
         start_date = scheduleBoard.start_date
     programmes = Programme.actives(start_date, scheduleBoard.end_date).order_by('name')

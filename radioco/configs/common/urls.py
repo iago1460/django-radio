@@ -24,6 +24,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
+from django.views.i18n import javascript_catalog
 from filebrowser.sites import site
 
 admin.site.logout_template = 'radio/logged_out.html'
@@ -55,9 +56,13 @@ admin.site.site_title = _('RadioCo site admin')
 #    response.status_code = 500
 #    return response
 
+js_info_dict = {
+    'packages': ('recurrence', ),
+}
 
 urlpatterns = patterns('',
     url(r'^$', 'radioco.apps.radio.views.index', name="home"),
+    url(r'^jsi18n/$', javascript_catalog, js_info_dict, name='javascript-catalog'),
     url(r'^login/$', 'radioco.apps.radio.views.user_login', name="login"),
     url(r'^logout/$', 'radioco.apps.radio.views.user_logout', name="logout"),
     url(r'^grappelli/', include('grappelli.urls')),
