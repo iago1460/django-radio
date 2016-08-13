@@ -1,3 +1,4 @@
+from apps.radio.tz_utils import transform_datetime_tz
 from radioco.apps.programmes.models import Programme, Episode
 from radioco.apps.schedules.models import Schedule, ScheduleBoard
 from rest_framework import serializers
@@ -6,7 +7,15 @@ from rest_framework import serializers
 class DateTimeFieldTz(serializers.DateTimeField):
 
     def to_representation(self, date, tz):
-        date_in_new_tz = date.astimezone(tz)
+        # date_in_new_tz = tz.normalize(date.astimezone(tz)) # FIXME
+
+        # from dateutil.tz import tzoffset
+        # from apps.radio.tz_utils import get_timezone_offset
+        # date_in_new_tz = date.astimezone(tzoffset(None, get_timezone_offset(tz)))  # FIXME: fullcalendar needs a fix timezone how to get this
+
+        # date_in_new_tz = transform_datetime_tz(date)
+        date_in_new_tz = date
+
         return super(DateTimeFieldTz, self).to_representation(date_in_new_tz)
 
 

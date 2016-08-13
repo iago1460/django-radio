@@ -67,7 +67,9 @@
 
             var previous_date = null;
             var calendar = $('#calendar').fullCalendar({
-                timezone: '{{ settings.TIME_ZONE }}',
+{#                timezone: '{{ settings.TIME_ZONE }}',#}
+{#                timezone: 'UTC',#}
+                timezone: false,
                 height: 'auto',
                 contentHeight: 'auto',
                 lang: '{{ LANGUAGE_CODE }}',

@@ -18,9 +18,9 @@ from functools import partial
 from itertools import imap
 
 import pytz
-from recurrence.base import normalize_offset_awareness, localtz
 
-from apps.radio.tz_utils import transform_datetime_tz, convert_date_to_datetime
+from apps.radio.tz_utils import transform_datetime_tz, convert_date_to_datetime, \
+    transform_dt_checking_dst, normalize_dst_tz, fix_dst_tz
 from radioco.apps.programmes.models import Programme, Episode
 from dateutil import rrule
 from django.core.exceptions import ValidationError
@@ -124,9 +124,17 @@ class Schedule(models.Model):
     )
 
     def save(self, *args, **kwargs):
+        self.recurrences.rdates = [fix_dst_tz(dt=_dt, from_dt=self.start_date) for _dt in self.recurrences.rdates]
+        self.recurrences.exdates = [fix_dst_tz(dt=_dt, from_dt=self.start_date) for _dt in self.recurrences.exdates]
+
+
         # FIXME: Saving clean dates in widget
-        self.recurrences.rdates = [convert_date_to_datetime(_dt.date(), time=self.start_date.time()) for _dt in self.recurrences.rdates]
-        self.recurrences.exdates = [convert_date_to_datetime(_dt.date(), time=self.start_date.time()) for _dt in self.recurrences.exdates]
+        # self.recurrences.rdates = [convert_date_to_datetime(_dt.date(), time=self.start_date.time(), tz=pytz.utc) for _dt in self.recurrences.rdates]
+        # self.recurrences.exdates = [convert_date_to_datetime(_dt.date(), time=self.start_date.time(), tz=pytz.utc) for _dt in self.recurrences.exdates]
+
+        # FIXME: appending combining dates with start_date ( DST is wrong )
+        # self.recurrences.rdates = [datetime.datetime.combine(_dt.date(), self.start_date.time()) for _dt in self.recurrences.rdates]
+        # self.recurrences.exdates = [datetime.datetime.combine(_dt.date(), self.start_date.time()) for _dt in self.recurrences.exdates]
 
         # Calculation of end_date to improve performance
         end_date = self.start_date + self.runtime
@@ -153,18 +161,18 @@ class Schedule(models.Model):
         return self.programme.runtime
 
     def date_is_excluded(self, dt):
-        date = transform_datetime_tz(dt)
+        date = transform_datetime_tz(dt, tz=pytz.utc)  # WARNING: unnecessary?
         for schedule in Schedule.objects.filter(programme=self.programme, type=self.type):
             if date in schedule.recurrences.exdates:
                 return schedule
         return None
 
-    def exclude_date(self, dt):
-        date = transform_datetime_tz(dt)
+    def exclude_date(self, dt): #FIXME
+        date = transform_datetime_tz(dt, tz=pytz.utc)
         self.recurrences.exdates.append(date)
 
-    def include_date(self, dt):
-        date = transform_datetime_tz(dt)
+    def include_date(self, dt): #FIXME
+        date = transform_datetime_tz(dt, tz=pytz.utc)
         self.recurrences.exdates.remove(date)
 
     def has_recurrences(self):
@@ -199,26 +207,32 @@ class Schedule(models.Model):
         """
         after_date = transform_datetime_tz(self._merge_after(after))
         before_date = transform_datetime_tz(self._merge_before(before))
-        start_date = transform_datetime_tz(self.start_date)
-        recurrence_dates_between = self.recurrences.between(after_date, before_date, inc=True, dtstart=start_date)
+        start_dt = transform_datetime_tz(self.start_date)
+        # start_date = transform_datetime_tz(self.start_date)
+
+        # We need to send to the library the dates in the current timezone
+        recurrence_dates_between = self.recurrences.between(after_date, before_date, inc=True, dtstart=start_dt)
+
         for date in recurrence_dates_between:
-            yield self._fix_datetime(date)
+            dt = normalize_dst_tz(date)  # Truncate date
+            # dt = date.tzinfo.normalize(date)  # sanity check
+            yield dt
 
     def date_before(self, before): #FIXME: probably broken
-        return self._fix_datetime(
-            self.recurrences.before(self._merge_before(before), inc=True, dtstart=transform_datetime_tz(self.start_date))
-        )
+        before_date = transform_datetime_tz(self._merge_before(before))
+        start_date = transform_dt_checking_dst(self.start_date)
+        return self.recurrences.before(before_date, inc=True, dtstart=start_date)
 
     def date_after(self, after, inc=True): #FIXME: probably broken
-        return self._fix_datetime(
-            self.recurrences.after(self._merge_after(after), inc, dtstart=transform_datetime_tz(self.start_date))
-        )
+        after_date = transform_datetime_tz(self._merge_after(after))
+        start_date = transform_dt_checking_dst(self.start_date)
+        return self.recurrences.after(after_date, inc, dtstart=start_date)
 
-    def _fix_datetime(self, dt): #FIXME
-        """
-        The recurrence library only work with dates, we need to add the correct time
-        """
-        return dt
+    # def _fix_datetime(self, dt): #FIXME
+    #     """
+    #     If start_date was created in DST return date + DST Offset
+    #     """
+    #     return transform_dt_according_to_dst(dt, self.start_date)  # We are "adjusting the dt according to the DST"
 
     def _merge_before(self, before):
         """
