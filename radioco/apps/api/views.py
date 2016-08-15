@@ -174,23 +174,20 @@ class TransmissionOperationViewSet(ModelViewSetWithoutCreate):
         schedule_excluded = schedule.date_is_excluded(new_start)
         if schedule_excluded:
             schedule_excluded.include_date(new_start)
-            schedule_excluded.save()
 
             if schedule.has_recurrences():
                 schedule.exclude_date(start)
-                schedule.save()
             else:
                 schedule.delete()
         else:
             if schedule.has_recurrences():
                 schedule.exclude_date(start)
-                schedule.save()
                 new_schedule = Schedule.objects.get(id=schedule.id)
                 new_schedule.id = None
+                new_schedule.from_collection = schedule
+                new_schedule.recurrences = Recurrence()
+                new_schedule.start_date = new_start
+                new_schedule.save()
             else:
-                new_schedule = schedule
-
-            new_schedule.start_date = new_start
-            new_schedule.recurrences = Recurrence()
-            new_schedule.from_collection = schedule
-            new_schedule.save()
+                schedule.start_date = new_start
+                schedule.save()

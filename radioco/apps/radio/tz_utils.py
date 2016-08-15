@@ -103,10 +103,10 @@ def transform_dt_checking_dst(dt):
     return tz.normalize(dt.astimezone(tz))
 
 
-def normalize_dst_tz(dt):
+def fix_recurrence_dst(dt):
     """
     Function to fix a datetime tz aware with an incorrect offset
-    :return A datetime tz aware in the new time
+    Returns: A datetime tz aware in the new time
     """
     tz = dt.tzinfo
     return tz.localize(datetime.datetime.combine(dt.date(), dt.time()))

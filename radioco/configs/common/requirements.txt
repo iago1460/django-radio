@@ -10,4 +10,4 @@ fabric==1.11.1
 django-disqus==0.5
 django-bower==5.1.0
 django-filter==0.13.0
-django-recurrence==1.3.0
+https://github.com/iago1460/django-recurrence/archive/master.zip
