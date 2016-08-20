@@ -99,8 +99,12 @@ def delete_ScheduleBoard_handler(sender, **kwargs):
 
 class ExcludedDates(models.Model):
     schedule = models.ForeignKey('Schedule')
-    date = models.DateField()
     datetime = models.DateTimeField(db_index=True)
+
+    @property
+    def date(self):
+        local_dt = transform_datetime_tz(self.datetime)
+        return local_dt.date()
 
 
 class Schedule(models.Model):
@@ -147,18 +151,18 @@ class Schedule(models.Model):
 
         self.end_date = end_date
 
-        import utils # FIXME
         super(Schedule, self).save(*args, **kwargs)
-        utils.rearrange_episodes(self.programme, timezone.now()) # FIXME
+        # import utils # FIXME
+        # utils.rearrange_episodes(self.programme, timezone.now()) # FIXME
 
     @property
     def runtime(self):
         return self.programme.runtime
 
-    def date_is_excluded(self, dt):
-        local_dt = transform_datetime_tz(dt)
+    @staticmethod
+    def get_schedule_which_excluded_dt(programme, dt):
         try:
-            return ExcludedDates.objects.get(schedule__programme=self.programme, datetime=local_dt).schedule
+            return ExcludedDates.objects.get(schedule__programme=programme, datetime=dt).schedule
         except ExcludedDates.DoesNotExist:
             return None
 
@@ -167,19 +171,18 @@ class Schedule(models.Model):
         exdates = []
         current_start_date = transform_datetime_tz(self.start_date)
         for excluded in ExcludedDates.objects.filter(schedule=self):
-            dt = tz.localize(datetime.datetime.combine(excluded.date, current_start_date.time()))
-            exdates.append(self._fix_recurrence_date(dt))
-            excluded.datetime = dt
+            new_dt = tz.localize(datetime.datetime.combine(excluded.date, current_start_date.time()))
+            excluded.datetime = new_dt
             excluded.save()
+            exdates.append(self._fix_recurrence_date(new_dt))  # Fix the datetime for django-recurrence
         self.recurrences.exdates = exdates
 
     def exclude_date(self, dt):
         local_dt = transform_datetime_tz(dt)
-        ExcludedDates.objects.create(schedule=self, date=local_dt.date(), datetime=dt)
+        ExcludedDates.objects.create(schedule=self, datetime=dt)
 
         exdate = self._fix_recurrence_date(local_dt)
         self.recurrences.exdates.append(exdate)
-        self.save()
 
     def include_date(self, dt):
         local_dt = transform_datetime_tz(dt)
@@ -187,7 +190,6 @@ class Schedule(models.Model):
 
         exdate = self._fix_recurrence_date(local_dt)
         self.recurrences.exdates.remove(exdate)
-        self.save()
 
     def has_recurrences(self):
         return self.recurrences
