@@ -19,11 +19,14 @@
                 <p>{% firstof episode.summary|safe episode.programme.synopsis|safe '' %}</p>
 
                 <h4>{% trans "Podcast" %}</h4>
-                <p>
+                <p class="podcast-download">
                     {% if episode.podcast %}
                         <audio src="{{ episode.podcast.url }}" type="{{ episode.podcast.mime_type }}" controls>
                             {% trans "Your browser does not support the audio element." %}
                         </audio>
+                        <a href="{{ episode.podcast.url }}" target="_blank" download>
+                          <span class="fa fa-download fa-2x"></span>
+                        </a>
                     {% else %}
                         {% if not episode_end_date or now > episode_end_date %}
                             {% trans "Sorry, this podcast isn't available yet" %}
