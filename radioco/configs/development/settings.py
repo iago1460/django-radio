@@ -21,19 +21,29 @@ INSTALLED_APPS += (
     'debug_toolbar',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS += (
-    'django.core.context_processors.debug',
+MIDDLEWARE_CLASSES += (
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'django_radio',
-        'USER': 'radioco',
-        'PASSWORD': 'radioco',
-        'HOST': 'localhost',
+        'NAME': os.environ.get('POSTGRES_DB', 'radioco'),
+        'USER': os.environ.get('POSTGRES_USER', 'radioco'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'radioco'),
+        'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
     }
 }
+
+
+# Django Debug Toolbar
+def show_toolbar(request):
+    return True
+
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": show_toolbar,
+}
+
 
 # Import local settings
 try:

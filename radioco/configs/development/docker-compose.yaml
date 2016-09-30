@@ -1,0 +1,61 @@
+version: '2'
+services:
+
+
+  # Backend server -------------------------------------------------------------
+
+  development_django:
+    build:
+      context: .
+      dockerfile: docker/django.Dockerfile
+    links:
+      - development_postgres
+    volumes:
+      - ../../../:/radioco
+    env_file:
+      - docker/env
+      - docker/local_env
+    ports:
+      - "${PORT_BACKEND}:8000"
+      - "2222:22"
+    command: /radioco/radioco/configs/${ENVIRONMENT}/docker/scripts/launch_server.sh
+
+#  nginx:
+#    image: nginx:1.11-alpine
+#    restart: always
+#    ports:
+#      - "${PORT_NGINX}:80"
+#    volumes:
+#      - ./docker/nginx.conf:/tmp/nginx.conf:ro
+#      - ./frontend/dist:/srv/static:ro
+#    command: /bin/sh -c "DOLLAR='$$' envsubst < /tmp/nginx.conf > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+#    volumes_from:
+#      - web
+#    links:
+#      - web:web
+
+
+  # Datastore Containers -------------------------------------------------------
+  
+  development_postgres:
+    image: postgres:9.6
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+    env_file:
+      - docker/env
+      - docker/local_env
+    volumes_from:
+      - development_data_postgres
+    ports:
+      - "${PORT_POSTGRES}:5432"
+
+
+  # Data-only Containers -------------------------------------------------------
+
+  development_data_postgres:
+    image: alpine
+    volumes:
+      - /var/lib/postgresql/data
+    entrypoint: /bin/echo "postgresql data container"

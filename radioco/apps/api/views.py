@@ -2,7 +2,7 @@ import pytz
 from django.utils.timezone import override, get_default_timezone, get_default_timezone_name
 from recurrence import Recurrence
 
-from apps.radio.tz_utils import convert_date_to_datetime, get_timezone_offset, transform_datetime_tz, \
+from radioco.apps.radio.tz_utils import convert_date_to_datetime, get_timezone_offset, transform_datetime_tz, \
     transform_dt_checking_dst
 from radioco.apps.api.viewsets import ModelViewSetWithoutCreate
 from radioco.apps.programmes.models import Programme, Episode
@@ -119,7 +119,7 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
         transmissions = Transmission.between(
             after_date,
             before_date,
-            schedules=self.filter_queryset(self.get_queryset())
+            schedules=self.filter_queryset(self.get_queryset()) #FIXME self.get_queryset()? is this filtering start_date end_date ?
         )
 
         # with override(timezone=get_default_timezone()):

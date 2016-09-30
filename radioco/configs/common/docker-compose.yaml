@@ -1,0 +1,18 @@
+version: '2'
+services:
+
+
+  # Backend server -------------------------------------------------------------
+
+  django:
+    build:
+      context: .
+      dockerfile: docker/django.Dockerfile
+    volumes:
+      - ../../../:/radioco
+    env_file:
+      - docker/env
+      - docker/local_env
+    ports:
+      - "${PORT_BACKEND}:8000"
+    command: /radioco/radioco/configs/${ENVIRONMENT}/docker/scripts/launch_server.sh

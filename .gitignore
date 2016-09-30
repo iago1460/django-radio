@@ -22,6 +22,7 @@ db.*
 !/.gitignore
 !/.gitmodules
 local_settings.py
+local_env
 
 # C extensions
 *.so
@@ -64,3 +65,7 @@ docs/_build/
 
 # Files ending in ~
 *~
+
+# Docker tmp files (just in case)
+id_rsa.pub
+tmp_requirements.txt

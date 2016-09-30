@@ -235,12 +235,18 @@ class Schedule(models.Model):
     def date_before(self, before):
         before_date = transform_datetime_tz(self._merge_before(before))
         start_date = transform_datetime_tz(self.start_date)
-        return fix_recurrence_dst(self.recurrences.before(before_date, inc=True, dtstart=start_date))
+        date = self.recurrences.before(before_date, inc=True, dtstart=start_date)
+        if date:
+            return fix_recurrence_dst(date)
+        return None
 
     def date_after(self, after, inc=True):
         after_date = transform_datetime_tz(self._merge_after(after))
         start_date = transform_datetime_tz(self.start_date)
-        return fix_recurrence_dst(self.recurrences.after(after_date, inc, dtstart=start_date))
+        date = self.recurrences.after(after_date, inc, dtstart=start_date)
+        if date:
+            return fix_recurrence_dst(date)
+        return None
 
     def _fix_recurrence_date(self, dt):
         """
@@ -307,13 +313,15 @@ class Transmission(object):
 
     @classmethod
     def at(cls, at):
-        # XXX filter board, filter schedule start / end
-        schedules = Schedule.objects.all()
+        schedules = Schedule.objects.filter(
+            Q(start_date__lte=at, end_date__gt=at) |
+            Q(start_date__lte=at, end_date__isnull=True)
+        ) # TODO: check!!
         for schedule in schedules:
             date = schedule.date_before(at)
             if date is None:
                 continue
-            if at < date + schedule.runtime:
+            elif at < date + schedule.runtime:
                 yield cls(schedule, date)
 
     @classmethod
@@ -322,7 +330,7 @@ class Transmission(object):
         Return a list of Transmissions sorted by date
         """
         if schedules is None:
-            schedules = Schedule.objects.all()
+            schedules = Schedule.objects.all() # FIXME do query!!
 
         transmission_dates = [
             imap(partial(_return_tuple, item2=schedule), schedule.dates_between(after, before))

@@ -1,6 +1,6 @@
 -r ../common/requirements.txt
 pygraphviz
-django-debug-toolbar
+django-debug-toolbar==1.6
 coverage
 mock
 psycopg2
