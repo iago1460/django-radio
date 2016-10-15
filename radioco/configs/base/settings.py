@@ -110,7 +110,7 @@ TEMPLATES = [
     },
 ]
 
-ROOT_URLCONF = 'radioco.configs.common.urls'
+ROOT_URLCONF = 'radioco.configs.base.urls'
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases

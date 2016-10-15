@@ -1,8 +1,0 @@
-LANG=C.UTF-8
-COMPOSE_PROJECT_NAME=radioco
-ENVIRONMENT=common
-
-
-PORT_BACKEND=8000
-
-MANAGE_PY=python /radioco/radioco/configs/common/manage.py

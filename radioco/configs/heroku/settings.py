@@ -17,7 +17,7 @@
 
 import dj_database_url
 
-from radioco.configs.common.settings import *
+from radioco.configs.base.settings import *
 
 DEBUG = False
 

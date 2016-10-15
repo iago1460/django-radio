@@ -41,12 +41,12 @@ msgid "source"
 msgstr "referencia"
 
 #: apps/dashboard/templates/dashboard/base_site.html:3
-#: configs/common/urls.py:33
+#: configs/base/urls.py:33
 msgid "RadioCo site admin"
 msgstr "RadioCo zona de administración"
 
 #: apps/dashboard/templates/dashboard/base_site.html:6
-#: configs/common/urls.py:32
+#: configs/base/urls.py:32
 msgid "RadioCo administration"
 msgstr "Administración de RadioCo"
 
