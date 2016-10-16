@@ -6,5 +6,7 @@ ${POSTGRES} -tc "SELECT 1 FROM pg_database WHERE datname = '${POSTGRES_DB}'" | g
 
 ${MANAGE_PY} migrate
 
-/usr/sbin/sshd -D
-#runserver.sh
+/usr/sbin/sshd
+
+# Keep container running 
+tail -f /dev/null
