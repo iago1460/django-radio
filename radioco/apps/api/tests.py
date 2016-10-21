@@ -1,3 +1,5 @@
+import pytz
+
 from radioco.apps.programmes.models import Programme, Episode
 from radioco.apps.radio.tests import TestDataMixin
 from radioco.apps.schedules.models import ScheduleBoard, Schedule, Transmission
@@ -13,7 +15,7 @@ import views
 
 
 def mock_now():
-    return datetime.datetime(2015, 1, 6, 14, 30, 0)
+    return pytz.utc.localize(datetime.datetime(2015, 1, 6, 14, 30, 0))
 
 
 class TestSerializers(TestDataMixin, TestCase):
@@ -41,12 +43,15 @@ class TestSerializers(TestDataMixin, TestCase):
     def test_schedule(self):
         serializer = serializers.ScheduleSerializer(self.schedule)
         schedule_id = self.schedule.id
+        schedule_board_id = self.schedule_board.id
         self.assertDictEqual(serializer.data, {
-            'title': u'Classic hits', 'source': None,
-            'start': '2015-01-01T14:00:00',
-            'end': datetime.datetime(2015, 1, 1, 15, 0),
-            'schedule_board': u'example',
-            'type': 'L', 'id': schedule_id,
+            'title': u'Classic hits',
+            'source': None,
+            'start': '2015-01-01T14:00:00Z',
+            'schedule_board': schedule_board_id,
+            'runtime': datetime.timedelta(minutes=60),
+            'type': 'L',
+            'id': schedule_id,
             'programme': u'classic-hits'})
 
     def test_transmission(self):
@@ -140,11 +145,11 @@ class TestAPI(TestDataMixin, APITestCase):
 
     def test_schedules_get_by_board(self):
         response = self.client.get(
-            '/api/2/schedules', {'schedule_board': self.schedule_board.slug})
+            '/api/2/schedules', {'schedule_board': self.schedule_board.id})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(
-            response.data[0]['schedule_board'], self.schedule_board.slug)
+            response.data[0]['schedule_board'], self.schedule_board.id)
 
     def test_schedules_get_by_nonexisting_board(self):
         response = self.client.get(
@@ -157,7 +162,7 @@ class TestAPI(TestDataMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(
-            response.data[0]['schedule_board'], self.schedule_board.slug)
+            response.data[0]['schedule_board'], self.schedule_board.id)
 
     def test_schedules_get_by_nonexiting_type(self):
         response = self.client.get('/api/2/schedules?type=B')
@@ -188,10 +193,21 @@ class TestAPI(TestDataMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(len(response.data)>20)
 
+    def test_incorrect_transmission_queries(self):
+        response = self.client.get('/api/2/transmissions')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response = self.client.get('/api/2/transmissions', {'after': datetime.date(2015, 2, 1)})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response = self.client.get('/api/2/transmissions', {'before': datetime.date(2015, 2, 1)})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response = self.client.get('/api/2/transmissions', {'after': datetime.date(2015, 2, 2), 'before': datetime.date(2015, 2, 1)})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     @mock.patch('django.utils.timezone.now', mock_now)
-    def test_transmission_list_filter_board(self):
+    def test_transmission_list_filter_non_active_board(self):
+        schedule_board_id = self.another_board.id
         response = self.client.get(
-            '/api/2/transmissions', {'schedule_board': 'another'})
+            '/api/2/transmissions', {'schedule_board': schedule_board_id})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertListEqual(
             map(lambda t: (t['slug'], t['start']), response.data),
@@ -199,7 +215,12 @@ class TestAPI(TestDataMixin, APITestCase):
 
     def test_transmission_after(self):
         response = self.client.get(
-            '/api/2/transmissions', {'after': datetime.date(2015, 02, 01)})
+            '/api/2/transmissions',
+            {
+                'after': datetime.date(2015, 2, 1),
+                'before': datetime.date(2015, 2, 1),
+            })
+        import pdb; pdb.set_trace()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             sorted(response.data, key=lambda t: t['start'])[0]['start'],
@@ -208,7 +229,7 @@ class TestAPI(TestDataMixin, APITestCase):
     @mock.patch('django.utils.timezone.now', mock_now)
     def test_transmission_before(self):
         response = self.client.get(
-            '/api/2/transmissions', {'before': datetime.date(2015, 01, 14)})
+            '/api/2/transmissions', {'before': datetime.date(2015, 1, 14)})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             sorted(response.data, key=lambda t: t['start'])[-1]['start'],
@@ -224,6 +245,6 @@ class TestAPI(TestDataMixin, APITestCase):
 
     def test_transmissions_filter_board_nonexistend(self):
         response = self.client.get(
-            '/api/2/transmissions', {'schedule_board': 'Foo'})
+            '/api/2/transmissions', {'schedule_board': 9999})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)

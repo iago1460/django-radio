@@ -278,7 +278,7 @@ class Schedule(models.Model):
         """
         if not self.programme.start_date:
             return after
-        programme_start_date = convert_date_to_datetime(self.programme.start_date, tz=pytz.utc)
+        programme_start_date = convert_date_to_datetime(self.programme.start_date, tz=pytz.utc) #TODO: should be utc?
         return max(after, programme_start_date)
 
     def __unicode__(self):
@@ -327,10 +327,10 @@ class Transmission(object):
     @classmethod
     def between(cls, after, before, schedules=None):
         """
-        Return a list of Transmissions sorted by date
+        Return a list of Transmissions of the active calendar sorted by date
         """
         if schedules is None:
-            schedules = Schedule.objects.all() # FIXME do query!!
+            schedules = Schedule.objects.filter(schedule_board__is_active=True)
 
         transmission_dates = [
             imap(partial(_return_tuple, item2=schedule), schedule.dates_between(after, before))

@@ -4,5 +4,8 @@ django-debug-toolbar==1.6
 coverage
 mock
 psycopg2
-#python-sphinx #pip install -U Sphinx
+
+# Docs
+sphinx
+sphinx_rtd_theme
 

@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+import pytz
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import User, Permission
 from django.core.exceptions import ValidationError, FieldError
@@ -36,7 +36,7 @@ from radioco.apps.schedules.models import Schedule, Transmission
 
 
 def mock_now():
-    return datetime.datetime(2014, 1, 1, 13, 30, 0)
+    return pytz.utc.localize(datetime.datetime(2014, 1, 1, 13, 30, 0))
 
 
 class ScheduleValidationTests(TestDataMixin, TestCase):
@@ -544,7 +544,7 @@ class ScheduleUtilsTests(TestDataMixin, TestCase):
             dates.next()
 
     def test_rearrenge_episodes(self):
-        utils.rearrange_episodes(self.programme, datetime.datetime(2015, 1, 1))
+        utils.rearrange_episodes(self.programme, pytz.utc.localize(datetime.datetime(2015, 1, 1)))
         self.assertListEqual(
             map(lambda e: e.issue_date, self.programme.episode_set.all().order_by('issue_date')[:5]),
             [
@@ -566,7 +566,7 @@ class ScheduleUtilsTests(TestDataMixin, TestCase):
                 dtend=datetime.datetime(2015, 1, 31, 16, 0, 0),
                 rrules=[recurrence.Rule(recurrence.WEEKLY)]))
 
-        utils.rearrange_episodes(self.programme, datetime.datetime(2015, 1, 1))
+        utils.rearrange_episodes(self.programme, pytz.utc.localize(datetime.datetime(2015, 1, 1)))
         self.assertListEqual(
             map(lambda e: e.issue_date, self.programme.episode_set.all().order_by('issue_date')[:5]),
             [

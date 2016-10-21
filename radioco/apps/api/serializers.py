@@ -23,9 +23,11 @@ class TimezoneSerializer(serializers.Serializer):
     """
     Same as Serializer but it will store a timezone and it will send it to DateTimeFieldTz fields
     """
+    timezone = None
 
     def __init__(self, *args, **kwargs):
-        self.timezone = kwargs.pop('timezone')
+        if 'timezone' in kwargs:
+            self.timezone = kwargs.pop('timezone')
         super(TimezoneSerializer, self).__init__(*args, **kwargs)
 
     def to_representation(self, instance):

@@ -21,7 +21,7 @@ def available_dates(programme, after):
 
 
 # XXX transaction?
-def rearrange_episodes(programme, after):
+def rearrange_episodes(programme, after):  #FIXME
     episodes = Episode.objects.unfinished(programme, after)
     dates = available_dates(programme, after)
 

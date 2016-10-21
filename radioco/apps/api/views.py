@@ -1,4 +1,6 @@
 import pytz
+from django.core.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError as DRFValidationError
 from django.utils.timezone import override, get_default_timezone, get_default_timezone_name
 from recurrence import Recurrence
 
@@ -58,27 +60,36 @@ class ScheduleViewSet(viewsets.ModelViewSet):
 
 
 class TransmissionForm(forms.Form):
-    after = forms.DateField(required=False)
-    before = forms.DateField(required=False)
+    after = forms.DateField()
+    before = forms.DateField()
     schedule_board = forms.CharField(required=False)
-    timezone = forms.ChoiceField(choices=[(x, x) for x in pytz.all_timezones])
+    timezone = forms.ChoiceField(required=False, choices=[(x, x) for x in pytz.all_timezones])
 
-    def clean_after(self):
-        after = self.cleaned_data.get('after')
-        if after is None:
-            return utils.timezone.now().replace(day=1).date()
-        return after
+    # def clean_after(self):
+    #     after = self.cleaned_data.get('after')
+    #     if after is None:
+    #         return utils.timezone.now().replace(day=1).date()
+    #     return after
+    # 
+    # def clean_before(self):
+    #     # FIXME: raise if before < after
+    #     before = self.cleaned_data.get('before')
+    #     if before is None:
+    #         return self.clean_after() + datetime.timedelta(days=31)
+    #     return before
 
-    def clean_before(self):
-        # XXX raise if before < after
-        before = self.cleaned_data.get('before')
-        if before is None:
-            return self.clean_after() + datetime.timedelta(days=31)
-        return before
+    def clean(self):
+        cleaned_data = super(TransmissionForm, self).clean()
+        if cleaned_data.get('before') and cleaned_data.get('after'):
+            if cleaned_data['before'] > cleaned_data['after']:
+                raise ValidationError('after date has to be greater or equals than before date.')
+        return cleaned_data
 
     def clean_timezone(self):
         timezone = self.cleaned_data.get('timezone')
-        return pytz.timezone(timezone)
+        if timezone:
+            return pytz.timezone(timezone)
+        return timezone
 
 
 class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
@@ -89,8 +100,12 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
 
     def list(self, request, *args, **kwargs):
         data = TransmissionForm(request.query_params)
-        data.is_valid()
+        if not data.is_valid():
+            raise DRFValidationError(data.errors)
         requested_timezone = data.cleaned_data.get('timezone')
+
+        after = data.cleaned_data.get('after')
+        before = data.cleaned_data.get('before')
 
         # if requested_timezone:
         #     timezone_without_dst = get_timezone_offset(requested_timezone) # forced timezone
@@ -103,23 +118,29 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
         # after_date = convert_date_to_datetime(data.cleaned_data.get('after'))
         # before_date = convert_date_to_datetime(data.cleaned_data.get('before'), time=datetime.time(23, 59, 59))
 
-        tz = timezone.get_current_timezone()  # Timezone in current use
-        after_date = transform_dt_checking_dst(
-            tz.localize(datetime.datetime.combine(data.cleaned_data.get('after'), datetime.time()))
-        )
-        before_date = transform_dt_checking_dst(
-            tz.localize(datetime.datetime.combine(data.cleaned_data.get('before'), datetime.time(23, 59, 59)))
-        )
+
+        # This seems wrong now
+        # tz = timezone.get_current_timezone()  # Timezone in current use
+        # after_date = transform_dt_checking_dst(
+        #     tz.localize(datetime.datetime.combine(after, datetime.time()))
+        # )
+        # before_date = transform_dt_checking_dst(
+        #     tz.localize(datetime.datetime.combine(before, datetime.time(23, 59, 59)))
+        # )
+        tz = requested_timezone or timezone.get_current_timezone()
+        after_date = tz.localize(datetime.datetime.combine(after, datetime.time()))
+        before_date = tz.localize(datetime.datetime.combine(before, datetime.time(23, 59, 59)))
 
 
-        # TODO:
-        # after_date created ignored DST!  00:00:00+01:00   ???
-        # before_date created ignored DST!  23:59:59+01:00  ???
+        # Filter by active calendar if that filter was not provided
+        schedules = self.filter_queryset(self.get_queryset())
+        if not data.cleaned_data.get('schedule_board'):
+            schedules = schedules.filter(schedule_board__is_active=True)
 
         transmissions = Transmission.between(
             after_date,
             before_date,
-            schedules=self.filter_queryset(self.get_queryset()) #FIXME self.get_queryset()? is this filtering start_date end_date ?
+            schedules=schedules
         )
 
         # with override(timezone=get_default_timezone()):
@@ -138,6 +159,8 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
         #         Transmission(schedule_1, date_1), Transmission(schedule_1, date_2),
         #         Transmission(schedule_1, date_3)
         #     ]
+        
+        # FIXME:  by default (if not requested tz) this should return dates in UTZ!!!
 
         serializer = self.serializer_class(transmissions, timezone=requested_timezone, many=True)
         return Response(serializer.data)

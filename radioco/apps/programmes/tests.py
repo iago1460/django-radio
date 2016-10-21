@@ -13,6 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import pytz
 
 from radioco.apps.programmes.models import Programme, Episode, EpisodeManager, Role
 from radioco.apps.radio.tests import TestDataMixin
@@ -85,7 +86,7 @@ class ProgrammeModelAdminTests(TestCase):
         ma = ModelAdmin(Programme, self.site)
         self.assertEqual(
             ma.get_fields(None),
-            ['name', 'synopsis', 'photo', 'language', 'current_season', 'category', 'slug', '_runtime'])
+            ['name', 'synopsis', 'photo', 'language', 'current_season', 'category', 'slug', '_runtime', 'start_date', 'end_date'])
 
 
 class EpisodeManagerTests(TestDataMixin, TestCase):
@@ -93,7 +94,7 @@ class EpisodeManagerTests(TestDataMixin, TestCase):
         self.manager = EpisodeManager()
 
         self.episode = self.manager.create_episode(
-            datetime.datetime(2014, 6, 14, 10, 0, 0), self.programme)
+            pytz.utc.localize(datetime.datetime(2014, 6, 14, 10, 0, 0)), self.programme)
 
     def test_create_episode(self):
         self.assertIsInstance(self.episode, Episode)
@@ -109,7 +110,7 @@ class EpisodeManagerTests(TestDataMixin, TestCase):
 
     def test_issue_date(self):
         self.assertEqual(
-            self.episode.issue_date, datetime.datetime(2014, 6, 14, 10, 0, 0))
+            self.episode.issue_date, pytz.utc.localize(datetime.datetime(2014, 6, 14, 10, 0, 0)))
 
     def test_people(self):
         self.assertQuerysetEqual(
@@ -126,9 +127,9 @@ class EpisodeManagerTests(TestDataMixin, TestCase):
 
     def test_unfinished(self):
         episodes = self.manager.unfinished(
-            self.programme, datetime.datetime(2015, 1, 1))
+            self.programme, pytz.utc.localize(datetime.datetime(2015, 1, 1)))
         self.assertEqual(
-            episodes.next().issue_date, datetime.datetime(2015, 1, 1, 14, 0))
+            episodes.next().issue_date, pytz.utc.localize(datetime.datetime(2015, 1, 1, 14, 0)))
 
     def test_unfinished_none(self):
         episodes = self.manager.unfinished(Programme())
@@ -145,7 +146,7 @@ class EpisodeModelTests(TestCase):
             current_season=8)
 
         self.episode = Episode.objects.create_episode(
-            datetime.datetime(2014, 1, 14, 10, 0, 0), self.programme)
+            pytz.utc.localize(datetime.datetime(2014, 1, 14, 10, 0, 0)), self.programme)
 
     def test_model_manager(self):
         self.assertIsInstance(self.episode, Episode)

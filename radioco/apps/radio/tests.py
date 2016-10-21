@@ -13,11 +13,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
+import pytz
 import recurrence
 from django.contrib.auth.models import User
-from radioco.apps.global_settings.models import SiteConfiguration
 from radioco.apps.programmes.models import Programme, Episode, Podcast, Role, CONTRIBUTOR
 from radioco.apps.schedules.models import Schedule, ScheduleBoard
 from django.core.urlresolvers import reverse
@@ -29,11 +27,11 @@ from radioco.apps.schedules.utils import rearrange_episodes
 def create_test_data():
     # Example schedule
     schedule_board, created = ScheduleBoard.objects.get_or_create(
-        name='Example', slug='example', start_date=datetime.date(2015, 1, 1))
+        name='Example', is_active=True)
 
     # Another example schedule
     ScheduleBoard.objects.get_or_create(
-        name='Another example', start_date=datetime.date(2015, 6, 1))
+        name='Another example', is_active=False)
 
     # Programme 1
     synopsis = '''
@@ -51,17 +49,17 @@ def create_test_data():
             '_runtime': 60,
         }
     )
-
+    start_date = pytz.utc.localize(datetime.datetime(2015, 1, 1, 8, 0, 0))
     recurrences = recurrence.Recurrence(
-        dtstart=datetime.datetime(2015, 1, 1, 8, 0, 0),
+        dtstart=start_date,
         rrules=[recurrence.Rule(recurrence.DAILY)])
-
 
     Schedule.objects.get_or_create(
         programme=programme,
         type='L',
         schedule_board=schedule_board,
-        recurrences=recurrences)
+        recurrences=recurrences,
+        start_date=start_date)
 
     for number in range(1, 4):
         episode, created = Episode.objects.get_or_create(
@@ -105,6 +103,10 @@ def create_test_data():
     # Programme 2 - 5
     titles = ['', 'Places To Go', 'The best wine', 'Local Gossips', 'Classic hits']
     for programme_counter in range(1, 5):
+
+        start_date = pytz.utc.localize(
+            datetime.datetime(2015, 1, 1, 10, 0, 0) + datetime.timedelta(hours=programme_counter)
+        )
         programme, created = Programme.objects.get_or_create(
             name=titles[programme_counter],
             defaults={
@@ -118,15 +120,15 @@ def create_test_data():
         )
 
         recurrences = recurrence.Recurrence(
-            dtstart=(datetime.datetime(2015, 1, 1, 10, 0, 0) +
-                datetime.timedelta(hours=programme_counter)),
+            dtstart=start_date,
             rrules=[recurrence.Rule(recurrence.DAILY)])
 
         Schedule.objects.get_or_create(
             programme=programme,
             type='L',
             schedule_board=schedule_board,
-            recurrences=recurrences)
+            recurrences=recurrences,
+            start_date=start_date)
 
         if created:
             for season in range(1, 8):
@@ -140,7 +142,7 @@ def create_test_data():
                     )
 
     for programme in Programme.objects.all():
-        rearrange_episodes(programme, datetime.datetime(1970, 1, 1))
+        rearrange_episodes(programme, pytz.utc.localize(datetime.datetime(1970, 1, 1)))
 
 
 class TestDataMixin(object):
@@ -155,7 +157,7 @@ class TestDataMixin(object):
         cls.another_board.schedule_set.add(Schedule(
             programme=cls.programme,
             type='S',
-            start=datetime.datetime(2015, 1, 6, 16, 30, 0)))
+            start_date=pytz.utc.localize(datetime.datetime(2015, 1, 6, 16, 30, 0))))
 
 
 class RadioIntegrationTests(TestDataMixin, TestCase):

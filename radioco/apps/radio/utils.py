@@ -1,15 +1,17 @@
-import datetime
-
-import recurrence
-from django.contrib.auth.models import User
-
-from radioco.apps.global_settings.models import SiteConfiguration
-from radioco.apps.programmes.models import Programme, Episode, Role, CONTRIBUTOR, Podcast
-from radioco.apps.schedules.models import Schedule, ScheduleBoard
-from radioco.apps.schedules.utils import rearrange_episodes
 
 
 def create_example_data():
+    import datetime
+
+    import recurrence
+    from django.contrib.auth.models import User
+
+    from radioco.apps.global_settings.models import SiteConfiguration
+    from radioco.apps.programmes.models import Programme, Episode, Role, CONTRIBUTOR, Podcast
+    from radioco.apps.schedules.models import Schedule, ScheduleBoard
+    from radioco.apps.schedules.utils import rearrange_episodes
+
+
     # Create administrator
     user, created = User.objects.get_or_create(
         username='admin', defaults={
@@ -147,4 +149,19 @@ def create_example_data():
                     )
 
     for programme in Programme.objects.all():
-        rearrange_episodes(programme, datetime.datetime(1970, 1, 1))
+        rearrange_episodes(programme, pytz.utc.localize(datetime.datetime(1970, 1, 1)))
+
+
+class memorize(dict):
+    """
+    A simple cache system, use as decorator
+    """
+    def __init__(self, func):
+        self.func = func
+
+    def __call__(self, *args):
+        return self[args]
+
+    def __missing__(self, key):
+        result = self[key] = self.func(*key)
+        return result

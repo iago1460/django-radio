@@ -3,6 +3,8 @@ import datetime
 from dateutil.tz import tzoffset
 from django.utils import timezone
 
+from radioco.apps.radio.utils import memorize
+
 timestamp = datetime.datetime(2009, 1, 1)  # any unambiguous timestamp will work here
 
 
@@ -40,21 +42,6 @@ class GMT(tzoffset):
 
     def __str__(self):
         return '%s' % self._name
-
-
-class memorize(dict):
-    """
-    A simple cache system, use as decorator
-    """
-    def __init__(self, func):
-        self.func = func
-
-    def __call__(self, *args):
-        return self[args]
-
-    def __missing__(self, key):
-        result = self[key] = self.func(*key)
-        return result
 
 
 @memorize
