@@ -174,7 +174,7 @@ def docker_build():
 def docker_run(background=False):
     require('environment', provided_by=[development])
     with prefix(_setup_development_environment()):
-        with lcd(env.environment_config):
+        with lcd(env.environment_config), _generate_requirements_file(), _ssh_support():
             local('docker-compose up {0}'.format('-d' if background else ''))
             # local('docker-compose run --service-ports development_django')
 
@@ -187,10 +187,21 @@ def docker_stop():
 
 
 def docker_clean():
-    local('docker stop $(docker ps -a -q) || true')
-    local('docker rm $(docker ps -a -q) || true')
+    require('environment', provided_by=[development])
+    with prefix(_setup_development_environment()):
+        with lcd(env.environment_config):
+            local('docker-compose down')
+
+    # local('docker stop $(docker ps -a -q) || true')
+    # local('docker rm $(docker ps -a -q) || true')
 
 
 def docker_destroy():
-    docker_clean()
-    local('docker rmi --force $(docker images -q)')
+    require('environment', provided_by=[development])
+    with prefix(_setup_development_environment()):
+        with lcd(env.environment_config):
+            local('docker-compose down --rmi all')
+            # local('docker-compose down --rmi local')
+
+    # docker_clean()
+    # local('docker rmi --force $(docker images -q)')

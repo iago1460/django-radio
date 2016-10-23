@@ -1,17 +1,15 @@
-import pytz
+import datetime
 
-from radioco.apps.programmes.models import Programme, Episode
-from radioco.apps.radio.tests import TestDataMixin
-from radioco.apps.schedules.models import ScheduleBoard, Schedule, Transmission
-from radioco.apps.schedules.models import WE
+import mock
+import pytz
 from django.contrib.auth.models import User, Permission
 from django.test import TestCase
 from rest_framework import status
-from rest_framework.test import APITestCase, APIRequestFactory
-import datetime
-import mock
+from rest_framework.test import APITestCase
+
 import serializers
-import views
+from radioco.apps.radio.tests import TestDataMixin
+from radioco.apps.schedules.models import Transmission
 
 
 def mock_now():
@@ -220,7 +218,6 @@ class TestAPI(TestDataMixin, APITestCase):
                 'after': datetime.date(2015, 2, 1),
                 'before': datetime.date(2015, 2, 1),
             })
-        import pdb; pdb.set_trace()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             sorted(response.data, key=lambda t: t['start'])[0]['start'],

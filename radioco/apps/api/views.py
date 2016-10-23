@@ -81,7 +81,7 @@ class TransmissionForm(forms.Form):
     def clean(self):
         cleaned_data = super(TransmissionForm, self).clean()
         if cleaned_data.get('before') and cleaned_data.get('after'):
-            if cleaned_data['before'] > cleaned_data['after']:
+            if cleaned_data['after'] > cleaned_data['before']:
                 raise ValidationError('after date has to be greater or equals than before date.')
         return cleaned_data
 

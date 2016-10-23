@@ -13,17 +13,16 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import pytz
+import datetime
 
-from radioco.apps.programmes.models import Programme, Episode, EpisodeManager, Role
-from radioco.apps.radio.tests import TestDataMixin
+import pytz
 from django.contrib.admin.options import ModelAdmin
 from django.contrib.admin.sites import AdminSite
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError, FieldError
-from django.core.urlresolvers import reverse
 from django.test import TestCase
-import datetime
+
+from apps.schedules.tests import TestDataMixin
+from radioco.apps.programmes.models import Programme, Episode, EpisodeManager
 
 
 class ProgrammeModelTests(TestCase):

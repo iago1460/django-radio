@@ -13,26 +13,23 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import datetime
+
+import mock
 import pytz
-from dateutil.relativedelta import relativedelta
-from django.contrib.auth.models import User, Permission
+import recurrence
 from django.core.exceptions import ValidationError, FieldError
 from django.core.urlresolvers import reverse
-from django.db import models
 from django.db.models.signals import post_delete
 from django.forms import modelform_factory
 from django.test import TestCase
-import datetime
-import mock
-import recurrence
 from django.utils import timezone
 
-from radioco.apps.programmes.models import Programme, Episode
 from radioco.apps.radio.tests import TestDataMixin
+from radioco.apps.programmes.models import Programme
 from radioco.apps.schedules import utils
-from radioco.apps.schedules.models import MO, TU, WE, TH, FR, SA, SU
-from radioco.apps.schedules.models import ScheduleBoard, ScheduleBoardManager
 from radioco.apps.schedules.models import Schedule, Transmission
+from radioco.apps.schedules.models import ScheduleBoard, ScheduleBoardManager
 
 
 def mock_now():

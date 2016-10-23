@@ -19,6 +19,8 @@ from itertools import imap
 
 import pytz
 
+from radioco.apps.schedules.utils import rearrange_episodes
+from radioco.apps.radio.utils import field_has_changed
 from radioco.apps.radio.tz_utils import transform_datetime_tz, convert_date_to_datetime, \
     transform_dt_checking_dst, fix_recurrence_dst, fix_dst_tz, GMT
 from radioco.apps.programmes.models import Programme, Episode
@@ -91,10 +93,9 @@ class ScheduleBoard(models.Model):
 
 @receiver(post_delete, sender=ScheduleBoard)
 def delete_ScheduleBoard_handler(sender, **kwargs):
-    import utils
-    now = django.utils.timezone.now()
+    now = timezone.now()
     for programme in Programme.objects.all():
-        utils.rearrange_episodes(programme, now)
+        rearrange_episodes(programme, now)
 
 
 class ExcludedDates(models.Model):
@@ -134,10 +135,21 @@ class Schedule(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        if self.id and Schedule.objects.get(id=self.id).start_date != self.start_date:
-            self._refresh_recurrence_dates()
+        # TODO self.recurrences.rrules.dtend needs to be updated
+        
+        if field_has_changed(self, 'start_date'):
+            self._update_excluded_dates()
 
-        # Calculation of end_date to improve performance
+        self.end_date = self._calculate_end_date()
+
+        super(Schedule, self).save(*args, **kwargs)
+        # import utils # FIXME
+        # utils.rearrange_episodes(self.programme, timezone.now()) # FIXME
+
+    def _calculate_end_date(self):
+        """
+        Calculation of end_date to improve performance
+        """
         end_date = self.start_date + self.runtime
         rrules_until_dates = [_rrule.until for _rrule in self.recurrences.rrules]
         for date in self.recurrences.rdates + rrules_until_dates:
@@ -148,12 +160,21 @@ class Schedule(models.Model):
             possible_end_date = date + self.runtime
             if possible_end_date > end_date:
                 end_date = possible_end_date
+        return end_date
 
-        self.end_date = end_date
-
-        super(Schedule, self).save(*args, **kwargs)
-        # import utils # FIXME
-        # utils.rearrange_episodes(self.programme, timezone.now()) # FIXME
+    def _update_excluded_dates(self):
+        """
+        We need to update dates inside ExcludedDates and the recurrence library
+        """
+        tz = timezone.get_current_timezone()
+        exdates = []
+        current_start_date = transform_datetime_tz(self.start_date)
+        for excluded in ExcludedDates.objects.filter(schedule=self):
+            new_dt = tz.localize(datetime.datetime.combine(excluded.date, current_start_date.time()))
+            excluded.datetime = new_dt
+            excluded.save()
+            exdates.append(self._fix_recurrence_date(new_dt))  # Fix the datetime for django-recurrence
+        self.recurrences.exdates = exdates
 
     @property
     def runtime(self):
@@ -165,17 +186,6 @@ class Schedule(models.Model):
             return ExcludedDates.objects.get(schedule__programme=programme, datetime=dt).schedule
         except ExcludedDates.DoesNotExist:
             return None
-
-    def _refresh_recurrence_dates(self):
-        tz = timezone.get_current_timezone()
-        exdates = []
-        current_start_date = transform_datetime_tz(self.start_date)
-        for excluded in ExcludedDates.objects.filter(schedule=self):
-            new_dt = tz.localize(datetime.datetime.combine(excluded.date, current_start_date.time()))
-            excluded.datetime = new_dt
-            excluded.save()
-            exdates.append(self._fix_recurrence_date(new_dt))  # Fix the datetime for django-recurrence
-        self.recurrences.exdates = exdates
 
     def exclude_date(self, dt):
         local_dt = transform_datetime_tz(dt)
@@ -211,7 +221,7 @@ class Schedule(models.Model):
     def end(self):
         if not self.programme.end_date:
             return self.end_date
-        end_date_board = datetime.datetime.combine(self.programme.end_date, datetime.time(23, 59, 59))
+        end_date_board = datetime.datetime.combine(self.programme.end_date, datetime.time(23, 59, 59)) #FIXME: 
         if not self.end_date:
             return end_date_board
         else:

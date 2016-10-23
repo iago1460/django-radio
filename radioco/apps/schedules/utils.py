@@ -1,8 +1,7 @@
-from radioco.apps.programmes.models import Episode
-from radioco.apps.schedules.models import Schedule
 
 
 def available_dates(programme, after):
+    from radioco.apps.schedules.models import Schedule
     schedules = Schedule.objects.filter(programme=programme, type='L')
 
     while True:
@@ -22,6 +21,7 @@ def available_dates(programme, after):
 
 # XXX transaction?
 def rearrange_episodes(programme, after):  #FIXME
+    from radioco.apps.programmes.models import Episode
     episodes = Episode.objects.unfinished(programme, after)
     dates = available_dates(programme, after)
 

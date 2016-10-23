@@ -100,9 +100,30 @@ def create_test_data():
             }
         )
 
-    # Programme 2 - 5
-    titles = ['', 'Places To Go', 'The best wine', 'Local Gossips', 'Classic hits']
-    for programme_counter in range(1, 5):
+    # Programme 2
+    programme, created = Programme.objects.get_or_create(
+        name='Classic hits',
+        defaults={
+            'synopsis': synopsis,
+            'language': 'en',
+            'photo': 'defaults/example/radio_5.jpg',
+            'current_season': 7,
+            'category': 'News & Politics',
+            '_runtime': 60
+        }
+    )
+
+    Schedule.objects.get_or_create(
+        programme=programme,
+        type='L',
+        schedule_board=schedule_board,
+        recurrences=recurrence.Recurrence(rrules=[recurrence.Rule(recurrence.DAILY)]),
+        start_date=pytz.utc.localize(datetime.datetime(2015, 1, 1, 14, 0, 0)))
+
+
+    # Programme 3 - 6
+    titles = ['Places To Go', 'The best wine', 'Local Gossips']
+    for programme_counter in range(3):
 
         start_date = pytz.utc.localize(
             datetime.datetime(2015, 1, 1, 10, 0, 0) + datetime.timedelta(hours=programme_counter)
@@ -112,22 +133,18 @@ def create_test_data():
             defaults={
                 'synopsis': synopsis,
                 'language': 'en',
-                'photo': 'defaults/example/radio_%s.jpg' % str(programme_counter + 1),
+                'photo': 'defaults/example/radio_%s.jpg' % str(programme_counter + 2),
                 'current_season': 7,
                 'category': 'News & Politics',
                 '_runtime': 60
             }
         )
 
-        recurrences = recurrence.Recurrence(
-            dtstart=start_date,
-            rrules=[recurrence.Rule(recurrence.DAILY)])
-
         Schedule.objects.get_or_create(
             programme=programme,
             type='L',
             schedule_board=schedule_board,
-            recurrences=recurrences,
+            recurrences=recurrence.Recurrence(rrules=[recurrence.Rule(recurrence.DAILY)]),
             start_date=start_date)
 
         if created:

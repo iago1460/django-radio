@@ -81,7 +81,7 @@ def convert_date_to_datetime(date, time=datetime.time(0), tz=None):
     return tz.normalize(timezone.make_aware(datetime.datetime.combine(date, time)).astimezone(tz))
 
 
-def transform_dt_checking_dst(dt):
+def transform_dt_checking_dst(dt): # TODO Maybe not necessary
     dst_tz = timezone.get_default_timezone()  # Timezone in settings.py
     tz = timezone.get_current_timezone()  # Timezone in current use
     dst_offset = dt.astimezone(dst_tz).dst()

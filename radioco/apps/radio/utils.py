@@ -1,16 +1,15 @@
+import pytz
+import datetime
+import recurrence
 
 
 def create_example_data():
-    import datetime
-
-    import recurrence
     from django.contrib.auth.models import User
 
     from radioco.apps.global_settings.models import SiteConfiguration
     from radioco.apps.programmes.models import Programme, Episode, Role, CONTRIBUTOR, Podcast
     from radioco.apps.schedules.models import Schedule, ScheduleBoard
     from radioco.apps.schedules.utils import rearrange_episodes
-
 
     # Create administrator
     user, created = User.objects.get_or_create(
@@ -165,3 +164,7 @@ class memorize(dict):
     def __missing__(self, key):
         result = self[key] = self.func(*key)
         return result
+
+
+def field_has_changed(_object, field):
+    return _object.id and getattr(_object.__class__.objects.get(id=_object.id), field) != getattr(_object, field)
