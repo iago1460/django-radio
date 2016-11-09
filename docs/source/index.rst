@@ -44,6 +44,7 @@ Table of contents
    start/index
    reference/index
    contributing/index
+   documentation/modules
    upgrade/index
 
 
