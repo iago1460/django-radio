@@ -49,9 +49,9 @@ def create_test_data():
             '_runtime': 60,
         }
     )
-    start_date = pytz.utc.localize(datetime.datetime(2015, 1, 1, 8, 0, 0))
+    start_dt = pytz.utc.localize(datetime.datetime(2015, 1, 1, 8, 0, 0))
     recurrences = recurrence.Recurrence(
-        dtstart=start_date,
+        dtstart=start_dt,
         rrules=[recurrence.Rule(recurrence.DAILY)])
 
     Schedule.objects.get_or_create(
@@ -59,7 +59,7 @@ def create_test_data():
         type='L',
         schedule_board=schedule_board,
         recurrences=recurrences,
-        start_date=start_date)
+        start_dt=start_dt)
 
     for number in range(1, 4):
         episode, created = Episode.objects.get_or_create(
@@ -118,14 +118,14 @@ def create_test_data():
         type='L',
         schedule_board=schedule_board,
         recurrences=recurrence.Recurrence(rrules=[recurrence.Rule(recurrence.DAILY)]),
-        start_date=pytz.utc.localize(datetime.datetime(2015, 1, 1, 14, 0, 0)))
+        start_dt=pytz.utc.localize(datetime.datetime(2015, 1, 1, 14, 0, 0)))
 
 
     # Programme 3 - 6
     titles = ['Places To Go', 'The best wine', 'Local Gossips']
     for programme_counter in range(3):
 
-        start_date = pytz.utc.localize(
+        start_dt = pytz.utc.localize(
             datetime.datetime(2015, 1, 1, 10, 0, 0) + datetime.timedelta(hours=programme_counter)
         )
         programme, created = Programme.objects.get_or_create(
@@ -145,7 +145,7 @@ def create_test_data():
             type='L',
             schedule_board=schedule_board,
             recurrences=recurrence.Recurrence(rrules=[recurrence.Rule(recurrence.DAILY)]),
-            start_date=start_date)
+            start_dt=start_dt)
 
         if created:
             for season in range(1, 8):
@@ -174,7 +174,7 @@ class TestDataMixin(object):
         cls.another_board.schedule_set.add(Schedule(
             programme=cls.programme,
             type='S',
-            start_date=pytz.utc.localize(datetime.datetime(2015, 1, 6, 16, 30, 0))))
+            start_dt=pytz.utc.localize(datetime.datetime(2015, 1, 6, 16, 30, 0))))
 
 
 class RadioIntegrationTests(TestDataMixin, TestCase):

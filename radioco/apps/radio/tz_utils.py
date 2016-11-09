@@ -58,6 +58,13 @@ def transform_datetime_tz(dt, tz=None):
     return tz.normalize(dt.astimezone(tz))
 
 
+def transform_dt_to_default_tz(dt):
+    """
+    Transform a datetime in other timezone to the current one
+    """
+    tz = timezone.get_default_timezone()
+    return tz.normalize(dt.astimezone(tz))
+
 # def transform_datetime_tz_to_fixed_tz(dt, time=None, tz=None):
 #     """
 #     Transform a datetime in other timezone to the current one
@@ -75,10 +82,11 @@ def transform_datetime_tz(dt, tz=None):
 def convert_date_to_datetime(date, time=datetime.time(0), tz=None):
     """
     Transform a date into a timezone aware datetime taking into account the current timezone
+    Returns: A datetime in the timezone provided or in the current timezone by default
     """
-    if not tz:
-        tz = timezone.get_current_timezone()
-    return tz.normalize(timezone.make_aware(datetime.datetime.combine(date, time)).astimezone(tz))
+    if tz:
+        return tz.normalize(timezone.make_aware(datetime.datetime.combine(date, time)).astimezone(tz))
+    return timezone.make_aware(datetime.datetime.combine(date, time))
 
 
 def transform_dt_checking_dst(dt): # TODO Maybe not necessary
@@ -95,18 +103,19 @@ def fix_recurrence_dst(dt):
     Function to fix a datetime tz aware with an incorrect offset
     Returns: A datetime tz aware in the new time
     """
-    tz = dt.tzinfo
-    return tz.localize(datetime.datetime.combine(dt.date(), dt.time()))
+    if dt:
+        tz = dt.tzinfo
+        return tz.localize(datetime.datetime.combine(dt.date(), dt.time()))
+    return None
 
 
-
-def fix_dst_tz(dt, start_date): #TODO
+def fix_dst_tz(dt, start_dt): #TODO
     # if dt.tzinfo == pytz.UTC:
     #     return dt # the date was already cleaned? FIXME problem when start_date changes
 
-    dst_tz = start_date.tzinfo
+    dst_tz = start_dt.tzinfo
     dst_offset = dt.astimezone(dst_tz).dst()
-    start_dst_offset = start_date.dst()
+    start_dst_offset = start_dt.dst()
     if dst_offset and not start_dst_offset:  # If dst return a date plus the offset
         # FIXME there is no solution, every time we are going to incremet this
         return tz.normalize((dt + dst_offset).astimezone(tz))

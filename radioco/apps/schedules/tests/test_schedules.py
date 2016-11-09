@@ -51,7 +51,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
     def setUp(self):
         self.schedule_board = ScheduleBoard.objects.create(
             name='Board',
-            start_date=datetime.date(2014, 1, 1),
+            start_dt=datetime.date(2014, 1, 1),
             end_date=datetime.date(2015, 6, 1))
 
         self.recurrences = recurrence.Recurrence(
@@ -73,7 +73,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
         with self.assertRaises(FieldError):
             schedule.runtime
 
-    def test_start_date_schedule_board_none(self):
+    def test_start_dt_schedule_board_none(self):
         schedule = Schedule(
             recurrences=self.recurrences,
             programme=Programme(),
@@ -91,7 +91,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
             datetime.datetime(2015, 1, 1, 14, 0, 0))
 
     def test_start_lt_schedule_board(self):
-        self.schedule_board.start_date = datetime.date(2014, 1, 14)
+        self.schedule_board.start_dt = datetime.date(2014, 1, 14)
         self.assertEqual(
             self.schedule.start, datetime.datetime(2014, 1, 14, 0, 0, 0))
 
@@ -115,7 +115,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
         self.assertIsNone(schedule.end)
 
     def test_rr_start(self):
-        self.schedule_board.start_date = datetime.date(2014, 1, 14)
+        self.schedule_board.start_dt = datetime.date(2014, 1, 14)
         self.assertEqual(
             self.schedule.rr_start, datetime.datetime(2014, 1, 6, 14, 0, 0))
 
@@ -156,7 +156,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
             datetime.datetime(2014, 1, 13, 14, 0))
 
     def test_date_after_later_start_by_board(self):
-        self.schedule_board.start_date = datetime.date(2014, 1, 7)
+        self.schedule_board.start_dt = datetime.date(2014, 1, 7)
         self.assertEqual(
             self.schedule.date_after(datetime.datetime(2014, 1, 1)),
             datetime.datetime(2014, 1, 13, 14, 0))
@@ -186,7 +186,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
              datetime.datetime(2014, 1, 8, 14, 0)])
 
     def test_dates_between_later_start_by_board(self):
-        self.schedule_board.start_date = datetime.date(2014, 1, 7)
+        self.schedule_board.start_dt = datetime.date(2014, 1, 7)
         self.assertListEqual(
             self.schedule.dates_between(
                 datetime.datetime(2014, 1, 1), datetime.datetime(2014, 1, 14)),
@@ -381,7 +381,7 @@ class ScheduleBoardManagerTests(TestDataMixin, TestCase):
 class ScheduleBoardValidationTests(TestCase):
     def setUp(self):
         self.ScheduleBoardForm = modelform_factory(
-            ScheduleBoard, fields=("name", "start_date", "end_date"))
+            ScheduleBoard, fields=("name",))
 
 # XXX there is something fishy with form validation, check!
 #    def test_name_required(self):
@@ -397,10 +397,10 @@ class ScheduleBoardValidationTests(TestCase):
 #                ValidationError, "{'slug':[u'This field cannot be blank.']}"):
 #            board.full_clean()
 
-    def test_start_date_gt_end_date(self):
+    def test_start_dt_gt_end_date(self):
         board = ScheduleBoard(
             name="test",
-            start_date=datetime.date(2015, 1, 14),
+            start_dt=datetime.date(2015, 1, 14),
             end_date=datetime.date(2015, 1, 1))
         with self.assertRaisesMessage(
                 ValidationError,
@@ -417,7 +417,7 @@ class ScheduleBoardModelTests(TestDataMixin, TestCase):
     def test_save_rearange_episodes(self):
         self.assertEqual(
             self.episode.issue_date, datetime.datetime(2015, 1, 1, 14, 0))
-        self.schedule_board.start_date = datetime.date(2015, 1, 14)
+        self.schedule_board.start_dt = datetime.date(2015, 1, 14)
         self.schedule_board.save()
         self.episode.refresh_from_db()
         self.assertEqual(

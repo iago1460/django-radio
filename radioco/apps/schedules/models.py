@@ -22,7 +22,7 @@ import pytz
 from radioco.apps.schedules.utils import rearrange_episodes
 from radioco.apps.radio.utils import field_has_changed
 from radioco.apps.radio.tz_utils import transform_datetime_tz, convert_date_to_datetime, \
-    transform_dt_checking_dst, fix_recurrence_dst, fix_dst_tz, GMT
+    transform_dt_checking_dst, fix_recurrence_dst, fix_dst_tz, GMT, transform_dt_to_default_tz
 from radioco.apps.programmes.models import Programme, Episode
 from dateutil import rrule
 from django.core.exceptions import ValidationError
@@ -34,6 +34,7 @@ from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.utils import six
 from django.utils.translation import ugettext_lazy as _
+from django.db.models.signals import pre_save
 from recurrence.fields import RecurrenceField
 import datetime
 from django.utils import timezone
@@ -66,15 +67,15 @@ WEEKDAY_CHOICES = (
 
 class ScheduleBoardManager(models.Manager):
     # XXX get from global setting
-    def current(self, date=None):
+    def current(self, date=None): # FIXME!!! 
         if not date:
             date = datetime.date.today()
 
         current_board = (ScheduleBoard.objects
-                  .order_by("-start_date")
+                  .order_by("-start_date") #FIXME
                   .filter(
-                      Q(start_date__lte=date, end_date__isnull=True) |
-                      Q(start_date__lte=date, end_date__gte=date))
+                      Q(start_date__lte=date, end_dt__isnull=True) |
+                      Q(start_date__lte=date, end_dt__gte=date))
                   .first())
         return current_board
 
@@ -99,13 +100,24 @@ def delete_ScheduleBoard_handler(sender, **kwargs):
 
 
 class ExcludedDates(models.Model):
+    """
+    Helper to improve performance
+    """
     schedule = models.ForeignKey('Schedule')
     datetime = models.DateTimeField(db_index=True)
 
     @property
     def date(self):
-        local_dt = transform_datetime_tz(self.datetime)
+        local_dt = transform_dt_to_default_tz(self.datetime)
         return local_dt.date()
+
+    def get_new_excluded_datetime(self, new_dt):
+        """
+        Returns: A new dt to be excluded in that date
+        """
+        default_tz = timezone.get_default_timezone()
+        new_dt_in_default_tz = transform_datetime_tz(new_dt, tz=default_tz)
+        default_tz.localize(datetime.datetime.combine(self.date, new_dt_in_default_tz.time()))
 
 
 class Schedule(models.Model):
@@ -118,62 +130,67 @@ class Schedule(models.Model):
     schedule_board = models.ForeignKey(ScheduleBoard, verbose_name=_("schedule board"))
     recurrences = RecurrenceField(verbose_name=_("recurrences"))
 
-    start_date = models.DateTimeField(verbose_name=_('start date'))
+    start_dt = models.DateTimeField(verbose_name=_('start date'))
 
-    end_date = models.DateTimeField(
+    end_dt = models.DateTimeField(  # TODO: check if it's necessary
         blank=True, null=True, verbose_name=_('end date'),
+        help_text=_('This field is dynamically generated based on the programme duration')
+    )
+
+    effective_start_dt = models.DateTimeField(
+        blank=True, null=True, verbose_name=_('first effective start date'),
+        help_text=_('This field is dynamically generated to improve performance')
+    )
+
+    effective_end_dt = models.DateTimeField(
+        blank=True, null=True, verbose_name=_('last effective end date'),
         help_text=_('This field is dynamically generated to improve performance')
     )
 
     from_collection = models.ForeignKey(
-        'self', blank=True, null=True, on_delete=models.SET_NULL, related_name='child_schedules'
+        'self', blank=True, null=True, on_delete=models.SET_NULL, related_name='child_schedules',
+        help_text=_("Parent schedule (only happens when it is changed from recurrence.")
     )
 
     source = models.ForeignKey(
         'self', blank=True, null=True, on_delete=models.SET_NULL, verbose_name=_("source"),
-        help_text=_("It is used when is a broadcast.")
+        help_text=_("Main schedule when (if this is a broadcast).")
     )
 
     def save(self, *args, **kwargs):
-        # TODO self.recurrences.rrules.dtend needs to be updated
-        
-        if field_has_changed(self, 'start_date'):
+        self._clean_recurrence_dates()
+        if field_has_changed(self, 'start_dt'):
             self._update_excluded_dates()
 
-        self.end_date = self._calculate_end_date()
+        self.effective_end_dt = calculate_effective_schedule_end_dt(self)
+        self.effective_start_dt = calculate_effective_schedule_start_dt(self)
+
+        self.end_dt = self.start_dt + self.runtime
 
         super(Schedule, self).save(*args, **kwargs)
         # import utils # FIXME
         # utils.rearrange_episodes(self.programme, timezone.now()) # FIXME
 
-    def _calculate_end_date(self):
+    def _clean_recurrence_dates(self):
         """
-        Calculation of end_date to improve performance
+        We want to include the whole day
         """
-        end_date = self.start_date + self.runtime
-        rrules_until_dates = [_rrule.until for _rrule in self.recurrences.rrules]
-        for date in self.recurrences.rdates + rrules_until_dates:
-            if not date:
-                # We cannot know the end date of a recurrence because at least one rule doesn't have an end date
-                end_date = None
-                break
-            possible_end_date = date + self.runtime
-            if possible_end_date > end_date:
-                end_date = possible_end_date
-        return end_date
+        default_tz = timezone.get_default_timezone()
+        for rrule in self.recurrences.rrules:
+            if rrule.until:
+                rrule.until = default_tz.localize(datetime.datetime.combine(
+                    transform_dt_to_default_tz(rrule.until).date(), datetime.time(23, 59, 59)))
 
     def _update_excluded_dates(self):
         """
         We need to update dates inside ExcludedDates and the recurrence library
         """
-        tz = timezone.get_current_timezone()
         exdates = []
-        current_start_date = transform_datetime_tz(self.start_date)
         for excluded in ExcludedDates.objects.filter(schedule=self):
-            new_dt = tz.localize(datetime.datetime.combine(excluded.date, current_start_date.time()))
-            excluded.datetime = new_dt
+            new_excluded_dt = excluded.get_new_excluded_datetime(self.start_dt)
+            excluded.datetime = new_excluded_dt
             excluded.save()
-            exdates.append(self._fix_recurrence_date(new_dt))  # Fix the datetime for django-recurrence
+            exdates.append(self._fix_recurrence_date(new_excluded_dt))
         self.recurrences.exdates = exdates
 
     @property
@@ -204,39 +221,16 @@ class Schedule(models.Model):
     def has_recurrences(self):
         return self.recurrences
 
-    # @property
-    # def start(self):
-    #     if not self.programme.start_date:
-    #         return self.start_date
-    #     start_date_board = datetime.datetime.combine(
-    #         self.programme.start_date, datetime.time(0)
-    #     )
-    #     return max(start_date_board, self.start_date)
-    #
-    # @start.setter
-    # def start(self, start_date):
-    #     self.start_date = start_date
-
-    @property
-    def end(self):
-        if not self.programme.end_date:
-            return self.end_date
-        end_date_board = datetime.datetime.combine(self.programme.end_date, datetime.time(23, 59, 59)) #FIXME: 
-        if not self.end_date:
-            return end_date_board
-        else:
-            return min(end_date_board, self.end_date)
-
     def dates_between(self, after, before):
         """
             Return a sorted list of dates between after and before
         """
         after_date = transform_datetime_tz(self._merge_after(after))
         before_date = transform_datetime_tz(self._merge_before(before))
-        start_date = transform_datetime_tz(self.start_date)
+        start_dt = transform_datetime_tz(self.start_dt)
 
         # We need to send the dates in the current timezone
-        recurrence_dates_between = self.recurrences.between(after_date, before_date, inc=True, dtstart=start_date)
+        recurrence_dates_between = self.recurrences.between(after_date, before_date, inc=True, dtstart=start_dt)
 
         for date in recurrence_dates_between:
             dt = fix_recurrence_dst(date)  # Truncate date
@@ -244,19 +238,15 @@ class Schedule(models.Model):
 
     def date_before(self, before):
         before_date = transform_datetime_tz(self._merge_before(before))
-        start_date = transform_datetime_tz(self.start_date)
-        date = self.recurrences.before(before_date, inc=True, dtstart=start_date)
-        if date:
-            return fix_recurrence_dst(date)
-        return None
+        start_dt = transform_datetime_tz(self.start_dt)
+        date = self.recurrences.before(before_date, inc=True, dtstart=start_dt)
+        return fix_recurrence_dst(date)
 
     def date_after(self, after, inc=True):
         after_date = transform_datetime_tz(self._merge_after(after))
-        start_date = transform_datetime_tz(self.start_date)
-        date = self.recurrences.after(after_date, inc, dtstart=start_date)
-        if date:
-            return fix_recurrence_dst(date)
-        return None
+        start_dt = transform_datetime_tz(self.start_dt)
+        date = self.recurrences.after(after_date, inc, dtstart=start_dt)
+        return fix_recurrence_dst(date)
 
     def _fix_recurrence_date(self, dt):
         """
@@ -265,34 +255,102 @@ class Schedule(models.Model):
 
         Return: A datetime in the *local timezone*
         """
-        current_dt = transform_datetime_tz(dt)
-        current_start_date = transform_datetime_tz(self.start_date)
+        current_dt = transform_dt_to_default_tz(dt)
+        current_start_dt = transform_dt_to_default_tz(self.start_dt)
 
-        tz = GMT(current_start_date.utcoffset().total_seconds())  # start_date DST naive timezone
-        fixed_dt = transform_datetime_tz(
-            tz.localize(datetime.datetime.combine(current_dt.date(), current_start_date.time()))
+        tz = GMT(current_start_dt.utcoffset().total_seconds())  # start_date DST naive timezone
+        fixed_dt = transform_dt_to_default_tz(
+            tz.localize(datetime.datetime.combine(current_dt.date(), current_start_dt.time()))
         )
         return fixed_dt
-
-    def _merge_before(self, before):
-        """
-        Return the smaller last date taking into account the programme constraints
-        """
-        if not self.end:
-            return before
-        return min(before, self.end)
 
     def _merge_after(self, after):
         """
         Return the greater first date taking into account the programme constraints
         """
-        if not self.programme.start_date:
-            return after
-        programme_start_date = convert_date_to_datetime(self.programme.start_date, tz=pytz.utc) #TODO: should be utc?
-        return max(after, programme_start_date)
+        assert self.effective_start_dt
+        return max(after, self.effective_start_dt)
+
+    def _merge_before(self, before):
+        """
+        Return the smaller last date taking into account the programme constraints
+        """
+        if not self.effective_end_dt:
+            return before
+        return min(before, self.effective_end_dt)
 
     def __unicode__(self):
-        return ' - '.join([self.start_date.strftime('%A'), self.start_date.strftime('%X')])
+        return ' - '.join([self.start_dt.strftime('%A'), self.start_dt.strftime('%X')])
+
+
+def calculate_effective_schedule_start_dt(schedule):
+    """
+    Calculation of end_dt to improve performance
+    """
+    schedule_start_dt = transform_datetime_tz(schedule.start_dt)
+
+    # If there are no rrules
+    programme_start_dt = schedule.programme.start_dt
+    if not schedule.has_recurrences():
+        if not programme_start_dt or programme_start_dt <= schedule_start_dt:
+            return schedule_start_dt
+        return None
+
+    # Get first date
+    after_dt = schedule_start_dt
+    if schedule.programme.start_dt:
+        after_dt = max(schedule_start_dt, schedule.programme.start_dt)
+    first_start_dt = schedule.recurrences.after(after_dt, True, dtstart=schedule_start_dt)
+    if first_start_dt:
+        if schedule.programme.end_dt and schedule.programme.end_dt < first_start_dt:
+            return None
+        return fix_recurrence_dst(first_start_dt)
+    return None
+
+
+def calculate_effective_schedule_end_dt(schedule):
+    """
+    Calculation of end_dt to improve performance
+    """
+    schedule_start_dt = transform_datetime_tz(schedule.start_dt)
+    programme_end_dt = schedule.programme.end_dt
+
+    # If there are no rrules
+    if not schedule.has_recurrences():
+        if not programme_end_dt or programme_end_dt >= schedule_start_dt:
+            return schedule_start_dt + schedule.runtime
+        return None
+
+    # If we have a programme restriction
+    if programme_end_dt:
+        last_effective_start_date = schedule.recurrences.before(programme_end_dt, dtstart=schedule_start_dt)
+        if last_effective_start_date:
+            if schedule.programme.start_dt and schedule.programme.start_dt > last_effective_start_date:
+                return None
+            return fix_recurrence_dst(last_effective_start_date) + schedule.runtime
+
+    rrules_until_dates = [_rrule.until for _rrule in schedule.recurrences.rrules]
+
+    # If we have a rrule without a until date we cannot know the last date
+    if any(map(lambda x: x is None, rrules_until_dates)):
+        return None
+
+    # Get the biggest possible start_date. It could be that the biggest date is excluded
+    possible_limit_dates = schedule.recurrences.rdates + rrules_until_dates
+    biggest_date = max(possible_limit_dates)
+    last_effective_start_date = schedule.recurrences.before(biggest_date, True, dtstart=schedule_start_dt)
+    if last_effective_start_date:
+        if schedule.programme.start_dt and schedule.programme.start_dt > last_effective_start_date:
+            return None
+        return fix_recurrence_dst(last_effective_start_date) + schedule.runtime
+    return None
+
+
+# def update_performance_in_schedule(sender, instance, **kwargs):
+#     instance.effective_end_dt = calculate_effective_schedule_end_dt(instance)
+#     instance.effective_start_dt = calculate_effective_schedule_start_dt(instance)
+# 
+# pre_save.connect(update_performance_in_schedule, sender=Schedule, dispatch_uid='calculate_effective_schedule_end_dt')
 
 
 # XXX entry point for transmission details (episode, recordings, ...)
@@ -324,8 +382,8 @@ class Transmission(object):
     @classmethod
     def at(cls, at):
         schedules = Schedule.objects.filter(
-            Q(start_date__lte=at, end_date__gt=at) |
-            Q(start_date__lte=at, end_date__isnull=True)
+            Q(start_dt__lte=at, end_dt__gt=at) |
+            Q(start_dt__lte=at, end_dt__isnull=True)
         ) # TODO: check!!
         for schedule in schedules:
             date = schedule.date_before(at)

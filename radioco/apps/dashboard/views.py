@@ -101,7 +101,7 @@ def change_broadcast(request, pk):
 def full_calendar(request):
     try:
         if schedule_permissions(request.user):
-            schedule_boards = ScheduleBoard.objects.all().order_by('start_date')
+            schedule_boards = ScheduleBoard.objects.all().order_by('start_date') #FIXME: start_date
             if not schedule_boards:
                 ScheduleBoard.objects.create(name="Unnamed")
                 schedule_boards = ScheduleBoard.objects.all()
@@ -215,7 +215,7 @@ def programmes(request):
     start_date = timezone.now().date()
     if scheduleBoard.start_date and scheduleBoard.start_date > start_date:
         start_date = scheduleBoard.start_date
-    programmes = Programme.actives(start_date, scheduleBoard.end_date).order_by('name')
+    programmes = Programme.actives(start_date, scheduleBoard.end_date).order_by('name')  #FIXME
     response_data = []
     for programme in programmes:
         response_data.append({'title': programme.name, 'runtime': programme._runtime, 'programmeId': programme.id})

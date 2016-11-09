@@ -4,7 +4,7 @@ from radioco.apps.schedules.models import Schedule, ScheduleBoard
 from rest_framework import serializers
 
 
-class DateTimeFieldTz(serializers.DateTimeField):
+class DateTimeFieldTz(serializers.DateTimeField): # TODO: DateTimeFieldTz and TimezoneSerializer not necessary
 
     def to_representation(self, date, tz):
         # date_in_new_tz = tz.normalize(date.astimezone(tz)) # FIXME
@@ -76,7 +76,7 @@ class EpisodeSerializer(serializers.ModelSerializer):
 class ScheduleSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
     programme = serializers.SlugRelatedField(slug_field='slug', queryset=Programme.objects.all())
-    start = serializers.DateTimeField(source='start_date')
+    start = serializers.DateTimeField(source='start_dt')
     runtime = serializers.ReadOnlyField()
 
     class Meta:

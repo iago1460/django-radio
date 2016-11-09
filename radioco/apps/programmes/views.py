@@ -43,6 +43,7 @@ def episode_detail(request, slug, season_number, episode_number):
         episode = Episode.objects.select_related(
             'podcast', 'programme'
         ).get(programme=programme, season=season_number, number_in_season=episode_number)
+        # TODO: why am I adding 1 hour?
         episode_end_date = episode.issue_date + episode.runtime + datetime.timedelta(hours=1)
     except:
         pass

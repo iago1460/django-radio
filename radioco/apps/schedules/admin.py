@@ -96,6 +96,16 @@ class ScheduleBoardAdmin(admin.ModelAdmin):
 
 @admin.register(Schedule)
 class ScheduleAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (None, {
+            'fields': ('programme', 'type', 'start_dt', 'end_dt', 'recurrences')
+        }),
+        (_('Advanced options'), {
+            'classes': ('collapse',),
+            'fields': ('effective_start_dt', 'effective_end_dt', 'from_collection', 'source'),
+        }),
+    )
+    readonly_fields = ('end_dt', 'effective_start_dt', 'effective_end_dt', 'source', 'from_collection')
     change_list_template = "admin/schedules/calendar.html"
 
     def changelist_view(self, request, extra_context=dict()):

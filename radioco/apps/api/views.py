@@ -160,7 +160,7 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
         #         Transmission(schedule_1, date_3)
         #     ]
         
-        # FIXME:  by default (if not requested tz) this should return dates in UTZ!!!
+        # FIXME:  by default (if not requested tz) this should return dates in UTC!!!
 
         serializer = self.serializer_class(transmissions, timezone=requested_timezone, many=True)
         return Response(serializer.data)
@@ -215,8 +215,8 @@ class TransmissionOperationViewSet(ModelViewSetWithoutCreate):
                 new_schedule.id = None
                 new_schedule.from_collection = schedule
                 new_schedule.recurrences = Recurrence()
-                new_schedule.start_date = new_start
+                new_schedule.start_dt = new_start
                 new_schedule.save()
             else:
-                schedule.start_date = new_start
+                schedule.start_dt = new_start
                 schedule.save()

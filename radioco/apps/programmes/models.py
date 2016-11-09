@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+import pytz
 from ckeditor.fields import RichTextField
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -22,11 +22,13 @@ from django.core.urlresolvers import reverse
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Q
+from django.db.models.signals import post_save, pre_save
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 import datetime
 
+from radioco.apps.radio.utils import field_has_changed
 
 if hasattr(settings, 'PROGRAMME_LANGUAGES'):
     PROGRAMME_LANGUAGES = settings.PROGRAMME_LANGUAGES
@@ -110,6 +112,20 @@ class Programme(models.Model):
     def runtime(self, value):
         self._runtime = value
 
+    @property
+    def start_dt(self):
+        if not self.start_date:
+            return None
+        tz = timezone.get_current_timezone()
+        return tz.localize(datetime.datetime.combine(self.start_date, datetime.time())).astimezone(pytz.utc)
+
+    @property
+    def end_dt(self):
+        if not self.end_date:
+            return None
+        tz = timezone.get_current_timezone()
+        return tz.localize(datetime.datetime.combine(self.end_date, datetime.time(23, 59, 59))).astimezone(pytz.utc)
+
     # XXX form
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
@@ -132,6 +148,23 @@ class Programme(models.Model):
 
     def __unicode__(self):
         return u"%s" % (self.name)
+
+
+def update_schedule_performance(programme):
+    # from radioco.apps.schedules.models import calculate_effective_schedule_start_dt, calculate_effective_schedule_end_dt
+    for schedule in programme.schedule_set.all():
+        # schedule.effective_start_dt = calculate_effective_schedule_start_dt(schedule)
+        # schedule.effective_end_dt = calculate_effective_schedule_end_dt(schedule)
+        schedule.save()  # TODO: improve performance, update objects in bulk
+
+
+def update_schedule_if_dt_has_changed(sender, instance, **kwargs):
+    if field_has_changed(instance, 'start_date') or field_has_changed(instance, 'end_date'):
+        update_schedule_performance(instance)
+
+
+pre_save.connect(
+    update_schedule_if_dt_has_changed, sender=Programme, dispatch_uid='update_schedule_if_dt_has_changed')
 
 
 class EpisodeManager(models.Manager):
