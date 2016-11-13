@@ -104,8 +104,8 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
             raise DRFValidationError(data.errors)
         requested_timezone = data.cleaned_data.get('timezone')
 
-        after = data.cleaned_data.get('after')
-        before = data.cleaned_data.get('before')
+        after = data.cleaned_data['after']
+        before = data.cleaned_data['before']
 
         # if requested_timezone:
         #     timezone_without_dst = get_timezone_offset(requested_timezone) # forced timezone
@@ -127,7 +127,7 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
         # before_date = transform_dt_checking_dst(
         #     tz.localize(datetime.datetime.combine(before, datetime.time(23, 59, 59)))
         # )
-        tz = requested_timezone or timezone.get_current_timezone()
+        tz = requested_timezone or pytz.utc
         after_date = tz.localize(datetime.datetime.combine(after, datetime.time()))
         before_date = tz.localize(datetime.datetime.combine(before, datetime.time(23, 59, 59)))
 

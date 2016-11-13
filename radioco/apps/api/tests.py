@@ -58,9 +58,12 @@ class TestSerializers(TestDataMixin, TestCase):
         )
         schedule_id = self.schedule.id
         self.assertDictEqual(serializer.data, {
+            'id': schedule_id,
+            'schedule': schedule_id,
+            'source': None,
+            'type': u'L',
             'start': '2015-01-06T14:00:00',
             'end': '2015-01-06T15:00:00',
-            'schedule': schedule_id,
             'name': u'Classic hits',
             'slug': u'classic-hits',
             'url': u'/programmes/classic-hits/'})
@@ -186,18 +189,30 @@ class TestAPI(TestDataMixin, APITestCase):
 #        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     @mock.patch('django.utils.timezone.now', mock_now)
-    def test_transmissions(self):
-        response = self.client.get('/api/2/transmissions')
+    def test_transmissions_without_parameters(self):
+        response = self.client.get(
+            '/api/2/transmissions',
+            {
+                'after': datetime.date(2015, 2, 1),
+                'before': datetime.date(2015, 2, 7),
+            })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue(len(response.data)>20)
+
 
     def test_incorrect_transmission_queries(self):
         response = self.client.get('/api/2/transmissions')
+        self.assertEqual(response.data['after'], [u'This field is required.'])
+        self.assertEqual(response.data['before'], [u'This field is required.'])
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
         response = self.client.get('/api/2/transmissions', {'after': datetime.date(2015, 2, 1)})
+        self.assertEqual(response.data['before'], [u'This field is required.'])
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
         response = self.client.get('/api/2/transmissions', {'before': datetime.date(2015, 2, 1)})
+        self.assertEqual(response.data['after'], [u'This field is required.'])
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
         response = self.client.get('/api/2/transmissions', {'after': datetime.date(2015, 2, 2), 'before': datetime.date(2015, 2, 1)})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -205,13 +220,17 @@ class TestAPI(TestDataMixin, APITestCase):
     def test_transmission_list_filter_non_active_board(self):
         schedule_board_id = self.another_board.id
         response = self.client.get(
-            '/api/2/transmissions', {'schedule_board': schedule_board_id})
+            '/api/2/transmissions',
+            {
+                'schedule_board': schedule_board_id,
+                'after': datetime.date(2015, 1, 1), 'before': datetime.date(2015, 2, 1)
+            })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertListEqual(
             map(lambda t: (t['slug'], t['start']), response.data),
-            [(u'classic-hits', '2015-01-06T16:30:00')])
+            [(u'classic-hits', '2015-01-06T16:30:00Z')])
 
-    def test_transmission_after(self):
+    def test_transmission_same_day(self):
         response = self.client.get(
             '/api/2/transmissions',
             {
@@ -221,16 +240,17 @@ class TestAPI(TestDataMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             sorted(response.data, key=lambda t: t['start'])[0]['start'],
-            '2015-02-01T08:00:00')
+            '2015-02-01T08:00:00Z')
 
     @mock.patch('django.utils.timezone.now', mock_now)
     def test_transmission_before(self):
         response = self.client.get(
-            '/api/2/transmissions', {'before': datetime.date(2015, 1, 14)})
+            '/api/2/transmissions',
+            {'after': datetime.date(2015, 1, 14), 'before': datetime.date(2015, 1, 14)})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             sorted(response.data, key=lambda t: t['start'])[-1]['start'],
-            '2015-01-14T14:00:00')
+            '2015-01-14T14:00:00Z')
 
     @mock.patch('django.utils.timezone.now', mock_now)
     def test_transmission_now(self):
@@ -238,10 +258,9 @@ class TestAPI(TestDataMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertListEqual(
             map(lambda t: (t['slug'], t['start']), response.data),
-            [(u'classic-hits', '2015-01-06T14:00:00')])
+            [(u'classic-hits', '2015-01-06T14:00:00Z')])
 
     def test_transmissions_filter_board_nonexistend(self):
         response = self.client.get(
             '/api/2/transmissions', {'schedule_board': 9999})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
