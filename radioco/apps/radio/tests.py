@@ -49,17 +49,13 @@ def create_test_data():
             '_runtime': 60,
         }
     )
-    start_dt = pytz.utc.localize(datetime.datetime(2015, 1, 1, 8, 0, 0))
-    recurrences = recurrence.Recurrence(
-        dtstart=start_dt,
-        rrules=[recurrence.Rule(recurrence.DAILY)])
 
     Schedule.objects.get_or_create(
         programme=programme,
         type='L',
         schedule_board=schedule_board,
-        recurrences=recurrences,
-        start_dt=start_dt)
+        recurrences=recurrence.Recurrence(rrules=[recurrence.Rule(recurrence.DAILY)]),
+        start_dt=pytz.utc.localize(datetime.datetime(2015, 1, 1, 8, 0, 0)))
 
     for number in range(1, 4):
         episode, created = Episode.objects.get_or_create(
@@ -119,6 +115,15 @@ def create_test_data():
         schedule_board=schedule_board,
         recurrences=recurrence.Recurrence(rrules=[recurrence.Rule(recurrence.DAILY)]),
         start_dt=pytz.utc.localize(datetime.datetime(2015, 1, 1, 14, 0, 0)))
+
+    for number in range(1, 6):
+        Episode.objects.create(
+            title='Episode %s' % number,
+            programme=programme,
+            summary=synopsis,
+            season=1,
+            number_in_season=number,
+        )
 
 
     # Programme 3 - 6

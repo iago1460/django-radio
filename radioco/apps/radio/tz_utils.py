@@ -98,14 +98,17 @@ def transform_dt_checking_dst(dt): # TODO Maybe not necessary
     return tz.normalize(dt.astimezone(tz))
 
 
-def fix_recurrence_dst(dt):
+def fix_recurrence_dst(dt, requested_tz=None):
     """
     Function to fix a datetime tz aware with an incorrect offset
     Returns: A datetime tz aware in the new time
     """
     if dt:
         tz = dt.tzinfo
-        return tz.localize(datetime.datetime.combine(dt.date(), dt.time()))
+        fixed_dt = tz.localize(datetime.datetime.combine(dt.date(), dt.time()))
+        if requested_tz:
+            fixed_dt = transform_datetime_tz(fixed_dt, requested_tz)
+        return fixed_dt
     return None
 
 

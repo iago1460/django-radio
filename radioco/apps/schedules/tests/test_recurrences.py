@@ -34,15 +34,15 @@ from radioco.apps.schedules.models import ScheduleBoard, ScheduleBoardManager
 
 class RecurrenceTests(TestDataMixin, TestCase):
     def setUp(self):
-        self.daily_recurrence = recurrence.Recurrence(
-            dtstart=datetime.datetime(2014, 1, 6, 14, 0, 0),
-            dtend=datetime.datetime(2014, 1, 31, 14, 0, 0),
-            rrules=[recurrence.Rule(recurrence.DAILY)])
-
-        self.weekly_recurrence = recurrence.Recurrence(
-            dtstart=datetime.datetime(2014, 1, 6, 14, 0, 0),
-            dtend=datetime.datetime(2014, 1, 31, 14, 0, 0),
-            rrules=[recurrence.Rule(recurrence.WEEKLY)])
+        # self.daily_recurrence = recurrence.Recurrence(
+        #     dtstart=datetime.datetime(2014, 1, 6, 14, 0, 0),
+        #     dtend=datetime.datetime(2014, 1, 31, 14, 0, 0),
+        #     rrules=[recurrence.Rule(recurrence.DAILY)])
+        # 
+        # self.weekly_recurrence = recurrence.Recurrence(
+        #     dtstart=datetime.datetime(2014, 1, 6, 14, 0, 0),
+        #     dtend=datetime.datetime(2014, 1, 31, 14, 0, 0),
+        #     rrules=[recurrence.Rule(recurrence.WEEKLY)])
 
         self.monthly_recurrence = recurrence.Recurrence(
             rrules=[recurrence.Rule(recurrence.MONTHLY)])

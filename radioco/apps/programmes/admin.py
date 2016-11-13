@@ -207,7 +207,7 @@ class NonStaffEpisodeAdminForm(forms.ModelForm):
                 after = now
 
             try:
-                utils.available_dates(programme, after).next()
+                utils.next_dates(programme, after).next()
             except StopIteration:
                 raise forms.ValidationError(_('There are no available schedules.'))
         return programme
@@ -284,7 +284,7 @@ class NonStaffEpisodeAdmin(admin.ModelAdmin):
                     after = now
             else:
                 after = now
-            date = utils.available_dates(programme, after).next()
+            date = utils.next_dates(programme, after).next()
             Episode.objects.create_episode(
                 episode=obj, last_episode=last_episode,
                 date=date, programme=programme)

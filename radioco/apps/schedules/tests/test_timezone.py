@@ -4,8 +4,10 @@ import mock
 import pytz
 import recurrence
 from django.test import TestCase
+from django.test import override_settings
 from django.utils import timezone
 
+from radioco.apps.radio.tz_utils import transform_dt_to_default_tz
 from radioco.apps.programmes.models import Programme
 from radioco.apps.radio.tests import TestDataMixin
 from radioco.apps.schedules.models import Schedule
@@ -32,6 +34,9 @@ def test_CET_transitions(self):
     assert AFTER_CET_TRANSITION == pytz.utc.localize(datetime.datetime(2017, 10, 29, 1, 0, 0))
 
 
+@override_settings(TIME_ZONE='Europe/Madrid')
+# @mock.patch('django.utils.timezone.get_default_timezone', spain_tz)
+# @mock.patch('django.utils.timezone.get_current_timezone', spain_tz)
 class ScheduleModelTests(TestDataMixin, TestCase):
 
     def setUp(self):
@@ -70,13 +75,17 @@ class ScheduleModelTests(TestDataMixin, TestCase):
             ),
             start_dt=SPAIN_TZ.localize(datetime.datetime(2017, 10, 28, 14, 00, 00)))
 
+    def test_transform_dt_to_default_tz(self):
+        utc_dt = pytz.utc.localize(datetime.datetime(2017, 1, 1, 0, 00, 00))
+        spain_dt = transform_dt_to_default_tz(utc_dt)
+        self.assertEquals(spain_dt.tzinfo.zone, 'Europe/Madrid')
+        self.assertEquals(spain_dt, SPAIN_TZ.localize(datetime.datetime(2017, 1, 1, 1, 0, 0)))
+
     def test_cleaned_internal_recurrence_dates(self):
         self.assertEquals(
             self.cest_schedule.recurrences.rrules[0].until,
             SPAIN_TZ.localize(datetime.datetime(2017, 3, 27, 23, 59, 59)))
 
-    @mock.patch('django.utils.timezone.get_default_timezone', spain_tz)
-    @mock.patch('django.utils.timezone.get_current_timezone', spain_tz)
     def test_CEST_transition(self):
         after = SPAIN_TZ.localize(datetime.datetime(2017, 2, 1, 0, 0, 00))
         before = SPAIN_TZ.localize(datetime.datetime(2017, 11, 30, 0, 0, 00))
@@ -90,8 +99,6 @@ class ScheduleModelTests(TestDataMixin, TestCase):
         )
         self.assertItemsEqual(expected_dates, dates_between)
 
-    @mock.patch('django.utils.timezone.get_default_timezone', spain_tz)
-    @mock.patch('django.utils.timezone.get_current_timezone', spain_tz)
     def test_CET_transition(self):
         after = SPAIN_TZ.localize(datetime.datetime(2017, 10, 28, 14, 0, 0))
         before = SPAIN_TZ.localize(datetime.datetime(2017, 10, 30, 14, 0, 0))

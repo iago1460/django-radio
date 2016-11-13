@@ -116,14 +116,14 @@ class Programme(models.Model):
     def start_dt(self):
         if not self.start_date:
             return None
-        tz = timezone.get_current_timezone()
+        tz = timezone.get_default_timezone()
         return tz.localize(datetime.datetime.combine(self.start_date, datetime.time())).astimezone(pytz.utc)
 
     @property
     def end_dt(self):
         if not self.end_date:
             return None
-        tz = timezone.get_current_timezone()
+        tz = timezone.get_default_timezone()
         return tz.localize(datetime.datetime.combine(self.end_date, datetime.time(23, 59, 59))).astimezone(pytz.utc)
 
     # XXX form
@@ -193,20 +193,19 @@ class EpisodeManager(models.Manager):
             )
         return episode
 
-    def last(self, programme):
+    @staticmethod
+    def last(programme):
         return (programme.episode_set
                 .order_by("-season", "-number_in_season")
                 .first())
 
-    def unfinished(self, programme, after=None):
+    @staticmethod
+    def unfinished(programme, after=None):
         if not after:
             after = timezone.now()
 
-        episodes = (programme.episode_set
-                    .order_by("season", "number_in_season")
-                    .filter(Q(issue_date__gte=after) | Q(issue_date=None)))
-        for episode in episodes:
-                yield episode
+        return programme.episode_set.filter(
+            Q(issue_date__gte=after) | Q(issue_date=None)).order_by("season", "number_in_season")
 
 
 class Episode(models.Model):
@@ -226,7 +225,7 @@ class Episode(models.Model):
     season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("season"))
     number_in_season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("No. in season"))
 
-    # XXX this is not true for archived episodes
+    # FIXME: this is not true for archived episodes
     @property
     def runtime(self):
         return self.programme.runtime
