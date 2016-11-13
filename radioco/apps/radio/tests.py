@@ -121,7 +121,7 @@ def create_test_data():
             title='Episode %s' % number,
             programme=programme,
             summary=synopsis,
-            season=1,
+            season=7,
             number_in_season=number,
         )
 

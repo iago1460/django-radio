@@ -205,7 +205,7 @@ class EpisodeManager(models.Manager):
             after = timezone.now()
 
         return programme.episode_set.filter(
-            Q(issue_date__gte=after) | Q(issue_date=None)).order_by("season", "number_in_season")
+            Q(issue_date__gte=after) | Q(issue_date=None)).order_by("season", "number_in_season").iterator()
 
 
 class Episode(models.Model):
