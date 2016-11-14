@@ -18,23 +18,23 @@ def migrate_daily_recurrences(apps, schema_editor):
 
 
 def migrate_board(apps, schema_editor):
-    ScheduleBoard = apps.get_model("schedules", "ScheduleBoard")
-    for board in ScheduleBoard.objects.all():
+    Calendar = apps.get_model("schedules", "Calendar")
+    for board in Calendar.objects.all():
         board.name = 'Legacy - {0}'.format(board.name)
 
-    ScheduleBoard.objects.create(name='Active Calendar', is_active=True)
+    Calendar.objects.create(name='Active Calendar', is_active=True)
 
 
 def migrate_schedules(apps, schema_editor):
     Schedule = apps.get_model("schedules", "Schedule")
-    ScheduleBoard = apps.get_model("schedules", "ScheduleBoard")
+    Calendar = apps.get_model("schedules", "Calendar")
 
     Board = namedtuple('Board', 'start_date end_date')
     boards = {}
-    for board in ScheduleBoard.objects.all():
+    for board in Calendar.objects.all():
         boards[board.id] = Board(board.start_date, board.end_date)
 
-    new_board = ScheduleBoard.objects.get(name='Active Calendar', is_active=True)
+    new_board = Calendar.objects.get(name='Active Calendar', is_active=True)
     for schedule in Schedule.objects.all():
         schedule_board = boards[schedule.schedule_board.id]
         if schedule_board.start_date:

@@ -33,7 +33,7 @@ from radioco.apps.schedules.utils import rearrange_episodes, next_dates
 from radioco.apps.radioco.tests import TestDataMixin
 from radioco.apps.programmes.models import Programme, Episode
 from radioco.apps.schedules.models import Schedule, Transmission
-from radioco.apps.schedules.models import ScheduleBoard, ScheduleBoardManager
+from radioco.apps.schedules.models import Calendar, CalendarManager
 
 
 def mock_now(dt=pytz.utc.localize(datetime.datetime(2014, 1, 1, 13, 30, 0))):
@@ -55,7 +55,7 @@ class ScheduleValidationTests(TestDataMixin, TestCase):
 @override_settings(TIME_ZONE='UTC')
 class ScheduleModelTests(TestDataMixin, TestCase):
     def setUp(self):
-        self.schedule_board = ScheduleBoard.objects.create(
+        self.schedule_board = Calendar.objects.create(
             name='Board',
             is_active=True)
             # start_dt=datetime.date(2014, 1, 1),
@@ -198,7 +198,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
 #        weekly = recurrence.Recurrence(
 #            rrules=[recurrence.Rule(recurrence.WEEKLY)])
 #
-#        self.schedule_board = ScheduleBoard.objects.create(
+#        self.schedule_board = Calendar.objects.create(
 #            name='Board', start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0))
 #
 #        midnight_programme = Programme.objects.create(
@@ -283,7 +283,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
 #        schedules, dates = Schedule.between(
 #            datetime.datetime(2014, 1, 1),
 #            datetime.datetime(2014, 1, 2),
-#            schedule_board=ScheduleBoard())
+#            schedule_board=Calendar())
 #        self.assertFalse(dates)
 #
 #    def test_between_exclude(self):
@@ -344,46 +344,46 @@ class ScheduleModelTests(TestDataMixin, TestCase):
 #        self.assertEqual(date, datetime.datetime(2014, 1, 1, 0, 0))
 
 
-class ScheduleBoardManagerTests(TestDataMixin, TestCase):
+class CalendarManagerTests(TestDataMixin, TestCase):
     def setUp(self):
-        self.manager = ScheduleBoardManager()
+        self.manager = CalendarManager()
 
     def test_current(self):
-        self.assertIsInstance(self.manager.current(), ScheduleBoard)
+        self.assertIsInstance(self.manager.current(), Calendar)
 
     def test_current_no_date(self):
-        self.assertIsInstance(self.manager.current(), ScheduleBoard)
+        self.assertIsInstance(self.manager.current(), Calendar)
 
 
-class ScheduleBoardValidationTests(TestCase):
+class CalendarValidationTests(TestCase):
     def setUp(self):
-        self.ScheduleBoardForm = modelform_factory(
-            ScheduleBoard, fields=("name",))
+        self.CalendarForm = modelform_factory(
+            Calendar, fields=("name",))
 
 # XXX there is something fishy with form validation, check!
 #    def test_name_required(self):
-#        board = ScheduleBoard(slug="foo")
-#        form = self.ScheduleBoardForm(instance=board)
+#        board = Calendar(slug="foo")
+#        form = self.CalendarForm(instance=board)
 #        with self.assertRaisesMessage(
 #                ValidationError, "{'name':[u'This field cannot be blank.']}"):
 #            form.clean()
 #
 #    def test_slug_required(self):
-#        board = ScheduleBoard(name="foo")
+#        board = Calendar(name="foo")
 #        with self.assertRaisesMessage(
 #                ValidationError, "{'slug':[u'This field cannot be blank.']}"):
 #            board.full_clean()
 
     def test_only_one_calendar_active(self):
-        self.assertEquals(len(ScheduleBoard.objects.filter(is_active=True)), 1)
+        self.assertEquals(len(Calendar.objects.filter(is_active=True)), 1)
 
-        board = ScheduleBoard(name="test", is_active=True)
+        board = Calendar(name="test", is_active=True)
 
-        self.assertEquals(len(ScheduleBoard.objects.filter(is_active=True)), 1)
+        self.assertEquals(len(Calendar.objects.filter(is_active=True)), 1)
 
 
 @override_settings(TIME_ZONE='UTC')
-class ScheduleBoardModelTests(TestDataMixin, TestCase):
+class CalendarModelTests(TestDataMixin, TestCase):
 
     def test_str(self):
         self.assertEqual(str(self.schedule_board), "Example")
@@ -395,7 +395,7 @@ class ScheduleBoardModelTests(TestDataMixin, TestCase):
     #         for programme in Programme.objects.all():
     #             yield mock.call(programme, mock_now())
     # 
-    #     post_delete.send(ScheduleBoard, instance=self.schedule_board)
+    #     post_delete.send(Calendar, instance=self.schedule_board)
     #     rearrange_episodes.assert_has_calls(calls(), any_order=True)
 
 
@@ -459,7 +459,7 @@ class TransmissionModelTests(TestDataMixin, TestCase):
 #        admin.user_permissions.add(
 #            Permission.objects.get(codename='change_schedule'))
 #
-#        schedule_board = ScheduleBoard.objects.create(
+#        schedule_board = Calendar.objects.create(
 #            name='Board',
 #            start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0))
 #
@@ -477,7 +477,7 @@ class TransmissionModelTests(TestDataMixin, TestCase):
 class ScheduleUtilsTests(TestDataMixin, TestCase):
 
     def setUp(self):
-        self.manager = ScheduleBoardManager()
+        self.manager = CalendarManager()
         programme = Programme.objects.filter(name="Classic hits").get()
         programme.name = "Classic hits - ScheduleUtilsTests"
         programme.id = programme.pk = None
@@ -537,7 +537,7 @@ class ScheduleUtilsTests(TestDataMixin, TestCase):
     def test_rearrange_episodes_new_schedule(self):
         Schedule.objects.create(
             programme=self.programme,
-            schedule_board=ScheduleBoard.objects.create(),
+            schedule_board=Calendar.objects.create(),
             type="L",
             start_dt=utc.localize(datetime.datetime(2015, 1, 3, 16, 0, 0)),
             recurrences=recurrence.Recurrence(
@@ -560,7 +560,7 @@ class ScheduleUtilsTests(TestDataMixin, TestCase):
     def test_rearrange_only_non_emited_episodes(self):
         Schedule.objects.create(
             programme=self.programme,
-            schedule_board=ScheduleBoard.objects.create(),
+            schedule_board=Calendar.objects.create(),
             type="L",
             start_dt=utc.localize(datetime.datetime(2015, 1, 3, 16, 0, 0)),
             recurrences=recurrence.Recurrence(

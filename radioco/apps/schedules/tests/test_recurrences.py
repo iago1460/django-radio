@@ -29,7 +29,7 @@ from radioco.apps.radioco.tests import TestDataMixin
 from radioco.apps.programmes.models import Programme
 from radioco.apps.schedules import utils
 from radioco.apps.schedules.models import Schedule, Transmission
-from radioco.apps.schedules.models import ScheduleBoard, ScheduleBoardManager
+from radioco.apps.schedules.models import Calendar, CalendarManager
 
 
 class RecurrenceTests(TestDataMixin, TestCase):

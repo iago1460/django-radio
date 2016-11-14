@@ -8,7 +8,7 @@ from radioco.apps.radioco.tz_utils import convert_date_to_datetime, get_timezone
     transform_dt_checking_dst
 from radioco.apps.api.viewsets import ModelViewSetWithoutCreate
 from radioco.apps.programmes.models import Programme, Episode
-from radioco.apps.schedules.models import ScheduleBoard, Schedule, Transmission
+from radioco.apps.schedules.models import Calendar, Schedule, Transmission
 from django import forms
 from django import utils
 from django.utils import timezone

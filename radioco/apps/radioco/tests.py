@@ -17,7 +17,7 @@ import pytz
 import recurrence
 from django.contrib.auth.models import User
 from radioco.apps.programmes.models import Programme, Episode, Podcast, Role, CONTRIBUTOR
-from radioco.apps.schedules.models import Schedule, ScheduleBoard
+from radioco.apps.schedules.models import Schedule, Calendar
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 import datetime
@@ -26,11 +26,11 @@ from radioco.apps.schedules.utils import rearrange_episodes
 
 def create_test_data():
     # Example schedule
-    schedule_board, created = ScheduleBoard.objects.get_or_create(
+    schedule_board, created = Calendar.objects.get_or_create(
         name='Example', is_active=True)
 
     # Another example schedule
-    ScheduleBoard.objects.get_or_create(
+    Calendar.objects.get_or_create(
         name='Another example', is_active=False)
 
     # Programme 1
@@ -175,7 +175,7 @@ class TestDataMixin(object):
         cls.schedule = cls.programme.schedule_set.first()
         cls.schedule_board = cls.schedule.schedule_board
         cls.episode = cls.programme.episode_set.first()
-        cls.another_board = ScheduleBoard.objects.create(name="Another")
+        cls.another_board = Calendar.objects.create(name="Another")
         cls.another_board.schedule_set.add(Schedule(
             programme=cls.programme,
             type='S',

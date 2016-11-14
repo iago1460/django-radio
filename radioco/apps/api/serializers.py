@@ -1,6 +1,6 @@
 from radioco.apps.radioco.tz_utils import transform_datetime_tz
 from radioco.apps.programmes.models import Programme, Episode
-from radioco.apps.schedules.models import Schedule, ScheduleBoard
+from radioco.apps.schedules.models import Schedule, Calendar
 from rest_framework import serializers
 
 

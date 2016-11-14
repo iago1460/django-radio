@@ -30,7 +30,7 @@ from django.utils.translation import ugettext_lazy as _
 from radioco.apps.dashboard.forms import ScheduleForm
 from radioco.apps.global_settings.models import CalendarConfiguration
 from radioco.apps.programmes.models import Programme, Episode
-from radioco.apps.schedules.models import Schedule, ScheduleBoard
+from radioco.apps.schedules.models import Schedule, Calendar
 
 
 # FullCalendar
@@ -101,17 +101,17 @@ def change_broadcast(request, pk):
 def full_calendar(request):
     try:
         if schedule_permissions(request.user):
-            schedule_boards = ScheduleBoard.objects.all().order_by('start_date') #FIXME: start_date
+            schedule_boards = Calendar.objects.all().order_by('start_date') #FIXME: start_date
             if not schedule_boards:
-                ScheduleBoard.objects.create(name="Unnamed")
-                schedule_boards = ScheduleBoard.objects.all()
+                Calendar.objects.create(name="Unnamed")
+                schedule_boards = Calendar.objects.all()
             calendar_configuration = CalendarConfiguration.objects.get()
             context = {
                 'scheduleBoards': schedule_boards,
                 'scroll_time': calendar_configuration.scroll_time.strftime('%H:%M:%S'),
                 'first_day': calendar_configuration.first_day + 1,
                 'language': request.LANGUAGE_CODE,
-                'current_scheduleBoard': ScheduleBoard.get_current(timezone.now())
+                'current_scheduleBoard': Calendar.get_current(timezone.now())
             }
             return render(request, 'dashboard/fullcalendar.html', context)
         else:
@@ -160,7 +160,7 @@ def change_event(request):
 
         for episode in next_episodes:
             # if the episode belongs to the same board
-            if ScheduleBoard.get_current(episode.issue_date) == schedule.schedule_board:
+            if Calendar.get_current(episode.issue_date) == schedule.schedule_board:
                 episode.issue_date = episode.issue_date + time_offset
                 episode.save()
     '''
@@ -180,7 +180,7 @@ def create_schedule(request):
     programme_id = int(request.POST.get('programmeId'))
     programme = get_object_or_404(Programme, id=programme_id)
     schedule_board_id = int(request.POST.get('scheduleBoardId'))
-    scheduleBoard = get_object_or_404(ScheduleBoard, id=schedule_board_id)
+    scheduleBoard = get_object_or_404(Calendar, id=schedule_board_id)
 
     schedule = Schedule(
         programme=programme, schedule_board=scheduleBoard, day=start.weekday(), start_hour=start.time(),
@@ -211,7 +211,7 @@ def delete_schedule(request):
 @user_passes_test(schedule_permissions)
 def programmes(request):
     schedule_board_id = int(request.POST.get('scheduleBoardId'))
-    scheduleBoard = get_object_or_404(ScheduleBoard, id=schedule_board_id)
+    scheduleBoard = get_object_or_404(Calendar, id=schedule_board_id)
     start_date = timezone.now().date()
     if scheduleBoard.start_date and scheduleBoard.start_date > start_date:
         start_date = scheduleBoard.start_date
@@ -229,7 +229,7 @@ def all_events(request):
         return HttpResponseBadRequest()
     schedule_board_id = int(request.GET.get('scheduleBoardId'))
     first_day = int(request.GET.get('firstDay'))
-    scheduleBoard = get_object_or_404(ScheduleBoard, id=schedule_board_id)
+    scheduleBoard = get_object_or_404(Calendar, id=schedule_board_id)
 
     schedules = Schedule.objects.filter(schedule_board=scheduleBoard)
     json_list = []

@@ -65,13 +65,13 @@ WEEKDAY_CHOICES = (
 )
 
 
-class ScheduleBoardManager(models.Manager):
+class CalendarManager(models.Manager):
 
     def current(self):
-        return ScheduleBoard.objects.get(is_active=True)
+        return Calendar.objects.get(is_active=True)
 
 
-class ScheduleBoard(models.Model):
+class Calendar(models.Model):
     class Meta:
         verbose_name = _('schedule board')
         verbose_name_plural = _('schedule board')
@@ -81,17 +81,17 @@ class ScheduleBoard(models.Model):
 
     def save(self, *args, **kwargs):
         if self.is_active:
-            active_boards = ScheduleBoard.objects.filter(is_active=True)
+            active_boards = Calendar.objects.filter(is_active=True)
             active_boards.update(is_active=False)
-        super(ScheduleBoard, self).save(*args, **kwargs)
+        super(Calendar, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return u"%s" % (self.name)
 
 # TODO: what should happen when a Calendar is deleted or other calendar is set as active
 # TODO:
-# @receiver(post_delete, sender=ScheduleBoard)
-# def delete_ScheduleBoard_handler(sender, **kwargs):
+# @receiver(post_delete, sender=Calendar)
+# def delete_Calendar_handler(sender, **kwargs):
 #     now = timezone.now()
 #     for programme in Programme.objects.all():
 #         rearrange_episodes(programme, now)
@@ -125,7 +125,7 @@ class Schedule(models.Model):
 
     programme = models.ForeignKey(Programme, verbose_name=_("programme"))
     type = models.CharField(verbose_name=_("type"), choices=EMISSION_TYPE, max_length=1)
-    schedule_board = models.ForeignKey(ScheduleBoard, verbose_name=_("schedule board"))
+    schedule_board = models.ForeignKey(Calendar, verbose_name=_("schedule board"))
     recurrences = RecurrenceField(verbose_name=_("recurrences"))
 
     start_dt = models.DateTimeField(verbose_name=_('start date'))

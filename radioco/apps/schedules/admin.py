@@ -25,7 +25,7 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 
 from radioco.apps.programmes.models import Programme
-from radioco.apps.schedules.models import Schedule, ScheduleBoard
+from radioco.apps.schedules.models import Schedule, Calendar
 
 try:
     from django.utils.encoding import force_unicode
@@ -33,17 +33,17 @@ except ImportError:
     from django.utils.encoding import force_text as force_unicode
 
 
-@admin.register(ScheduleBoard)
-class ScheduleBoardAdmin(admin.ModelAdmin):
+@admin.register(Calendar)
+class CalendarAdmin(admin.ModelAdmin):
     list_display = ('name', 'is_active')
     list_filter = ['is_active']
     search_fields = ['name']
     ordering = ['name']
-    actions = ['copy_ScheduleBoard']
+    actions = ['copy_Calendar']
 
     def set_active(self, request, queryset):
         if queryset.count() == 1:
-            active_boards = ScheduleBoard.objects.filter(is_active=True)
+            active_boards = Calendar.objects.filter(is_active=True)
             active_boards.update(is_active=False)
             queryset.update(is_active=True)
             self.message_user(request, _('Board marked as active'))
@@ -51,7 +51,7 @@ class ScheduleBoardAdmin(admin.ModelAdmin):
             self.message_user(request, _('You cannot mark more than 1 schedule as active'), level=messages.ERROR)
     set_active.short_description = _("Set a calendar active")
 
-    def copy_ScheduleBoard(self, request, queryset):
+    def copy_Calendar(self, request, queryset):
         for obj in queryset:
             obj_copy = copy.copy(obj)
             obj_copy.id = None
@@ -60,7 +60,7 @@ class ScheduleBoardAdmin(admin.ModelAdmin):
             obj_copy.name = copy_name
             obj_copy.is_active = False
             try:
-                if ScheduleBoard.objects.get(name=copy_name):
+                if Calendar.objects.get(name=copy_name):
                     self.message_user(
                         request,
                         _('A calendar with the name %(obj)s already exists') % {'obj': force_unicode(obj)},
@@ -71,7 +71,7 @@ class ScheduleBoardAdmin(admin.ModelAdmin):
                     # self.message_user(
                     # request, _('There is already a calendar with this name \"%s\"') % copy_name, level=messages.ERROR
                     # )
-            except ScheduleBoard.DoesNotExist:
+            except Calendar.DoesNotExist:
                 obj_copy.save()
                 # Live Schedules lives must be created first
                 schedules = []
@@ -91,7 +91,7 @@ class ScheduleBoardAdmin(admin.ModelAdmin):
                         schedule_copy.source = source_copy
                     schedule_copy.save()
 
-    copy_ScheduleBoard.short_description = _("Make a Copy of calendar")
+    copy_Calendar.short_description = _("Make a Copy of calendar")
 
 
 @admin.register(Schedule)
@@ -109,7 +109,7 @@ class ScheduleAdmin(admin.ModelAdmin):
     change_list_template = "admin/schedules/calendar.html"
 
     def changelist_view(self, request, extra_context=dict()):
-        extra_context['schedule_boards'] = ScheduleBoard.objects.all()
+        extra_context['schedule_boards'] = Calendar.objects.all()
         return super(ScheduleAdmin, self).changelist_view(request, extra_context=extra_context)
 
     def has_add_permission(self, request):

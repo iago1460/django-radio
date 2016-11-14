@@ -8,7 +8,7 @@ def create_example_data():
 
     from radioco.apps.global_settings.models import SiteConfiguration
     from radioco.apps.programmes.models import Programme, Episode, Role, CONTRIBUTOR, Podcast
-    from radioco.apps.schedules.models import Schedule, ScheduleBoard
+    from radioco.apps.schedules.models import Schedule, Calendar
     from radioco.apps.schedules.utils import rearrange_episodes
 
     # Create administrator
@@ -36,11 +36,11 @@ def create_example_data():
     site_config.save()
 
     # Example schedule
-    schedule_board, created = ScheduleBoard.objects.get_or_create(
+    schedule_board, created = Calendar.objects.get_or_create(
         name='Example', slug='example', start_date=datetime.date(2015, 1, 1))
 
     # Another example schedule
-    ScheduleBoard.objects.get_or_create(
+    Calendar.objects.get_or_create(
         name='Another example', start_date=datetime.date(2015, 6, 1))
 
     # Programme 1
