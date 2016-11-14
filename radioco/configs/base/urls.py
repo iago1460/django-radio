@@ -27,32 +27,32 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.i18n import javascript_catalog
 from filebrowser.sites import site
 
-admin.site.logout_template = 'radio/logged_out.html'
+admin.site.logout_template = 'radioco/logged_out.html'
 admin.site.site_header = _('RadioCo administration')
 admin.site.site_title = _('RadioCo site admin')
 
 
 ### templates not implemented, led to strange exceptions when running tests.
 #def handler400(request):
-#    response = render_to_response('radio/400.html', {}, context_instance=RequestContext(request))
+#    response = render_to_response('radioco/400.html', {}, context_instance=RequestContext(request))
 #    response.status_code = 400
 #    return response
 #
 #
 #def handler404(request):
-#    response = render_to_response('radio/404.html', {}, context_instance=RequestContext(request))
+#    response = render_to_response('radioco/404.html', {}, context_instance=RequestContext(request))
 #    response.status_code = 404
 #    return response
 #
 #
 #def handler403(request):
-#    response = render_to_response('radio/403.html', {}, context_instance=RequestContext(request))
+#    response = render_to_response('radioco/403.html', {}, context_instance=RequestContext(request))
 #    response.status_code = 403
 #    return response
 #
 #
 #def handler500(request):
-#    response = render_to_response('radio/500.html', {}, context_instance=RequestContext(request))
+#    response = render_to_response('radioco/500.html', {}, context_instance=RequestContext(request))
 #    response.status_code = 500
 #    return response
 
@@ -61,29 +61,29 @@ js_info_dict = {
 }
 
 urlpatterns = patterns('',
-    url(r'^$', 'radioco.apps.radio.views.index', name="home"),
-    url(r'^jsi18n/$', javascript_catalog, js_info_dict, name='javascript-catalog'),
-    url(r'^login/$', 'radioco.apps.radio.views.user_login', name="login"),
-    url(r'^logout/$', 'radioco.apps.radio.views.user_logout', name="logout"),
-    url(r'^grappelli/', include('grappelli.urls')),
-    url(r'^admin/filebrowser/', include(site.urls)),
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^admin/password_reset/$', auth_views.password_reset, name='admin_password_reset'),
-    url(r'^admin/password_reset/done/$', auth_views.password_reset_done, name='password_reset_done'),
-    url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$', auth_views.password_reset_confirm, name='password_reset_confirm'),
-    url(r'^reset/done/$', auth_views.password_reset_complete, name='password_reset_complete'),
+                       url(r'^$', 'radioco.apps.radioco.views.index', name="home"),
+                       url(r'^jsi18n/$', javascript_catalog, js_info_dict, name='javascript-catalog'),
+                       url(r'^login/$', 'radioco.apps.radioco.views.user_login', name="login"),
+                       url(r'^logout/$', 'radioco.apps.radioco.views.user_logout', name="logout"),
+                       url(r'^grappelli/', include('grappelli.urls')),
+                       url(r'^admin/filebrowser/', include(site.urls)),
+                       url(r'^admin/', include(admin.site.urls)),
+                       url(r'^admin/password_reset/$', auth_views.password_reset, name='admin_password_reset'),
+                       url(r'^admin/password_reset/done/$', auth_views.password_reset_done, name='password_reset_done'),
+                       url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$', auth_views.password_reset_confirm, name='password_reset_confirm'),
+                       url(r'^reset/done/$', auth_views.password_reset_complete, name='password_reset_complete'),
 
-    # url(r'^configuration/schedule_editor/', 'radioco.apps.dashboard.views.full_calendar', name="schedule_editor"),
+                       # url(r'^configuration/schedule_editor/', 'radioco.apps.dashboard.views.full_calendar', name="schedule_editor"),
     url(r'^schedules/', include('radioco.apps.schedules.urls', namespace="schedules")),
-    url(r'^programmes/', include('radioco.apps.programmes.urls', namespace="programmes")),
-    url(r'^users/', include('radioco.apps.users.urls', namespace="users")),
+                       url(r'^programmes/', include('radioco.apps.programmes.urls', namespace="programmes")),
+                       url(r'^users/', include('radioco.apps.users.urls', namespace="users")),
 
-    url(r'^ckeditor/', include('ckeditor_uploader.urls')),
+                       url(r'^ckeditor/', include('ckeditor_uploader.urls')),
 
-    url(r'^api/1/recording_schedules/$', 'radioco.apps.radio.views.recording_schedules', name="recording_schedules"),
-    url(r'^api/1/submit_recorder/$', 'radioco.apps.radio.views.submit_recorder', name="submit_recorder"),
-    url(r'^api/2/', include('radioco.apps.api.urls', namespace="api"))
-)
+                       url(r'^api/1/recording_schedules/$', 'radioco.apps.radioco.views.recording_schedules', name="recording_schedules"),
+                       url(r'^api/1/submit_recorder/$', 'radioco.apps.radioco.views.submit_recorder', name="submit_recorder"),
+                       url(r'^api/2/', include('radioco.apps.api.urls', namespace="api"))
+                       )
 
 if settings.DEBUG and 'debug_toolbar' in settings.INSTALLED_APPS:
     import debug_toolbar

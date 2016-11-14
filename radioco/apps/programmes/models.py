@@ -28,7 +28,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 import datetime
 
-from radioco.apps.radio.utils import field_has_changed
+from radioco.apps.radioco.utils import field_has_changed
 
 if hasattr(settings, 'PROGRAMME_LANGUAGES'):
     PROGRAMME_LANGUAGES = settings.PROGRAMME_LANGUAGES

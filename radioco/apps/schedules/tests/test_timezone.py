@@ -7,9 +7,9 @@ from django.test import TestCase
 from django.test import override_settings
 from django.utils import timezone
 
-from radioco.apps.radio.tz_utils import transform_dt_to_default_tz
+from radioco.apps.radioco.tz_utils import transform_dt_to_default_tz
 from radioco.apps.programmes.models import Programme
-from radioco.apps.radio.tests import TestDataMixin
+from radioco.apps.radioco.tests import TestDataMixin
 from radioco.apps.schedules.models import Schedule
 
 

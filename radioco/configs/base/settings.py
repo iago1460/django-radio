@@ -66,7 +66,7 @@ INSTALLED_APPS = (
     'radioco.apps.programmes',
     'radioco.apps.schedules',
     'radioco.apps.global_settings',
-    'radioco.apps.radio',
+    'radioco.apps.radioco',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -87,7 +87,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.tz',
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
-    'radioco.apps.radio.context_processors.settings',
+    'radioco.apps.radioco.context_processors.settings',
 )
 
 TEMPLATE_LOADERS = (

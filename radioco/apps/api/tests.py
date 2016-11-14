@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 import serializers
-from radioco.apps.radio.tests import TestDataMixin
+from radioco.apps.radioco.tests import TestDataMixin
 from radioco.apps.schedules.models import Transmission
 
 

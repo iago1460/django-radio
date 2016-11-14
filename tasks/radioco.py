@@ -15,9 +15,9 @@ def commit_changes(ctx):
     # Add files
     ctx.run('git add .')
     # Add local settings excluded on gitignore
-    ctx.run('git add -f radio/configs/base/local_settings.py')
-    ctx.run('git add -f radio/configs/development/local_settings.py')
-    ctx.run('git add -f radio/configs/heroku/local_settings.py')
+    ctx.run('git add -f radioco/configs/base/local_settings.py')
+    ctx.run('git add -f radioco/configs/development/local_settings.py')
+    ctx.run('git add -f radioco/configs/heroku/local_settings.py')
     # Commit all
     ctx.run('git commit -am "autocommit: save changes"')
 

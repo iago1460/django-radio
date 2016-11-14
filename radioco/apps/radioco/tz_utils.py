@@ -3,7 +3,7 @@ import datetime
 from dateutil.tz import tzoffset
 from django.utils import timezone
 
-from radioco.apps.radio.utils import memorize
+from radioco.apps.radioco.utils import memorize
 
 timestamp = datetime.datetime(2009, 1, 1)  # any unambiguous timestamp will work here
 

@@ -30,7 +30,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from radioco.apps.schedules.utils import rearrange_episodes, next_dates
-from radioco.apps.radio.tests import TestDataMixin
+from radioco.apps.radioco.tests import TestDataMixin
 from radioco.apps.programmes.models import Programme, Episode
 from radioco.apps.schedules.models import Schedule, Transmission
 from radioco.apps.schedules.models import ScheduleBoard, ScheduleBoardManager

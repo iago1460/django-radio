@@ -4,7 +4,7 @@ from rest_framework.exceptions import ValidationError as DRFValidationError
 from django.utils.timezone import override, get_default_timezone, get_default_timezone_name
 from recurrence import Recurrence
 
-from radioco.apps.radio.tz_utils import convert_date_to_datetime, get_timezone_offset, transform_datetime_tz, \
+from radioco.apps.radioco.tz_utils import convert_date_to_datetime, get_timezone_offset, transform_datetime_tz, \
     transform_dt_checking_dst
 from radioco.apps.api.viewsets import ModelViewSetWithoutCreate
 from radioco.apps.programmes.models import Programme, Episode

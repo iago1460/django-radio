@@ -20,8 +20,8 @@ from itertools import imap
 import pytz
 
 from radioco.apps.schedules.utils import rearrange_episodes
-from radioco.apps.radio.utils import field_has_changed
-from radioco.apps.radio.tz_utils import transform_datetime_tz, convert_date_to_datetime, \
+from radioco.apps.radioco.utils import field_has_changed
+from radioco.apps.radioco.tz_utils import transform_datetime_tz, convert_date_to_datetime, \
     transform_dt_checking_dst, fix_recurrence_dst, fix_dst_tz, GMT, transform_dt_to_default_tz
 from radioco.apps.programmes.models import Programme, Episode
 from dateutil import rrule

@@ -14,7 +14,7 @@ HOME_DIR = os.path.expanduser('~')
 
 env.heroku_project_name = 'radioco'
 env.python = 'python2.7'
-env.heroku_config_path = 'radio/configs/heroku'
+env.heroku_config_path = 'radioco/configs/heroku'
 env.environment = 'base'
 # env.shell = '/bin/bash -c'
 
@@ -50,9 +50,9 @@ def save_changes():
     # Add files
     local('git add .')
     # Add local settings excluded on gitignore
-    local('git add -f radio/configs/base/local_settings.py')
-    local('git add -f radio/configs/development/local_settings.py')
-    local('git add -f radio/configs/heroku/local_settings.py')
+    local('git add -f radioco/configs/base/local_settings.py')
+    local('git add -f radioco/configs/development/local_settings.py')
+    local('git add -f radioco/configs/heroku/local_settings.py')
     # Commit all
     local('git commit -am "autocommit: save changes"')
 

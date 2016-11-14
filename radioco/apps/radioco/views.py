@@ -35,7 +35,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from radioco.apps.global_settings.models import PodcastConfiguration
 from radioco.apps.programmes.models import Podcast, Programme, Episode
-from radioco.apps.radio.forms import LoginForm
+from radioco.apps.radioco.forms import LoginForm
 from radioco.apps.schedules.models import Schedule, Transmission
 
 
@@ -65,7 +65,7 @@ def index(request):
         'transmission': transmission, 'next_transmissions': next_transmissions,
         'other_programmes': other_programmes, 'latest_episodes': latest_episodes
     }
-    return render(request, 'radio/index.html', context)
+    return render(request, 'radioco/index.html', context)
 
 
 # WARNING: function not in use
@@ -83,12 +83,12 @@ def user_login(request):
                         # This logs him in
                         login(request, user)
                         return HttpResponseRedirect(reverse('admin:index'))
-                return render(request, "radio/login.html", {'form': form, 'error': True})
+                return render(request, "radioco/login.html", {'form': form, 'error': True})
             else:
-                return render(request, "radio/login.html", {'form': form})
+                return render(request, "radioco/login.html", {'form': form})
         else:
             form = LoginForm()
-            return render(request, "radio/login.html", {'form': form})
+            return render(request, "radioco/login.html", {'form': form})
     return HttpResponseRedirect(reverse('admin:index'))
 
 
