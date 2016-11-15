@@ -4,6 +4,7 @@ import mock
 import pytz
 from django.contrib.auth.models import User, Permission
 from django.test import TestCase
+from django.test import override_settings
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -41,12 +42,12 @@ class TestSerializers(TestDataMixin, TestCase):
     def test_schedule(self):
         serializer = serializers.ScheduleSerializer(self.schedule)
         schedule_id = self.schedule.id
-        schedule_board_id = self.schedule_board.id
+        calendar_id = self.calendar.id
         self.assertDictEqual(serializer.data, {
             'title': u'Classic hits',
             'source': None,
             'start': '2015-01-01T14:00:00Z',
-            'schedule_board': schedule_board_id,
+            'calendar': calendar_id,
             'runtime': datetime.timedelta(minutes=60),
             'type': 'L',
             'id': schedule_id,
@@ -144,17 +145,17 @@ class TestAPI(TestDataMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
 
-    def test_schedules_get_by_board(self):
+    def test_schedules_get_by_calendar(self):
         response = self.client.get(
-            '/api/2/schedules', {'schedule_board': self.schedule_board.id})
+            '/api/2/schedules', {'calendar': self.calendar.id})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(
-            response.data[0]['schedule_board'], self.schedule_board.id)
+            response.data[0]['calendar'], self.calendar.id)
 
-    def test_schedules_get_by_nonexisting_board(self):
+    def test_schedules_get_by_nonexisting_calendar(self):
         response = self.client.get(
-            '/api/2/schedules', {'schedule_board': 'foobar'})
+            '/api/2/schedules', {'calendar': 'foobar'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
 
@@ -163,7 +164,7 @@ class TestAPI(TestDataMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(
-            response.data[0]['schedule_board'], self.schedule_board.id)
+            response.data[0]['calendar'], self.calendar.id)
 
     def test_schedules_get_by_nonexiting_type(self):
         response = self.client.get('/api/2/schedules?type=B')
@@ -183,7 +184,7 @@ class TestAPI(TestDataMixin, APITestCase):
 #        self.client.login(username="klaus", password="topsecret")
 #        data = {
 #            "programme": self.programme.id,
-#            "schedule_board": self.schedule_board.id,
+#            "calendar": self.calendar.id,
 #            "start": "2015-01-01T07:30:00", "type": "L"}
 #        response = self.client.post('/api/2/schedules', data)
 #        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -217,12 +218,12 @@ class TestAPI(TestDataMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     @mock.patch('django.utils.timezone.now', mock_now)
-    def test_transmission_list_filter_non_active_board(self):
-        schedule_board_id = self.another_board.id
+    def test_transmission_list_filter_non_active_calendar(self):
+        calendar_id = self.another_calendar.id
         response = self.client.get(
             '/api/2/transmissions',
             {
-                'schedule_board': schedule_board_id,
+                'calendar': calendar_id,
                 'after': datetime.date(2015, 1, 1), 'before': datetime.date(2015, 2, 1)
             })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -260,7 +261,34 @@ class TestAPI(TestDataMixin, APITestCase):
             map(lambda t: (t['slug'], t['start']), response.data),
             [(u'classic-hits', '2015-01-06T14:00:00Z')])
 
-    def test_transmissions_filter_board_nonexistend(self):
+    def test_transmissions_filter_calendar_nonexistend(self):
         response = self.client.get(
-            '/api/2/transmissions', {'schedule_board': 9999})
+            '/api/2/transmissions', {'calendar': 9999})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+@override_settings(TIME_ZONE='Europe/Madrid')
+class TestFullCalendarApi(TestDataMixin, APITestCase):
+    def setUp(self):
+        self.admin_user = User.objects.create_superuser(
+            username='iago', email='author@radioco.org', password='1234')
+
+    def _login(self):
+        self.client.login(username="iago", password="1234")
+
+    def test_schedules_post(self):
+        self._login()
+        data = {
+            'calendar': self.calendar.id,
+            'programme': self.programme.slug,
+            'start': "2016-11-17T01:00:00",
+            'type': "L"
+        }
+        response = self.client.post('/api/2/schedules', data=data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEquals(
+            response.data,
+            {
+                'title': u'Classic hits', 'start': '2016-11-17T01:00:00+01:00', 'source': None, 'calendar': 2,
+                'runtime': datetime.timedelta(0, 3600), 'type': 'L', 'id': 7, 'programme': u'classic-hits'
+            })

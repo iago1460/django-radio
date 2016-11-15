@@ -115,7 +115,7 @@
                     url: 'all_events/',
                     data: function () { // a function that returns an object
                         return {
-                            scheduleBoardId: $("#select-board").val(),
+                            calendarId: $("#select-calendar").val(),
                             firstDay: {{first_day}}
                         };
                     },
@@ -144,7 +144,7 @@
                         data: 'programmeId=' + copiedEventObject.programmeId + '&start='
                         + moment(copiedEventObject.start.utc().toString().slice(0, copiedEventObject.start.utc().toString().indexOf("GMT")), 'ddd MMM DD YYYY HH:mm:ss')
                         + '&type=' + $("input[name='group1']:checked").val()
-                        + '&scheduleBoardId=' + $("#select-board").val(),
+                        + '&calendarId=' + $("#select-calendar").val(),
                         success: function (res) {
                             if (res.error) {
                                 alert('{% trans "There was an error while creating schedule" %}: ' + res.error);
@@ -241,7 +241,7 @@
             $.ajax({
                 type: "POST",
                 url: "programmes",
-                data: 'scheduleBoardId=' + $("#select-board").val(),
+                data: 'calendarId=' + $("#select-calendar").val(),
                 success: function (res) {
                     if (res.error) {
                         alert('{% trans "There was an error in the request" %}' + res.error);
@@ -282,7 +282,7 @@
 
         window.onload = function () {
             reloadProgrammes();
-            $("#select-board").change(function () {
+            $("#select-calendar").change(function () {
                 $('#calendar').fullCalendar('removeEvents');
                 $('#calendar').fullCalendar('refetchEvents');
                 reloadProgrammes();
@@ -321,13 +321,13 @@
         <div class="col-xs-2">
         </div>
         <div class="col-xs-8">
-            <select id='select-board' class="form-control">
-                {% for scheduleBoard in scheduleBoards %}
-                    <option value="{{ scheduleBoard.id }}"
-                        {% if scheduleBoard == current_scheduleBoard %}
+            <select id='select-calendar' class="form-control">
+                {% for calendar in calendars %}
+                    <option value="{{ calendar.id }}"
+                        {% if calendar == current_calendar %}
                             selected="selected"
                         {% endif %}>
-                    {{ scheduleBoard.name }}
+                    {{ calendar.name }}
                     </option>
                 {% endfor %}
             </select>

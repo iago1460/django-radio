@@ -73,16 +73,16 @@ class CalendarManager(models.Manager):
 
 class Calendar(models.Model):
     class Meta:
-        verbose_name = _('schedule board')
-        verbose_name_plural = _('schedule board')
+        verbose_name = _('calendar')
+        verbose_name_plural = _('calendar')
 
     name = models.CharField(max_length=255, unique=True, verbose_name=_("name"))
     is_active = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if self.is_active:
-            active_boards = Calendar.objects.filter(is_active=True)
-            active_boards.update(is_active=False)
+            active_calendars = Calendar.objects.filter(is_active=True)
+            active_calendars.update(is_active=False)
         super(Calendar, self).save(*args, **kwargs)
 
     def __unicode__(self):
@@ -125,7 +125,7 @@ class Schedule(models.Model):
 
     programme = models.ForeignKey(Programme, verbose_name=_("programme"))
     type = models.CharField(verbose_name=_("type"), choices=EMISSION_TYPE, max_length=1)
-    schedule_board = models.ForeignKey(Calendar, verbose_name=_("schedule board"))
+    calendar = models.ForeignKey(Calendar, verbose_name=_("calendar"))
     recurrences = RecurrenceField(verbose_name=_("recurrences"))
 
     start_dt = models.DateTimeField(verbose_name=_('start date'))
@@ -402,7 +402,7 @@ class Transmission(object):
         Return a list of Transmissions of the active calendar sorted by date
         """
         if schedules is None:
-            schedules = Schedule.objects.filter(schedule_board__is_active=True)
+            schedules = Schedule.objects.filter(calendar__is_active=True)
 
         transmission_dates = [
             imap(partial(_return_tuple, item2=schedule), schedule.dates_between(after, before))

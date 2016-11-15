@@ -46,7 +46,7 @@ class EpisodeViewSet(viewsets.ReadOnlyModelViewSet):
 class ScheduleFilter(filters.FilterSet):
     class Meta:
         model = Schedule
-        fields = ('programme', 'schedule_board', 'type')
+        fields = ('programme', 'calendar', 'type')
 
     programme = django_filters.CharFilter(name="programme__slug")
 
@@ -62,7 +62,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
 class TransmissionForm(forms.Form):
     after = forms.DateField()
     before = forms.DateField()
-    schedule_board = forms.CharField(required=False)
+    calendar = forms.CharField(required=False)
     timezone = forms.ChoiceField(required=False, choices=[(x, x) for x in pytz.all_timezones])
 
     # def clean_after(self):
@@ -134,8 +134,8 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
 
         # Filter by active calendar if that filter was not provided
         schedules = self.filter_queryset(self.get_queryset())
-        if not data.cleaned_data.get('schedule_board'):
-            schedules = schedules.filter(schedule_board__is_active=True)
+        if not data.cleaned_data.get('calendar'):
+            schedules = schedules.filter(calendar__is_active=True)
 
         transmissions = Transmission.between(
             after_date,

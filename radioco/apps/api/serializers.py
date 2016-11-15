@@ -82,7 +82,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Schedule
         fields = (
-            'id', 'programme', 'schedule_board', 'start', 'runtime', 'title', 'type', 'source'
+            'id', 'programme', 'calendar', 'start', 'runtime', 'title', 'type', 'source'
         )
 
     def get_title(self, schedule):

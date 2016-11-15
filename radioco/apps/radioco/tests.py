@@ -26,7 +26,7 @@ from radioco.apps.schedules.utils import rearrange_episodes
 
 def create_test_data():
     # Example schedule
-    schedule_board, created = Calendar.objects.get_or_create(
+    calendar, created = Calendar.objects.get_or_create(
         name='Example', is_active=True)
 
     # Another example schedule
@@ -53,7 +53,7 @@ def create_test_data():
     Schedule.objects.get_or_create(
         programme=programme,
         type='L',
-        schedule_board=schedule_board,
+        calendar=calendar,
         recurrences=recurrence.Recurrence(rrules=[recurrence.Rule(recurrence.DAILY)]),
         start_dt=pytz.utc.localize(datetime.datetime(2015, 1, 1, 8, 0, 0)))
 
@@ -112,7 +112,7 @@ def create_test_data():
     Schedule.objects.get_or_create(
         programme=programme,
         type='L',
-        schedule_board=schedule_board,
+        calendar=calendar,
         recurrences=recurrence.Recurrence(rrules=[recurrence.Rule(recurrence.DAILY)]),
         start_dt=pytz.utc.localize(datetime.datetime(2015, 1, 1, 14, 0, 0)))
 
@@ -148,7 +148,7 @@ def create_test_data():
         Schedule.objects.get_or_create(
             programme=programme,
             type='L',
-            schedule_board=schedule_board,
+            calendar=calendar,
             recurrences=recurrence.Recurrence(rrules=[recurrence.Rule(recurrence.DAILY)]),
             start_dt=start_dt)
 
@@ -173,10 +173,10 @@ class TestDataMixin(object):
         create_test_data()
         cls.programme = Programme.objects.filter(name="Classic hits").get()
         cls.schedule = cls.programme.schedule_set.first()
-        cls.schedule_board = cls.schedule.schedule_board
+        cls.calendar = cls.schedule.calendar
         cls.episode = cls.programme.episode_set.first()
-        cls.another_board = Calendar.objects.create(name="Another")
-        cls.another_board.schedule_set.add(Schedule(
+        cls.another_calendar = Calendar.objects.create(name="Another")
+        cls.another_calendar.schedule_set.add(Schedule(
             programme=cls.programme,
             type='S',
             start_dt=pytz.utc.localize(datetime.datetime(2015, 1, 6, 16, 30, 0))))

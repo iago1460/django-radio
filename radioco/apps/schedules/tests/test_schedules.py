@@ -45,7 +45,7 @@ class ScheduleValidationTests(TestDataMixin, TestCase):
         schedule = Schedule()
         with self.assertRaisesMessage(
             ValidationError,
-            "{'schedule_board': [u'This field cannot be null.'], "
+            "{'calendar': [u'This field cannot be null.'], "
             "'start_dt': [u'This field cannot be null.'], "
             "'type': [u'This field cannot be blank.'], "
             "'programme': [u'This field cannot be null.']}"):
@@ -55,8 +55,8 @@ class ScheduleValidationTests(TestDataMixin, TestCase):
 @override_settings(TIME_ZONE='UTC')
 class ScheduleModelTests(TestDataMixin, TestCase):
     def setUp(self):
-        self.schedule_board = Calendar.objects.create(
-            name='Board',
+        self.calendar = Calendar.objects.create(
+            name='Calendar',
             is_active=True)
             # start_dt=datetime.date(2014, 1, 1),
             # end_date=datetime.date(2015, 6, 1))
@@ -75,7 +75,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
             type='L',
             recurrences=self.recurrences,
             start_dt=utc.localize(datetime.datetime(2014, 1, 6, 14, 0, 0)),
-            schedule_board=self.schedule_board)
+            calendar=self.calendar)
 
         self.episode = Episode.objects.create(
             title='Episode 1',
@@ -99,14 +99,14 @@ class ScheduleModelTests(TestDataMixin, TestCase):
         self.assertEqual(
             self.schedule.start_dt, utc.localize(datetime.datetime(2014, 1, 6, 14, 0, 0)))
 
-    def test_start_lt_schedule_board(self):
+    def test_start_lt_calendar(self):
         self.programme.start_date = datetime.date(2014, 1, 14)
         self.programme.save()
         self.schedule.refresh_from_db()
         self.assertEqual(
             self.schedule.effective_start_dt, utc.localize(datetime.datetime(2014, 1, 20, 14, 0, 0)))
 
-    def test_end_gt_schedule_board(self):
+    def test_end_gt_calendar(self):
         self.programme.end_date = datetime.date(2014, 1, 14)
         self.programme.save()
         self.schedule.refresh_from_db()
@@ -163,7 +163,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
         programme = Programme.objects.create(name="Programme 14:00 - 15:00", current_season=1, runtime=60)
         schedule = Schedule.objects.create(
             programme=programme,
-            schedule_board=self.schedule_board,
+            calendar=self.calendar,
             start_dt=utc.localize(datetime.datetime(2014, 1, 2, 14, 0, 0)),
             recurrences=recurrence.Recurrence(
                 rrules=[recurrence.Rule(recurrence.DAILY, interval=2)],
@@ -198,7 +198,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
 #        weekly = recurrence.Recurrence(
 #            rrules=[recurrence.Rule(recurrence.WEEKLY)])
 #
-#        self.schedule_board = Calendar.objects.create(
+#        self.calendar = Calendar.objects.create(
 #            name='Board', start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0))
 #
 #        midnight_programme = Programme.objects.create(
@@ -211,7 +211,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
 #            day=WE,
 #            start_hour=datetime.time(0, 0, 0),
 #            type='L',
-#            schedule_board=self.schedule_board)
+#            calendar=self.calendar)
 #
 #        programme = Programme.objects.create(
 #            name="Programme 09:00 - 10:00",
@@ -221,7 +221,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
 #        for day in (MO, WE, FR):
 #            Schedule.objects.create(
 #                programme=programme, day=day, type='L',
-#                schedule_board=self.schedule_board)
+#                calendar=self.calendar)
 #
 #        programme = Programme.objects.create(
 #            name="Programme 10:00 - 12:00",
@@ -233,7 +233,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
 #                programme=programme,
 #                day=day, type='B',
 #                start_hour=datetime.time(10, 0, 0),
-#                schedule_board=self.schedule_board)
+#                calendar=self.calendar)
 #
 #        for schedule in Schedule.objects.all():
 #            schedule.clean()
@@ -268,22 +268,22 @@ class ScheduleModelTests(TestDataMixin, TestCase):
 #             datetime.datetime(2014, 1, 2, 0, 0)],
 #            [datetime.datetime(2014, 1, 1, 9, 0)]])
 #
-#    def test_between_schedule_board(self):
+#    def test_between_calendar(self):
 #        schedules, dates = Schedule.between(
 #            datetime.datetime(2014, 1, 1),
 #            datetime.datetime(2014, 1, 2),
-#            schedule_board=self.schedule_board)
+#            calendar=self.calendar)
 #        self.assertEqual(dates, [
 #            [datetime.datetime(2014, 1, 1, 0, 0),
 #             datetime.datetime(2014, 1, 2, 0, 0)],
 #            [datetime.datetime(2014, 1, 1, 9, 0)],
 #            [datetime.datetime(2014, 1, 1, 10, 0)]])
 #
-#    def test_between_emtpy_schedule_board(self):
+#    def test_between_emtpy_calendar(self):
 #        schedules, dates = Schedule.between(
 #            datetime.datetime(2014, 1, 1),
 #            datetime.datetime(2014, 1, 2),
-#            schedule_board=Calendar())
+#            calendar=Calendar())
 #        self.assertFalse(dates)
 #
 #    def test_between_exclude(self):
@@ -377,7 +377,7 @@ class CalendarValidationTests(TestCase):
     def test_only_one_calendar_active(self):
         self.assertEquals(len(Calendar.objects.filter(is_active=True)), 1)
 
-        board = Calendar(name="test", is_active=True)
+        calendar = Calendar(name="test", is_active=True)
 
         self.assertEquals(len(Calendar.objects.filter(is_active=True)), 1)
 
@@ -386,7 +386,7 @@ class CalendarValidationTests(TestCase):
 class CalendarModelTests(TestDataMixin, TestCase):
 
     def test_str(self):
-        self.assertEqual(str(self.schedule_board), "Example")
+        self.assertEqual(str(self.calendar), "Example")
 
     # @mock.patch('django.utils.timezone.now', mock_now)
     # @mock.patch('radioco.apps.schedules.utils.rearrange_episodes')
@@ -395,7 +395,7 @@ class CalendarModelTests(TestDataMixin, TestCase):
     #         for programme in Programme.objects.all():
     #             yield mock.call(programme, mock_now())
     # 
-    #     post_delete.send(Calendar, instance=self.schedule_board)
+    #     post_delete.send(Calendar, instance=self.calendar)
     #     rearrange_episodes.assert_has_calls(calls(), any_order=True)
 
 
@@ -447,7 +447,7 @@ class TransmissionModelTests(TestDataMixin, TestCase):
             utc.localize(datetime.datetime(2015, 1, 6, 12, 0, 0)),
             utc.localize(datetime.datetime(2015, 1, 6, 17, 0, 0)),
             schedules=Schedule.objects.filter(
-                schedule_board=self.another_board).all())
+                calendar=self.another_calendar).all())
         self.assertListEqual(
             map(lambda t: (t.slug, t.start), list(between)),
             [(u'classic-hits', utc.localize(datetime.datetime(2015, 1, 6, 16, 30, 0)))])
@@ -459,7 +459,7 @@ class TransmissionModelTests(TestDataMixin, TestCase):
 #        admin.user_permissions.add(
 #            Permission.objects.get(codename='change_schedule'))
 #
-#        schedule_board = Calendar.objects.create(
+#        calendar = Calendar.objects.create(
 #            name='Board',
 #            start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0))
 #
@@ -468,7 +468,7 @@ class TransmissionModelTests(TestDataMixin, TestCase):
 #            start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0))
 #
 #        self.schedule = Schedule.objects.create(
-#            schedule_board=schedule_board, programme=programme,
+#            calendar=calendar, programme=programme,
 #            start_hour=datetime.time(0, 0, 0), day=WE, type='L')
 #
 
@@ -487,7 +487,7 @@ class ScheduleUtilsTests(TestDataMixin, TestCase):
         Schedule.objects.get_or_create(
             programme=programme,
             type='L',
-            schedule_board=self.schedule_board,
+            calendar=self.calendar,
             recurrences=recurrence.Recurrence(rrules=[recurrence.Rule(recurrence.DAILY)]),
             start_dt=pytz.utc.localize(datetime.datetime(2015, 1, 1, 14, 0, 0)))
 
@@ -504,7 +504,7 @@ class ScheduleUtilsTests(TestDataMixin, TestCase):
     def test_available_dates_after(self):
         Schedule.objects.create(
             programme=self.programme,
-            schedule_board=self.schedule_board,
+            calendar=self.calendar,
             type="L",
             start_dt=utc.localize(datetime.datetime(2015, 1, 6, 16, 0, 0)),
             recurrences=recurrence.Recurrence(
@@ -537,7 +537,7 @@ class ScheduleUtilsTests(TestDataMixin, TestCase):
     def test_rearrange_episodes_new_schedule(self):
         Schedule.objects.create(
             programme=self.programme,
-            schedule_board=Calendar.objects.create(),
+            calendar=Calendar.objects.create(),
             type="L",
             start_dt=utc.localize(datetime.datetime(2015, 1, 3, 16, 0, 0)),
             recurrences=recurrence.Recurrence(
@@ -560,7 +560,7 @@ class ScheduleUtilsTests(TestDataMixin, TestCase):
     def test_rearrange_only_non_emited_episodes(self):
         Schedule.objects.create(
             programme=self.programme,
-            schedule_board=Calendar.objects.create(),
+            calendar=Calendar.objects.create(),
             type="L",
             start_dt=utc.localize(datetime.datetime(2015, 1, 3, 16, 0, 0)),
             recurrences=recurrence.Recurrence(

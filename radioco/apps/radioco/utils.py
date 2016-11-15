@@ -36,7 +36,7 @@ def create_example_data():
     site_config.save()
 
     # Example schedule
-    schedule_board, created = Calendar.objects.get_or_create(
+    calendar, created = Calendar.objects.get_or_create(
         name='Example', slug='example', start_date=datetime.date(2015, 1, 1))
 
     # Another example schedule
@@ -68,7 +68,7 @@ def create_example_data():
     Schedule.objects.get_or_create(
         programme=programme,
         type='L',
-        schedule_board=schedule_board,
+        calendar=calendar,
         recurrences=recurrences)
 
     for number in range(1, 4):
@@ -133,7 +133,7 @@ def create_example_data():
         Schedule.objects.get_or_create(
             programme=programme,
             type='L',
-            schedule_board=schedule_board,
+            calendar=calendar,
             recurrences=recurrences)
 
         if created:

@@ -11,7 +11,7 @@ def next_dates(programme, after):
     while True:
         candidates = map(lambda s: s.date_after(after), schedules)
         try:
-            next_date = min(candidates)
+            next_date = min(filter(lambda _dt: _dt is not None, candidates))
         except ValueError:
             break
 

@@ -73,9 +73,9 @@ def schedule_permissions(user):
 @login_required
 @user_passes_test(schedule_permissions)
 def change_broadcast(request, pk):
-    schedule = get_object_or_404(Schedule.objects.select_related('schedule_board', 'programme'), pk=pk)
+    schedule = get_object_or_404(Schedule.objects.select_related('calendar', 'programme'), pk=pk)
     queryset = Schedule.objects.filter(
-        schedule_board=schedule.schedule_board, programme=schedule.programme, type='L'
+        calendar=schedule.calendar, programme=schedule.programme, type='L'
     ).order_by('day', 'start_hour')
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
@@ -101,17 +101,17 @@ def change_broadcast(request, pk):
 def full_calendar(request):
     try:
         if schedule_permissions(request.user):
-            schedule_boards = Calendar.objects.all().order_by('start_date') #FIXME: start_date
-            if not schedule_boards:
+            calendars = Calendar.objects.all().order_by('start_date') #FIXME: start_date
+            if not calendars:
                 Calendar.objects.create(name="Unnamed")
-                schedule_boards = Calendar.objects.all()
+                calendars = Calendar.objects.all()
             calendar_configuration = CalendarConfiguration.objects.get()
             context = {
-                'scheduleBoards': schedule_boards,
+                'calendars': calendars,
                 'scroll_time': calendar_configuration.scroll_time.strftime('%H:%M:%S'),
                 'first_day': calendar_configuration.first_day + 1,
                 'language': request.LANGUAGE_CODE,
-                'current_scheduleBoard': Calendar.get_current(timezone.now())
+                'current_calendar': Calendar.get_current(timezone.now())
             }
             return render(request, 'dashboard/fullcalendar.html', context)
         else:
@@ -140,7 +140,7 @@ def change_event(request):
     '''
     # next episodes from now or when the schedule board starts
     now = datetime.datetime.now()
-    dt = datetime.datetime.combine(schedule.schedule_board.start_date, datetime.time(0, 0))
+    dt = datetime.datetime.combine(schedule.calendar.start_date, datetime.time(0, 0))
     if now > dt:
         dt = now
     next_episodes = Episode.next_episodes(programme=schedule.programme, hour=schedule.start_hour, after=dt)
@@ -160,7 +160,7 @@ def change_event(request):
 
         for episode in next_episodes:
             # if the episode belongs to the same board
-            if Calendar.get_current(episode.issue_date) == schedule.schedule_board:
+            if Calendar.get_current(episode.issue_date) == schedule.calendar:
                 episode.issue_date = episode.issue_date + time_offset
                 episode.save()
     '''
@@ -179,11 +179,11 @@ def create_schedule(request):
     emission_type = request.POST.get('type')
     programme_id = int(request.POST.get('programmeId'))
     programme = get_object_or_404(Programme, id=programme_id)
-    schedule_board_id = int(request.POST.get('scheduleBoardId'))
-    scheduleBoard = get_object_or_404(Calendar, id=schedule_board_id)
+    calendar_id = int(request.POST.get('calendarId'))
+    calendar = get_object_or_404(Calendar, id=calendar_id)
 
     schedule = Schedule(
-        programme=programme, schedule_board=scheduleBoard, day=start.weekday(), start_hour=start.time(),
+        programme=programme, calendar=calendar, day=start.weekday(), start_hour=start.time(),
         type=emission_type
     )
     schedule.clean()
@@ -210,12 +210,12 @@ def delete_schedule(request):
 @login_required
 @user_passes_test(schedule_permissions)
 def programmes(request):
-    schedule_board_id = int(request.POST.get('scheduleBoardId'))
-    scheduleBoard = get_object_or_404(Calendar, id=schedule_board_id)
+    calendar_id = int(request.POST.get('calendarId'))
+    calendar = get_object_or_404(Calendar, id=calendar_id)
     start_date = timezone.now().date()
-    if scheduleBoard.start_date and scheduleBoard.start_date > start_date:
-        start_date = scheduleBoard.start_date
-    programmes = Programme.actives(start_date, scheduleBoard.end_date).order_by('name')  #FIXME
+    if calendar.start_date and calendar.start_date > start_date:
+        start_date = calendar.start_date
+    programmes = Programme.actives(start_date, calendar.end_date).order_by('name')  #FIXME
     response_data = []
     for programme in programmes:
         response_data.append({'title': programme.name, 'runtime': programme._runtime, 'programmeId': programme.id})
@@ -227,11 +227,11 @@ def programmes(request):
 def all_events(request):
     if not settings.DEBUG and not request.is_ajax():
         return HttpResponseBadRequest()
-    schedule_board_id = int(request.GET.get('scheduleBoardId'))
+    calendar_id = int(request.GET.get('calendarId'))
     first_day = int(request.GET.get('firstDay'))
-    scheduleBoard = get_object_or_404(Calendar, id=schedule_board_id)
+    calendar = get_object_or_404(Calendar, id=calendar_id)
 
-    schedules = Schedule.objects.filter(schedule_board=scheduleBoard)
+    schedules = Schedule.objects.filter(calendar=calendar)
     json_list = []
     for schedule in schedules:
         day = schedule.day + 1

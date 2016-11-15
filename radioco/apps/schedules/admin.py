@@ -39,19 +39,19 @@ class CalendarAdmin(admin.ModelAdmin):
     list_filter = ['is_active']
     search_fields = ['name']
     ordering = ['name']
-    actions = ['copy_Calendar']
+    actions = ['copy_calendar', 'set_active']
 
     def set_active(self, request, queryset):
         if queryset.count() == 1:
-            active_boards = Calendar.objects.filter(is_active=True)
-            active_boards.update(is_active=False)
+            active_calendars = Calendar.objects.filter(is_active=True)
+            active_calendars.update(is_active=False)
             queryset.update(is_active=True)
-            self.message_user(request, _('Board marked as active'))
+            self.message_user(request, _('Calendar marked as active'))
         else:
             self.message_user(request, _('You cannot mark more than 1 schedule as active'), level=messages.ERROR)
     set_active.short_description = _("Set a calendar active")
 
-    def copy_Calendar(self, request, queryset):
+    def copy_calendar(self, request, queryset):
         for obj in queryset:
             obj_copy = copy.copy(obj)
             obj_copy.id = None
@@ -75,23 +75,23 @@ class CalendarAdmin(admin.ModelAdmin):
                 obj_copy.save()
                 # Live Schedules lives must be created first
                 schedules = []
-                schedules.extend(Schedule.objects.filter(schedule_board=obj, type='L'))
-                schedules.extend(Schedule.objects.filter(schedule_board=obj).exclude(type='L'))
+                schedules.extend(Schedule.objects.filter(calendar=obj, type='L'))
+                schedules.extend(Schedule.objects.filter(calendar=obj).exclude(type='L'))
                 for schedule in schedules:
                     schedule_copy = copy.copy(schedule)
                     schedule_copy.id = None
                     schedule_copy.pk = None
-                    schedule_copy.schedule_board = obj_copy
+                    schedule_copy.calendar = obj_copy
                     if schedule_copy.source:
                         source = schedule_copy.source
                         source_copy = Schedule.objects.get(
-                            schedule_board=obj_copy, day=source.day, start_hour=source.start_hour,
+                            calendar=obj_copy, day=source.day, start_hour=source.start_hour,
                             type=source.type, programme=source.programme
                         )
                         schedule_copy.source = source_copy
                     schedule_copy.save()
 
-    copy_Calendar.short_description = _("Make a Copy of calendar")
+    copy_calendar.short_description = _("Make a Copy of calendar")
 
 
 @admin.register(Schedule)
@@ -109,7 +109,7 @@ class ScheduleAdmin(admin.ModelAdmin):
     change_list_template = "admin/schedules/calendar.html"
 
     def changelist_view(self, request, extra_context=dict()):
-        extra_context['schedule_boards'] = Calendar.objects.all()
+        extra_context['calendars'] = Calendar.objects.all()
         return super(ScheduleAdmin, self).changelist_view(request, extra_context=extra_context)
 
     def has_add_permission(self, request):

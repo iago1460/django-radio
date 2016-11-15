@@ -59,7 +59,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
         self.cest_schedule, created = Schedule.objects.get_or_create(
             programme=programme,
             type='L',
-            schedule_board=self.schedule_board,
+            calendar=self.calendar,
             recurrences=recurrence.Recurrence(
                 rrules=[recurrence.Rule(
                     recurrence.DAILY, until=SPAIN_TZ.localize(datetime.datetime(2017, 3, 27)))]
@@ -69,7 +69,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
         self.cet_schedule, created = Schedule.objects.get_or_create(
             programme=programme,
             type='L',
-            schedule_board=self.schedule_board,
+            calendar=self.calendar,
             recurrences=recurrence.Recurrence(
                 rrules=[recurrence.Rule(recurrence.DAILY)],
             ),
