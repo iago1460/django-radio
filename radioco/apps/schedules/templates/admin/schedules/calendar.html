@@ -61,7 +61,7 @@
         $(document).ready(function () {
             reloadProgrammes();
 
-            $("#select-board").change(function() {
+            $("#select-calendar").change(function() {
                     $('#calendar').fullCalendar( 'refetchEvents')
             });
 
@@ -90,7 +90,7 @@
                     startParam: 'after',
                     endParam: 'before',
                     data: function() {
-                        return { schedule_board: $("#select-board").val() }
+                        return { calendar: $("#select-calendar").val(), timezone: '{{ settings.TIME_ZONE }}' }
                     },
                     error: function() {
                         alert('{% trans "There was an error while fetching transmissions" %}');
@@ -122,7 +122,7 @@
                 droppable: true, // this allows things to be dropped onto the calendar !!!
                 drop: function (date) { // this function is called when something is dropped
                     var programme = $(this).data('slug');
-                    var schedule_board = $("#select-board").val();
+                    var calendar = $("#select-calendar").val();
                     var type = $("input[name='group1']:checked").val();
 
                     // create the event
@@ -131,7 +131,7 @@
                         url: "{% url 'api:schedule-list' %}",
                         contentType: 'application/json',
                         data: JSON.stringify({
-                            schedule_board: schedule_board,
+                            calendar: calendar,
                             programme: programme,
                             start: date,
                             type: type
@@ -214,13 +214,13 @@
 {% block content %}
     <div class="row shedude-manager">
         <div class="col-xs-2">
-            <select id="select-board" class="form-control">
-                {% for schedule_board in schedule_boards %}
-                    <option value="{{schedule_board.id}}"
-                            {% if schedule_board.is_active %}
+            <select id="select-calendar" class="form-control">
+                {% for calendar in calendars %}
+                    <option value="{{calendar.id}}"
+                            {% if calendar.is_active %}
                             selected="selected"
                             {% endif %}>
-                        {{schedule_board.name}}
+                        {{calendar.name}}
                     </option>
                 {% endfor %}
             </select>
