@@ -55,7 +55,7 @@ class TestSerializers(TestDataMixin, TestCase):
 
     def test_transmission(self):
         serializer = serializers.TransmissionSerializer(
-            Transmission(self.schedule, datetime.datetime(2015, 1, 6, 14, 0, 0))
+            Transmission(self.schedule, pytz.utc.localize(datetime.datetime(2015, 1, 6, 14, 0, 0)))
         )
         schedule_id = self.schedule.id
         self.assertDictEqual(serializer.data, {
@@ -63,8 +63,8 @@ class TestSerializers(TestDataMixin, TestCase):
             'schedule': schedule_id,
             'source': None,
             'type': u'L',
-            'start': '2015-01-06T14:00:00',
-            'end': '2015-01-06T15:00:00',
+            'start': '2015-01-06T14:00:00Z',
+            'end': '2015-01-06T15:00:00Z',
             'name': u'Classic hits',
             'slug': u'classic-hits',
             'url': u'/programmes/classic-hits/'})

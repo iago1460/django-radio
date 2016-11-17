@@ -1,5 +1,6 @@
 import datetime
 
+import pytz
 from dateutil.tz import tzoffset
 from django.utils import timezone
 
@@ -49,6 +50,13 @@ def get_timezone_offset(tz):
     return GMT((tz.utcoffset(timestamp) - tz.dst(timestamp)).total_seconds())
 
 
+def get_active_timezone():
+    """
+    Same method as timezone.get_current_timezone but returning utc if nothing was set
+    """
+    return getattr(timezone._active, "value", pytz.utc)
+
+
 def transform_datetime_tz(dt, tz=None):
     """
     Transform a datetime in other timezone to the current one
@@ -65,19 +73,6 @@ def transform_dt_to_default_tz(dt):
     tz = timezone.get_default_timezone()
     return tz.normalize(dt.astimezone(tz))
 
-# def transform_datetime_tz_to_fixed_tz(dt, time=None, tz=None):
-#     """
-#     Transform a datetime in other timezone to the current one
-#     """
-#     if not tz:
-#         tz = timezone.get_current_timezone()
-#     dst_tz_naive = tzoffset(None, get_timezone_offset(tz))
-#
-#     if time:
-#         return timezone.make_aware(datetime.datetime.combine(dt.date(), time), timezone=dst_tz_naive)
-#
-#     return dt.astimezone(dst_tz_naive)
-
 
 def convert_date_to_datetime(date, time=datetime.time(0), tz=None):
     """
@@ -89,70 +84,31 @@ def convert_date_to_datetime(date, time=datetime.time(0), tz=None):
     return timezone.make_aware(datetime.datetime.combine(date, time))
 
 
-def transform_dt_checking_dst(dt): # TODO Maybe not necessary
-    dst_tz = timezone.get_default_timezone()  # Timezone in settings.py
-    tz = timezone.get_current_timezone()  # Timezone in current use
-    dst_offset = dt.astimezone(dst_tz).dst()
-    if dst_offset:  # If dst return a date plus the offset
-        return tz.normalize((dt + dst_offset).astimezone(tz))
-    return tz.normalize(dt.astimezone(tz))
-
-
-def fix_recurrence_dst(dt, requested_tz=None):
+def fix_recurrence_date(start_dt, dt):
     """
+    Fix for django-recurrence 1.3
+    rdates and exdates needs a datetime, we are combining the date with the time from start_date.
+
+    Return: A datetime in the default timezone with the offset required to work in the recurrence
+    """
+    current_dt = transform_dt_to_default_tz(dt)
+    current_start_dt = transform_dt_to_default_tz(start_dt)
+
+    tz = GMT(current_start_dt.utcoffset().total_seconds())  # tz without DST
+    # We are localising a new dt in the DST naive tz
+    fixed_dt = transform_dt_to_default_tz(
+        tz.localize(datetime.datetime.combine(current_dt.date(), current_start_dt.time())))
+    return fixed_dt
+
+
+def fix_recurrence_dst(dt):
+    """
+    Fix for django-recurrence 1.3
     Function to fix a datetime tz aware with an incorrect offset
-    Returns: A datetime tz aware in the new time
+
+    Returns: A datetime in the same timezone but with the offset fixed
     """
     if dt:
         tz = dt.tzinfo
-        fixed_dt = tz.localize(datetime.datetime.combine(dt.date(), dt.time()))
-        if requested_tz:
-            fixed_dt = transform_datetime_tz(fixed_dt, requested_tz)
-        return fixed_dt
+        return tz.localize(datetime.datetime.combine(dt.date(), dt.time()))
     return None
-
-
-def fix_dst_tz(dt, start_dt): #TODO
-    # if dt.tzinfo == pytz.UTC:
-    #     return dt # the date was already cleaned? FIXME problem when start_date changes
-
-    dst_tz = start_dt.tzinfo
-    dst_offset = dt.astimezone(dst_tz).dst()
-    start_dst_offset = start_dt.dst()
-    if dst_offset and not start_dst_offset:  # If dst return a date plus the offset
-        # FIXME there is no solution, every time we are going to incremet this
-        return tz.normalize((dt + dst_offset).astimezone(tz))
-
-    return tz.localize(datetime.datetime.combine(dt.date(), dt.time()))
-
-
-# def transform_dt_according_to_dst(dt):
-#     """
-#     Return a datetime adding the DST offset if the start_date was created in DST
-#     :return:
-#     """
-#
-#     dst_tz = timezone.get_default_timezone()  # Timezone in settings.py
-#     tz = dt.tzinfo
-#     dst_offset = dt.astimezone(dst_tz).dst()
-#     if dst_offset:
-#         return tz.normalize(dt + dst_offset)
-#     return dt
-
-# def transform_dt_according_to_dst(dt, start_date):
-#     """
-#     Return a datetime adding the DST offset if the start_date was created in DST
-#     :return:
-#     """
-#
-#     dst_tz = timezone.get_default_timezone()  # Timezone in settings.py
-#     # tz = timezone.get_current_timezone()  # Timezone in current use
-#     date = dt.astimezone(dst_tz)
-#     start_dst_offset = start_date.astimezone(dst_tz).dst()
-#     date_dst_offset = date.astimezone(dst_tz).dst()
-#     if start_dst_offset:
-#         if not date_dst_offset:  # If start_date was created in summer but this date is not
-#             return dst_tz.normalize(date - start_dst_offset)
-#     elif date_dst_offset:  # If start_date wasn't created in summer but this date is in summer
-#         return dst_tz.normalize(date + start_dst_offset)
-#     return dst_tz.normalize(date)

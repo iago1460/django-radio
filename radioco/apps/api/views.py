@@ -4,8 +4,6 @@ from rest_framework.exceptions import ValidationError as DRFValidationError
 from django.utils.timezone import override, get_default_timezone, get_default_timezone_name
 from recurrence import Recurrence
 
-from radioco.apps.radioco.tz_utils import convert_date_to_datetime, get_timezone_offset, transform_datetime_tz, \
-    transform_dt_checking_dst
 from radioco.apps.api.viewsets import ModelViewSetWithoutCreate
 from radioco.apps.programmes.models import Programme, Episode
 from radioco.apps.schedules.models import Calendar, Schedule, Transmission
@@ -22,8 +20,16 @@ import django_filters
 import serializers
 
 
+class ProgrammeFilter(filters.FilterSet):
+    class Meta:
+        model = Programme
+        fields = ('start_date', 'end_date')
+
+
 class ProgrammeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Programme.objects.all()
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = ProgrammeFilter
     serializer_class = serializers.ProgrammeSerializer
     lookup_field = 'slug'
 
@@ -107,30 +113,9 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
         after = data.cleaned_data['after']
         before = data.cleaned_data['before']
 
-        # if requested_timezone:
-        #     timezone_without_dst = get_timezone_offset(requested_timezone) # forced timezone
-        # else:
-        #     timezone_without_dst = get_timezone_offset(get_default_timezone())
-
-
-
-        # with override(timezone=timezone_without_dst):
-        # after_date = convert_date_to_datetime(data.cleaned_data.get('after'))
-        # before_date = convert_date_to_datetime(data.cleaned_data.get('before'), time=datetime.time(23, 59, 59))
-
-
-        # This seems wrong now
-        # tz = timezone.get_current_timezone()  # Timezone in current use
-        # after_date = transform_dt_checking_dst(
-        #     tz.localize(datetime.datetime.combine(after, datetime.time()))
-        # )
-        # before_date = transform_dt_checking_dst(
-        #     tz.localize(datetime.datetime.combine(before, datetime.time(23, 59, 59)))
-        # )
         tz = requested_timezone or pytz.utc
         after_date = tz.localize(datetime.datetime.combine(after, datetime.time()))
         before_date = tz.localize(datetime.datetime.combine(before, datetime.time(23, 59, 59)))
-
 
         # Filter by active calendar if that filter was not provided
         schedules = self.filter_queryset(self.get_queryset())
@@ -142,36 +127,19 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
             before_date,
             schedules=schedules
         )
-
-        # with override(timezone=get_default_timezone()):
-        #     schedule_1 = Schedule()
-        #     schedule_1.id = 6
-        #     date_1 = convert_date_to_datetime(
-        #         datetime.date(2016, 8, 2), time=datetime.time(23, 50, 0),
-        #         tz =  get_default_timezone()
-        #     )
-        #     date_2 = pytz.UTC.localize(datetime.datetime.combine(datetime.date(2016, 8, 4), time=datetime.time(23, 50, 0)))
-        #     date_3 = get_default_timezone().normalize(
-        #         (date_2 + datetime.timedelta(days=2)).astimezone(get_default_timezone())
-        #     )
-        #
-        #     transmissions = [
-        #         Transmission(schedule_1, date_1), Transmission(schedule_1, date_2),
-        #         Transmission(schedule_1, date_3)
-        #     ]
-        
-        # FIXME:  by default (if not requested tz) this should return dates in UTC!!!
-
-        serializer = self.serializer_class(transmissions, timezone=requested_timezone, many=True)
-        return Response(serializer.data)
+        serializer = self.serializer_class(transmissions, many=True)
+        with override(timezone=tz):
+            return Response(serializer.data)
 
     @list_route()
     def now(self, request):
+        tz = None or pytz.utc  # TODO check for a tz
         now = utils.timezone.now()
         transmissions = Transmission.at(now)
-        serializer = serializers.TransmissionSerializer(
+        serializer = self.serializer_class(
             transmissions, many=True)
-        return Response(serializer.data)
+        with override(timezone=tz):
+            return Response(serializer.data)
 
 
 class TransmissionOperationViewSet(ModelViewSetWithoutCreate):

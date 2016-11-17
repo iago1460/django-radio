@@ -1,58 +1,16 @@
-from radioco.apps.radioco.tz_utils import transform_datetime_tz
+from radioco.apps.radioco.tz_utils import transform_datetime_tz, get_active_timezone
 from radioco.apps.programmes.models import Programme, Episode
 from radioco.apps.schedules.models import Schedule, Calendar
 from rest_framework import serializers
 
 
-class DateTimeFieldTz(serializers.DateTimeField): # TODO: DateTimeFieldTz and TimezoneSerializer not necessary
-
-    def to_representation(self, date, tz):
-        # date_in_new_tz = tz.normalize(date.astimezone(tz)) # FIXME
-
-        # from dateutil.tz import tzoffset
-        # from radioco.apps.radioco.tz_utils import get_timezone_offset
-        # date_in_new_tz = date.astimezone(tzoffset(None, get_timezone_offset(tz)))  # FIXME: fullcalendar needs a fix timezone how to get this
-
-        # date_in_new_tz = transform_datetime_tz(date)
-        date_in_new_tz = date
-
-        return super(DateTimeFieldTz, self).to_representation(date_in_new_tz)
-
-
-class TimezoneSerializer(serializers.Serializer):
+class DateTimeFieldTz(serializers.DateTimeField):
     """
-    Same as Serializer but it will store a timezone and it will send it to DateTimeFieldTz fields
+    Field to display the datetime in the current timezone
     """
-    timezone = None
 
-    def __init__(self, *args, **kwargs):
-        if 'timezone' in kwargs:
-            self.timezone = kwargs.pop('timezone')
-        super(TimezoneSerializer, self).__init__(*args, **kwargs)
-
-    def to_representation(self, instance):
-        """
-        Object instance -> Dict of primitive datatypes.
-        """
-        ret = serializers.OrderedDict()
-        fields = self._readable_fields
-
-        for field in fields:
-            try:
-                attribute = field.get_attribute(instance)
-            except serializers.SkipField:
-                continue
-
-            if attribute is None:
-                # We skip `to_representation` for `None` values so that
-                # fields do not have to explicitly deal with that case.
-                ret[field.field_name] = None
-            elif type(field) is DateTimeFieldTz:
-                ret[field.field_name] = field.to_representation(attribute, self.timezone)
-            else:
-                ret[field.field_name] = field.to_representation(attribute)
-
-        return ret
+    def to_representation(self, date):
+        return super(DateTimeFieldTz, self).to_representation(transform_datetime_tz(date, tz=get_active_timezone()))
 
 
 class ProgrammeSerializer(serializers.ModelSerializer):
@@ -89,7 +47,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
         return schedule.programme.name
 
 
-class TransmissionSerializer(TimezoneSerializer):
+class TransmissionSerializer(serializers.Serializer):
     id = serializers.IntegerField(source='schedule.id')
     name = serializers.CharField(max_length=100)
     slug = serializers.SlugField(max_length=100)
