@@ -55,11 +55,7 @@ class ScheduleValidationTests(TestDataMixin, TestCase):
 @override_settings(TIME_ZONE='UTC')
 class ScheduleModelTests(TestDataMixin, TestCase):
     def setUp(self):
-        self.calendar = Calendar.objects.create(
-            name='Calendar',
-            is_active=True)
-            # start_dt=datetime.date(2014, 1, 1),
-            # end_date=datetime.date(2015, 6, 1))
+        self.calendar = Calendar.objects.create(name='Calendar', is_active=True)
 
         self.recurrences = recurrence.Recurrence(
             rrules=[recurrence.Rule(recurrence.WEEKLY, until=utc.localize(datetime.datetime(2014, 1, 31)))])
@@ -104,14 +100,14 @@ class ScheduleModelTests(TestDataMixin, TestCase):
         self.programme.save()
         self.schedule.refresh_from_db()
         self.assertEqual(
-            self.schedule.effective_start_dt, utc.localize(datetime.datetime(2014, 1, 20, 14, 0, 0)))
+            self.schedule.effective_first_end_dt, utc.localize(datetime.datetime(2014, 1, 20, 14, 0, 0)))
 
     def test_end_gt_calendar(self):
         self.programme.end_date = datetime.date(2014, 1, 14)
         self.programme.save()
         self.schedule.refresh_from_db()
         self.assertEqual(
-            self.schedule.effective_end_dt,
+            self.schedule.effective_last_start_dt,
             utc.localize(datetime.datetime(2014, 1, 13, 15, 0, 0))  # last date including runtime duration
         )
 
@@ -188,6 +184,43 @@ class ScheduleModelTests(TestDataMixin, TestCase):
         self.schedule.save()
         self.episode.refresh_from_db()
         self.assertEqual(self.episode.issue_date, utc.localize(datetime.datetime(2014, 1, 6, 14, 0, 0)))
+
+
+@override_settings(TIME_ZONE='UTC')
+class ScheduleBetweenTests(TestDataMixin, TestCase):
+    def setUp(self):
+        self.recurrences = recurrence.Recurrence(rrules=[recurrence.Rule(recurrence.DAILY)])
+
+        self.schedule = Schedule.objects.create(
+            programme=self.programme,
+            type='L',
+            recurrences=self.recurrences,
+            start_dt=utc.localize(datetime.datetime(2014, 1, 1, 23, 30, 0)),
+            calendar=self.calendar)
+
+    def test_dates_between_includes_started_episode(self):
+        self.assertItemsEqual(
+            self.schedule.dates_between(
+                utc.localize(datetime.datetime(2014, 1, 2, 0, 0, 0)),
+                utc.localize(datetime.datetime(2014, 1, 3, 23, 59, 59))
+            ),
+            [
+                utc.localize(datetime.datetime(2014, 1, 1, 23, 30, 0)), # Not finished yet
+                utc.localize(datetime.datetime(2014, 1, 2, 23, 30, 0)),
+                utc.localize(datetime.datetime(2014, 1, 3, 23, 30, 0)),
+            ]
+        )
+
+    def test_between_includes_started_episode(self):
+        between = Transmission.between(
+            utc.localize(datetime.datetime(2014, 1, 2, 0, 0, 0)),
+            utc.localize(datetime.datetime(2014, 1, 3, 23, 59, 59))
+        )
+        self.assertListEqual(
+            map(lambda t: (t.slug, t.start), list(between)),
+            [(u'classic-hits',  utc.localize(datetime.datetime(2014, 1, 1, 23, 30, 0))),
+             (u'classic-hits',  utc.localize(datetime.datetime(2014, 1, 2, 23, 30, 0))),
+             (u'classic-hits',  utc.localize(datetime.datetime(2014, 1, 3, 23, 30, 0)))])
 
 
 #class ScheduleClassModelTests(TestCase):
@@ -357,8 +390,14 @@ class CalendarManagerTests(TestDataMixin, TestCase):
 
 class CalendarValidationTests(TestCase):
     def setUp(self):
-        self.CalendarForm = modelform_factory(
-            Calendar, fields=("name",))
+        self.CalendarForm = modelform_factory(Calendar, fields=("name",))
+
+    def test_only_one_calendar_active(self):
+        self.assertEquals(len(Calendar.objects.filter(is_active=True)), 1)
+
+        new_active_calendar = Calendar.objects.create(name="test", is_active=True)
+
+        self.assertEquals(Calendar.objects.get(is_active=True), new_active_calendar)
 
 # XXX there is something fishy with form validation, check!
 #    def test_name_required(self):
@@ -373,13 +412,6 @@ class CalendarValidationTests(TestCase):
 #        with self.assertRaisesMessage(
 #                ValidationError, "{'slug':[u'This field cannot be blank.']}"):
 #            board.full_clean()
-
-    def test_only_one_calendar_active(self):
-        self.assertEquals(len(Calendar.objects.filter(is_active=True)), 1)
-
-        calendar = Calendar(name="test", is_active=True)
-
-        self.assertEquals(len(Calendar.objects.filter(is_active=True)), 1)
 
 
 @override_settings(TIME_ZONE='UTC')
@@ -451,26 +483,6 @@ class TransmissionModelTests(TestDataMixin, TestCase):
         self.assertListEqual(
             map(lambda t: (t.slug, t.start), list(between)),
             [(u'classic-hits', utc.localize(datetime.datetime(2015, 1, 6, 16, 30, 0)))])
-
-#class ScheduleViewTests(TestCase):
-#    def setUp(self):
-#        admin = User.objects.create_user(
-#            username='admin', password='topsecret')
-#        admin.user_permissions.add(
-#            Permission.objects.get(codename='change_schedule'))
-#
-#        calendar = Calendar.objects.create(
-#            name='Board',
-#            start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0))
-#
-#        programme = Programme.objects.create(
-#            name="Test-Programme", current_season=1, runtime=540,
-#            start_date=datetime.datetime(2014, 1, 1, 0, 0, 0, 0))
-#
-#        self.schedule = Schedule.objects.create(
-#            calendar=calendar, programme=programme,
-#            start_hour=datetime.time(0, 0, 0), day=WE, type='L')
-#
 
 
 @override_settings(TIME_ZONE='UTC')

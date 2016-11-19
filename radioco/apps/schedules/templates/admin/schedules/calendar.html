@@ -67,8 +67,6 @@
 
             var previous_date = null;
             var calendar = $('#calendar').fullCalendar({
-{#                timezone: '{{ settings.TIME_ZONE }}',#}
-{#                timezone: 'UTC',#}
                 timezone: false,
                 height: 'auto',
                 contentHeight: 'auto',
@@ -177,6 +175,10 @@
             $('#external-events').empty();
             $.getJSON({
                 url: "{% url 'api:programme-list' %}",
+                data: function() {
+                    /* TODO */
+                    return { start_dt: '', end_dt: '' }
+                },
                 success: function(programmes) {
                     for (var i=0; i<programmes.length; i++) {
                         var programme = programmes[i];

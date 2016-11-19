@@ -151,10 +151,10 @@ class Programme(models.Model):
 
 
 def update_schedule_performance(programme):
-    # from radioco.apps.schedules.models import calculate_effective_schedule_start_dt, calculate_effective_schedule_end_dt
+    # from radioco.apps.schedules.models import calculate_effective_first_end_dt, calculate_effective_last_start_dt
     for schedule in programme.schedule_set.all():
-        # schedule.effective_start_dt = calculate_effective_schedule_start_dt(schedule)
-        # schedule.effective_end_dt = calculate_effective_schedule_end_dt(schedule)
+        # schedule.effective_first_end_dt = calculate_effective_first_end_dt(schedule)
+        # schedule.effective_last_start_dt = calculate_effective_last_start_dt(schedule)
         schedule.save()  # TODO: improve performance, update objects in bulk
 
 

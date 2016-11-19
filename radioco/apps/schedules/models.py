@@ -130,18 +130,13 @@ class Schedule(models.Model):
 
     start_dt = models.DateTimeField(verbose_name=_('start date'))
 
-    end_dt = models.DateTimeField(  # TODO: check if it's necessary
-        blank=True, null=True, verbose_name=_('end date'),
-        help_text=_('This field is dynamically generated based on the programme duration')
-    )
-
-    effective_start_dt = models.DateTimeField(
-        blank=True, null=True, verbose_name=_('first effective start date'),
+    effective_first_end_dt = models.DateTimeField(
+        blank=True, null=True, verbose_name=_('first effective end date'),
         help_text=_('This field is dynamically generated to improve performance')
     )
 
-    effective_end_dt = models.DateTimeField(
-        blank=True, null=True, verbose_name=_('last effective end date'),
+    effective_last_start_dt = models.DateTimeField(
+        blank=True, null=True, verbose_name=_('last effective start date'),
         help_text=_('This field is dynamically generated to improve performance')
     )
 
@@ -161,10 +156,8 @@ class Schedule(models.Model):
         if field_has_changed(self, 'start_dt'):
             self._update_excluded_dates()
 
-        self.effective_end_dt = calculate_effective_schedule_end_dt(self)
-        self.effective_start_dt = calculate_effective_schedule_start_dt(self)
-
-        self.end_dt = self.start_dt + self.runtime
+        self.effective_last_start_dt = calculate_effective_last_start_dt(self)
+        self.effective_first_end_dt = calculate_effective_first_end_dt(self)
 
         super(Schedule, self).save(*args, **kwargs)
 
@@ -232,6 +225,11 @@ class Schedule(models.Model):
         # We need to send the dates in the default timezone
         recurrence_dates_between = self.recurrences.between(after_date, before_date, inc=True, dtstart=start_dt)
 
+        # Special case to include started episodes
+        date_before = self.date_before(after_date)
+        if date_before and date_before < after_date < date_before + self.runtime:
+            yield date_before  # Date was already fixed
+
         for date in recurrence_dates_between:
             yield fix_recurrence_dst(date) # Truncate date
 
@@ -253,25 +251,25 @@ class Schedule(models.Model):
     def _merge_after(self, after):
         """
         Return the greater first date taking into account the programme constraints
-        Can return None if there is no effective_start_dt
+        Can return None if there is no effective_first_end_dt
         """
-        if not self.effective_start_dt:
+        if not self.effective_first_end_dt:
             return None
-        return max(after, self.effective_start_dt)
+        return max(after, self.effective_first_end_dt - self.runtime)
 
     def _merge_before(self, before):
         """
         Return the smaller last date taking into account the programme constraints
         """
-        if not self.effective_end_dt:
+        if not self.effective_last_start_dt:
             return before
-        return min(before, self.effective_end_dt)
+        return min(before, self.effective_last_start_dt + self.runtime)
 
     def __unicode__(self):
         return ' - '.join([self.start_dt.strftime('%A'), self.start_dt.strftime('%X')])
 
 
-def calculate_effective_schedule_start_dt(schedule):
+def calculate_effective_first_end_dt(schedule):
     """
     Calculation of the first start date to improve performance
     """
@@ -279,23 +277,24 @@ def calculate_effective_schedule_start_dt(schedule):
     programme_start_dt = schedule.programme.start_dt
     if not schedule.has_recurrences():
         if not programme_start_dt or programme_start_dt <= schedule.start_dt:
-            return schedule.start_dt
+            return schedule.start_dt + schedule.runtime
         return None
 
     # Get first date
     after_dt = schedule.start_dt
     if schedule.programme.start_dt:
         after_dt = max(schedule.start_dt, schedule.programme.start_dt)
-    first_start_dt = schedule.recurrences.after(
-        transform_dt_to_default_tz(after_dt), True, dtstart=transform_dt_to_default_tz(schedule.start_dt))
+    first_start_dt = fix_recurrence_dst(schedule.recurrences.after(
+        transform_dt_to_default_tz(after_dt), True, dtstart=transform_dt_to_default_tz(schedule.start_dt)))
     if first_start_dt:
         if schedule.programme.end_dt and schedule.programme.end_dt < first_start_dt:
             return None
-        return fix_recurrence_dst(first_start_dt)
+        if first_start_dt:
+            return first_start_dt + schedule.runtime
     return None
 
 
-def calculate_effective_schedule_end_dt(schedule):
+def calculate_effective_last_start_dt(schedule):
     """
     Calculation of the last end date to improve performance
     """
@@ -304,7 +303,7 @@ def calculate_effective_schedule_end_dt(schedule):
     # If there are no rrules
     if not schedule.has_recurrences():
         if not programme_end_dt or programme_end_dt >= schedule.start_dt:
-            return schedule.start_dt + schedule.runtime
+            return schedule.start_dt
         return None
 
     # If we have a programme restriction
@@ -314,7 +313,7 @@ def calculate_effective_schedule_end_dt(schedule):
         if last_effective_start_date:
             if schedule.programme.start_dt and schedule.programme.start_dt > last_effective_start_date:
                 return None
-            return fix_recurrence_dst(last_effective_start_date) + schedule.runtime
+            return fix_recurrence_dst(last_effective_start_date)
 
     rrules_until_dates = [_rrule.until for _rrule in schedule.recurrences.rrules]
 
@@ -365,10 +364,15 @@ class Transmission(object):
 
     @classmethod
     def at(cls, at):
-        schedules = Schedule.objects.filter(
-            Q(effective_start_dt__lte=at, effective_end_dt__gt=at) |
-            Q(effective_start_dt__lte=at, effective_end_dt__isnull=True)
-        ) # TODO: check!!
+        # schedules = Schedule.objects.filter(
+        #     calendar__is_active=True,
+        #     effective_first_end_dt__gt=at
+        # ).filter(
+        #     Q(effective_last_start_dt__lt=at, effective_last_start_dt__isnull=True)
+        # )
+        # FIXME: create query
+        raise NotImplemented()
+        schedules = Transmission.between(at, at)
         for schedule in schedules:
             date = schedule.date_before(at)
             if date and date <= at < date + schedule.runtime:
@@ -380,7 +384,16 @@ class Transmission(object):
         Return a tuple of Schedule and Transmissions sorted by date
         """
         if schedules is None:
-            schedules = Schedule.objects.filter(calendar__is_active=True)
+            # schedules = Schedule.objects.filter(calendar__is_active=True)
+            schedules = Schedule.objects.filter(
+                calendar__is_active=True
+            ).filter(
+                Q(effective_last_start_dt__isnull=True, effective_first_end_dt__gt=after) |
+                Q(effective_last_start_dt__isnull=False, effective_first_end_dt__gt=after - F('duration'))
+            ).filter(
+                Q(effective_last_start_dt__lt=before, effective_last_start_dt__gt=after) |
+                Q(effective_last_start_dt__isnull=True)
+            )
 
         transmission_dates = [
             imap(partial(_return_tuple, item2=schedule), schedule.dates_between(after, before))
