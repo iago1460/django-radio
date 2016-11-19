@@ -33,17 +33,10 @@ from radioco.apps.schedules.models import Calendar, CalendarManager
 
 
 class RecurrenceTests(TestDataMixin, TestCase):
+    """
+    Tests to check django-recurrence behaviour
+    """
     def setUp(self):
-        # self.daily_recurrence = recurrence.Recurrence(
-        #     dtstart=datetime.datetime(2014, 1, 6, 14, 0, 0),
-        #     dtend=datetime.datetime(2014, 1, 31, 14, 0, 0),
-        #     rrules=[recurrence.Rule(recurrence.DAILY)])
-        # 
-        # self.weekly_recurrence = recurrence.Recurrence(
-        #     dtstart=datetime.datetime(2014, 1, 6, 14, 0, 0),
-        #     dtend=datetime.datetime(2014, 1, 31, 14, 0, 0),
-        #     rrules=[recurrence.Rule(recurrence.WEEKLY)])
-
         self.monthly_recurrence = recurrence.Recurrence(
             rrules=[recurrence.Rule(recurrence.MONTHLY)])
 
@@ -80,6 +73,10 @@ class RecurrenceTests(TestDataMixin, TestCase):
 
     def test_after(self):
         start_dt = datetime.datetime(2014, 1, 20, 14, 0, 0)
+        after = datetime.datetime(2014, 1, 1, 13, 59, 59)
+        dt = self.monthly_recurrence.after(after, dtstart=start_dt)
+        self.assertEquals(datetime.datetime(2014, 1, 20, 14, 0, 0), dt)
+
         after = start_dt
         dt = self.monthly_recurrence.after(after, dtstart=start_dt)
         self.assertEquals(datetime.datetime(2014, 2, 20, 14, 0, 0), dt)
@@ -104,3 +101,64 @@ class RecurrenceTests(TestDataMixin, TestCase):
         before = start_dt
         dt = self.monthly_recurrence.before(before, True, dtstart=start_dt)
         self.assertEquals(datetime.datetime(2014, 1, 20, 14, 0, 0), dt)
+
+
+class EmptyRecurrenceTests(TestDataMixin, TestCase):
+    """
+    Tests to check django-recurrence behaviour when there are no recurrences
+    """
+    def setUp(self):
+        self.empty_recurrence = recurrence.Recurrence()
+
+    def test_no_values(self):
+        self.assertFalse(bool(self.empty_recurrence))
+
+    def test_after(self):
+        start_dt = datetime.datetime(2014, 1, 1, 14, 0, 0)
+        after = datetime.datetime(2014, 1, 1, 13, 59, 59)
+        dt = self.empty_recurrence.after(after, dtstart=start_dt)
+        self.assertEquals(datetime.datetime(2014, 1, 1, 14, 0, 0), dt)
+
+        after = start_dt
+        self.assertIsNone(self.empty_recurrence.after(after, dtstart=start_dt))
+
+        after = datetime.datetime(2014, 1, 1, 14, 0, 1)
+        self.assertIsNone(self.empty_recurrence.after(after, dtstart=start_dt))
+
+    def test_after_inclusive(self):
+        start_dt = datetime.datetime(2014, 1, 1, 14, 0, 0)
+        after = datetime.datetime(2014, 1, 1, 13, 59, 59)
+        dt = self.empty_recurrence.after(after, True, dtstart=start_dt)
+        self.assertEquals(datetime.datetime(2014, 1, 1, 14, 0, 0), dt)
+
+        after = start_dt
+        dt = self.empty_recurrence.after(after, True, dtstart=start_dt)
+        self.assertEquals(datetime.datetime(2014, 1, 1, 14, 0, 0), dt)
+
+        after = datetime.datetime(2014, 1, 1, 14, 0, 1)
+        self.assertIsNone(self.empty_recurrence.after(after, True, dtstart=start_dt))
+
+    def test_before(self):
+        start_dt = datetime.datetime(2014, 1, 1, 14, 0, 0)
+        before = datetime.datetime(2014, 1, 1, 14, 0, 1)
+        dt = self.empty_recurrence.before(before, dtstart=start_dt)
+        self.assertEquals(datetime.datetime(2014, 1, 1, 14, 0, 0), dt)
+
+        before = start_dt
+        self.assertIsNone(self.empty_recurrence.before(before, dtstart=start_dt))
+
+        before = datetime.datetime(2014, 1, 1, 13, 59, 59)
+        self.assertIsNone(self.empty_recurrence.before(before, dtstart=start_dt))
+
+    def test_before_inclusive(self):
+        start_dt = datetime.datetime(2014, 1, 1, 14, 0, 0)
+        before = datetime.datetime(2014, 1, 1, 14, 0, 1)
+        dt = self.empty_recurrence.before(before, True, dtstart=start_dt)
+        self.assertEquals(datetime.datetime(2014, 1, 1, 14, 0, 0), dt)
+
+        before = start_dt
+        dt = self.empty_recurrence.before(before, True, dtstart=start_dt)
+        self.assertEquals(datetime.datetime(2014, 1, 1, 14, 0, 0), dt)
+
+        before = datetime.datetime(2014, 1, 1, 13, 59, 59)
+        self.assertIsNone(self.empty_recurrence.before(before, True, dtstart=start_dt))
