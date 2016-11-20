@@ -364,9 +364,11 @@ class Transmission(object):
     @classmethod
     def at(cls, at):
         schedules = Schedule.objects.filter(
-            Q(effective_start_dt__lte=at, effective_end_dt__gt=at) |
-            Q(effective_start_dt__lte=at, effective_end_dt__isnull=True)
-        ) # TODO: check!!
+            calendar__is_active=True, effective_start_dt__lt=at
+        ).filter(
+            Q(effective_end_dt__gt=at) |
+            Q(effective_end_dt__isnull=True)
+        )
         for schedule in schedules:
             date = schedule.date_before(at)
             if date and date <= at < date + schedule.runtime:
@@ -379,6 +381,13 @@ class Transmission(object):
         """
         if schedules is None:
             schedules = Schedule.objects.filter(calendar__is_active=True)
+
+        schedules = schedules.filter(
+            effective_start_dt__lt=before
+        ).filter(
+            Q(effective_end_dt__gt=after) |
+            Q(effective_end_dt__isnull=True)
+        )
 
         transmission_dates = [
             imap(partial(_return_tuple, item2=schedule), schedule.dates_between(after, before))

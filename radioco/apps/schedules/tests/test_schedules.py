@@ -198,6 +198,12 @@ class ScheduleBetweenTests(TestDataMixin, TestCase):
             start_dt=utc.localize(datetime.datetime(2014, 1, 1, 23, 30, 0)),
             calendar=self.calendar)
 
+        self.schedule_without_recurrences = Schedule.objects.create(
+            programme=self.programme,
+            type='L',
+            start_dt=utc.localize(datetime.datetime(2014, 1, 2, 0, 30, 0)),
+            calendar=self.calendar)
+
     def test_dates_between_includes_started_episode(self):
         self.assertItemsEqual(
             self.schedule.dates_between(
@@ -205,7 +211,7 @@ class ScheduleBetweenTests(TestDataMixin, TestCase):
                 utc.localize(datetime.datetime(2014, 1, 3, 23, 59, 59))
             ),
             [
-                utc.localize(datetime.datetime(2014, 1, 1, 23, 30, 0)), # Not finished yet
+                utc.localize(datetime.datetime(2014, 1, 1, 23, 30, 0)),  # Not finished yet
                 utc.localize(datetime.datetime(2014, 1, 2, 23, 30, 0)),
                 utc.localize(datetime.datetime(2014, 1, 3, 23, 30, 0)),
             ]
@@ -218,7 +224,8 @@ class ScheduleBetweenTests(TestDataMixin, TestCase):
         )
         self.assertListEqual(
             map(lambda t: (t.slug, t.start), list(between)),
-            [(u'classic-hits',  utc.localize(datetime.datetime(2014, 1, 1, 23, 30, 0))),
+            [(u'classic-hits',  utc.localize(datetime.datetime(2014, 1, 1, 23, 30, 0))),  # Not finished yet
+             (u'classic-hits',  utc.localize(datetime.datetime(2014, 1, 2, 0, 30, 0))),
              (u'classic-hits',  utc.localize(datetime.datetime(2014, 1, 2, 23, 30, 0))),
              (u'classic-hits',  utc.localize(datetime.datetime(2014, 1, 3, 23, 30, 0)))])
 
@@ -459,10 +466,23 @@ class TransmissionModelTests(TestDataMixin, TestCase):
             reverse('programmes:detail', args=[self.schedule.programme.slug]))
 
     def test_at(self):
-        now = Transmission.at(utc.localize(datetime.datetime(2015, 1, 6, 14, 30, 0)))
+        now = Transmission.at(utc.localize(datetime.datetime(2015, 1, 6, 11, 59, 59)))
         self.assertListEqual(
             map(lambda t: (t.slug, t.start), list(now)),
-            [(u'classic-hits', utc.localize(datetime.datetime(2015, 1, 6, 14, 0)))])
+            [(u'the-best-wine', utc.localize(datetime.datetime(2015, 1, 6, 11, 0, 0)))])
+
+        now = Transmission.at(utc.localize(datetime.datetime(2015, 1, 6, 12, 0, 0)))
+        self.assertListEqual(
+            map(lambda t: (t.slug, t.start), list(now)),
+            [(u'local-gossips', utc.localize(datetime.datetime(2015, 1, 6, 12, 0, 0)))])
+
+        now = Transmission.at(utc.localize(datetime.datetime(2015, 1, 6, 12, 59, 59)))
+        self.assertListEqual(
+            map(lambda t: (t.slug, t.start), list(now)),
+            [(u'local-gossips', utc.localize(datetime.datetime(2015, 1, 6, 12, 0, 0)))])
+
+        now = Transmission.at(utc.localize(datetime.datetime(2015, 1, 6, 13, 0, 0)))
+        self.assertListEqual(list(now), [])
 
     def test_between(self):
         between = Transmission.between(

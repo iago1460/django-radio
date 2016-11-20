@@ -117,8 +117,9 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
         after_date = tz.localize(datetime.datetime.combine(after, datetime.time()))
         before_date = tz.localize(datetime.datetime.combine(before, datetime.time(23, 59, 59)))
 
-        # Filter by active calendar if that filter was not provided
+        # Apply filters to the queryset
         schedules = self.filter_queryset(self.get_queryset())
+        # Filter by active calendar if that filter was not provided
         if not data.cleaned_data.get('calendar'):
             schedules = schedules.filter(calendar__is_active=True)
 
