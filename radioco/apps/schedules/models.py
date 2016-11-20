@@ -130,11 +130,6 @@ class Schedule(models.Model):
 
     start_dt = models.DateTimeField(verbose_name=_('start date'))
 
-    end_dt = models.DateTimeField(  # TODO: check if it's necessary
-        blank=True, null=True, verbose_name=_('end date'),
-        help_text=_('This field is dynamically generated based on the programme duration')
-    )
-
     effective_start_dt = models.DateTimeField(
         blank=True, null=True, verbose_name=_('first effective start date'),
         help_text=_('This field is dynamically generated to improve performance')
@@ -163,8 +158,6 @@ class Schedule(models.Model):
 
         self.effective_end_dt = calculate_effective_schedule_end_dt(self)
         self.effective_start_dt = calculate_effective_schedule_start_dt(self)
-
-        self.end_dt = self.start_dt + self.runtime
 
         super(Schedule, self).save(*args, **kwargs)
 
@@ -232,6 +225,11 @@ class Schedule(models.Model):
         # We need to send the dates in the default timezone
         recurrence_dates_between = self.recurrences.between(after_date, before_date, inc=True, dtstart=start_dt)
 
+        # Special case to include started episodes
+        date_before = self.date_before(after_date)
+        if date_before and date_before < after_date < date_before + self.runtime:
+            yield date_before  # Date was already fixed
+
         for date in recurrence_dates_between:
             yield fix_recurrence_dst(date) # Truncate date
 
@@ -286,12 +284,12 @@ def calculate_effective_schedule_start_dt(schedule):
     after_dt = schedule.start_dt
     if schedule.programme.start_dt:
         after_dt = max(schedule.start_dt, schedule.programme.start_dt)
-    first_start_dt = schedule.recurrences.after(
-        transform_dt_to_default_tz(after_dt), True, dtstart=transform_dt_to_default_tz(schedule.start_dt))
+    first_start_dt = fix_recurrence_dst(schedule.recurrences.after(
+        transform_dt_to_default_tz(after_dt), True, dtstart=transform_dt_to_default_tz(schedule.start_dt)))
     if first_start_dt:
         if schedule.programme.end_dt and schedule.programme.end_dt < first_start_dt:
             return None
-        return fix_recurrence_dst(first_start_dt)
+        return first_start_dt
     return None
 
 
