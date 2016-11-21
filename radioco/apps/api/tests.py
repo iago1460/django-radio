@@ -9,6 +9,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 import serializers
+from radioco.apps.programmes.models import Programme
 from radioco.apps.radioco.tests import TestDataMixin
 from radioco.apps.schedules.models import Transmission
 
@@ -80,6 +81,16 @@ class TestAPI(TestDataMixin, APITestCase):
         someone = User.objects.create_user(
             username='someone', password='topsecret')
 
+        self.summer_programme = Programme.objects.create(
+            name='Summer Programme',
+            synopsis='',
+            language='en',
+            current_season=1,
+            _runtime=60,
+            start_date=datetime.date(2015, 6, 1),
+            end_date=datetime.date(2015, 8, 31),
+        )
+
     def test_api(self):
         response = self.client.get('/api/2/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -87,6 +98,53 @@ class TestAPI(TestDataMixin, APITestCase):
     def test_programmes_get_all(self):
         response = self.client.get('/api/2/programmes')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_programmes_before(self):
+        response = self.client.get(
+            '/api/2/programmes',
+            {
+                'before': datetime.date(2015, 6, 1),
+            })
+        self.assertIn(u'summer-programme', map(lambda t: t['slug'], response.data))
+
+        response = self.client.get(
+            '/api/2/programmes',
+            {
+                'before': datetime.date(2015, 5, 30),
+            })
+        self.assertNotIn(u'summer-programme', map(lambda t: t['slug'], response.data))
+
+    def test_programmes_after(self):
+        response = self.client.get(
+            '/api/2/programmes',
+            {
+                'after': datetime.date(2015, 8, 31),
+            })
+        self.assertIn(u'summer-programme', map(lambda t: t['slug'], response.data))
+
+        response = self.client.get(
+            '/api/2/programmes',
+            {
+                'after': datetime.date(2015, 9, 1),
+            })
+        self.assertNotIn(u'summer-programme', map(lambda t: t['slug'], response.data))
+
+    def test_programmes_between(self):
+        response = self.client.get(
+            '/api/2/programmes',
+            {
+                'after': datetime.date(2015, 1, 1),
+                'before': datetime.date(2015, 12, 31),
+            })
+        self.assertIn(u'summer-programme', map(lambda t: t['slug'], response.data))
+
+        response = self.client.get(
+            '/api/2/programmes',
+            {
+                'after': datetime.date(2015, 1, 1),
+                'before': datetime.date(2015, 5, 30),
+            })
+        self.assertNotIn(u'summer-programme', map(lambda t: t['slug'], response.data))
 
     def test_programmes_post(self):
         response = self.client.post('/api/2/programmes')
@@ -198,7 +256,6 @@ class TestAPI(TestDataMixin, APITestCase):
                 'before': datetime.date(2015, 2, 7),
             })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
 
     def test_incorrect_transmission_queries(self):
         response = self.client.get('/api/2/transmissions')

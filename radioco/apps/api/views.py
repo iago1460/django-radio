@@ -1,5 +1,6 @@
 import pytz
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from rest_framework.exceptions import ValidationError as DRFValidationError
 from django.utils.timezone import override, get_default_timezone, get_default_timezone_name
 from recurrence import Recurrence
@@ -23,7 +24,19 @@ import serializers
 class ProgrammeFilter(filters.FilterSet):
     class Meta:
         model = Programme
-        fields = ('start_date', 'end_date')
+        fields = ('name', 'category')
+
+
+class ProgrammeFilterForm(forms.Form):
+    after = forms.DateField(required=False)
+    before = forms.DateField(required=False)
+
+    def clean(self):
+        cleaned_data = super(ProgrammeFilterForm, self).clean()
+        if cleaned_data.get('before') and cleaned_data.get('after'):
+            if cleaned_data['after'] > cleaned_data['before']:
+                raise ValidationError('after date has to be greater or equals than before date.')
+        return cleaned_data
 
 
 class ProgrammeViewSet(viewsets.ReadOnlyModelViewSet):
@@ -32,6 +45,24 @@ class ProgrammeViewSet(viewsets.ReadOnlyModelViewSet):
     filter_class = ProgrammeFilter
     serializer_class = serializers.ProgrammeSerializer
     lookup_field = 'slug'
+
+    def list(self, request, *args, **kwargs):
+        data = ProgrammeFilterForm(request.query_params)
+        if not data.is_valid():
+            raise DRFValidationError(data.errors)
+
+        after = data.cleaned_data['after']
+        before = data.cleaned_data['before']
+
+        # Apply filters to the queryset
+        programmes = self.filter_queryset(self.get_queryset())
+        if after:
+            programmes = programmes.filter(Q(end_date__gte=after) | Q(end_date__isnull=True))
+        if before:
+            programmes = programmes.filter(Q(start_date__lte=before) | Q(start_date__isnull=True))
+
+        serializer = self.serializer_class(programmes, many=True)
+        return Response(serializer.data)
 
 
 class EpisodeFilter(filters.FilterSet):

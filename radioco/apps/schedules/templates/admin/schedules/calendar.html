@@ -59,16 +59,12 @@
 
 
         $(document).ready(function () {
-            reloadProgrammes();
-
             $("#select-calendar").change(function() {
                     $('#calendar').fullCalendar( 'refetchEvents')
             });
 
             var previous_date = null;
             var calendar = $('#calendar').fullCalendar({
-{#                timezone: '{{ settings.TIME_ZONE }}',#}
-{#                timezone: 'UTC',#}
                 timezone: false,
                 height: 'auto',
                 contentHeight: 'auto',
@@ -145,6 +141,9 @@
                     });
                 },
 
+                viewRender: function (view, element) {
+                    reloadProgrammes(view.start.format('YYYY-MM-DD'), moment(view.end).subtract(1, "days").format('YYYY-MM-DD'))
+                },
                 eventClick: function (calEvent, jsEvent, view) {
                 },
                 eventDragStart: function(event) {
@@ -173,10 +172,11 @@
 
         });
 
-        function reloadProgrammes() {
+        function reloadProgrammes(after, before) {
             $('#external-events').empty();
             $.getJSON({
                 url: "{% url 'api:programme-list' %}",
+                data: {after: after, before:before},
                 success: function(programmes) {
                     for (var i=0; i<programmes.length; i++) {
                         var programme = programmes[i];
