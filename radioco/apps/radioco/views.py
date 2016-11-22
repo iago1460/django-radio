@@ -23,11 +23,11 @@ from django.conf import settings
 from django.contrib.auth import (
     login, logout, authenticate
 )
-from django import utils
 from django.contrib.auth.decorators import user_passes_test
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
+from django.utils import timezone
 from django.utils.translation import ugettext as _
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -40,29 +40,38 @@ from radioco.apps.schedules.models import Schedule, Transmission
 
 
 def index(request):
-    now = utils.timezone.now()
-    transmissions = Transmission.at(now)
-    try:
-        transmission = transmissions.next()
-        end_time = transmission.end
-        percentage = round(
-            (now - transmission.start).total_seconds() /
-            (transmission.end - transmission.start).total_seconds() * 100)
+    now = timezone.now()
 
+    transmissions_between = Transmission.between(now, now + datetime.timedelta(hours=+16))
+    next_transmissions = []
+
+    try:
+        live_transmission = transmissions_between.next()
+        if live_transmission.start <= now < live_transmission.end:
+            percentage = round(
+                (now - live_transmission.start).total_seconds() /
+                (live_transmission.end - live_transmission.start).total_seconds() * 100)
+        else:
+            next_transmissions.append(live_transmission)
+            live_transmission = None
+            percentage = None
     except StopIteration:
-        transmission = None
-        end_time = now
+        live_transmission = None
         percentage = None
 
-    next_transmissions = Transmission.between(
-        end_time, end_time + datetime.timedelta(hours=+16))
+    try:
+        max_num_of_next_transmissions = 6 - len(next_transmissions)
+        for num in range(max_num_of_next_transmissions):
+            next_transmissions.append(transmissions_between.next())
+    except StopIteration:
+        pass
 
     other_programmes = Programme.objects.order_by('?').all()[:10]
     latest_episodes = Episode.objects.filter(podcast__isnull=False).order_by('-issue_date')[:5]
 
     context = {
         'now': now, 'percentage': percentage,
-        'transmission': transmission, 'next_transmissions': next_transmissions,
+        'transmission': live_transmission, 'next_transmissions': next_transmissions,
         'other_programmes': other_programmes, 'latest_episodes': latest_episodes
     }
     return render(request, 'radioco/index.html', context)

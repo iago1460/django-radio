@@ -10,10 +10,8 @@ timestamp = datetime.datetime(2009, 1, 1)  # any unambiguous timestamp will work
 
 
 class GMT(tzoffset):
-    """UTC
-
-    Optimized UTC implementation. It unpickles using the single module global
-    instance defined beneath this class declaration.
+    """
+    GMT implementation, it has a fixed offset
     """
 
     def __init__(self, seconds):

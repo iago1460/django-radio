@@ -74,19 +74,21 @@
                             </li>
                         {% endif %}
 
-                        {% for schedule, date, episode in next_events %}
-                            <li class="list-group-item">
-                                <h4>
-                                    <span class="label label-success">{{ date|date:"G:i" }}</span>
-                                    {% if episode %}
-                                        <a href="{% url 'programmes:episode_detail' schedule.programme.slug episode.season episode.number_in_season %}">{{ schedule.programme.name }}</a>
-                                    {% else %}
-                                        <a href="{% url 'programmes:detail' schedule.programme.slug %}">{{ schedule.programme.name }}</a>
-                                    {% endif %}
-                                </h4>
-                            </li>
+                        {% for transmission in next_transmissions %}
+                            {% with schedule=transmission.schedule date=transmission.start %}
+                                <li class="list-group-item">
+                                    <h4>
+                                        <span class="label label-success">{{ date|date:"G:i" }}</span>
+                                        {% if episode %}
+                                            <a href="{% url 'programmes:episode_detail' schedule.programme.slug episode.season episode.number_in_season %}">{{ schedule.programme.name }}</a>
+                                        {% else %}
+                                            <a href="{% url 'programmes:detail' schedule.programme.slug %}">{{ schedule.programme.name }}</a>
+                                        {% endif %}
+                                    </h4>
+                                </li>
+                            {% endwith %}
                         {% endfor %}
-                        {% if not next_events and not schedule_now %}
+                        {% if not next_transmissions and not schedule_now %}
                             <h4>{% trans "There are currently no programmes"|upper %}</h4>
                         {% endif %}
                     </ul>
