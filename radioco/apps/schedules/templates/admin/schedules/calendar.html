@@ -145,6 +145,9 @@
                     reloadProgrammes(view.start.format('YYYY-MM-DD'), moment(view.end).subtract(1, "days").format('YYYY-MM-DD'))
                 },
                 eventClick: function (calEvent, jsEvent, view) {
+                    var url = '{% url 'admin:schedules_schedule_change' 0 %}'.replace('/0/', '/' + calEvent.id + '/');
+                    showAddAnotherPopup({href : url + '?_popup=1', 'id':'add_change_programme'});
+                    jsEvent.preventDefault();
                 },
                 eventDragStart: function(event) {
                     previous_date = new Date(event.start);
@@ -183,6 +186,7 @@
 
                         $("<div>").append(programme.name)
                             .addClass("external-event")
+                            .data('id', programme.id)
                             .data('slug', programme.slug)
                             .data('title', programme.name)
                             .data('runtime', programme.runtime)
@@ -190,8 +194,14 @@
                                 zIndex: 999,
                                 revert: true, // will cause the event to go back to its
                                 revertDuration: 0
-                            })
-                            .appendTo('#external-events');
+                            }).on( "click", function() {
+                                var url = '{% url 'admin:programmes_programme_change' 0 %}'.replace('/0/', '/' + $(this).data('id') + '/');
+                                showAddAnotherPopup({
+                                    href : url + '?_popup=1',
+                                    'id':'add_programme'
+                                });
+                                jsEvent.preventDefault();
+                            }).appendTo('#external-events');
                     }
                     info('{% trans "Programmes reloaded" %}');
                 },
@@ -200,6 +210,20 @@
                 },
             });
         }
+        
+        function dismissAddRelatedObjectPopup(win, newId, newRepr) {
+            // Refreshing related information depending on the object type 
+            var name = windowname_to_id(win.name);
+            if (name === 'programme'){
+                var view = $('#calendar').fullCalendar('getView');
+                reloadProgrammes(view.start.format('YYYY-MM-DD'), moment(view.end).subtract(1, "days").format('YYYY-MM-DD'));
+            } else if (name === 'change_programme') {
+                $('#calendar').fullCalendar( 'refetchEvents');
+            }
+            win.close();
+        }
+        
+        dismissAddAnotherPopup = dismissAddRelatedObjectPopup;
     </script>
 {% endblock %}
 
@@ -225,7 +249,14 @@
                 {% endfor %}
             </select>
 
-            <h3>{% trans "Programmes" %}</h3>
+            <h3>
+                {% trans "Programmes" %}
+                <small>
+                    <a class="add-another" id="add_programme" 
+                       href="/admin/programmes/programme/add/?_popup=1" title="Add another programme">
+                    </a>
+                </small>
+            </h3>
             <div id="external-events"></div>
 
             <h4>{% trans "Programme type" %}</h4>

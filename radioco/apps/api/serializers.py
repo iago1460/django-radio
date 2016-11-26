@@ -19,7 +19,7 @@ class ProgrammeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Programme
-        fields = ('slug', 'name', 'synopsis', 'runtime', 'photo', 'language', 'category')
+        fields = ('id', 'slug', 'name', 'synopsis', 'runtime', 'photo', 'language', 'category')
 
 
 class EpisodeSerializer(serializers.ModelSerializer):
