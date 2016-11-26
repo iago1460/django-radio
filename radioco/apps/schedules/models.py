@@ -115,7 +115,7 @@ class ExcludedDates(models.Model):
         """
         default_tz = timezone.get_default_timezone()
         new_dt_in_default_tz = transform_datetime_tz(new_dt, tz=default_tz)
-        default_tz.localize(datetime.datetime.combine(self.date, new_dt_in_default_tz.time()))
+        return default_tz.localize(datetime.datetime.combine(self.date, new_dt_in_default_tz.time()))
 
 
 class Schedule(models.Model):
@@ -320,8 +320,11 @@ def calculate_effective_schedule_end_dt(schedule):
     if any(map(lambda x: x is None, rrules_until_dates)):
         return None
 
-    # Get the biggest possible start_date. It could be that the biggest date is excluded
     possible_limit_dates = schedule.recurrences.rdates + rrules_until_dates
+    if not possible_limit_dates:
+        return None
+
+    # Get the biggest possible start_date. It could be that the biggest date is excluded
     biggest_date = max(possible_limit_dates)
     last_effective_start_date = schedule.recurrences.before(
         transform_dt_to_default_tz(biggest_date), True, dtstart=transform_dt_to_default_tz(schedule.start_dt))
