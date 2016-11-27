@@ -153,8 +153,10 @@ class Schedule(models.Model):
     def save(self, *args, **kwargs):
         assert self.start_dt, 'start_dt is required'
         self._update_recurrence_dates()
-        if field_has_changed(self, 'start_dt'):
-            self._update_excluded_dates()
+
+        # Do this every time to avoid users to delete/add exdates manually
+        # if field_has_changed(self, 'start_dt'):
+        self._update_excluded_dates()
 
         # End date has to be calculated first
         self.effective_start_dt = calculate_effective_schedule_start_dt(self)
