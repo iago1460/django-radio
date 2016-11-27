@@ -17,8 +17,9 @@
 
 from django.conf.urls import patterns, url
 
-from radioco.apps.schedules import views
+from radioco.apps.schedules.views import schedule_list, DeleteScheduleView
 
 urlpatterns = [
-    url(r'^$', views.schedule_list, name='list'),
+    url(r'^$', schedule_list, name='list'),
+    url(r'^delete-transmission/(?P<pk>\d+)/$', DeleteScheduleView.as_view(), name='delete_transmission'),
 ]

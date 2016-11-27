@@ -1,0 +1,19 @@
+{% load i18n %}
+
+
+{% if schedule.has_recurrences %}
+    <p>
+        {% trans 'Would you like to delete only this transmission, all transmissions in the series or this and all future transmissions in the series?' %}
+    </p>
+{% else %}
+    <p>
+        {% trans 'Would you like to delete this transmission?' %}
+    </p>
+    <h5>
+        {{ schedule.programme }} : {{ transmission_dt|date:"DATETIME_FORMAT" }}
+    </h5>
+{% endif %}
+
+<form action="{{ request.path }}" method="post">{% csrf_token %}
+    {{ form }}
+</form>

@@ -1,6 +1,8 @@
 import pytz
 import datetime
 import recurrence
+from django.http import HttpResponseForbidden
+from django.views.generic.detail import SingleObjectMixin
 
 
 def create_example_data():
@@ -168,3 +170,25 @@ class memorize(dict):
 
 def field_has_changed(_object, field):
     return _object.id and getattr(_object.__class__.objects.get(id=_object.id), field) != getattr(_object, field)
+
+
+def check_delete_permission(user, model):
+    permission = '%s.%s' % (model._meta.app_label, "delete_%s" % model._meta.model_name)
+    return user.has_perm(permission)
+
+
+class DeletePermissionMixin(object):
+    model = None
+
+    def dispatch(self, request, *args, **kwargs):
+        if not check_delete_permission(request.user, self.model):
+            return HttpResponseForbidden("User doesn't have delete permission")
+        return super(DeletePermissionMixin, self).dispatch(request, *args, **kwargs)
+
+
+class GetObjectMixin(SingleObjectMixin):
+    object = None
+
+    def dispatch(self, *args, **kwargs):
+        self.object = self.get_object()
+        return super(GetObjectMixin, self).dispatch(*args, **kwargs)

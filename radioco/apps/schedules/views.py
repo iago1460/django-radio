@@ -18,13 +18,18 @@
 import datetime
 import json
 
-from django.contrib.auth.decorators import permission_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
+from django.http import HttpResponseBadRequest
 from django.shortcuts import render
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
+from django.views.generic import FormView
 
 from radioco.apps.global_settings.models import CalendarConfiguration
-from radioco.apps.programmes.models import Episode
+from radioco.apps.radioco.tz_utils import transform_dt_to_default_tz
+from radioco.apps.radioco.utils import GetObjectMixin, DeletePermissionMixin
+from radioco.apps.schedules.forms import DeleteScheduleForm
 from radioco.apps.schedules.models import Schedule
 
 
@@ -41,10 +46,70 @@ def schedule_list(request):
     return render(request, 'schedules/schedules_list.html', context)
 
 
-#def feed_schedules(request):
-#    start = datetime.datetime.strptime(request.GET.get('start'), '%Y-%m-%d')
-#    end = datetime.datetime.strptime(request.GET.get('end'), '%Y-%m-%d')
-#    return HttpResponse(
-#        json.dumps(__get_events(after=start, before=end, json_mode=True)),
-#        content_type='application/json'
-#    )
+class DeleteScheduleView(GetObjectMixin, DeletePermissionMixin, FormView):
+    template_name = 'admin/schedules/delete_modal.html'
+    form_class = DeleteScheduleForm
+    model = Schedule
+
+    schedule_id = None
+    transmission_dt = None
+
+    def get(self, request, *args, **kwargs):
+        try:
+            self.transmission_dt = parse_datetime(request.GET['transmission_dt'])
+        except ValueError:
+            pass
+        if not self.transmission_dt:
+            return HttpResponseBadRequest('Invalid request! transmission_dt is invalid.')
+
+        return super(DeleteScheduleView, self).get(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super(DeleteScheduleView, self).get_form_kwargs()
+        kwargs.update({
+            'has_recurrences': self.object.has_recurrences(),
+        })
+        return kwargs
+
+    def get_initial(self):
+        return {
+            'schedule': self.object,
+            'transmission_dt': self.transmission_dt,
+        }
+
+    def get_context_data(self, **kwargs):
+        context = super(DeleteScheduleView, self).get_context_data(**kwargs)
+        context['schedule'] = self.object
+        context['transmission_dt'] = self.transmission_dt
+        return context
+
+    def form_valid(self, form):
+        cleaned_data = form.clean()
+        schedule = cleaned_data['schedule']
+        transmission_dt = cleaned_data['transmission_dt']
+        action = cleaned_data.get('action')
+        if not schedule.has_recurrences() or action == DeleteScheduleForm.DELETE_ALL:
+            schedule.delete()
+        elif action == DeleteScheduleForm.DELETE_ONLY_THIS:
+            schedule.exclude_date(transmission_dt)
+            schedule.save()
+        elif action == DeleteScheduleForm.DELETE_THIS_AND_FOLLOWING:
+            # until_dt is the end of the previous day
+            until_dt = timezone.get_default_timezone().localize(
+                datetime.datetime.combine(
+                    transform_dt_to_default_tz(transmission_dt).date() - datetime.timedelta(days=1),
+                    datetime.time(23, 59, 59)
+                )
+            )
+            # removing rdates rules that are bigger than until_dt
+            schedule.recurrences.rdates = [_dt for _dt in schedule.recurrences.rdates if _dt > until_dt]
+            # Add a until constraint to all rules (except if they have a date more restrictive)
+            for rrule in schedule.recurrences.rrules:
+                if not rrule.until or rrule.until > until_dt:
+                    rrule.until = until_dt
+            schedule.save()
+
+        return HttpResponse(
+            json.dumps({'result': 'ok'}),
+            content_type='application/json'
+        )

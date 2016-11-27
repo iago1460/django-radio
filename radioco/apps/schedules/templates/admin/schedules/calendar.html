@@ -56,11 +56,28 @@
             $("#messages").slideDown();
         }
 
-
-
         $(document).ready(function () {
+        
+            $('#modal .modal-confirm-button').on('click', function(e) {
+                e.preventDefault();
+                var $form = $('#modal form');
+                $.ajax({
+                    data: $form.serialize(),
+                    type: "POST",
+                    url: $form.attr('action'),
+                    success: function(response) {
+                        if (response.result === 'ok'){
+                            $('#modal').modal('hide');
+                            $('#calendar').fullCalendar('refetchEvents');
+                        } else {
+                            $('#modal .modal-body').html(response);
+                        }
+                    }
+                });
+            });
+            
             $("#select-calendar").change(function() {
-                    $('#calendar').fullCalendar( 'refetchEvents')
+                $('#calendar').fullCalendar('refetchEvents')
             });
 
             var previous_date = null;
@@ -152,6 +169,17 @@
                 eventDragStart: function(event) {
                     previous_date = new Date(event.start);
                 },
+                eventDragStop: function (event, jsEvent, ui, view) {
+                    if (isOverElement(jsEvent, $('div#external-events'))) {
+                        var url = '{% url 'schedules:delete_transmission' 0 %}'.replace('/0/', '/' + event.id + '/');
+                        $("#modal .modal-body").load(
+                            url + '?transmission_dt=' + event.start.toISOString(),
+                            function (result) {
+                                $('#modal').modal('show');
+                            }
+                        );
+                    }
+                },
                 eventDrop: function (event, delta, revertFunc) {
                     $.ajax({
                         type: "PATCH",
@@ -206,9 +234,25 @@
                     info('{% trans "Programmes reloaded" %}');
                 },
                 error: function (data) {
-                    alert('{% trans "There was an error while reloding programmes" %}');
+                    alert('{% trans "There was an error while reloading programmes" %}');
                 },
             });
+        }
+        
+        function isOverElement(draggedItem, dropArea) {
+            var draggedX = draggedItem.pageX;
+            var draggedY = draggedItem.pageY;
+
+            var b = $(dropArea);
+            var limitX = parseInt(b.offset().left) + parseInt(b.outerWidth());
+            var limitY = parseInt(b.offset().top) + parseInt(b.outerHeight());
+
+            // Compare
+            if (limitY >= parseInt(draggedY)
+                    && limitX >= parseInt(draggedX)) {
+                return true;
+            }
+            return false;
         }
         
         function dismissAddRelatedObjectPopup(win, newId, newRepr) {
@@ -217,8 +261,9 @@
             if (name === 'programme'){
                 var view = $('#calendar').fullCalendar('getView');
                 reloadProgrammes(view.start.format('YYYY-MM-DD'), moment(view.end).subtract(1, "days").format('YYYY-MM-DD'));
+                $('#calendar').fullCalendar('refetchEvents');
             } else if (name === 'change_programme') {
-                $('#calendar').fullCalendar( 'refetchEvents');
+                $('#calendar').fullCalendar('refetchEvents');
             }
             win.close();
         }
@@ -283,4 +328,24 @@
             <div id='calendar'></div>
         </div>
     </div>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Delete transmission?</h4>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger modal-confirm-button">I am sure</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    
 {% endblock %}
