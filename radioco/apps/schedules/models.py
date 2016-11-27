@@ -156,8 +156,9 @@ class Schedule(models.Model):
         if field_has_changed(self, 'start_dt'):
             self._update_excluded_dates()
 
-        self.effective_end_dt = calculate_effective_schedule_end_dt(self)
+        # End date has to be calculated first
         self.effective_start_dt = calculate_effective_schedule_start_dt(self)
+        self.effective_end_dt = calculate_effective_schedule_end_dt(self)
 
         super(Schedule, self).save(*args, **kwargs)
 
@@ -275,10 +276,13 @@ def calculate_effective_schedule_start_dt(schedule):
     """
     # If there are no rrules
     programme_start_dt = schedule.programme.start_dt
+    programme_end_dt = schedule.programme.end_dt
     if not schedule.has_recurrences():
-        if not programme_start_dt or programme_start_dt <= schedule.start_dt:
-            return schedule.start_dt
-        return None
+        if programme_start_dt and programme_start_dt > schedule.start_dt:
+            return None
+        if programme_end_dt and schedule.start_dt > programme_end_dt:
+            return None
+        return schedule.start_dt
 
     # Get first date
     after_dt = schedule.start_dt
@@ -301,9 +305,10 @@ def calculate_effective_schedule_end_dt(schedule):
 
     # If there are no rrules
     if not schedule.has_recurrences():
-        if not programme_end_dt or programme_end_dt >= schedule.start_dt:
-            return schedule.start_dt + schedule.runtime
-        return None
+        if not schedule.effective_start_dt:
+            # WARNING: this depends on effective_start_dt
+            return None  # returning None if there is no effective_start_dt
+        return schedule.start_dt + schedule.runtime
 
     # If we have a programme restriction
     if programme_end_dt:
