@@ -38,5 +38,5 @@ urlpatterns = patterns('',
        views.episode_detail,
        name='episode_detail'
    ),
-   url(r'^(?P<slug>[-\w]+)/rss/$', RssProgrammeFeed(), name='rss'),
+   url(r'^(?P<slug>[-\w]+)/rss/$', RssProgrammeFeed(), name='rss')
 )
