@@ -16,8 +16,11 @@
 
 
 import datetime
+import json
+import re
 
 from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse
 
 from apps.programmes.models import Episode, Programme, Role, Participant, NOT_SPECIFIED
 
@@ -32,6 +35,32 @@ def programme_detail(request, slug):
         ).select_related('programme').order_by('-season', '-number_in_season')
     }
     return render(request, 'programmes/programme_detail.html', context)
+
+
+def programmes_json(request):
+
+    #url = 'http://' + request.environ['HTTP_HOST']
+    url = re.sub(request.get_full_path(), '', request.build_absolute_uri())
+
+    programme_list = Programme.objects.order_by('end_date', 'name')
+    json_list = []
+
+    for programme in programme_list:
+
+        json_entry = {
+            'id': programme.id,
+            'genre': programme.get_category_display(),
+            'title': programme.name,
+            'description': programme.synopsis,
+            'logo_url': url + programme.photo.url,
+            'rss_url': url + "/programmes/" + programme.slug + '/rss/'
+        }
+        json_list.append(json_entry)
+
+    data = {'data': json_list}
+
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
 
 
 def episode_detail(request, slug, season_number, episode_number):
