@@ -22,6 +22,10 @@
     </style>
 {% endblock %}
 
+
+{% block content_title %}{% endblock %}
+
+
 {% block extrahead %}
     <script src="{% static "jquery/dist/jquery.min.js" %}" type="text/javascript"></script>
     <script src="{% static "jquery-ui/jquery-ui.min.js" %}" type="text/javascript"></script>
@@ -33,7 +37,7 @@
 
     <script>
         function alert(msg) {
-            message(msg, "error");
+            message(msg, "danger");
         }
 
         function info(msg) {
@@ -46,14 +50,13 @@
 
 
         function message(msg, tag) {
+            $("#messages").empty();
             $("<li>").append(msg)
-                .addClass("grp-" + tag)
+                .addClass("alert alert-" + tag)
                 .fadeIn(800).delay(5000).fadeOut(800, function() {
                     this.remove();
-                    if (!$("#messages>li").size()) $("#messages").slideUp();
                 })
                 .appendTo("#messages");
-            $("#messages").slideDown();
         }
 
         $(document).ready(function () {
@@ -89,7 +92,7 @@
                 eventDurationEditable: false,
                 eventStartEditable: true,
                 allDaySlot: false,
-                slotDuration: '00:10:00',
+                slotDuration: '00:10:00', /* TODO: move this */
                 axisFormat: 'HH:mm',
                 header: {
                     left: 'prev,next today',
@@ -137,7 +140,7 @@
                     var programme = $(this).data('slug');
                     var calendar = $("#select-calendar").val();
                     var type = $("input[name='group1']:checked").val();
-
+                    debugger;
                     // create the event
                     $.ajax({
                         type: "POST",
@@ -146,7 +149,7 @@
                         data: JSON.stringify({
                             calendar: calendar,
                             programme: programme,
-                            start: date,
+                            start: date.format('YYYY-MM-DD HH:mm:ss'),
                             type: type
                         }),
                         success: function(schedule) {
@@ -170,7 +173,7 @@
                     previous_date = new Date(event.start);
                 },
                 eventDragStop: function (event, jsEvent, ui, view) {
-                    if (isOverElement(jsEvent, $('div#external-events'))) {
+                    if (isOverElement(jsEvent, $('div.external-events-wrapper'))) {
                         var url = '{% url 'schedules:delete_transmission' 0 %}'.replace('/0/', '/' + event.id + '/');
                         $("#modal .modal-body").load(
                             url + '?transmission_dt=' + event.start.toISOString(),
@@ -240,6 +243,7 @@
         }
         
         function isOverElement(draggedItem, dropArea) {
+            debugger;
             var draggedX = draggedItem.pageX;
             var draggedY = draggedItem.pageY;
 
@@ -273,7 +277,7 @@
 {% endblock %}
 
 {% block messages %}
-    <ul id="messages" class="grp-messagelist" style="display:{% if messages %}block{% else %}none{% endif %}">
+    <ul id="messages">
         {% for message in messages %}
             <li{% if message.tags %} class="grp-{{ message.tags }}"{% endif %}>{{ message }}</li>
         {% endfor %}
@@ -294,34 +298,39 @@
                 {% endfor %}
             </select>
 
-            <h3>
-                {% trans "Programmes" %}
-                <small>
-                    <a class="add-another" id="add_programme" 
-                       href="/admin/programmes/programme/add/?_popup=1" title="Add another programme">
-                    </a>
-                </small>
-            </h3>
-            <div id="external-events"></div>
-
-            <h4>{% trans "Programme type" %}</h4>
-            <div class="radio">
-                <label for="live">
-                    <input type="radio" name="group1" id="live" value="L" checked />
-                    {% trans "live" %}
-                </label>
+            
+            <div class="external-programmes-wrapper col-xs-2">
+                <h3>
+                    {% trans "Programmes" %}
+                    <small>
+                        <a class="add-another" id="add_programme" 
+                           href="/admin/programmes/programme/add/?_popup=1" title="Add another programme">
+                        </a>
+                    </small>
+                </h3>
+    
+                <h4>{% trans "Programme type" %}</h4>
+                <div class="radio">
+                    <label for="live">
+                        <input type="radio" name="group1" id="live" value="L" checked />
+                        {% trans "live" %}
+                    </label>
+                </div>
+                <div class="radio">
+                    <label for="broadcast">
+                        <input type="radio" name="group1" id="broadcast" value="B" />
+                        {% trans "broadcast" %}
+                    </label>
+                </div>
+                <div class="radio">
+                    <label for="broadcast-syn">
+                        <input type="radio" name="group1" id="broadcast-syn" value="S">
+                        {% trans "broadcast syndication" %}
+                    </label>
+                </div>
             </div>
-            <div class="radio">
-                <label for="broadcast">
-                    <input type="radio" name="group1" id="broadcast" value="B" />
-                    {% trans "broadcast" %}
-                </label>
-            </div>
-            <div class="radio">
-                <label for="broadcast-syn">
-                    <input type="radio" name="group1" id="broadcast-syn" value="S">
-                    {% trans "broadcast syndication" %}
-                </label>
+            <div class="external-events-wrapper col-xs-2">
+                <div id="external-events"></div>
             </div>
         </div>
         <div class="col-xs-10">

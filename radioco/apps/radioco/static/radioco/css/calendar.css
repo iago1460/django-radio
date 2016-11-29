@@ -8,7 +8,52 @@
 #wrap {
 	padding: 10px 0px 0px 0px;
 }
+
+#messages{
+	min-height: 60px;
+}
+
+#messages .alert {
+	margin-bottom: 0;
+}
+
+.shedude-manager{
+	display: block;
+}
+
+.manager-left{
+	width: 300px;
+	float: left;
+}
+
+.manager-right{
+	width: 100%;
+	float: left;
+}
+
+.external-programmes-wrapper {
+	position: fixed;
 	
+    height: 170px;
+	z-index: 31;  
+	bottom: 188px;
+	left: 15px;
+	background-color: #eee;
+	border: 1px solid #ccc;
+	padding: 0 10px;
+	
+}
+.external-events-wrapper {
+	position: fixed;
+	
+    height: 188px;
+    overflow: overlay;
+	z-index: 30;
+	bottom: 0;
+	left: 15px;
+	
+	padding: 0;
+}
 #external-events {
 	padding: 0 10px;
 	border: 1px solid #ccc;
