@@ -65,11 +65,13 @@ urlpatterns = patterns('',
     url(r'^schedules/', include('apps.schedules.urls', namespace="schedules")),
     url(r'^dashboard/', include('apps.dashboard.urls', namespace="dashboard")),
     url(r'^programmes/', include('apps.programmes.urls', namespace="programmes")),
+
     url(r'^users/', include('apps.users.urls', namespace="users")),
 
     url(r'^ckeditor/', include('ckeditor_uploader.urls')),
 
     url(r'^api/1/recording_schedules/$', 'apps.radio.views.recording_schedules', name="recording_schedules"),
+    url(r'^api/1/radiocom/programmes', 'apps.api.views.programmes_json', name='programmes_json'),
     url(r'^api/1/submit_recorder/$', 'apps.radio.views.submit_recorder', name="submit_recorder"),
     url(r'^api/2/', include('apps.api.urls', namespace="api"))
 )

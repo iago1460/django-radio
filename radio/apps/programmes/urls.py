@@ -31,12 +31,11 @@ urlpatterns = patterns('',
        ),
        name='list'
    ),
-   url(r'^json', views.programmes_json, name='programmes_json'),
    url(r'^(?P<slug>[-\w]+)/$', views.programme_detail, name='detail'),
    url(
        r'^(?P<slug>[-\w]+)/(?P<season_number>\d+)x(?P<episode_number>\d+)/$',
        views.episode_detail,
        name='episode_detail'
    ),
-   url(r'^(?P<slug>[-\w]+)/rss/$', RssProgrammeFeed(), name='rss'),
+   url(r'^(?P<slug>[-\w]+)/rss/$', RssProgrammeFeed(), name='rss')
 )
