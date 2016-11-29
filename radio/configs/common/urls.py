@@ -65,7 +65,6 @@ urlpatterns = patterns('',
     url(r'^schedules/', include('apps.schedules.urls', namespace="schedules")),
     url(r'^dashboard/', include('apps.dashboard.urls', namespace="dashboard")),
     url(r'^programmes/', include('apps.programmes.urls', namespace="programmes")),
-
     url(r'^users/', include('apps.users.urls', namespace="users")),
 
     url(r'^ckeditor/', include('ckeditor_uploader.urls')),
