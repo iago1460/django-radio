@@ -24,7 +24,6 @@ from rest_framework import viewsets
 from django.http import HttpResponse
 
 
-
 class ProgrammeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Programme.objects.all()
     serializer_class = serializers.ProgrammeSerializer
