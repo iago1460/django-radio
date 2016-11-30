@@ -72,6 +72,7 @@
                         if (response.result === 'ok'){
                             $('#modal').modal('hide');
                             $('#calendar').fullCalendar('refetchEvents');
+                            success('{% trans "Transmission deleted" %}');
                         } else {
                             $('#modal .modal-body').html(response);
                         }
@@ -140,7 +141,6 @@
                     var programme = $(this).data('slug');
                     var calendar = $("#select-calendar").val();
                     var type = $("input[name='group1']:checked").val();
-                    debugger;
                     // create the event
                     $.ajax({
                         type: "POST",
@@ -154,6 +154,7 @@
                         }),
                         success: function(schedule) {
                             $('#calendar').fullCalendar('refetchEvents');
+                            success('{% trans "Transmission created" %}');
                         },
                         error: function (data) {
                             alert('{% trans "There was an error while creating schedule" %}');
@@ -195,6 +196,7 @@
                         }),
                         success: function (res) {
                           $('#calendar').fullCalendar('refetchEvents');
+                            success('{% trans "Transmission moved successfully" %}');
                         },
                         error: function (data) {
                             revertFunc();
@@ -243,7 +245,6 @@
         }
         
         function isOverElement(draggedItem, dropArea) {
-            debugger;
             var draggedX = draggedItem.pageX;
             var draggedY = draggedItem.pageY;
 
