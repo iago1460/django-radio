@@ -240,7 +240,6 @@
                                 jsEvent.preventDefault();
                             }).appendTo('#external-events');
                     }
-                    info('{% trans "Programmes reloaded" %}');
                 },
                 error: function (data) {
                     alert('{% trans "There was an error while reloading programmes" %}' + data.responseText);
@@ -268,15 +267,14 @@
             // Refreshing related information depending on the object type 
             debugger;
             var name = windowname_to_id(win.name);
-            if (name === 'change_programme' || name === 'add_programme' ){
-                var view = $('#calendar').fullCalendar('getView');
+            var view = $('#calendar').fullCalendar('getView');
+            if (name === 'change_programme') {
                 reloadProgrammes(view.start.format('YYYY-MM-DD'), moment(view.end).subtract(1, "days").format('YYYY-MM-DD'));
                 $('#calendar').fullCalendar('refetchEvents');
-                if (name === 'change_programme'){
-                    success('{% trans "Updated programme" %}');
-                } else {
-                    success('{% trans "Added programme" %}');
-                }
+                success('{% trans "Updated programme" %}');
+            } else if (name === 'add_programme') {
+                reloadProgrammes(view.start.format('YYYY-MM-DD'), moment(view.end).subtract(1, "days").format('YYYY-MM-DD'));
+                success('{% trans "Added programme" %}');
             } else if (name === 'change_schedule') {
                 $('#calendar').fullCalendar('refetchEvents');
                 success('{% trans "Updated schedule" %}');
