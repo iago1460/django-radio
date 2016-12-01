@@ -47,7 +47,7 @@
 	position: fixed;
 	
     height: 188px;
-    overflow: overlay;
+    overflow: auto;
 	z-index: 30;
 	bottom: 0;
 	left: 15px;
@@ -68,6 +68,7 @@
 }
 	
 .external-event { /* try to mimick the look of a real event */
+	min-width: 200px;
 	margin: 10px 0;
 	padding: 2px 4px;
 	background: #3366CC;
@@ -75,15 +76,6 @@
 	font-size: .85em;
 	cursor: pointer;
 }
-
-.external-event:after {
-	font-family: 'Glyphicons Halflings';  
-	content: "\e065";
-	position: absolute;
-	top: 2px;
-	right: 7px;
-}
-
 	
 #external-events p {
 	margin: 1.5em 0;
