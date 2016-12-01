@@ -46,6 +46,15 @@ class ScheduleSerializer(serializers.ModelSerializer):
     def get_title(self, schedule):
         return schedule.programme.name
 
+    def validate(self, attrs):
+        programme = attrs.get('programme')
+        start = attrs.get('start_dt')
+
+        if programme.start_dt and programme.start_dt > start \
+                or programme.end_dt and programme.end_dt < start:
+                    raise serializers.ValidationError('Schedule is outside of the programme dates constraints')
+        return attrs
+
 
 class TransmissionSerializer(serializers.Serializer):
     id = serializers.IntegerField(source='schedule.id')
@@ -63,3 +72,12 @@ class TransmissionSerializerLight(serializers.Serializer):  # WARNING: Hack to s
     id = serializers.IntegerField(source='schedule.id')
     start = serializers.DateTimeField()
     new_start = serializers.DateTimeField(allow_null=True)
+
+    def validate(self, attrs):
+        programme = self.instance.programme
+        new_start = attrs.get('new_start')
+
+        if programme.start_dt and programme.start_dt > new_start \
+                or programme.end_dt and programme.end_dt < new_start:
+                    raise serializers.ValidationError('Schedule is outside of the programme dates constraints')
+        return attrs
