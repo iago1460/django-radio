@@ -48,7 +48,6 @@
             message(msg, "success");
         }
 
-
         function message(msg, tag) {
             $("#messages").empty();
             $("<li>").append(msg)
@@ -77,6 +76,13 @@
                             $('#modal .modal-body').html(response);
                         }
                     }
+                });
+            });
+            
+            $("input[name='group1']").click(function() {
+                var backgroundColor = getBackgroundColor($("input[name='group1']:checked").val());
+                $('.external-event').each(function() {
+                  $( this ).css("background-color", backgroundColor);
                 });
             });
             
@@ -122,13 +128,8 @@
                             type: transmission.type,
                             source: transmission.source,
                             backgroundColor: function() {
-                                var BackgroundColor = Object.freeze({
-                                    L: "#F9AD81",
-                                    B: "#C4DF9B",
-                                    S: "#8493CA"
-                                });
-                                return BackgroundColor[transmission.type];
-                            }(),
+                                return getBackgroundColor(transmission.type);
+                            }()
                         };
                         return event;
                     },
@@ -214,11 +215,13 @@
                 url: "{% url 'api:programme-list' %}",
                 data: {after: after, before:before},
                 success: function(programmes) {
+                    var backgroundColor = getBackgroundColor($("input[name='group1']:checked").val());
                     for (var i=0; i<programmes.length; i++) {
                         var programme = programmes[i];
 
                         $("<div>").append(programme.name)
                             .addClass("external-event")
+                            .css("background-color", backgroundColor)
                             .data('id', programme.id)
                             .data('slug', programme.slug)
                             .data('title', programme.name)
@@ -261,6 +264,15 @@
                 return true;
             }
             return false;
+        }
+        
+        function getBackgroundColor(type) {
+            var BackgroundColor = Object.freeze({
+                L: "#F9AD81",
+                B: "#C4DF9B",
+                S: "#8493CA"
+            });
+            return BackgroundColor[type];
         }
         
         function dismissAddRelatedObjectPopup(win, newId, newRepr) {
@@ -354,14 +366,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="myModalLabel">Delete transmission?</h4>
+                    <h4 class="modal-title" id="myModalLabel">{% trans "Delete transmission?" %}</h4>
                 </div>
                 <div class="modal-body">
                     ...
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger modal-confirm-button">I am sure</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-danger modal-confirm-button">{% trans "I am sure" %}</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
