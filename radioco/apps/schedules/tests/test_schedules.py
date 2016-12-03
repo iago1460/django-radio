@@ -62,6 +62,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
 
         programme = Programme.objects.filter(name="Classic hits").get()
         programme.name = "Classic hits 2"
+        programme.slug = None
         programme.id = programme.pk = None
         programme.save()
         self.programme = programme
@@ -512,6 +513,7 @@ class ScheduleUtilsTests(TestDataMixin, TestCase):
         self.manager = CalendarManager()
         programme = Programme.objects.filter(name="Classic hits").get()
         programme.name = "Classic hits - ScheduleUtilsTests"
+        programme.slug = None
         programme.id = programme.pk = None
         programme.save()
         self.programme = programme

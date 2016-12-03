@@ -126,6 +126,11 @@ class Programme(models.Model):
         tz = timezone.get_default_timezone()
         return tz.localize(datetime.datetime.combine(self.end_date, datetime.time(23, 59, 59))).astimezone(pytz.utc)
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super(Programme, self).save(*args, **kwargs)
+
     def get_absolute_url(self):
         return reverse('programmes:detail', args=[self.slug])
 
