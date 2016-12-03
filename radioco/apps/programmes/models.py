@@ -126,23 +126,6 @@ class Programme(models.Model):
         tz = timezone.get_default_timezone()
         return tz.localize(datetime.datetime.combine(self.end_date, datetime.time(23, 59, 59))).astimezone(pytz.utc)
 
-    # XXX form
-    def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
-        super(Programme, self).save(*args, **kwargs)
-
-# XXX
-#    @classmethod
-#    def actives(cls, start_date, end_date=None):
-#        programme_list = cls.objects.filter(
-#            end_date__isnull=True
-#        ).order_by('-start_date') | cls.objects.filter(
-#            end_date__gte=start_date
-#        ).order_by('-start_date')
-#        if end_date:
-#            programme_list = programme_list.filter(start_date__lte=end_date)
-#        return programme_list
-
     def get_absolute_url(self):
         return reverse('programmes:detail', args=[self.slug])
 
@@ -151,11 +134,10 @@ class Programme(models.Model):
 
 
 def update_schedule_performance(programme):
-    # from radioco.apps.schedules.models import calculate_effective_schedule_start_dt, calculate_effective_schedule_end_dt
     for schedule in programme.schedule_set.all():
         # schedule.effective_start_dt = calculate_effective_schedule_start_dt(schedule)
         # schedule.effective_end_dt = calculate_effective_schedule_end_dt(schedule)
-        schedule.save()  # TODO: improve performance, update objects in bulk
+        schedule.save()  # TODO: improve performance, update objects in bulk? We need custom logic on save
 
 
 def update_schedule_if_dt_has_changed(sender, instance, **kwargs):
