@@ -24,6 +24,13 @@ import datetime
 from radioco.apps.schedules.utils import rearrange_episodes
 
 
+SPAIN_TZ = pytz.timezone('Europe/Madrid')
+
+
+def spain_tz():
+    return SPAIN_TZ
+
+
 def create_test_data():
     # Example schedule
     calendar, created = Calendar.objects.get_or_create(

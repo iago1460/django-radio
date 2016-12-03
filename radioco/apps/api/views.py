@@ -196,23 +196,28 @@ class TransmissionOperationViewSet(ModelViewSetWithoutCreate):
 
         schedule_excluded = Schedule.get_schedule_which_excluded_dt(schedule.programme, new_start)
         if schedule_excluded:
+            # Including the date that was excluded
             schedule_excluded.include_date(new_start)
             schedule_excluded.save()
 
-            if schedule.id == schedule_excluded.id:  # Fix to avoid override changes
+            if schedule.id == schedule_excluded.id:
+                # Case when a transmission is moved from one day to other but is still part of the same schedule
+                # The object is the same, using schedule_excluded to avoid overriding changes!
                 schedule_excluded.exclude_date(start)
                 schedule_excluded.save()
             elif schedule.has_recurrences():
+                # The schedule has other recurrences excluding only that date (it could be deleted)
                 schedule.exclude_date(start)
                 schedule.save()
             else:
+                # Case when the previous schedule is not necessary
                 schedule.delete()
         else:
             if schedule.has_recurrences():
                 schedule.exclude_date(start)
                 schedule.save()
                 new_schedule = Schedule.objects.get(id=schedule.id)
-                new_schedule.id = None
+                new_schedule.id = new_schedule.pk = None
                 new_schedule.from_collection = schedule
                 new_schedule.recurrences = Recurrence()
                 new_schedule.start_dt = new_start

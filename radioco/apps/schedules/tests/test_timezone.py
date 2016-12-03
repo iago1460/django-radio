@@ -1,29 +1,21 @@
 import datetime
 
-import mock
 import pytz
 import recurrence
 from django.test import TestCase
 from django.test import override_settings
-from django.utils import timezone
 
 from radioco.apps.radioco.tz_utils import transform_dt_to_default_tz
 from radioco.apps.programmes.models import Programme
-from radioco.apps.radioco.tests import TestDataMixin
+from radioco.apps.radioco.tests import TestDataMixin, SPAIN_TZ
 from radioco.apps.schedules.models import Schedule
 
-
-SPAIN_TZ = pytz.timezone('Europe/Madrid')
 
 BEFORE_CEST_TRANSITION = SPAIN_TZ.localize(datetime.datetime(2017, 3, 26, 1, 59, 59))  # CET+1:00:00
 AFTER_CEST_TRANSITION = SPAIN_TZ.localize(datetime.datetime(2017, 3, 26, 3, 0, 0))  # CEST+2:00:00
 
 BEFORE_CET_TRANSITION = SPAIN_TZ.localize(datetime.datetime(2017, 10, 29, 2, 59, 59), is_dst=True)  # CEST+2:00:00
 AFTER_CET_TRANSITION = SPAIN_TZ.localize(datetime.datetime(2017, 10, 29, 2, 0, 0), is_dst=False)  # CET+1:00:00
-
-
-def spain_tz():
-    return SPAIN_TZ
 
 
 def test_CET_transitions(self):
