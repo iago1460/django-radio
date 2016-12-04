@@ -18,7 +18,7 @@
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from apps.radioco.utils import create_example_data
+from radioco.apps.radioco.utils import create_example_data
 from radioco.apps.radioco.tests.utils import TestDataMixin
 
 
