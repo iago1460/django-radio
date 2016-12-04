@@ -186,9 +186,10 @@
                     }
                 },
                 eventDrop: function (event, delta, revertFunc) {
+                    var url = "{% url 'api:operation-detail' 0 %}".replace('/0', '/' +  event.id); // replacing /0 
                     $.ajax({
                         type: "PATCH",
-                        url: "{% url 'api:operation-list' %}/" + event.id,
+                        url: url,
                         contentType: 'application/json',
                         data: JSON.stringify({
                             id:  event.id,

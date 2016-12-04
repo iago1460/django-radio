@@ -9,7 +9,6 @@ from radioco.apps.radioco.tests import TestDataMixin
 
 class TestProgrammesAPI(TestDataMixin, APITestCase):
     def setUp(self):
-
         self.summer_programme = Programme.objects.create(
             name='Summer Programme',
             synopsis='',
@@ -75,6 +74,19 @@ class TestProgrammesAPI(TestDataMixin, APITestCase):
             })
         self.assertNotIn(u'summer-programme', map(lambda t: t['slug'], response.data))
 
+    def test_episodes_get_all(self):
+        response = self.client.get('/api/2/episodes')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_episodes_get_by_programme(self):
+        response = self.client.get(
+            '/api/2/episodes', {'programme': self.programme.slug})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]['programme'], self.programme.slug)
+
+
+class TestNotAllowedMethodsProgrammesAPI(TestDataMixin, APITestCase):
+
     def test_programmes_post(self):
         response = self.client.post('/api/2/programmes')
         self.assertEqual(
@@ -89,16 +101,6 @@ class TestProgrammesAPI(TestDataMixin, APITestCase):
         response = self.client.delete('/api/2/programmes')
         self.assertEqual(
             response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    def test_episodes_get_all(self):
-        response = self.client.get('/api/2/episodes')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_episodes_get_by_programme(self):
-        response = self.client.get(
-            '/api/2/episodes', {'programme': self.programme.slug})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data[0]['programme'], self.programme.slug)
 
     def test_episodes_post(self):
         response = self.client.post('/api/2/episodes')

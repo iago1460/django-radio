@@ -1,24 +1,22 @@
-import pytz
-from django.core.exceptions import ValidationError
-from django.db.models import Q
-from rest_framework.exceptions import ValidationError as DRFValidationError
-from django.utils.timezone import override, get_default_timezone, get_default_timezone_name
-from recurrence import Recurrence
+import datetime
 
-from radioco.apps.api.viewsets import ModelViewSetWithoutCreate
-from radioco.apps.programmes.models import Programme, Episode
-from radioco.apps.schedules.models import Calendar, Schedule, Transmission
+import django_filters
+import pytz
 from django import forms
 from django import utils
-from django.utils import timezone
-from django.shortcuts import get_object_or_404
+from django.core.exceptions import ValidationError
+from django.db.models import Q
+from django.utils.timezone import override
+from recurrence import Recurrence
 from rest_framework import filters, permissions, viewsets
 from rest_framework.decorators import list_route
-from rest_framework.parsers import JSONParser, FormParser
+from rest_framework.exceptions import ValidationError as DRFValidationError
 from rest_framework.response import Response
-import datetime
-import django_filters
+
 import serializers
+from radioco.apps.api.viewsets import UpdateOnlyModelViewSet
+from radioco.apps.programmes.models import Programme, Episode
+from radioco.apps.schedules.models import Schedule, Transmission
 
 
 class ProgrammeFilter(filters.FilterSet):
@@ -102,19 +100,6 @@ class TransmissionForm(forms.Form):
     calendar = forms.CharField(required=False)
     timezone = forms.ChoiceField(required=False, choices=[(x, x) for x in pytz.all_timezones])
 
-    # def clean_after(self):
-    #     after = self.cleaned_data.get('after')
-    #     if after is None:
-    #         return utils.timezone.now().replace(day=1).date()
-    #     return after
-    # 
-    # def clean_before(self):
-    #     # FIXME: raise if before < after
-    #     before = self.cleaned_data.get('before')
-    #     if before is None:
-    #         return self.clean_after() + datetime.timedelta(days=31)
-    #     return before
-
     def clean(self):
         cleaned_data = super(TransmissionForm, self).clean()
         if cleaned_data.get('before') and cleaned_data.get('after'):
@@ -165,7 +150,7 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
 
     @list_route()
     def now(self, request):
-        tz = None or pytz.utc  # TODO check for a tz
+        tz = None or pytz.utc  # TODO check for a tz?
         now = utils.timezone.now()
         transmissions = Transmission.at(now)
         serializer = self.serializer_class(
@@ -174,7 +159,7 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
             return Response(serializer.data)
 
 
-class TransmissionOperationViewSet(ModelViewSetWithoutCreate):
+class TransmissionOperationViewSet(UpdateOnlyModelViewSet):
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
     serializer_class = serializers.TransmissionSerializerLight
     queryset = Schedule.objects.all()

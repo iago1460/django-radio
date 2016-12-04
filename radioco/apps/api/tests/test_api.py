@@ -28,7 +28,7 @@ class TestSerializers(TestDataMixin, TestCase):
 
     def test_episode_programme(self):
         serializer = serializers.EpisodeSerializer(self.episode)
-        self.assertEqual(serializer.data['programme'], "classic-hits")
+        self.assertEqual(serializer.data['programme'], 'classic-hits')
 
     def test_schedule(self):
         serializer = serializers.ScheduleSerializer(self.schedule)

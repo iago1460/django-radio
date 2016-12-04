@@ -56,15 +56,6 @@ class TestSchedulesAPI(TestDataMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
 
-    def test_schedules_post(self):
-        response = self.client.post('/api/2/schedules')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_schedules_post_authenticated_no_permission(self):
-        self.client.login(username="someone", password="topsecret")
-        response = self.client.post('/api/2/schedules')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
 
 class TestTransmissionAPI(TestDataMixin, APITestCase):
     @mock.patch('django.utils.timezone.now', mock_now)
@@ -117,8 +108,10 @@ class TestTransmissionAPI(TestDataMixin, APITestCase):
         self.assertEqual(response.data['after'], [u'This field is required.'])
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-        response = self.client.get('/api/2/transmissions',
-                                   {'after': datetime.date(2015, 2, 2), 'before': datetime.date(2015, 2, 1)})
+        response = self.client.get(
+            '/api/2/transmissions',
+            {'after': datetime.date(2015, 2, 2), 'before': datetime.date(2015, 2, 1)}
+        )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     @mock.patch('django.utils.timezone.now', mock_now)
@@ -169,3 +162,14 @@ class TestTransmissionAPI(TestDataMixin, APITestCase):
         response = self.client.get(
             '/api/2/transmissions', {'calendar': 9999})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class TestRestrictedMethodsScheduleAPI(TestDataMixin, APITestCase):
+
+    def test_schedules_post(self):
+        response = self.client.post('/api/2/schedules')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_schedules_post_authenticated_no_permission(self):
+        response = self.client.post('/api/2/schedules')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
