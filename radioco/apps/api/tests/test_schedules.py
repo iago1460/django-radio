@@ -170,6 +170,27 @@ class TestRestrictedMethodsScheduleAPI(TestDataMixin, APITestCase):
         response = self.client.post('/api/2/schedules')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_schedules_post_authenticated_no_permission(self):
-        response = self.client.post('/api/2/schedules')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    def test_schedules_put(self):
+        response = self.client.put('/api/2/schedules')
+        self.assertEqual(
+            response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_schedules_delete(self):
+        response = self.client.delete('/api/2/schedules')
+        self.assertEqual(
+            response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_transmissions_post(self):
+        response = self.client.post('/api/2/transmissions')
+        self.assertEqual(
+            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_transmissions_put(self):
+        response = self.client.put('/api/2/transmissions')
+        self.assertEqual(
+            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_transmissions_delete(self):
+        response = self.client.delete('/api/2/transmissions')
+        self.assertEqual(
+            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
