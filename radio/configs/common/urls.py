@@ -71,6 +71,7 @@ urlpatterns = patterns('',
 
     url(r'^api/1/recording_schedules/$', 'apps.radio.views.recording_schedules', name="recording_schedules"),
     url(r'^api/1/radiocom/programmes', 'apps.api.views.programmes_json', name='programmes_json'),
+    url(r'^api/1/radiocom/radiostation', 'apps.api.views.station_json', name='station_json'),
     url(r'^api/1/submit_recorder/$', 'apps.radio.views.submit_recorder', name="submit_recorder"),
     url(r'^api/2/', include('apps.api.urls', namespace="api"))
 )

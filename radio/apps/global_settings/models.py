@@ -144,3 +144,25 @@ class CalendarConfiguration(SingletonModel):
         default_permissions = ('change',)
         verbose_name = _('Calendar Configuration')
         verbose_name_plural = _('Calendar Configuration')
+
+
+
+class RadiocomConfiguration(SingletonModel):
+
+    station_name = models.CharField(max_length=255, default='RadioCo', verbose_name=_("station name"))
+    icon_url = models.TextField(blank=True, default="", verbose_name=_("big icon url"))
+    big_icon_url = models.TextField(blank=True, default="", verbose_name=_("big icon url"))
+    history = models.TextField(blank=True, default="", verbose_name=_("history"))
+    latitude = models.FloatField(blank=True, default=0, verbose_name=_("latitude"))
+    longitude = models.FloatField(blank=True, default=0, verbose_name=_("longitude"))
+    news_rss = models.TextField(blank=True, default="", verbose_name=_("news_rss"))
+    station_photos = models.TextField(blank=True, default="", verbose_name=_("station photos"))
+    stream_url = models.TextField(blank=True, default="", verbose_name=_("stream url"))
+
+    def __unicode__(self):
+        return _u('Radiocom Configuration')
+
+    class Meta:
+        default_permissions = ('change',)
+        verbose_name = _('Radiocom Configuration')
+        verbose_name_plural = _('Radiocom Configuration')
