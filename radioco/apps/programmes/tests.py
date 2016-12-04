@@ -21,7 +21,7 @@ from django.contrib.admin.sites import AdminSite
 from django.core.exceptions import ValidationError, FieldError
 from django.test import TestCase
 
-from radioco.apps.radioco.tests import TestDataMixin
+from radioco.apps.radioco.tests.utils import TestDataMixin
 from radioco.apps.programmes.models import Programme, Episode, EpisodeManager
 
 

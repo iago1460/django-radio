@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from radioco.apps.programmes.models import Programme
-from radioco.apps.radioco.tests import TestDataMixin
+from radioco.apps.radioco.tests.utils import TestDataMixin
 
 
 class TestProgrammesAPI(TestDataMixin, APITestCase):

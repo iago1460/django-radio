@@ -25,7 +25,7 @@ from django.forms import modelform_factory
 from django.test import TestCase
 from django.utils import timezone
 
-from radioco.apps.radioco.tests import TestDataMixin
+from radioco.apps.radioco.tests.utils import TestDataMixin
 from radioco.apps.programmes.models import Programme
 from radioco.apps.schedules import utils
 from radioco.apps.schedules.models import Schedule, Transmission

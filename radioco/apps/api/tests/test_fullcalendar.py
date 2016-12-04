@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from radioco.apps.schedules.models import ExcludedDates, Schedule
-from radioco.apps.radioco.tests import TestDataMixin, SPAIN_TZ
+from radioco.apps.radioco.tests.utils import TestDataMixin, SPAIN_TZ
 
 
 class TestFullCalendarApi(TestDataMixin, APITestCase):

@@ -4,7 +4,7 @@ import pytz
 from django.test import TestCase
 
 from radioco.apps.api import serializers
-from radioco.apps.radioco.tests import TestDataMixin
+from radioco.apps.radioco.tests.utils import TestDataMixin
 from radioco.apps.schedules.models import Transmission
 
 

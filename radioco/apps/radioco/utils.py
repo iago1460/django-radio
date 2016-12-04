@@ -1,17 +1,11 @@
-import pytz
-import datetime
-import recurrence
 from django.http import HttpResponseForbidden
 from django.views.generic.detail import SingleObjectMixin
 
 
 def create_example_data():
     from django.contrib.auth.models import User
-
     from radioco.apps.global_settings.models import SiteConfiguration
-    from radioco.apps.programmes.models import Programme, Episode, Role, CONTRIBUTOR, Podcast
-    from radioco.apps.schedules.models import Schedule, Calendar
-    from radioco.apps.schedules.utils import rearrange_episodes
+    from radioco.apps.radioco.tests.utils import create_test_data
 
     # Create administrator
     user, created = User.objects.get_or_create(
@@ -37,120 +31,7 @@ def create_example_data():
     site_config.twitter_address = 'https://twitter.com/RadioCo_org'
     site_config.save()
 
-    # Example schedule
-    calendar, created = Calendar.objects.get_or_create(
-        name='Example', slug='example', start_date=datetime.date(2015, 1, 1))
-
-    # Another example schedule
-    Calendar.objects.get_or_create(
-        name='Another example', start_date=datetime.date(2015, 6, 1))
-
-    # Programme 1
-    synopsis = '''
-        Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-        Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-        when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-    '''
-    programme, created = Programme.objects.get_or_create(
-        name='Morning News', defaults={
-            'synopsis': synopsis,
-            'language': 'en',
-            'photo': 'defaults/example/radio_1.jpg',
-            'current_season': 1,
-            'category': 'News & Politics',
-            '_runtime': 60,
-        }
-    )
-
-    recurrences = recurrence.Recurrence(
-        dtstart=datetime.datetime(2015, 1, 1, 8, 0, 0),
-        rrules=[recurrence.Rule(recurrence.DAILY)])
-
-
-    Schedule.objects.get_or_create(
-        programme=programme,
-        type='L',
-        calendar=calendar,
-        recurrences=recurrences)
-
-    for number in range(1, 4):
-        episode, created = Episode.objects.get_or_create(
-            title='Episode %s' % number,
-            programme=programme,
-            summary=synopsis,
-            season=1,
-            number_in_season=number,
-        )
-        if number == 1:
-            Podcast.objects.get_or_create(
-                episode=episode,
-                url='https://archive.org/download/Backstate_Wife/1945-08-10_-_1600_-_Backstage_Wife_-_Mary_And_Larry_See_A_Twenty_Year_Old_Portrait_That_Looks_Exactly_Like_Mary_-_32-22_-_14m13s.mp3',
-                mime_type='audio/mp3',
-                length=0,
-                duration=853
-            )
-
-    for username_counter in range(1, 6):
-        titles = ['', 'Mark Webber', 'Paul Jameson', 'Laura Sommers', 'Martin Blunt', 'John Smith']
-        user, created = User.objects.get_or_create(
-            username='user_%s' % username_counter,
-            defaults={
-                'first_name': titles[username_counter]
-            }
-        )
-        user.userprofile.bio = synopsis
-        user.userprofile.avatar = 'defaults/example/user_%s.jpg' % username_counter
-        user.userprofile.display_personal_page = True
-        user.userprofile.save()
-
-        Role.objects.get_or_create(
-            person=user,
-            programme=programme,
-            defaults={
-                'role': CONTRIBUTOR,
-                'description': synopsis,
-            }
-        )
-
-    # Programme 2 - 5
-    titles = ['', 'Places To Go', 'The best wine', 'Local Gossips', 'Classic hits']
-    for programme_counter in range(1, 5):
-        programme, created = Programme.objects.get_or_create(
-            name=titles[programme_counter],
-            defaults={
-                'synopsis': synopsis,
-                'language': 'en',
-                'photo': 'defaults/example/radio_%s.jpg' % str(programme_counter + 1),
-                'current_season': 7,
-                'category': 'News & Politics',
-                '_runtime': 60
-            }
-        )
-
-        recurrences = recurrence.Recurrence(
-            dtstart=(datetime.datetime(2015, 1, 1, 10, 0, 0) +
-                datetime.timedelta(hours=programme_counter)),
-            rrules=[recurrence.Rule(recurrence.DAILY)])
-
-        Schedule.objects.get_or_create(
-            programme=programme,
-            type='L',
-            calendar=calendar,
-            recurrences=recurrences)
-
-        if created:
-            for season in range(1, 8):
-                for number in range(1, 6):
-                    Episode.objects.create(
-                        title='Episode %s' % number,
-                        programme=programme,
-                        summary=synopsis,
-                        season=season,
-                        number_in_season=number,
-                    )
-
-    for programme in Programme.objects.all():
-        rearrange_episodes(programme, pytz.utc.localize(datetime.datetime(1970, 1, 1)))
+    create_test_data()
 
 
 class memorize(dict):
