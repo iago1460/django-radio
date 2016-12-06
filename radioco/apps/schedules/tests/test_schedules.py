@@ -18,22 +18,20 @@ from functools import partial
 
 import mock
 import pytz
-from django.test import override_settings
-from django.utils import unittest
-from pytz import utc
 import recurrence
 from django.core.exceptions import ValidationError, FieldError
 from django.core.urlresolvers import reverse
-from django.db.models.signals import post_delete
 from django.forms import modelform_factory
 from django.test import TestCase
+from django.test import override_settings
 from django.utils import timezone
+from pytz import utc
 
-from radioco.apps.schedules.utils import rearrange_episodes, next_dates
-from radioco.apps.radioco.tests.utils import TestDataMixin
 from radioco.apps.programmes.models import Programme, Episode
-from radioco.apps.schedules.models import Schedule, Transmission
+from radioco.apps.radioco.tests.utils import TestDataMixin
 from radioco.apps.schedules.models import Calendar, CalendarManager
+from radioco.apps.schedules.models import Schedule, Transmission
+from radioco.apps.schedules.utils import rearrange_episodes, next_dates
 
 
 def mock_now(dt=pytz.utc.localize(datetime.datetime(2014, 1, 1, 13, 30, 0))):

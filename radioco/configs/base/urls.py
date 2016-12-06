@@ -63,7 +63,6 @@ js_info_dict = {
 urlpatterns = patterns('',
                        url(r'^$', 'radioco.apps.radioco.views.index', name="home"),
                        url(r'^jsi18n/$', javascript_catalog, js_info_dict, name='javascript-catalog'),
-                       url(r'^login/$', 'radioco.apps.radioco.views.user_login', name="login"),
                        url(r'^logout/$', 'radioco.apps.radioco.views.user_logout', name="logout"),
                        url(r'^grappelli/', include('grappelli.urls')),
                        url(r'^admin/filebrowser/', include(site.urls)),
@@ -80,8 +79,8 @@ urlpatterns = patterns('',
 
                        url(r'^ckeditor/', include('ckeditor_uploader.urls')),
 
-                       url(r'^api/1/recording_schedules/$', 'radioco.apps.radioco.views.recording_schedules', name="recording_schedules"),
-                       url(r'^api/1/submit_recorder/$', 'radioco.apps.radioco.views.submit_recorder', name="submit_recorder"),
+                       url(r'^api/1/recording_schedules/$', 'radioco.apps.api.recorder_views.recording_schedules', name="recording_schedules"),
+                       url(r'^api/1/submit_recorder/$', 'radioco.apps.api.recorder_views.submit_recorder', name="submit_recorder"),
                        url(r'^api/2/', include('radioco.apps.api.urls', namespace="api"))
                        )
 
