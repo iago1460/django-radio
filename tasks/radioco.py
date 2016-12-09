@@ -1,7 +1,7 @@
 from invoke import task, Collection
 
 
-@task(default=True)
+@task
 def quickstart(ctx):
     ctx.run('npm install bower')  # UBUNTU FIX: sudo apt-get install nodejs-legacy
     ctx.run('python manage.py bower install')

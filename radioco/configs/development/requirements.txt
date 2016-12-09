@@ -7,5 +7,6 @@ psycopg2
 
 # Docs
 sphinx
+sphinx-intl
 sphinx_rtd_theme
-
+transifex-client

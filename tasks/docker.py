@@ -6,21 +6,7 @@ from invoke import task, Collection
 from pip.req import parse_requirements
 import os
 
-from utils import setup_host
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-HOME_DIR = os.path.expanduser('~')
-
-
-@contextmanager
-def chdir(dirname=None):
-    """
-    Not safe running concurrence tasks
-    """
-    current_dir = os.getcwd()
-    os.chdir(dirname)
-    yield
-    os.chdir(current_dir)
+from utils import chdir, setup_host, HOME_DIR, BASE_DIR
 
 
 @contextmanager

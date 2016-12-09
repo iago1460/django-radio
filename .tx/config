@@ -2,8 +2,7 @@
 host = https://www.transifex.com
 
 [django-radio.djangopo]
-file_filter = radio/locale/<lang>/LC_MESSAGES/django.po
-source_file = radio/locale/en/LC_MESSAGES/django.po
+file_filter = radioco/locale/<lang>/LC_MESSAGES/django.po
+source_file = radioco/locale/en/LC_MESSAGES/django.po
 source_lang = en
 type = PO
-

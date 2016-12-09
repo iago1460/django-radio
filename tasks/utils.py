@@ -3,12 +3,22 @@ from contextlib import contextmanager
 from invoke import task
 
 import re
-from pip.req import parse_requirements
 import os
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 HOME_DIR = os.path.expanduser('~')
+
+
+@contextmanager
+def chdir(dirname=None):
+    """
+    Not safe running concurrence tasks
+    """
+    current_dir = os.getcwd()
+    os.chdir(dirname)
+    yield
+    os.chdir(current_dir)
 
 
 @task
