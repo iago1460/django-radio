@@ -347,9 +347,10 @@ class Transmission(object):
     Temporal object generated according to recurrence rules or schedule information
     It contains concrete dates
     """
-    def __init__(self, schedule, date):
+    def __init__(self, schedule, date, episode=None):
         self.schedule = schedule
         self.start = date
+        self.episode = episode
 
     @property
     def programme(self):
@@ -360,21 +361,30 @@ class Transmission(object):
         return self.programme.name
 
     @property
-    def end(self):
-        return self.start + self.schedule.runtime
-
-    @property
     def slug(self):
         return self.programme.slug
 
     @property
-    def url(self):
+    def end(self):
+        return self.start + self.schedule.runtime
+
+    @property
+    def programme_url(self):
         return reverse('programmes:detail', args=[self.programme.slug])
+
+    @property
+    def episode_url(self):
+        if not self.episode:
+            return None
+        return reverse(
+            'programmes:episode_detail',
+            args=(self.slug, self.episode.season, self.episode.number_in_season)
+        )
 
     @classmethod
     def at(cls, at):
         schedules = Schedule.objects.filter(
-            calendar__is_active=True, effective_start_dt__lt=at
+            calendar__is_active=True, effective_start_dt__lt=at   # FIXME: should be lte??
         ).filter(
             Q(effective_end_dt__gt=at) |
             Q(effective_end_dt__isnull=True)
@@ -382,7 +392,13 @@ class Transmission(object):
         for schedule in schedules:
             date = schedule.date_before(at)
             if date and date <= at < date + schedule.runtime:
-                yield cls(schedule, date)
+                # Get episode
+                try:
+                    episode = Episode.objects.get(issue_date=date)
+                except Episode.DoesNotExist:
+                    episode = None
+                # yield transmission
+                yield cls(schedule, date, episode)
 
     @classmethod
     def between(cls, after, before, schedules=None):
@@ -399,77 +415,21 @@ class Transmission(object):
             Q(effective_end_dt__isnull=True)
         )
 
+        # Querying episodes episodes in that period of time
+        episodes = Episode.objects.filter(
+            issue_date__lt=before, issue_date__gte=after  # FIXME: should be gte??
+        )
+        episodes = {_episode.issue_date: _episode for _episode in episodes}
+
         transmission_dates = [
             imap(partial(_return_tuple, item2=schedule), schedule.dates_between(after, before))
             for schedule in schedules
         ]
         sorted_transmission_dates = heapq.merge(*transmission_dates)
         for sorted_transmission_date, schedule in sorted_transmission_dates:
-            yield cls(schedule, sorted_transmission_date)
+            # Adding episodes matching by date, we don't care about if this info is not correct
+            yield cls(schedule, sorted_transmission_date, episodes.get(sorted_transmission_date))
 
 
 def _return_tuple(item1, item2):
     return item1, item2
-
-#def __get_events(after, before, json_mode=False):
-#    background_colours = {"L": "#F9AD81", "B": "#C4DF9B", "S": "#8493CA"}
-#    text_colours = {"L": "black", "B": "black", "S": "black"}
-#
-#    next_schedules, next_dates = Schedule.between(after=after, before=before)
-#    schedules = []
-#    dates = []
-#    episodes = []
-#    event_list = []
-#    for x in range(len(next_schedules)):
-#        for y in range(len(next_dates[x])):
-#            # next_events.append([next_schedules[x], next_dates[x][y]])
-#            schedule = next_schedules[x]
-#            schedules.append(schedule)
-#            date = next_dates[x][y]
-#            dates.append(date)
-#
-#            episode = None
-#            # if schedule == live
-#            if next_schedules[x].type == 'L':
-#                try:
-#                    episode = Episode.objects.get(issue_date=date)
-#                except Episode.DoesNotExist:
-#                    pass
-#            # broadcast
-#            elif next_schedules[x].source:
-#                try:
-#                    source_date = next_schedules[x].source.date_before(date)
-#                    if source_date:
-#                        episode = Episode.objects.get(issue_date=source_date)
-#                except Episode.DoesNotExist:
-#                    pass
-#            episodes.append(episode)
-#
-#            if episode:
-#                url = reverse(
-#                    'programmes:episode_detail',
-#                    args=(schedule.programme.slug, episode.season, episode.number_in_season,)
-#                )
-#            else:
-#                url = reverse('programmes:detail', args=(schedule.programme.slug,))
-#
-#            event_entry = {
-#                'id': schedule.id,
-#                'start': str(date),
-#                'end': str(date + schedule.runtime),
-#                'allDay': False,
-#                'title':  schedule.programme.name,
-#                'type': schedule.type,
-#                'textColor': text_colours[schedule.type],
-#                'backgroundColor': background_colours[schedule.type],
-#                'url': url
-#            }
-#            event_list.append(event_entry)
-#
-#    if json_mode:
-#        return event_list
-#    else:
-#        if schedules:
-#            dates, schedules, episodes = (list(t) for t in zip(*sorted(zip(dates, schedules, episodes))))
-#            return zip(schedules, dates, episodes)
-#        return None

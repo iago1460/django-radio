@@ -440,8 +440,9 @@ class CalendarModelTests(TestDataMixin, TestCase):
 @override_settings(TIME_ZONE='UTC')
 class TransmissionModelTests(TestDataMixin, TestCase):
     def setUp(self):
-        self.transmission = Transmission(
-            self.schedule, utc.localize(datetime.datetime(2015, 1, 6, 14, 0, 0)))
+        dt = utc.localize(datetime.datetime(2015, 1, 6, 14, 0, 0))
+        self.episode_in_transmission = Episode.objects.create_episode(date=dt, programme=self.programme)
+        self.transmission = Transmission(self.schedule, dt, self.episode_in_transmission)
 
     def test_name(self):
         self.assertEqual(
@@ -459,10 +460,15 @@ class TransmissionModelTests(TestDataMixin, TestCase):
         self.assertEqual(
             self.transmission.slug, self.schedule.programme.slug)
 
-    def test_url(self):
+    def test_programme_url(self):
         self.assertEqual(
-            self.transmission.url,
+            self.transmission.programme_url,
             reverse('programmes:detail', args=[self.schedule.programme.slug]))
+
+    def test_episode__url(self):
+        self.assertEqual(
+            self.transmission.episode_url,
+            self.episode_in_transmission.get_absolute_url())
 
     def test_at(self):
         now = Transmission.at(utc.localize(datetime.datetime(2015, 1, 6, 11, 59, 59)))

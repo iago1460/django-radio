@@ -71,7 +71,8 @@ class TestTransmissionAPI(TestDataMixin, APITestCase):
             response.data[0],
             {
                 u'end': u'2015-02-01T09:00:00Z', u'name': u'Morning News', u'schedule': 1,
-                u'url': u'/programmes/morning-news/', u'id': 1, u'start': u'2015-02-01T08:00:00Z', u'source': None,
+                u'programme_url': u'/programmes/morning-news/', u'episode_url': None,
+                u'id': 1, u'start': u'2015-02-01T08:00:00Z', u'source': None,
                 u'type': u'L', u'slug': u'morning-news'
             }
         )
@@ -89,7 +90,8 @@ class TestTransmissionAPI(TestDataMixin, APITestCase):
             response.data[0],
             {
                 u'end': u'2015-02-01T10:00:00+01:00', u'name': u'Morning News', u'schedule': 1,
-                u'url': u'/programmes/morning-news/', u'id': 1, u'start': u'2015-02-01T09:00:00+01:00', u'source': None,
+                u'programme_url': u'/programmes/morning-news/', u'episode_url': None,
+                u'id': 1, u'start': u'2015-02-01T09:00:00+01:00', u'source': None,
                 u'type': u'L', u'slug': u'morning-news'
             }
         )

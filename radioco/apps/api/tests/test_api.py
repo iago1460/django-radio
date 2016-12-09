@@ -49,13 +49,18 @@ class TestSerializers(TestDataMixin, TestCase):
             Transmission(self.schedule, pytz.utc.localize(datetime.datetime(2015, 1, 6, 14, 0, 0)))
         )
         schedule_id = self.schedule.id
-        self.assertDictEqual(serializer.data, {
-            'id': schedule_id,
-            'schedule': schedule_id,
-            'source': None,
-            'type': u'L',
-            'start': '2015-01-06T14:00:00Z',
-            'end': '2015-01-06T15:00:00Z',
-            'name': u'Classic hits',
-            'slug': u'classic-hits',
-            'url': u'/programmes/classic-hits/'})
+        self.assertDictEqual(
+            serializer.data,
+            {
+                'id': schedule_id,
+                'schedule': schedule_id,
+                'source': None,
+                'type': u'L',
+                'start': '2015-01-06T14:00:00Z',
+                'end': '2015-01-06T15:00:00Z',
+                'name': u'Classic hits',
+                'slug': u'classic-hits',
+                'programme_url': u'/programmes/classic-hits/',
+                'episode_url': None,
+            }
+        )
