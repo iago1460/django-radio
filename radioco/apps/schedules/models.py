@@ -384,7 +384,7 @@ class Transmission(object):
     @classmethod
     def at(cls, at):
         schedules = Schedule.objects.filter(
-            calendar__is_active=True, effective_start_dt__lt=at   # FIXME: should be lte??
+            calendar__is_active=True, effective_start_dt__lte=at
         ).filter(
             Q(effective_end_dt__gt=at) |
             Q(effective_end_dt__isnull=True)
@@ -417,7 +417,7 @@ class Transmission(object):
 
         # Querying episodes episodes in that period of time
         episodes = Episode.objects.filter(
-            issue_date__lt=before, issue_date__gte=after  # FIXME: should be gte??
+            issue_date__lt=before, issue_date__gte=after
         )
         episodes = {_episode.issue_date: _episode for _episode in episodes}
 
