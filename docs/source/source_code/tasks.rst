@@ -28,6 +28,14 @@ tasks.heroku module
     :undoc-members:
     :show-inheritance:
 
+tasks.locale module
+-------------------
+
+.. automodule:: tasks.locale
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 tasks.radioco module
 --------------------
 

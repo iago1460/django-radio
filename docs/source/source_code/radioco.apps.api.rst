@@ -1,21 +1,28 @@
 radioco.apps.api package
 ========================
 
+Subpackages
+-----------
+
+.. toctree::
+
+    radioco.apps.api.tests
+
 Submodules
 ----------
+
+radioco.apps.api.recorder_views module
+--------------------------------------
+
+.. automodule:: radioco.apps.api.recorder_views
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 radioco.apps.api.serializers module
 -----------------------------------
 
 .. automodule:: radioco.apps.api.serializers
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-radioco.apps.api.tests module
------------------------------
-
-.. automodule:: radioco.apps.api.tests
     :members:
     :undoc-members:
     :show-inheritance:

@@ -28,8 +28,8 @@ Create and activate a virtual env:
 
 .. code-block:: bash
 
-    virtualenv .
-    source bin/activate
+    virtualenv venv
+    source venv/bin/activate
 
 Install the requirements:
 

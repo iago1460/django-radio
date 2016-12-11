@@ -7,10 +7,9 @@ Subpackages
 .. toctree::
 
     radioco.apps.api
-    radioco.apps.dashboard
     radioco.apps.global_settings
     radioco.apps.programmes
-    radioco.apps.radio
+    radioco.apps.radioco
     radioco.apps.schedules
     radioco.apps.users
 

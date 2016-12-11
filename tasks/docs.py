@@ -8,7 +8,7 @@ def clean(ctx):
 
 @task(pre=[clean], default=True)
 def build(ctx):
-    ctx.run("sphinx-apidoc -f -o docs/source/documentation .")
+    ctx.run("sphinx-apidoc -f -o docs/source/source_code .")
     ctx.run("sphinx-build -b html -d docs/build/doctrees -D latex_paper_size=a4 docs/source docs/build/html")
 
 

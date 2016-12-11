@@ -1,10 +1,10 @@
-#################
-Quick start guide
-#################
+##################
+Installation Guide
+##################
 
 The pages in this section of the documentation are designed to help you get started quickly and show how easy it is to work with RadioCo
 
-The guides follow a logical progession and build on each other, so it's
+The guides follow a logical progression and build on each other, so it's
 recommended to work through them in the order presented here.
 
 .. toctree::
@@ -12,3 +12,4 @@ recommended to work through them in the order presented here.
 
     install_web_app
     install_recorder_program
+    configure_communication

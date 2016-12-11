@@ -46,7 +46,7 @@ Open a terminal and introduce the following commands::
     virtualenv venv
     source venv/bin/activate
     pip install -r radioco/configs/common/requirements.txt
-    fab quickstart
+    inv quickstart
     
     
 Now that the server’s running (don't close the terminal), visit http://127.0.0.1:8000/
@@ -58,8 +58,7 @@ Deploy on Heroku
 ****************
 Quick deploy on Heroku::
 
-    fab save_changes
-    fab heroku_setup
-    fab master heroku_deploy
-
+    inv commit_changes
+    inv heroku.setup
+    inv heroky.deploy 
 

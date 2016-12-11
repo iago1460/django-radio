@@ -1,5 +1,4 @@
 from invoke import task, Collection
-from radioco import commit_changes
 
 HEROKU_CONFIG_PATH = 'radioco/configs/heroku/'
 
@@ -13,7 +12,7 @@ def setup(ctx, project_name='radioco'):
 
 
 @task
-def deploy(ctx, pre=[commit_changes], branch='master'):
+def deploy(ctx, branch='master'):
     # Deploy changes
     ctx.run('git push heroku {0}'.format(branch))
     # Install requirements and run migrations

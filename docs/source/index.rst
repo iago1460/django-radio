@@ -41,10 +41,11 @@ Table of contents
 .. toctree::
    :maxdepth: 2
 
-   start/index
-   reference/index
+   installation/index
+   customize/index
+   api/index
    contributing/index
-   documentation/modules
+   source_code/modules
    upgrade/index
 
 

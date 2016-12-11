@@ -68,10 +68,10 @@ radioco.apps.programmes.migrations.0008_auto_20160116_1509 module
     :undoc-members:
     :show-inheritance:
 
-radioco.apps.programmes.migrations.0009_auto_20160820_1634 module
------------------------------------------------------------------
+radioco.apps.programmes.migrations.0009_dev_auto_20160820_1634 module
+---------------------------------------------------------------------
 
-.. automodule:: radioco.apps.programmes.migrations.0009_auto_20160820_1634
+.. automodule:: radioco.apps.programmes.migrations.0009_dev_auto_20160820_1634
     :members:
     :undoc-members:
     :show-inheritance:

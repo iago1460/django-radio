@@ -1,7 +1,8 @@
 #################
 Application Setup
 #################
-RadioCo can be adapted to your needs, you have three ways, in the administration page in the Global Settings section,
+RadioCo can be adapted to your needs, you have three ways to do it.
+Editing the Global Settings section in the administration page using your browser or manually
 overriding the settings.py and overriding templates.
 
 
@@ -9,18 +10,31 @@ overriding the settings.py and overriding templates.
 Global settings
 ***************
 
-Go to the admin section on your browser and edit the information available. You can setup the google analytics id here.
+Go to the admin section on your browser and edit the information available.
+
+Global Configuration
+====================
+In this section you can add information related to your site apart of the google analytics id.
+
+Calendar Configuration
+======================
+Settings related to the calendar, things like the first day of the week
+
+Podcast Configuration
+=====================
+Settings related with the recorder, change here recording delays and get the Recorder token necessary 
+for the recorder programme to work
 
 
 *********
 Templates
 *********
 
-There is a empty folder called templates inside radio folder. You should override templates here, make sure to keep
+There is a empty folder called templates inside the radioco folder. You should override templates here, make sure to keep
 the relative path.
 
 For example, to override the episode detail page copy the episode_detail.html file from
-radio/apps/programmes/templates/programmes/episode_detail.html to radio/templates/episode_detail.html
+radioco/apps/programmes/templates/programmes/episode_detail.html to radioco/templates/programmes/episode_detail.html
 
 
 ***********
@@ -67,7 +81,7 @@ You can see the current list of translated languages by looking in django/conf/g
 
 
 Disqus
-===================
+======
 *New in version 2.0*
 
 Default: Disabled by default.

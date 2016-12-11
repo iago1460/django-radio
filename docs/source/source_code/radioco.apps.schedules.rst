@@ -20,6 +20,14 @@ radioco.apps.schedules.admin module
     :undoc-members:
     :show-inheritance:
 
+radioco.apps.schedules.forms module
+-----------------------------------
+
+.. automodule:: radioco.apps.schedules.forms
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 radioco.apps.schedules.models module
 ------------------------------------
 

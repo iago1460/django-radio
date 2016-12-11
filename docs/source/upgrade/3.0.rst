@@ -1,0 +1,75 @@
+#################
+3.0 release notes
+#################
+
+
+*****************
+What's new in 3.0
+*****************
+
+In this version RadioCo has almost been rewritten completely, internally the major improvements are:
+
+*   Use of datetime aware objects (`more info <https://docs.djangoproject.com/en/1.10/topics/i18n/timezones/>`_)
+*   Added good amount of tests
+*   Changed calendar to use API methods
+*   Using bower to download js and css dependencies
+*   Renamed internal folders and models
+
+    * django-radio/radio  --> django-radio/radioco
+    * django-radio/radio/configs/common --> django-radio/radioco/configs/base
+    * ScheduleBoard model has been renamed to Calendar
+    * dashboard app has been merged into schedules
+
+
+And the visible features are:
+
+*   Removed fabric and added a suite of helper tasks using (`invoke <http://www.pyinvoke.org/>`_)
+*   Added public API to access to programmes, episodes, schedules and transmissions
+*   The schedule manager has received important updates
+
+
+Now managing the schedules should be a lot more simple. From the manager is possible to 
+create and edit programmes in addition to schedules.
+
+The forced weekly recurrence has been removed in favor of complex recurrence rules, having 
+a unique calendar should be enough
+
+The Calendar model doesn't have date constraints anymore and only one can be active at the same time.
+If you want to restrict a programme you should do it filling the start and end date fields inside itself.
+
+
+
+
+********************
+How this affects you
+********************
+
+If you’re starting with a new installation, you don’t need to worry about this. 
+Don’t even bother reading this section; it’s for upgraders.
+
+Please **make sure of having a copy of your database** before even started to look to the next steps
+
+If you have custom code or templates I recommend putting them in a safe place, special mention 
+to local_settings.py files, your are going to need to move them to the correct folder
+
+Since this migration introduces timezone support, it's necessary to set the timezone variable:
+
+1. Find your timezone in `this list <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones>`_
+2. Go to the config folder and create if not exists a local_settings.py in the same directory than settings.py
+3. Add to the local settings the variable timezone, for example: TIME_ZONE = 'Europe/Madrid'
+
+
+.. warning::
+    Using an incorrect timezone will cause incorrect dates, you should 
+    set/override that setting in your local_settings.py.
+
+.. note::
+    For production environments we recommend to use PostgreSQL
+
+.. code-block:: bash
+
+    pip install -r radio/configs/common/requirements.txt
+    python manage.py collectstatic
+    python manage.py migrate
+
+    
