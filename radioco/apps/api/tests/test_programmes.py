@@ -90,17 +90,17 @@ class TestNotAllowedMethodsProgrammesAPI(TestDataMixin, APITestCase):
     def test_programmes_post(self):
         response = self.client.post('/api/2/programmes')
         self.assertEqual(
-            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+            response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_programmes_put(self):
         response = self.client.put('/api/2/programmes')
         self.assertEqual(
-            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+            response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_programmes_delete(self):
         response = self.client.delete('/api/2/programmes')
         self.assertEqual(
-            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+            response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_episodes_post(self):
         response = self.client.post('/api/2/episodes')

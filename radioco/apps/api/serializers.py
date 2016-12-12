@@ -27,8 +27,7 @@ class EpisodeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Episode
-        fields = ('title', 'programme', 'summary',
-                  'issue_date', 'season', 'number_in_season')
+        fields = ('title', 'programme', 'summary', 'issue_date', 'season', 'number_in_season')
 
 
 class ScheduleSerializer(serializers.ModelSerializer):

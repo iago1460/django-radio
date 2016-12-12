@@ -37,7 +37,8 @@ class ProgrammeFilterForm(forms.Form):
         return cleaned_data
 
 
-class ProgrammeViewSet(viewsets.ReadOnlyModelViewSet):
+class ProgrammeViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
     queryset = Programme.objects.all()
     filter_backends = (filters.DjangoFilterBackend, filters.OrderingFilter)
     filter_class = ProgrammeFilter
@@ -71,7 +72,7 @@ class EpisodeFilter(filters.FilterSet):
     programme = django_filters.CharFilter(name="programme__slug")
 
 
-class EpisodeViewSet(viewsets.ReadOnlyModelViewSet):
+class EpisodeViewSet(viewsets.ReadOnlyModelViewSet):  # FIXME: allowing creation breaks the view
     queryset = Episode.objects.all()
     filter_backends = (filters.DjangoFilterBackend, filters.OrderingFilter)
     filter_class = EpisodeFilter
