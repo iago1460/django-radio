@@ -39,7 +39,7 @@ class ProgrammeFilterForm(forms.Form):
 
 class ProgrammeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Programme.objects.all()
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (filters.DjangoFilterBackend, filters.OrderingFilter)
     filter_class = ProgrammeFilter
     serializer_class = serializers.ProgrammeSerializer
     lookup_field = 'slug'
@@ -73,7 +73,7 @@ class EpisodeFilter(filters.FilterSet):
 
 class EpisodeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Episode.objects.all()
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (filters.DjangoFilterBackend, filters.OrderingFilter)
     filter_class = EpisodeFilter
     serializer_class = serializers.EpisodeSerializer
 
@@ -89,7 +89,7 @@ class ScheduleFilter(filters.FilterSet):
 class ScheduleViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
     queryset = Schedule.objects.all()
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (filters.DjangoFilterBackend, filters.OrderingFilter)
     filter_class = ScheduleFilter
     serializer_class = serializers.ScheduleSerializer
 
@@ -116,7 +116,7 @@ class TransmissionForm(forms.Form):
 
 class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Schedule.objects.all()
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (filters.DjangoFilterBackend,)  # Transmissions are always order by date
     filter_class = ScheduleFilter
     serializer_class = serializers.TransmissionSerializer
 

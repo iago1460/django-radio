@@ -214,7 +214,7 @@
             $('#external-events').empty();
             $.getJSON({
                 url: "{% url 'api:programme-list' %}",
-                data: {after: after, before:before},
+                data: {after: after, before:before, ordering:'name'},
                 success: function(programmes) {
                     var backgroundColor = getBackgroundColor($("input[name='group1']:checked").val());
                     for (var i=0; i<programmes.length; i++) {
