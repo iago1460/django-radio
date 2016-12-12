@@ -14,12 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import datetime
+
 import pytz
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 from radioco.apps.radioco.utils import create_example_data
-from radioco.apps.radioco.tests.utils import TestDataMixin, SPAIN_TZ
+from radioco.apps.radioco.test_utils import TestDataMixin, SPAIN_TZ
 
 
 class UtilsTest(TestCase):

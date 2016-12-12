@@ -15,21 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import datetime
 
-import mock
-import pytz
 import recurrence
-from django.core.exceptions import ValidationError, FieldError
-from django.core.urlresolvers import reverse
-from django.db.models.signals import post_delete
-from django.forms import modelform_factory
 from django.test import TestCase
-from django.utils import timezone
 
-from radioco.apps.radioco.tests.utils import TestDataMixin
-from radioco.apps.programmes.models import Programme
-from radioco.apps.schedules import utils
-from radioco.apps.schedules.models import Schedule, Transmission
-from radioco.apps.schedules.models import Calendar, CalendarManager
+from radioco.apps.radioco.test_utils import TestDataMixin
 
 
 class RecurrenceTests(TestDataMixin, TestCase):

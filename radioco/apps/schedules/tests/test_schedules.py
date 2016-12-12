@@ -28,7 +28,7 @@ from django.utils import timezone
 from pytz import utc
 
 from radioco.apps.programmes.models import Programme, Episode
-from radioco.apps.radioco.tests.utils import TestDataMixin
+from radioco.apps.radioco.test_utils import TestDataMixin
 from radioco.apps.schedules.models import Calendar, CalendarManager
 from radioco.apps.schedules.models import Schedule, Transmission
 from radioco.apps.schedules.utils import rearrange_episodes, next_dates

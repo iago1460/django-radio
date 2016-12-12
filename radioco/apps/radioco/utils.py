@@ -5,7 +5,7 @@ from django.views.generic.detail import SingleObjectMixin
 def create_example_data():
     from django.contrib.auth.models import User
     from radioco.apps.global_settings.models import SiteConfiguration
-    from radioco.apps.radioco.tests.utils import create_test_data
+    from radioco.apps.radioco.test_utils import create_test_data
 
     # Create administrator
     user, created = User.objects.get_or_create(

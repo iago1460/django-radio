@@ -5,9 +5,9 @@ import recurrence
 from django.test import TestCase
 from django.test import override_settings
 
-from radioco.apps.radioco.tz_utils import transform_dt_to_default_tz
 from radioco.apps.programmes.models import Programme
-from radioco.apps.radioco.tests.utils import TestDataMixin, SPAIN_TZ
+from radioco.apps.radioco.test_utils import TestDataMixin, SPAIN_TZ
+from radioco.apps.radioco.tz_utils import transform_dt_to_default_tz
 from radioco.apps.schedules.models import Schedule
 
 

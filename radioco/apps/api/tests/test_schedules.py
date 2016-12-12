@@ -5,7 +5,7 @@ import pytz
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from radioco.apps.radioco.tests.utils import TestDataMixin
+from radioco.apps.radioco.test_utils import TestDataMixin
 
 
 def mock_now():
