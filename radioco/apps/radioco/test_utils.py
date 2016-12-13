@@ -19,7 +19,11 @@ import datetime
 
 import pytz
 import recurrence
+from django.apps import apps
 from django.contrib.auth.models import User
+from django.db import connection
+from django.db.migrations.executor import MigrationExecutor
+from django.test import TransactionTestCase
 
 from radioco.apps.programmes.models import Programme, Episode, Podcast, Role, CONTRIBUTOR
 from radioco.apps.schedules.models import Calendar, Schedule

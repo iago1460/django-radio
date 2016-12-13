@@ -116,10 +116,10 @@ class PodcastConfiguration(SingletonModel):
 
 
 class CalendarConfiguration(SingletonModel):
-    scroll_time = models.TimeField(
-        default=datetime.time(0, 0, 0), verbose_name=_('scroll time'),
-        help_text=_("Determines how far down the scroll pane is initially scrolled down.")
-    )
+    slot_duration = models.DurationField(
+        default=datetime.timedelta(minutes=30), verbose_name=_('slot duration'),
+        help_text=_('The frequency for displaying time slots. Format hh:mm:ss'))
+
     first_day = models.IntegerField(
         choices=WEEKDAY_CHOICES, default=0, verbose_name=_('first day'),
         help_text=_('The day that the calendar begins')

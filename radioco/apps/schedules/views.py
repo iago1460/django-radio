@@ -36,9 +36,9 @@ from radioco.apps.schedules.models import Schedule
 def schedule_list(request):
     calendar_configuration = CalendarConfiguration.objects.get()
     context = {
-        'scroll_time': calendar_configuration.scroll_time.strftime('%H:%M:%S'),
         'min_time': calendar_configuration.min_time.strftime('%H:%M:%S'),
         'max_time': calendar_configuration.max_time.strftime('%H:%M:%S'),
+        'slot_duration': unicode(calendar_configuration.slot_duration),
         'first_day': calendar_configuration.first_day + 1,
         'language': request.LANGUAGE_CODE,
         'transmissions': reverse('api:transmission-list'),

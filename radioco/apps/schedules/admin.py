@@ -17,14 +17,11 @@
 
 import copy
 
-from django.conf.urls import url, patterns
 from django.contrib import admin
 from django.core.checks import messages
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 
-from radioco.apps.programmes.models import Programme
+from radioco.apps.global_settings.models import CalendarConfiguration
 from radioco.apps.schedules.models import Schedule, Calendar
 
 try:
@@ -66,11 +63,6 @@ class CalendarAdmin(admin.ModelAdmin):
                         _('A calendar with the name %(obj)s already exists') % {'obj': force_unicode(obj)},
                         level=messages.ERROR
                     )
-                    pass
-                    # Don't work
-                    # self.message_user(
-                    # request, _('There is already a calendar with this name \"%s\"') % copy_name, level=messages.ERROR
-                    # )
             except Calendar.DoesNotExist:
                 obj_copy.save()
                 # Live Schedules lives must be created first
@@ -108,8 +100,11 @@ class ScheduleAdmin(admin.ModelAdmin):
     readonly_fields = ('effective_start_dt', 'effective_end_dt', 'source', 'from_collection')
     change_list_template = "admin/schedules/calendar.html"
 
-    def changelist_view(self, request, extra_context=dict()):
+    def changelist_view(self, request, extra_context=None):
+        calendar_configuration = CalendarConfiguration.objects.get()
+        extra_context = extra_context or {}
         extra_context['calendars'] = Calendar.objects.all()
+        extra_context['slot_duration'] = unicode(calendar_configuration.slot_duration)
         return super(ScheduleAdmin, self).changelist_view(request, extra_context=extra_context)
 
     def has_add_permission(self, request):
