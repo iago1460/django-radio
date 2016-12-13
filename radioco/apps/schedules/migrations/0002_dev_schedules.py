@@ -6,69 +6,76 @@ from collections import namedtuple
 from django.db import migrations, models
 import datetime
 import recurrence.fields
+from django.utils import timezone
 from django.utils.timezone import utc
 import django.db.models.deletion
 
 
 def migrate_daily_recurrences(apps, schema_editor):
+    """
+    Migration to convert weekly recurrences into new complex recurrences
+    """
     Schedule = apps.get_model("schedules", "Schedule")
     for schedule in Schedule.objects.all():
-        schedule.recurrences.rrules[0] = [recurrence.Rule(recurrence.WEEKLY, byday=schedule.day)]
+        schedule.recurrences = recurrence.Recurrence(rrules=[recurrence.Rule(recurrence.WEEKLY, byday=schedule.day)]),
         schedule.save()
 
 
 def migrate_board(apps, schema_editor):
+    """
+    Renaming previous Calendars and creating a new one
+    """
     ScheduleBoard = apps.get_model("schedules", "ScheduleBoard")
     for board in ScheduleBoard.objects.all():
-        board.name = 'Legacy - {0}'.format(board.name)
+        board.name = 'Legacy - {name}'.format(name=board.name)
+        board.save()
 
     ScheduleBoard.objects.create(name='Active Calendar', is_active=True)
 
 
 def migrate_schedules(apps, schema_editor):
+    """
+    Final Migration
+
+    Before this migration Calendar (ScheduleBoard) had a date limit and all the schedules were repeated weekly
+    We want to move constraint dates from Calendar to programmes and clone the active schedules into the active calendar
+    """
+    Board = namedtuple('Board', ['start_date', 'end_date'])
     Schedule = apps.get_model("schedules", "Schedule")
     ScheduleBoard = apps.get_model("schedules", "ScheduleBoard")
+    tz = timezone.get_default_timezone()
 
-    Board = namedtuple('Board', 'start_date end_date')
     boards = {}
     for board in ScheduleBoard.objects.all():
         boards[board.id] = Board(board.start_date, board.end_date)
 
-    new_board = ScheduleBoard.objects.get(name='Active Calendar', is_active=True)
-    for schedule in Schedule.objects.all():
+    active_board = ScheduleBoard.objects.get(name='Active Calendar', is_active=True)  # Created by previous migration
+    for schedule in Schedule.objects.all().select_related('programme'):
         schedule_board = boards[schedule.schedule_board.id]
         if schedule_board.start_date:
-            start_date = schedule_board.start_date
-            start_dt = datetime.datetime.combine(start_date, schedule.start_hour)
-
-            schedule.start_date = start_dt
-            schedule.save()
-            # Create a new schedule
-            schedule.id = None
-            schedule.schedule_board = new_board
+            schedule.start_date = tz.localize(datetime.datetime.combine(schedule_board.start_date, schedule.start_hour))
             schedule.save()
 
-            end_date = None
-            if schedule_board.end_date:
-                end_date = schedule_board.end_date
+            # Create a copy, keeping previous schedule
+            schedule.id = schedule.pk = None
+            schedule.schedule_board = active_board
+            schedule.save()
 
             # Add the lower start_date to the programme
-            if schedule.programme.start_date is None or schedule.programme.start_date > start_date:
-                schedule.programme.start_date = start_date
+            if schedule.programme.start_date is None or schedule.programme.start_date > schedule_board.start_date:
+                schedule.programme.start_date = schedule_board.start_date
                 schedule.programme.save()
 
             # Add the bigger end_date to the programme
-            if end_date and (schedule.programme.end_date is None or schedule.programme.end_date < end_date):
-                schedule.programme.end_date = end_date
+            if schedule_board.end_date and (schedule.programme.end_date is None or schedule.programme.end_date < schedule_board.end_date):
+                schedule.programme.end_date = schedule_board.end_date
                 schedule.programme.save()
 
         else:
             # case when start_date and end_date doesn't exist
             # this schedules are disable, we don't need to migrate them but at least we fix the weekday
             date = datetime.date(2016, 1, 4) + datetime.timedelta(days=schedule.day)
-            time = schedule.start_hour
-            start_dt = datetime.datetime.combine(date, time)
-            schedule.start_date = start_dt
+            schedule.start_date = tz.localize(datetime.datetime.combine(date, schedule.start_hour))
             schedule.save()
 
 
