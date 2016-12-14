@@ -19,6 +19,7 @@ from functools import partial
 import mock
 import pytz
 import recurrence
+from django.contrib.admin import AdminSite
 from django.core.exceptions import ValidationError, FieldError
 from django.core.urlresolvers import reverse
 from django.forms import modelform_factory
@@ -29,6 +30,7 @@ from pytz import utc
 
 from radioco.apps.programmes.models import Programme, Episode
 from radioco.apps.radioco.test_utils import TestDataMixin
+from radioco.apps.schedules.admin import CalendarAdmin
 from radioco.apps.schedules.models import Calendar, CalendarManager
 from radioco.apps.schedules.models import Schedule, Transmission
 from radioco.apps.schedules.utils import rearrange_episodes, next_dates
@@ -425,6 +427,36 @@ class CalendarModelTests(TestDataMixin, TestCase):
 
     def test_str(self):
         self.assertEqual(str(self.calendar), "Example")
+
+
+class CalendarAdminTests(TestDataMixin, TestCase):
+
+    def setUp(self):
+        self.app_admin = CalendarAdmin(Calendar, AdminSite())
+
+    def test_clone_calendar(self):
+        schedule_ids = [_schedule.id for _schedule in self.calendar.schedule_set.all()]
+        num_of_schedules = len(schedule_ids)
+
+        self.app_admin.clone_calendar(request=None, queryset=Calendar.objects.filter(id=self.calendar.id))
+        cloned_calendar = Calendar.objects.order_by('-id').first()
+        self.calendar.refresh_from_db()
+
+        self.assertNotEqual(self.calendar.id, cloned_calendar.id)
+        self.assertEqual(num_of_schedules, self.calendar.schedule_set.count())
+        self.assertEqual(num_of_schedules, cloned_calendar.schedule_set.count())
+        self.assertFalse(
+            any(
+                map(
+                    lambda x: x in schedule_ids,
+                    [_schedule.id for _schedule in cloned_calendar.schedule_set.all()]
+                )
+            )
+        )
+        self.assertNotEquals(
+            frozenset([_schedule.id for _schedule in self.calendar.schedule_set.all()]),
+            frozenset([_schedule.id for _schedule in cloned_calendar.schedule_set.all()]),
+        )
 
     # @mock.patch('django.utils.timezone.now', mock_now)
     # @mock.patch('radioco.apps.schedules.utils.rearrange_episodes')

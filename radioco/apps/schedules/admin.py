@@ -36,7 +36,7 @@ class CalendarAdmin(admin.ModelAdmin):
     list_filter = ['is_active']
     search_fields = ['name']
     ordering = ['name']
-    actions = ['copy_calendar', 'set_active']
+    actions = ['clone_calendar', 'set_active']
 
     def set_active(self, request, queryset):
         if queryset.count() == 1:
@@ -48,7 +48,7 @@ class CalendarAdmin(admin.ModelAdmin):
             self.message_user(request, _('You cannot mark more than 1 schedule as active'), level=messages.ERROR)
     set_active.short_description = _("Set a calendar active")
 
-    def copy_calendar(self, request, queryset):
+    def clone_calendar(self, request, queryset):
         for obj in queryset:
             obj_copy = copy.copy(obj)
             obj_copy.id = None
@@ -65,25 +65,25 @@ class CalendarAdmin(admin.ModelAdmin):
                     )
             except Calendar.DoesNotExist:
                 obj_copy.save()
-                # Live Schedules lives must be created first
+                # Live schedules have to be created first because we are linking to those objects
                 schedules = []
                 schedules.extend(Schedule.objects.filter(calendar=obj, type='L'))
                 schedules.extend(Schedule.objects.filter(calendar=obj).exclude(type='L'))
                 for schedule in schedules:
                     schedule_copy = copy.copy(schedule)
-                    schedule_copy.id = None
-                    schedule_copy.pk = None
+                    schedule_copy.id = schedule_copy.pk = None
                     schedule_copy.calendar = obj_copy
                     if schedule_copy.source:
                         source = schedule_copy.source
-                        source_copy = Schedule.objects.get(
-                            calendar=obj_copy, day=source.day, start_hour=source.start_hour,
+                        # We should have created the referenced object first
+                        # Only live schedules should be in the source field
+                        schedule_copy.source = Schedule.objects.get(
+                            calendar=obj_copy, start_dt=source.start_dt,
                             type=source.type, programme=source.programme
                         )
-                        schedule_copy.source = source_copy
                     schedule_copy.save()
 
-    copy_calendar.short_description = _("Make a Copy of calendar")
+    clone_calendar.short_description = _("Make a Clone of the selected calendar")
 
 
 @admin.register(Schedule)
