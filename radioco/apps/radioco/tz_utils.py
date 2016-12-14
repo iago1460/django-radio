@@ -72,16 +72,6 @@ def transform_dt_to_default_tz(dt):
     return tz.normalize(dt.astimezone(tz))
 
 
-def convert_date_to_datetime(date, time=datetime.time(0), tz=None):
-    """
-    Transform a date into a timezone aware datetime taking into account the current timezone
-    Returns: A datetime in the timezone provided or in the current timezone by default
-    """
-    if tz:
-        return tz.normalize(timezone.make_aware(datetime.datetime.combine(date, time)).astimezone(tz))
-    return timezone.make_aware(datetime.datetime.combine(date, time))
-
-
 def fix_recurrence_date(start_dt, dt):
     """
     Fix for django-recurrence 1.3
