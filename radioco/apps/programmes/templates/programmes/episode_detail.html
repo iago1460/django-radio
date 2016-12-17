@@ -14,7 +14,7 @@
             </div>
 
             <div class="col-lg-5 col-lg-offset-1 spacing">
-                <h4>{% firstof episode.title|upper episode|upper %}</h4>
+                <h4>{{ episode|title }}</h4>
 
                 <p>{% firstof episode.summary|safe episode.programme.synopsis|safe '' %}</p>
 
