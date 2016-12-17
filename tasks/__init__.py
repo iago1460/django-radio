@@ -9,7 +9,7 @@ import locale
 
 ns = Collection()
 ns.add_collection(Collection.from_module(heroku))
-ns.add_collection(Collection.from_module(docker))
+ns.add_collection(docker)
 ns.add_collection(docs)
 ns.add_collection(locale)
 ns.add_task(radioco.quickstart)

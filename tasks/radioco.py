@@ -1,13 +1,14 @@
-from invoke import task, Collection
+from invoke import task, call, Collection
+from docker import build, setup, run, manage
 
 
-@task
+@task(
+    pre=[build, setup, call(run, background=True)],
+    post=[call(manage, management_command='create_example_data')]
+)
 def quickstart(ctx):
-    ctx.run('npm install bower')  # UBUNTU FIX: sudo apt-get install nodejs-legacy
-    ctx.run('python manage.py bower install')
-    ctx.run('python manage.py migrate')
-    ctx.run('python manage.py create_example_data')
-    ctx.run('python manage.py runserver')
+    print('RadioCo should be running now')
+    print('Generating some data...')
 
 
 @task
