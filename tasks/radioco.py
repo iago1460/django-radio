@@ -1,4 +1,4 @@
-from invoke import task, call, Collection
+from invoke import task, call
 from docker import build, setup, run, manage
 
 
@@ -7,7 +7,7 @@ from docker import build, setup, run, manage
     post=[call(manage, management_command='create_example_data')]
 )
 def quickstart(ctx):
-    print('RadioCo should be running now')
+    print('RadioCo should be running')
     print('Generating some data...')
 
 
@@ -26,6 +26,3 @@ def commit_changes(ctx):
 @task
 def checkout_latest(ctx):
     ctx.run('git pull')
-
-
-# ns = Collection(commit_changes, checkout_latest)

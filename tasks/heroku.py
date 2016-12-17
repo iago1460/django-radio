@@ -2,8 +2,9 @@ from invoke import task, Collection
 
 HEROKU_CONFIG_PATH = 'radioco/configs/heroku/'
 
+# FIXME: BROKEN MODULE
 
-@task(default=True)
+@task
 def setup(ctx, project_name='radioco'):
     ctx.run('heroku login')
     ctx.run('heroku create {0}'.format(project_name))

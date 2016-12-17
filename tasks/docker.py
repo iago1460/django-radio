@@ -1,7 +1,7 @@
 from contextlib import contextmanager
 from functools import wraps
 
-from invoke import task, Collection
+from invoke import task
 
 import os
 from utils import chdir, HOME_DIR, BASE_DIR, parse_requirements
@@ -76,17 +76,22 @@ def set_env(func):
 @task
 @set_env
 def build(ctx):
-    with _generate_requirements_file(ctx), _ssh_support(ctx):
-        ctx.run('docker-compose build')
+    with _generate_requirements_file(ctx):
+        if ctx['environment'] == 'development':
+            # Copying ssh key to allow remote debugging
+            with _ssh_support(ctx):
+                ctx.run('docker-compose build')
+        else:
+            ctx.run('docker-compose build')
 
 
 @task
 @set_env
 def setup(ctx):
+    # Adding executable permissions to docker scripts
     ctx.run('chmod -R +x {env_path}/docker/scripts'.format(**ctx))
-    # ctx.run('docker-compose up -d --no-recreate --no-build')
 
-    # The services has to be running before start this service
+    # Dependency services has to be running before start this service
     ctx.run(
         _docker_compose_run(
             _get_service_name(ctx),
