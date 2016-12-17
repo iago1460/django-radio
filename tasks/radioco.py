@@ -3,7 +3,7 @@ from docker import build, setup, run, manage
 
 
 @task(
-    pre=[build, setup, call(run, background=True)],
+    pre=[build, call(run, background=True), setup],
     post=[call(manage, management_command='create_example_data')]
 )
 def quickstart(ctx):
