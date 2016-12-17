@@ -20,6 +20,14 @@ radioco.apps.radioco.context_processors module
     :undoc-members:
     :show-inheritance:
 
+radioco.apps.radioco.test_utils module
+--------------------------------------
+
+.. automodule:: radioco.apps.radioco.test_utils
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 radioco.apps.radioco.tz_utils module
 ------------------------------------
 

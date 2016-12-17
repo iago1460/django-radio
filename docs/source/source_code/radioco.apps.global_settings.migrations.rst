@@ -52,6 +52,14 @@ radioco.apps.global_settings.migrations.0006_auto_20160116_1509 module
     :undoc-members:
     :show-inheritance:
 
+radioco.apps.global_settings.migrations.0007_dev_calendarconfiguration_tweaks module
+------------------------------------------------------------------------------------
+
+.. automodule:: radioco.apps.global_settings.migrations.0007_dev_calendarconfiguration_tweaks
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------

@@ -1,6 +1,6 @@
-############
+#######
 RadioCo
-############
+#######
 
 .. image:: https://travis-ci.org/iago1460/django-radio.svg
    :target: https://travis-ci.org/iago1460/django-radio
@@ -29,36 +29,27 @@ Features
 
 More information on `our website <http://radioco.org/>`_.
 
+***********
+Quick Start
+***********
+
+Install `Docker engine <https://docs.docker.com/engine/installation/>`_.
+
+Open a terminal and introduce the following commands::
+
+    pip install invoke==0.14.0
+    git clone https://github.com/iago1460/django-radio
+    cd django-radio
+    inv quickstart
+
+
+Now that the server’s running (don't close the terminal), visit http://127.0.0.1:8000/
+
+To access administrator site visit http://127.0.0.1:8000/admin/ using "admin/1234"
+
 *************
 Documentation
 *************
 
 Please head over to our `documentation <http://django-radio.readthedocs.org/>`_ for all
 the details on how to install, extend and use RadioCo.
-
-***********
-Quick Start
-***********
-Open a terminal and introduce the following commands::
-
-    git clone https://github.com/iago1460/django-radio
-    cd django-radio
-    virtualenv venv
-    source venv/bin/activate
-    pip install -r radioco/configs/common/requirements.txt
-    inv quickstart
-    
-    
-Now that the server’s running (don't close the terminal), visit http://127.0.0.1:8000/
-
-To access administrator site visit http://127.0.0.1:8000/admin/ using "admin/1234"
-
-****************
-Deploy on Heroku
-****************
-Quick deploy on Heroku::
-
-    inv commit_changes
-    inv heroku.setup
-    inv heroky.deploy 
-

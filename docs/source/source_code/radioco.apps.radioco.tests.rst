@@ -12,14 +12,6 @@ radioco.apps.radioco.tests.tests module
     :undoc-members:
     :show-inheritance:
 
-radioco.apps.radioco.tests.utils module
----------------------------------------
-
-.. automodule:: radioco.apps.radioco.tests.utils
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 
 Module contents
 ---------------

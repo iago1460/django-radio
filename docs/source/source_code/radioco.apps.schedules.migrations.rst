@@ -20,22 +20,6 @@ radioco.apps.schedules.migrations.0002_dev_schedules module
     :undoc-members:
     :show-inheritance:
 
-radioco.apps.schedules.migrations.0003_dev_auto_20161115_0949 module
---------------------------------------------------------------------
-
-.. automodule:: radioco.apps.schedules.migrations.0003_dev_auto_20161115_0949
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-radioco.apps.schedules.migrations.0004_dev_auto_20161120_1026 module
---------------------------------------------------------------------
-
-.. automodule:: radioco.apps.schedules.migrations.0004_dev_auto_20161120_1026
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 
 Module contents
 ---------------

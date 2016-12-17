@@ -28,14 +28,6 @@ radioco.configs.base.urls module
     :undoc-members:
     :show-inheritance:
 
-radioco.configs.base.wsgi module
---------------------------------
-
-.. automodule:: radioco.configs.base.wsgi
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 
 Module contents
 ---------------

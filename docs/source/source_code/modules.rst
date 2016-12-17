@@ -6,5 +6,4 @@ django-radio
 
    manage
    radioco
-   setup
    tasks
