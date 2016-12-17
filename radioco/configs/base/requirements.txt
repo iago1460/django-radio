@@ -7,6 +7,5 @@ django-filebrowser==3.7.2
 djangorestframework==3.3.3
 django-ckeditor==5.1.1
 django-disqus==0.5
-django-bower==5.1.0
 django-filter==1.0.0
 https://github.com/iago1460/django-recurrence/archive/master.zip

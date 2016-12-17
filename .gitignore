@@ -5,10 +5,7 @@ radioco/static/
 
 # bower
 node_modules/
-
-# bower / js libs
-node_modules/
-radioco/components/
+radioco/apps/radioco/static/bower/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
