@@ -68,12 +68,12 @@ class TestTransmissionAPI(TestDataMixin, APITestCase):
             })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data[0],
+            {_key: response.data[0][_key] for _key in response.data[0] if _key not in ['schedule', 'id']},
             {
-                u'end': u'2015-02-01T09:00:00Z', u'name': u'Morning News', u'schedule': 1,
-                u'programme_url': u'/programmes/morning-news/', u'episode_url': None,
-                u'id': 1, u'start': u'2015-02-01T08:00:00Z', u'source': None,
-                u'type': u'L', u'slug': u'morning-news'
+                'end': '2015-02-01T09:00:00Z', 'name': 'Morning News',
+                'programme_url': '/programmes/morning-news/', 'episode_url': None,
+                'start': '2015-02-01T08:00:00Z', 'source': None,
+                'type': 'L', 'slug': 'morning-news'
             }
         )
 
@@ -87,27 +87,27 @@ class TestTransmissionAPI(TestDataMixin, APITestCase):
             })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data[0],
+            {_key: response.data[0][_key] for _key in response.data[0] if _key not in ['schedule', 'id']},
             {
-                u'end': u'2015-02-01T10:00:00+01:00', u'name': u'Morning News', u'schedule': 1,
-                u'programme_url': u'/programmes/morning-news/', u'episode_url': None,
-                u'id': 1, u'start': u'2015-02-01T09:00:00+01:00', u'source': None,
-                u'type': u'L', u'slug': u'morning-news'
+                'end': '2015-02-01T10:00:00+01:00', 'name': u'Morning News',
+                'programme_url': u'/programmes/morning-news/', 'episode_url': None,
+                'start': '2015-02-01T09:00:00+01:00', 'source': None,
+                'type': u'L', 'slug': u'morning-news'
             }
         )
 
     def test_incorrect_transmission_queries(self):
         response = self.client.get('/api/2/transmissions')
-        self.assertEqual(response.data['after'], [u'This field is required.'])
-        self.assertEqual(response.data['before'], [u'This field is required.'])
+        self.assertEqual(response.data['after'], ['This field is required.'])
+        self.assertEqual(response.data['before'], ['This field is required.'])
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         response = self.client.get('/api/2/transmissions', {'after': datetime.date(2015, 2, 1)})
-        self.assertEqual(response.data['before'], [u'This field is required.'])
+        self.assertEqual(response.data['before'], ['This field is required.'])
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         response = self.client.get('/api/2/transmissions', {'before': datetime.date(2015, 2, 1)})
-        self.assertEqual(response.data['after'], [u'This field is required.'])
+        self.assertEqual(response.data['after'], ['This field is required.'])
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         response = self.client.get(
@@ -128,7 +128,7 @@ class TestTransmissionAPI(TestDataMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertListEqual(
             map(lambda t: (t['slug'], t['start']), response.data),
-            [(u'classic-hits', '2015-01-06T16:30:00Z')])
+            [('classic-hits', '2015-01-06T16:30:00Z')])
 
     def test_transmission_same_day(self):
         response = self.client.get(
@@ -158,7 +158,7 @@ class TestTransmissionAPI(TestDataMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertListEqual(
             map(lambda t: (t['slug'], t['start']), response.data),
-            [(u'classic-hits', '2015-01-06T14:00:00Z')])
+            [('classic-hits', '2015-01-06T14:00:00Z')])
 
     def test_transmissions_filter_calendar_nonexistend(self):
         response = self.client.get(

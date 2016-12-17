@@ -50,11 +50,11 @@ class TestFullCalendarApi(TestDataMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEquals(
-            response.data,
+            {key: response.data[key] for key in response.data if key not in ['id']},
             {
                 'start': '2016-11-17T01:00:00Z',
-                'title': u'Classic hits', 'source': None, 'calendar': 2,
-                'runtime': datetime.timedelta(0, 3600), 'type': 'L', 'id': 7, 'programme': u'classic-hits'
+                'title': u'Classic hits', 'source': None, 'calendar': self.calendar.id,
+                'runtime': datetime.timedelta(0, 3600), 'type': 'L', 'programme': u'classic-hits'
             })
 
     @override_settings(TIME_ZONE='Europe/Madrid')
@@ -64,11 +64,11 @@ class TestFullCalendarApi(TestDataMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEquals(
-            response.data,
+            {key: response.data[key] for key in response.data if key not in ['id']},
             {
                 'start': '2016-11-17T01:00:00+01:00',  # Returns the date in the default tz
-                'title': u'Classic hits', 'source': None, 'calendar': 2,
-                'runtime': datetime.timedelta(0, 3600), 'type': 'L', 'id': 7, 'programme': u'classic-hits'
+                'title': u'Classic hits', 'source': None, 'calendar': self.calendar.id,
+                'runtime': datetime.timedelta(0, 3600), 'type': 'L', 'programme': u'classic-hits'
             })
 
     @override_settings(TIME_ZONE='UTC')
