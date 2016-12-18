@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 from django.conf import settings
+import ckeditor_uploader.fields
 
 
 class Migration(migrations.Migration):
@@ -32,6 +33,7 @@ class Migration(migrations.Migration):
             name='start_date',
             field=models.DateField(null=True, verbose_name='start date', blank=True),
         ),
+        # Deprecation warnings
         migrations.AlterField(
             model_name='episode',
             name='people',
@@ -41,5 +43,16 @@ class Migration(migrations.Migration):
             model_name='programme',
             name='announcers',
             field=models.ManyToManyField(to=settings.AUTH_USER_MODEL, verbose_name='announcers', through='programmes.Role', blank=True),
+        ),
+        # ckeditor - Adding upload feature back
+        migrations.AlterField(
+            model_name='episode',
+            name='summary',
+            field=ckeditor_uploader.fields.RichTextUploadingField(verbose_name='summary', blank=True),
+        ),
+        migrations.AlterField(
+            model_name='programme',
+            name='synopsis',
+            field=ckeditor_uploader.fields.RichTextUploadingField(verbose_name='synopsis', blank=True),
         ),
     ]

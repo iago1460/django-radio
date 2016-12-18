@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from ckeditor.fields import RichTextField
+from ckeditor_uploader.fields import RichTextUploadingField
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -26,7 +26,7 @@ from django.utils.translation import ugettext_lazy as _
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, unique=True)
-    bio = RichTextField(blank=True, verbose_name=_("biography"))
+    bio = RichTextUploadingField(blank=True, verbose_name=_("biography"))
     avatar = models.ImageField(
         upload_to='avatars/', default='defaults/default-userprofile-avatar.jpg', verbose_name=_("avatar")
     )

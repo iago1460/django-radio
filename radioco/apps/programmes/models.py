@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import pytz
-from ckeditor.fields import RichTextField
+from ckeditor_uploader.fields import RichTextUploadingField
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import FieldError
@@ -79,7 +79,7 @@ class Programme(models.Model):
     announcers = models.ManyToManyField(
         User, blank=True, through='Role', verbose_name=_("announcers")
     )
-    synopsis = RichTextField(blank=True, verbose_name=_("synopsis"))
+    synopsis = RichTextUploadingField(blank=True, verbose_name=_("synopsis"))
     photo = models.ImageField(
         upload_to='photos/', default='defaults/default-programme-photo.jpg', verbose_name=_("photo")
     )
@@ -207,7 +207,7 @@ class Episode(models.Model):
     title = models.CharField(max_length=100, blank=True, null=True, verbose_name=_("title"))
     people = models.ManyToManyField(User, blank=True, through='Participant', verbose_name=_("people"))
     programme = models.ForeignKey(Programme, verbose_name=_("programme"))
-    summary = RichTextField(blank=True, verbose_name=_("summary"))
+    summary = RichTextUploadingField(blank=True, verbose_name=_("summary"))
     issue_date = models.DateTimeField(blank=True, null=True, db_index=True, verbose_name=_('issue date'))
     season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("season"))
     number_in_season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("No. in season"))
