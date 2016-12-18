@@ -20,7 +20,8 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 
-from radioco.apps.global_settings.models import SiteConfiguration, PodcastConfiguration, CalendarConfiguration
+from radioco.apps.global_settings.models import SiteConfiguration, PodcastConfiguration, CalendarConfiguration, \
+    RadiocomConfiguration
 
 try:
     from django.utils.encoding import force_unicode
@@ -88,4 +89,5 @@ class PodcastConfigurationAdmin(SingletonModelAdmin):
 
 admin.site.register(SiteConfiguration, SingletonModelAdmin)
 admin.site.register(CalendarConfiguration, SingletonModelAdmin)
+admin.site.register(RadiocomConfiguration, SingletonModelAdmin)
 admin.site.register(PodcastConfiguration, PodcastConfigurationAdmin)

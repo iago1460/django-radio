@@ -144,3 +144,45 @@ class CalendarConfiguration(SingletonModel):
         default_permissions = ('change',)
         verbose_name = _('Calendar Configuration')
         verbose_name_plural = _('Calendar Configuration')
+
+
+class RadiocomConfiguration(SingletonModel):
+
+    station_name = models.CharField(
+        max_length=255, default='RadioCo', verbose_name=_('station name'),
+        help_text=_('The name of radio station')
+    )
+    icon_url = models.URLField(
+        blank=True, max_length=255, verbose_name=_('big icon url'),
+        help_text=_('The icon url where the store icon is.')
+    )
+    big_icon_url = models.URLField(
+        blank=True, max_length=255, verbose_name=_('icon url'),
+        help_text=_('The icon url where the store icon is.')
+    )
+    history = models.TextField(
+        blank=True, default='', verbose_name=_('history'),
+        help_text=_('The history of the station')
+    )
+    latitude = models.FloatField(blank=True, default=0, verbose_name=_('latitude'))
+    longitude = models.FloatField(blank=True, default=0, verbose_name=_('longitude'))
+    news_rss = models.URLField(
+        blank=True, max_length=255, verbose_name=_('news_rss'),
+        help_text=_('The news rss url where the recordings news rss'),
+    )
+    station_photos = models.TextField(
+        blank=True, default='', verbose_name=_('station photos'),
+        help_text=_('A list of urls to the station photos'),
+    )
+    stream_url = models.URLField(
+        blank=True, max_length=255, verbose_name=_('stream url'),
+        help_text=_('The stream url where its hear actual program'),
+    )
+
+    def __unicode__(self):
+        return _u('Radiocom Configuration')
+
+    class Meta:
+        default_permissions = ('change',)
+        verbose_name = _('Radiocom Configuration')
+        verbose_name_plural = _('Radiocom Configuration')
