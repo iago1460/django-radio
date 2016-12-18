@@ -30,12 +30,10 @@ SITE_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__f
 ##################################################################################
 
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# SECURITY WARNING: override this variable and keep the secret key used in production secret!
 SECRET_KEY = '(h_$1pj(&usx%kw^m6$7*x9pnar+t_136g!3)g#+eje5r^3(!+'
 
 DEBUG = True
-
-TEMPLATE_DEBUG = True
 
 # Application definition
 INSTALLED_APPS = (
@@ -78,33 +76,27 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
-    'django.core.context_processors.static',
-    'django.core.context_processors.tz',
-    'django.core.context_processors.request',
-    'django.contrib.messages.context_processors.messages',
-    'radioco.apps.radioco.context_processors.settings',
-)
-
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
-
-TEMPLATE_DIRS = (
-    os.path.join(SITE_ROOT, 'templates'),
-)
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': TEMPLATE_DIRS,
+        'DIRS': (
+            os.path.join(SITE_ROOT, 'templates'),
+        ),
         'OPTIONS': {
-            'context_processors': TEMPLATE_CONTEXT_PROCESSORS,
-            'loaders': TEMPLATE_LOADERS,
+            'context_processors': (
+                'django.contrib.auth.context_processors.auth',
+                'django.core.context_processors.i18n',
+                'django.core.context_processors.media',
+                'django.core.context_processors.static',
+                'django.core.context_processors.tz',
+                'django.core.context_processors.request',
+                'django.contrib.messages.context_processors.messages',
+                'radioco.apps.radioco.context_processors.settings',
+            ),
+            'loaders': (
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+            ),
         },
     },
 ]

@@ -1,5 +1,5 @@
 from django import template
-from django.db import models
+from django.apps import apps
 
 register = template.Library()
 
@@ -16,7 +16,7 @@ def get_global_model(model_path):
             "Received '%s'." % model_path
         )
 
-    model_class = models.get_model(app_label, model_name)
+    model_class = apps.get_model(app_label, model_name)
     if not model_class:
         raise template.TemplateSyntaxError(
             "Could not get the model name '%(model)s' from the application "
