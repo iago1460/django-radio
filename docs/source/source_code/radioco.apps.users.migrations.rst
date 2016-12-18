@@ -28,6 +28,14 @@ radioco.apps.users.migrations.0003_auto_20160104_2029 module
     :undoc-members:
     :show-inheritance:
 
+radioco.apps.users.migrations.0004_dev_ckeditor_upload_field module
+-------------------------------------------------------------------
+
+.. automodule:: radioco.apps.users.migrations.0004_dev_ckeditor_upload_field
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------

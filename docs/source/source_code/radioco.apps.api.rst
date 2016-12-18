@@ -11,6 +11,14 @@ Subpackages
 Submodules
 ----------
 
+radioco.apps.api.radiocom_views module
+--------------------------------------
+
+.. automodule:: radioco.apps.api.radiocom_views
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 radioco.apps.api.recorder_views module
 --------------------------------------
 
