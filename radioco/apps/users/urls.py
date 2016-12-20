@@ -15,11 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from radioco.apps.users import views
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^$', views.UsersView.as_view(), name='list'),
     url(r'^(?P<slug>[-\w]+)/$', views.userprofile_detail, name='detail'),
-)
+]
