@@ -1,4 +1,4 @@
-Django==1.8.16
+Django==1.8.17
 Pillow==3.4.2
 python-dateutil==2.6.0
 pytz==2016.4
