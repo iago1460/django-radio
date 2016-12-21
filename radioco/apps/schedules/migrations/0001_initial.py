@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='schedule',
-            name='calendar',
+            name='schedule_board',
             field=models.ForeignKey(verbose_name='schedule board', to='schedules.ScheduleBoard'),
             preserve_default=True,
         ),
