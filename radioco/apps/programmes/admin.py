@@ -92,15 +92,15 @@ class NonStaffRoleInline(admin.StackedInline):
 
 
 class NonStaffProgrammeAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name', '_runtime', 'current_season', 'category', 'start_date', 'end_date')
     search_fields = ['name']
+    list_filter = ['_runtime', 'category']
     inlines = [NonStaffRoleInline]
     fieldsets = (
         (None, {
             'fields': ('name', 'slug', 'synopsis', 'category', 'current_season', 'photo', 'language', '_runtime')
         }),
         (_('Advanced options'), {
-            'classes': ('collapse',),
             'fields': ('start_date', 'end_date'),
         }),
     )
@@ -221,10 +221,9 @@ class OwnEpisodeProgrammeListFilter(admin.SimpleListFilter):
     parameter_name = 'programme'
 
     def lookups(self, request, model_admin):
-        list_tuple = []
-        for programme in Programme.objects.filter(announcers__in=[request.user]).distinct():
-            list_tuple.append((programme.id, programme.name))
-        return list_tuple
+        if request.user.is_superuser:
+            return [(programme.id, programme.name) for programme in Programme.objects.all()]
+        return [(programme.id, programme.name) for programme in Programme.objects.filter(announcers__in=[request.user]).distinct()]
 
     def queryset(self, request, queryset):
         if self.value():
@@ -260,11 +259,13 @@ class OwnEpisodeIssueDateListFilter(admin.SimpleListFilter):
 
 
 class PodcastInline(admin.StackedInline):
+    inline_classes = ('grp-collapse grp-open',)
+    extra = 0
     model = Podcast
 
 
 class NonStaffEpisodeAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'issue_date')
+    list_display = ('__unicode__', 'season', 'number_in_season', 'issue_date', 'programme')
     list_select_related = True
     ordering = ['-season', '-number_in_season']
     list_filter = ['issue_date', OwnEpisodeProgrammeListFilter, OwnEpisodeIssueDateListFilter]

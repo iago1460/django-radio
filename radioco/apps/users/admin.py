@@ -37,6 +37,8 @@ except ImportError:
 # USER
 
 class UserProfileInline(admin.StackedInline):
+    inline_classes = ('grp-collapse grp-open',)
+    extra = 1
     model = UserProfile
     can_delete = False
     exclude = ('slug',)
