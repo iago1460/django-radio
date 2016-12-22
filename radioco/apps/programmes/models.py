@@ -146,7 +146,7 @@ def update_schedule_performance(programme):
 
 
 def update_schedule_if_dt_has_changed(sender, instance, **kwargs):
-    if field_has_changed(instance, 'start_date') or field_has_changed(instance, 'end_date'):
+    if field_has_changed(instance, 'start_date') or field_has_changed(instance, 'end_date'):  # TODO: improve
         update_schedule_performance(instance)
 
 

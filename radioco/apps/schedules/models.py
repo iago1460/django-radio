@@ -158,9 +158,7 @@ class Schedule(models.Model):
         # if field_has_changed(self, 'start_dt'):
         self._update_excluded_dates()
 
-        # End date has to be calculated first
-        self.effective_start_dt = calculate_effective_schedule_start_dt(self)
-        self.effective_end_dt = calculate_effective_schedule_end_dt(self)
+        self._update_effective_dates()
 
         super(Schedule, self).save(*args, **kwargs)
 
@@ -189,6 +187,11 @@ class Schedule(models.Model):
             excluded.save()
             exdates.append(fix_recurrence_date(self.start_dt, new_excluded_dt))
         self.recurrences.exdates = exdates
+
+    def _update_effective_dates(self):
+        # End date has to be calculated first
+        self.effective_start_dt = calculate_effective_schedule_start_dt(self)
+        self.effective_end_dt = calculate_effective_schedule_end_dt(self)
 
     @property
     def runtime(self):
@@ -276,9 +279,10 @@ def calculate_effective_schedule_start_dt(schedule):
     """
     Calculation of the first start date to improve performance
     """
-    # If there are no rrules
     programme_start_dt = schedule.programme.start_dt
     programme_end_dt = schedule.programme.end_dt
+
+    # If there are no rrules
     if not schedule.has_recurrences():
         if programme_start_dt and programme_start_dt > schedule.start_dt:
             return None
@@ -288,12 +292,12 @@ def calculate_effective_schedule_start_dt(schedule):
 
     # Get first date
     after_dt = schedule.start_dt
-    if schedule.programme.start_dt:
-        after_dt = max(schedule.start_dt, schedule.programme.start_dt)
+    if programme_start_dt:
+        after_dt = max(schedule.start_dt, programme_start_dt)
     first_start_dt = fix_recurrence_dst(schedule.recurrences.after(
         transform_dt_to_default_tz(after_dt), True, dtstart=transform_dt_to_default_tz(schedule.start_dt)))
     if first_start_dt:
-        if schedule.programme.end_dt and schedule.programme.end_dt < first_start_dt:
+        if programme_end_dt and programme_end_dt < first_start_dt:
             return None
         return first_start_dt
     return None
@@ -303,6 +307,7 @@ def calculate_effective_schedule_end_dt(schedule):
     """
     Calculation of the last end date to improve performance
     """
+    programme_start_dt = schedule.programme.start_dt
     programme_end_dt = schedule.programme.end_dt
 
     # If there are no rrules
@@ -317,7 +322,7 @@ def calculate_effective_schedule_end_dt(schedule):
         last_effective_start_date = schedule.recurrences.before(
             transform_dt_to_default_tz(programme_end_dt), dtstart=transform_dt_to_default_tz(schedule.start_dt))
         if last_effective_start_date:
-            if schedule.programme.start_dt and schedule.programme.start_dt > last_effective_start_date:
+            if programme_start_dt and programme_start_dt > last_effective_start_date:
                 return None
             return fix_recurrence_dst(last_effective_start_date) + schedule.runtime
 
@@ -336,7 +341,7 @@ def calculate_effective_schedule_end_dt(schedule):
     last_effective_start_date = schedule.recurrences.before(
         transform_dt_to_default_tz(biggest_date), True, dtstart=transform_dt_to_default_tz(schedule.start_dt))
     if last_effective_start_date:
-        if schedule.programme.start_dt and schedule.programme.start_dt > last_effective_start_date:
+        if programme_start_dt and programme_start_dt > last_effective_start_date:
             return None
         return fix_recurrence_dst(last_effective_start_date) + schedule.runtime
     return None
