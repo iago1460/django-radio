@@ -28,10 +28,11 @@ And the visible features are:
 *   Added download button to episodes (`#38 <https://github.com/iago1460/django-radio/issues/38>`_ Credit to `@AlexCortinas <https://github.com/AlexCortinas>`_)
 *   Removed unnecessary Scroll configuration setting (`#13 <https://github.com/iago1460/django-radio/issues/13>`_ Credit to `@AlexCortinas <https://github.com/AlexCortinas>`_)
 *   Improvements in title representation of episodes when not set (`#17 <https://github.com/iago1460/django-radio/issues/17>`_ Credit to `@txenoo <https://github.com/txenoo>`_)
-*   Adding `Radiocom endpoints <https://github.com/pablogrela/radiocom-android>`_ (Thanks to `@pablogrela <https://github.com/pablogrela>`_)
-*   Adding upload feature to CKEditor (`#22 <https://github.com/iago1460/django-radio/issues/22>`_)
+*   Removed warnings when compiling (`#32 <https://github.com/iago1460/django-radio/issues/32>`_ Thanks to `@txenoo <https://github.com/txenoo>`_)
+*   Added `Radiocom endpoints <https://github.com/pablogrela/radiocom-android>`_ (Thanks to `@pablogrela <https://github.com/pablogrela>`_)
+*   Added upload feature to CKEditor (`#22 <https://github.com/iago1460/django-radio/issues/22>`_)
 *   Added new calendar setting `slotDuration <https://fullcalendar.io/docs/agenda/slotDuration/>`_
-*   Added a suite of helper tasks using `invoke <http://www.pyinvoke.org/>`_
+*   Added a suite of helper tasks using `invoke <http://www.pyinvoke.org/>`_ (Easy deploy to docker)
 *   Added public API to access to programmes, episodes, schedules and transmissions (`#2 <https://github.com/iago1460/django-radio/issues/2>`_)
 *   The schedule manager has received important updates (`#20 <https://github.com/iago1460/django-radio/issues/20>`_, `#4 <https://github.com/iago1460/django-radio/issues/4>`_)
 
