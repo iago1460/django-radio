@@ -22,7 +22,7 @@ import pytz
 from radioco.apps.schedules.utils import rearrange_episodes
 from radioco.apps.radioco.utils import field_has_changed
 from radioco.apps.radioco.tz_utils import transform_datetime_tz, fix_recurrence_dst, GMT, transform_dt_to_default_tz, \
-    fix_recurrence_date
+    fix_recurrence_date, recurrence_after, recurrence_before
 from radioco.apps.programmes.models import Programme, Episode
 from dateutil import rrule
 from django.core.exceptions import ValidationError
@@ -189,7 +189,7 @@ class Schedule(models.Model):
         self.recurrences.exdates = exdates
 
     def _update_effective_dates(self):
-        # End date has to be calculated first
+        # Start date has to be calculated first
         self.effective_start_dt = calculate_effective_schedule_start_dt(self)
         self.effective_end_dt = calculate_effective_schedule_end_dt(self)
 
@@ -242,7 +242,7 @@ class Schedule(models.Model):
     def date_before(self, before):
         before_date = transform_dt_to_default_tz(self._merge_before(before))
         start_dt = transform_dt_to_default_tz(self.start_dt)
-        date = self.recurrences.before(before_date, inc=True, dtstart=start_dt)
+        date = recurrence_before(self.recurrences, before_date, start_dt)
         return fix_recurrence_dst(date)
 
     def date_after(self, after):
@@ -251,7 +251,7 @@ class Schedule(models.Model):
             return
         after_date = transform_dt_to_default_tz(after_date)
         start_dt = transform_dt_to_default_tz(self.start_dt)
-        date = self.recurrences.after(after_date, inc=True, dtstart=start_dt)
+        date = recurrence_after(self.recurrences, after_date, start_dt)
         return fix_recurrence_dst(date)
 
     def _merge_after(self, after):
@@ -294,8 +294,8 @@ def calculate_effective_schedule_start_dt(schedule):
     after_dt = schedule.start_dt
     if programme_start_dt:
         after_dt = max(schedule.start_dt, programme_start_dt)
-    first_start_dt = fix_recurrence_dst(schedule.recurrences.after(
-        transform_dt_to_default_tz(after_dt), True, dtstart=transform_dt_to_default_tz(schedule.start_dt)))
+    first_start_dt = fix_recurrence_dst(recurrence_after(
+        schedule.recurrences, transform_dt_to_default_tz(after_dt), transform_dt_to_default_tz(schedule.start_dt)))
     if first_start_dt:
         if programme_end_dt and programme_end_dt < first_start_dt:
             return None
@@ -319,12 +319,15 @@ def calculate_effective_schedule_end_dt(schedule):
 
     # If we have a programme restriction
     if programme_end_dt:
-        last_effective_start_date = schedule.recurrences.before(
-            transform_dt_to_default_tz(programme_end_dt), dtstart=transform_dt_to_default_tz(schedule.start_dt))
+        # last_effective_start_date = schedule.recurrences.before(
+        #     transform_dt_to_default_tz(programme_end_dt), dtstart=transform_dt_to_default_tz(schedule.start_dt))
+        # FIXME: without inc=true?
+        last_effective_start_date = fix_recurrence_dst(recurrence_before(
+            schedule.recurrences, transform_dt_to_default_tz(programme_end_dt), transform_dt_to_default_tz(schedule.start_dt)))
         if last_effective_start_date:
             if programme_start_dt and programme_start_dt > last_effective_start_date:
                 return None
-            return fix_recurrence_dst(last_effective_start_date) + schedule.runtime
+            return last_effective_start_date + schedule.runtime
 
     rrules_until_dates = [_rrule.until for _rrule in schedule.recurrences.rrules]
 

@@ -19,6 +19,7 @@ import recurrence
 from django.test import TestCase
 
 from radioco.apps.radioco.test_utils import TestDataMixin
+from radioco.apps.radioco.tz_utils import recurrence_after, recurrence_before
 
 
 class RecurrenceTests(TestDataMixin, TestCase):
@@ -90,6 +91,34 @@ class RecurrenceTests(TestDataMixin, TestCase):
         before = start_dt
         dt = self.monthly_recurrence.before(before, True, dtstart=start_dt)
         self.assertEquals(datetime.datetime(2014, 1, 20, 14, 0, 0), dt)
+
+    def test_impossible_recurrence_after(self):
+        """
+        Testing error calling after and function wrapper to solve it (recurrence_after)
+        """
+        start_dt = datetime.datetime(2014, 1, 20, 14, 0, 0)
+        until_dt = datetime.datetime(2014, 1, 19, 14, 0, 0)
+        daily_recurrence = recurrence.Recurrence(
+            rrules=[recurrence.Rule(recurrence.DAILY, until=until_dt)])
+
+        dt = daily_recurrence.after(start_dt, True, dtstart=start_dt)
+        self.assertEquals(start_dt, dt)  # wrong!
+
+        self.assertIsNone(recurrence_after(daily_recurrence, start_dt, start_dt))
+
+    def test_impossible_recurrence_before(self):
+        """
+        Testing error calling before and function wrapper to solve it (recurrence_before)
+        """
+        start_dt = datetime.datetime(2014, 1, 20, 14, 0, 0)
+        until_dt = datetime.datetime(2014, 1, 19, 14, 0, 0)
+        daily_recurrence = recurrence.Recurrence(
+            rrules=[recurrence.Rule(recurrence.MONTHLY, until=until_dt)])
+
+        dt = daily_recurrence.before(start_dt + datetime.timedelta(seconds=1), dtstart=start_dt)
+        self.assertEquals(start_dt, dt)  # wrong!
+
+        self.assertIsNone(recurrence_before(daily_recurrence, start_dt + datetime.timedelta(seconds=1), start_dt))
 
 
 class EmptyRecurrenceTests(TestDataMixin, TestCase):

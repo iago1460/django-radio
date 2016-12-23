@@ -100,3 +100,44 @@ def fix_recurrence_dst(dt):
         tz = dt.tzinfo
         return tz.localize(datetime.datetime.combine(dt.date(), dt.time()))
     return None
+
+
+def _fix_invalid_dt(recurrence, dt):
+    """
+    Check if start_dt is a valid result
+    """
+    if not recurrence.rrules:
+        return dt
+
+    if dt in recurrence.rdates:
+        return dt
+
+    for rrule in recurrence.rrules:
+        if not rrule.until:
+            return dt
+        elif dt < rrule.until:
+            return dt
+
+    return None
+
+
+def recurrence_after(recurrence, after_dt, start_dt):
+    """
+    Fix for django-recurrence 1.3
+    Avoid outputing a non possible dt
+    """
+    dt = recurrence.after(after_dt, True, dtstart=start_dt)
+    if dt == start_dt:
+        return _fix_invalid_dt(recurrence, dt)
+    return dt
+
+
+def recurrence_before(recurrence, before_dt, start_dt):
+    """
+    Fix for django-recurrence 1.3
+    Avoid outputing a non possible dt
+    """
+    dt = recurrence.before(before_dt, True, dtstart=start_dt)
+    if dt == start_dt:
+        return _fix_invalid_dt(recurrence, dt)
+    return dt
