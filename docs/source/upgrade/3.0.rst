@@ -72,9 +72,17 @@ Since this migration introduces timezone support, it's necessary to set the time
     Using an incorrect timezone will cause incorrect dates, you should 
     set/override that setting in your local_settings.py.
 
-.. note::
 
-    For production environments we recommend to use PostgreSQL
+.. warning::
+
+    If you have a database backend `different to PostgreSQL <https://docs.djangoproject.com/en/1.10/topics/i18n/timezones/#migration-guide>`_ 
+    you must convert your data from local time to UTC. 
+    Fortunately for you a migration was written to fix episode issue_dates, other dates will suffer alterations.
+
+
+.. warning::
+
+    We strongly recommend to use PostgreSQL as backend. Other database engines **will not be supported** in the future.
 
 
 You have to install `bower <https://bower.io/>`_ before running the following commands in the project root folder:
@@ -86,4 +94,7 @@ You have to install `bower <https://bower.io/>`_ before running the following co
     python manage.py collectstatic
     python manage.py migrate
 
-    
+
+.. note::
+
+    Warning messages could appear during the migration process, it's usually safe to ignore then.
