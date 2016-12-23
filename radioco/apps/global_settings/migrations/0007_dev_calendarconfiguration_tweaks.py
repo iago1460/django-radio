@@ -9,10 +9,11 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('global_settings', '0006_auto_20160116_1509'),
+        ('radioco', '0001_mysql_timezone'),
     ]
 
     operations = [
-        migrations.RemoveField(
+        migrations.RemoveField( 
             model_name='calendarconfiguration',
             name='scroll_time',
         ),

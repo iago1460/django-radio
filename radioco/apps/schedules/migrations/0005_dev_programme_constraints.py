@@ -13,6 +13,47 @@ from django.utils import timezone
 from radioco.apps.radioco.tz_utils import transform_dt_to_default_tz, fix_recurrence_dst
 
 
+def _fix_invalid_dt(recurrence, dt):
+    """
+    Check if start_dt is a valid result
+    """
+    if not recurrence.rrules:
+        return dt
+
+    if dt in recurrence.rdates:
+        return dt
+
+    for rrule in recurrence.rrules:
+        if not rrule.until:
+            return dt
+        elif dt < rrule.until:
+            return dt
+
+    return None
+
+
+def recurrence_after(recurrence, after_dt, start_dt):
+    """
+    Fix for django-recurrence 1.3
+    Avoid outputing a non possible dt
+    """
+    dt = recurrence.after(after_dt, True, dtstart=start_dt)
+    if dt == start_dt:
+        return _fix_invalid_dt(recurrence, dt)
+    return dt
+
+
+def recurrence_before(recurrence, before_dt, start_dt):
+    """
+    Fix for django-recurrence 1.3
+    Avoid outputing a non possible dt
+    """
+    dt = recurrence.before(before_dt, True, dtstart=start_dt)
+    if dt == start_dt:
+        return _fix_invalid_dt(recurrence, dt)
+    return dt
+
+
 def calculate_effective_schedule_start_dt(schedule):
     """
     Calculation of the first start date to improve performance
@@ -38,8 +79,8 @@ def calculate_effective_schedule_start_dt(schedule):
     after_dt = schedule.start_dt
     if programme_start_dt:
         after_dt = max(schedule.start_dt, programme_start_dt)
-    first_start_dt = fix_recurrence_dst(schedule.recurrences.after(
-        transform_dt_to_default_tz(after_dt), True, dtstart=transform_dt_to_default_tz(schedule.start_dt)))
+    first_start_dt = fix_recurrence_dst(recurrence_after(
+        schedule.recurrences, transform_dt_to_default_tz(after_dt), transform_dt_to_default_tz(schedule.start_dt)))
     if first_start_dt:
         if programme_end_dt and programme_end_dt < first_start_dt:
             return None
@@ -71,12 +112,12 @@ def calculate_effective_schedule_end_dt(schedule):
 
     # If we have a programme restriction
     if programme_end_dt:
-        last_effective_start_date = schedule.recurrences.before(
-            transform_dt_to_default_tz(programme_end_dt), dtstart=transform_dt_to_default_tz(schedule.start_dt))
+        last_effective_start_date = fix_recurrence_dst(recurrence_before(
+            schedule.recurrences, transform_dt_to_default_tz(programme_end_dt), transform_dt_to_default_tz(schedule.start_dt)))
         if last_effective_start_date:
             if programme_start_dt and programme_start_dt > last_effective_start_date:
                 return None
-            return fix_recurrence_dst(last_effective_start_date) + runtime
+            return last_effective_start_date + runtime
 
     rrules_until_dates = [_rrule.until for _rrule in schedule.recurrences.rrules]
 
@@ -99,6 +140,27 @@ def calculate_effective_schedule_end_dt(schedule):
     return None
 
 
+def _get_diference_between_days(day_1, day_2):
+    return (day_1 - day_2 + 7) % 7
+
+
+def _generate_schedule_start_date(tz, calendar, schedule):
+    """
+    Returns: A tuple (can_be_migrated, datetime)
+    """
+    days = _get_diference_between_days(schedule.day, calendar.start_date.weekday())
+    # Calculation to check if the calendar is less than one week
+    max_days = (calendar.end_date - calendar.start_date).days if calendar.end_date else 7
+
+    can_be_migrated = True
+    if days > max_days:
+        # Can't generate date, the calendar is smaller than the required days
+        can_be_migrated = False
+
+    # Fix the start_date according to start_date of calendar + initial day
+    start_date = calendar.start_date + datetime.timedelta(days=days)
+    return can_be_migrated, tz.localize(datetime.datetime.combine(start_date, schedule.start_hour))
+
 
 def migrate_schedules(apps, schema_editor):
     """
@@ -113,7 +175,6 @@ def migrate_schedules(apps, schema_editor):
     Calendar = apps.get_model("schedules", "Calendar")
     Programme = apps.get_model("programmes", "Programme")
     tz = timezone.get_default_timezone()
-    MIN_DATE = datetime.date(1970, 1, 2)
 
     calendars = {}
     for calendar in Calendar.objects.all():
@@ -121,7 +182,7 @@ def migrate_schedules(apps, schema_editor):
 
     programmes = {}
     for programme in Programme.objects.all():
-        programmes[programme.id] = ProgrammeTuple(programme.id, MIN_DATE, MIN_DATE)
+        programmes[programme.id] = ProgrammeTuple(programme.id, programme.start_date, programme.end_date)
 
     active_calendar = Calendar.objects.get(name='Active Calendar', is_active=True)  # Created by previous migration
     # Live schedules have to be created first because we are linking to those objects
@@ -138,11 +199,22 @@ def migrate_schedules(apps, schema_editor):
     
     for schedule in schedule_iterator:
         calendar = calendars[schedule.calendar.id]
-        programme = programmes[schedule.programme.id]
+        # programme = programmes[schedule.programme.id]
         if calendar.start_date:
             # Updating schedule start_date
-            schedule.start_dt = tz.localize(datetime.datetime.combine(calendar.start_date, schedule.start_hour))
+            can_be_migrated, start_dt = _generate_schedule_start_date(tz, calendar, schedule)
+            schedule.start_dt = start_dt
             schedule.save()
+
+            if not can_be_migrated:
+                # We cannot copy that schedule (it hasn't effective dates)
+                print("WARNING Migration: schedule {id} cannot be migrated (doesn't have a effective date)".format(id=schedule.id))
+                continue
+
+            assert not calendar.end_date or calendar.end_date >= schedule.start_dt.date(), "_generate_schedule_start_date doesn't work"
+            # if not(not calendar.end_date or calendar.end_date >= schedule.start_dt.date()):
+            #     import pdb; pdb.set_trace()
+            #     pass
 
             # Create a copy, keeping previous schedule
             schedule.id = schedule.pk = None
@@ -152,16 +224,23 @@ def migrate_schedules(apps, schema_editor):
                 source = schedule.source
                 # We should have created the referenced object first
                 # Only live schedules should be in the source field
-                schedule.source = Schedule.objects.get(
+                sources = Schedule.objects.filter(
                     calendar=active_calendar, start_dt=source.start_dt,
                     type=source.type, programme=source.programme
                 )
+                if sources:
+                    if len(sources) > 1:
+                        print('WARNING Migration: schedule.source has more than one candidate "{objects}"'.format(objects=[_obj.id for _obj in sources]))
+                    schedule.source = sources.last()
+                else:
+                    print('WARNING Migration: schedule.source was not found in the new calendar')
+                    schedule.source = None
 
             schedule.save()
 
             # Add the lower start_date to the programme
-            if programme.start_date is not None and (programme.start_date == MIN_DATE or programme.start_date > calendar.start_date):
-                programmes[programme.id] = ProgrammeTuple(programme.id, calendar.start_date, programme.end_date)
+            # if programme.start_date is not None and (programme.start_date == MIN_DATE or programme.start_date > calendar.start_date):
+            #     programmes[programme.id] = ProgrammeTuple(programme.id, calendar.start_date, programme.end_date)
 
             # Add the bigger end_date to the programme
             if calendar.end_date:
@@ -171,12 +250,12 @@ def migrate_schedules(apps, schema_editor):
                 )
                 schedule.save()
 
-                if programme.end_date is not None and (programme.end_date == MIN_DATE or programme.end_date < calendar.end_date):
-                    programmes[programme.id] = ProgrammeTuple(programme.id, programme.start_date, calendar.end_date)
+                # if programme.end_date is not None and (programme.end_date == MIN_DATE or programme.end_date < calendar.end_date):
+                #     programmes[programme.id] = ProgrammeTuple(programme.id, programme.start_date, calendar.end_date)
             else:
                 # No end_date programme restriction
-                programmes[programme.id] = ProgrammeTuple(programme.id, programme.start_date, None)
-
+                # programmes[programme.id] = ProgrammeTuple(programme.id, programme.start_date, None)
+                pass
         else:
             # case when start_date and end_date doesn't exist
             # this schedules are disable, we don't need to migrate them but at least we fix the weekday
@@ -185,15 +264,15 @@ def migrate_schedules(apps, schema_editor):
             schedule.save()
 
     # Updating programme constraint dates
-    for _programme in programmes.values():
-        db_programme = Programme.objects.get(id=_programme.id)
-        db_programme.start_date = None if _programme.start_date == MIN_DATE else _programme.start_date
-        db_programme.end_date = None if _programme.end_date == MIN_DATE else _programme.end_date
-        db_programme.save()
+    # for _programme in programmes.values():
+    #     db_programme = Programme.objects.get(id=_programme.id)
+    #     db_programme.start_date = None if _programme.start_date == MIN_DATE else _programme.start_date
+    #     db_programme.end_date = None if _programme.end_date == MIN_DATE else _programme.end_date
+    #     db_programme.save()
 
     # Updating all effective schedules dates
     for schedule in Schedule.objects.all().select_related('programme'):
-        # End date has to be calculated first
+        # Start date has to be calculated first
         schedule.effective_start_dt = calculate_effective_schedule_start_dt(schedule)
         schedule.effective_end_dt = calculate_effective_schedule_end_dt(schedule)
         schedule.save()
