@@ -40,9 +40,9 @@ class CalendarAdmin(admin.ModelAdmin):
 
     def set_active(self, request, queryset):
         if queryset.count() == 1:
-            active_calendars = Calendar.objects.filter(is_active=True)
-            active_calendars.update(is_active=False)
-            queryset.update(is_active=True)
+            calendar = queryset.get()
+            calendar.is_active = True
+            calendar.save()
             self.message_user(request, _('Calendar marked as active'))
         else:
             self.message_user(request, _('You cannot mark more than 1 schedule as active'), level=messages.ERROR)

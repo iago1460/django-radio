@@ -19,8 +19,6 @@
 # Delete me when done!
 
 
-import datetime
-
 from dateutil.relativedelta import relativedelta
 from django import forms
 from django.contrib import admin
@@ -29,11 +27,13 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from radioco.apps.programmes.models import Programme, Podcast, Episode, Role, Participant
-from radioco.apps.schedules.models import Schedule
-from radioco.apps.schedules import utils
+from radioco.apps.schedules.models import Calendar
 
 
 # PROGRAMME
+from radioco.apps.schedules.utils import next_dates
+
+
 class NonStaffRoleInlineForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         if 'instance' in kwargs:
@@ -207,7 +207,7 @@ class NonStaffEpisodeAdminForm(forms.ModelForm):
                 after = now
 
             try:
-                utils.next_dates(programme, after).next()
+                next_dates(Calendar.get_active(), programme, after).next()
             except StopIteration:
                 raise forms.ValidationError(_('There are no available schedules.'))
         return programme
@@ -285,7 +285,7 @@ class NonStaffEpisodeAdmin(admin.ModelAdmin):
                     after = now
             else:
                 after = now
-            date = utils.next_dates(programme, after).next()
+            date = next_dates(Calendar.get_active(), programme, after).next()
             Episode.objects.create_episode(
                 episode=obj, last_episode=last_episode,
                 date=date, programme=programme)

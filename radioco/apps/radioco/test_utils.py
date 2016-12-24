@@ -27,7 +27,6 @@ from django.test import TransactionTestCase
 
 from radioco.apps.programmes.models import Programme, Episode, Podcast, Role, CONTRIBUTOR
 from radioco.apps.schedules.models import Calendar, Schedule
-from radioco.apps.schedules.utils import rearrange_episodes
 
 
 SPAIN_TZ = pytz.timezone('Europe/Madrid')
@@ -177,7 +176,7 @@ def create_test_data():
                     )
 
     for programme in Programme.objects.all():
-        rearrange_episodes(programme, pytz.utc.localize(datetime.datetime(1970, 1, 1)))
+        programme.rearrange_episodes(pytz.utc.localize(datetime.datetime(1970, 1, 1)), Calendar.get_active())
 
 
 class TestDataMixin(object):

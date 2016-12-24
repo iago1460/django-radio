@@ -1,12 +1,16 @@
 import datetime
 
 
-def next_dates(programme, after):
+def next_dates(calendar, programme, after):
     """
     Returns: A generator with the next dates of a given programme
     """
+    if not calendar or not calendar.id:
+        return
+
     from radioco.apps.schedules.models import Schedule
-    schedules = Schedule.objects.filter(programme=programme, type='L')
+    # Only taking into account schedules which belong to the active calendar
+    schedules = Schedule.objects.filter(programme=programme, type='L', calendar=calendar)
 
     while True:
         candidates = map(lambda s: s.date_after(after), schedules)
@@ -20,33 +24,3 @@ def next_dates(programme, after):
         # schedules = filter(lambda t: t[1] is not None, zip(schedules, candidates))
         schedules = [_tuple[0] for _tuple in zip(schedules, candidates) if _tuple[1] is not None]
 
-
-# XXX transaction?
-def rearrange_episodes(programme, after):
-    """
-    Update the issue_date of next episodes from a given date
-    """
-    from radioco.apps.programmes.models import Episode
-    episodes = Episode.objects.unfinished(programme, after)
-    dates = next_dates(programme, after)
-
-    # Further dates and episodes available -> re-order
-    while True:
-        try:
-            date = dates.next()
-            episode = episodes.next()
-        except StopIteration:
-            break
-
-        episode.issue_date = date
-        episode.save()
-
-    # No further dates available -> unschedule
-    while True:
-        try:
-            episode = episodes.next()
-        except StopIteration:
-            break
-
-        episode.issue_date = None
-        episode.save()

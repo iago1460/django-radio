@@ -29,6 +29,7 @@ from django.utils.translation import ugettext_lazy as _
 import datetime
 
 from radioco.apps.radioco.utils import field_has_changed
+from radioco.apps.schedules.utils import next_dates
 
 if hasattr(settings, 'PROGRAMME_LANGUAGES'):
     PROGRAMME_LANGUAGES = settings.PROGRAMME_LANGUAGES
@@ -130,6 +131,34 @@ class Programme(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
         super(Programme, self).save(*args, **kwargs)
+
+    def rearrange_episodes(self, after, calendar):
+        """
+        Update the issue_date of episodes from a given date
+        """
+        episodes = Episode.objects.unfinished(self, after)
+        dates = next_dates(calendar, self, after)
+
+        # Further dates and episodes available -> re-order
+        while True:
+            try:
+                date = dates.next()
+                episode = episodes.next()
+            except StopIteration:
+                break
+            else:
+                episode.issue_date = date
+                episode.save()
+
+        # No further dates available -> unschedule
+        while True:
+            try:
+                episode = episodes.next()
+            except StopIteration:
+                break
+            else:
+                episode.issue_date = None
+                episode.save()
 
     def get_absolute_url(self):
         return reverse('programmes:detail', args=[self.slug])

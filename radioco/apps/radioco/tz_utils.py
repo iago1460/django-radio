@@ -124,7 +124,7 @@ def _fix_invalid_dt(recurrence, dt):
 def recurrence_after(recurrence, after_dt, start_dt):
     """
     Fix for django-recurrence 1.3
-    Avoid outputing a non possible dt
+    Avoid outputting a impossible dt
     """
     dt = recurrence.after(after_dt, True, dtstart=start_dt)
     if dt == start_dt:
@@ -135,7 +135,7 @@ def recurrence_after(recurrence, after_dt, start_dt):
 def recurrence_before(recurrence, before_dt, start_dt):
     """
     Fix for django-recurrence 1.3
-    Avoid outputing a non possible dt
+    Avoid outputting a non impossible dt
     """
     dt = recurrence.before(before_dt, True, dtstart=start_dt)
     if dt == start_dt:

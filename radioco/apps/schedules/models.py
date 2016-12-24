@@ -13,32 +13,21 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import datetime
 import heapq
 from functools import partial
 from itertools import imap
 
-import pytz
-
-from radioco.apps.schedules.utils import rearrange_episodes
-from radioco.apps.radioco.utils import field_has_changed
-from radioco.apps.radioco.tz_utils import transform_datetime_tz, fix_recurrence_dst, GMT, transform_dt_to_default_tz, \
-    fix_recurrence_date, recurrence_after, recurrence_before
-from radioco.apps.programmes.models import Programme, Episode
-from dateutil import rrule
-from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
-from django.db.models.signals import post_delete
-from django.dispatch import receiver
-from django.template.defaultfilters import slugify
-from django.utils import six
-from django.utils.translation import ugettext_lazy as _
-from django.db.models.signals import pre_save
-from recurrence.fields import RecurrenceField
-import datetime
 from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
+from recurrence.fields import RecurrenceField
 
+from radioco.apps.programmes.models import Programme, Episode
+from radioco.apps.radioco.tz_utils import transform_datetime_tz, fix_recurrence_dst, transform_dt_to_default_tz, \
+    fix_recurrence_date, recurrence_after, recurrence_before
 
 EMISSION_TYPE = (
     ("L", _("live")),
@@ -83,18 +72,25 @@ class Calendar(models.Model):
         if self.is_active:
             active_calendars = Calendar.objects.filter(is_active=True)
             active_calendars.update(is_active=False)
+            self.rearrange_episodes()
         super(Calendar, self).save(*args, **kwargs)
+
+    def rearrange_episodes(self):
+        now = timezone.now()
+        for programme in Programme.objects.filter(Q(end_date__gte=now) | Q(end_date__isnull=True)):
+            programme.rearrange_episodes(now, self)
+
+    @classmethod
+    def get_active(cls):
+        try:
+            return cls.objects.get(is_active=True)
+        except Calendar.DoesNotExist:
+            return None
 
     def __unicode__(self):
         return u"%s" % (self.name)
 
-# TODO: what should happen when a Calendar is deleted or other calendar is set as active
-# TODO:
-# @receiver(post_delete, sender=Calendar)
-# def delete_Calendar_handler(sender, **kwargs):
-#     now = timezone.now()
-#     for programme in Programme.objects.all():
-#         rearrange_episodes(programme, now)
+# We are not rearranging episodes during deletion
 
 
 class ExcludedDates(models.Model):
@@ -162,7 +158,7 @@ class Schedule(models.Model):
 
         super(Schedule, self).save(*args, **kwargs)
 
-        rearrange_episodes(self.programme, timezone.now())
+        self.programme.rearrange_episodes(timezone.now(), Calendar.get_active())
 
     def _update_recurrence_dates(self):
         """

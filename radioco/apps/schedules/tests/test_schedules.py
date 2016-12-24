@@ -33,7 +33,7 @@ from radioco.apps.radioco.test_utils import TestDataMixin
 from radioco.apps.schedules.admin import CalendarAdmin
 from radioco.apps.schedules.models import Calendar, CalendarManager
 from radioco.apps.schedules.models import Schedule, Transmission
-from radioco.apps.schedules.utils import rearrange_episodes, next_dates
+from radioco.apps.schedules.utils import next_dates
 
 
 def mock_now(dt=pytz.utc.localize(datetime.datetime(2014, 1, 1, 13, 30, 0))):
@@ -81,7 +81,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
             season=1,
             number_in_season=1,
         )
-        rearrange_episodes(self.programme, pytz.utc.localize(datetime.datetime(1970, 1, 1)))
+        self.programme.rearrange_episodes(pytz.utc.localize(datetime.datetime(1970, 1, 1)), Calendar.get_active())
         self.episode.refresh_from_db()
 
     def test_runtime(self):
@@ -305,14 +305,14 @@ class CalendarAdminTests(TestDataMixin, TestCase):
         )
 
     # @mock.patch('django.utils.timezone.now', mock_now)
-    # @mock.patch('radioco.apps.schedules.utils.rearrange_episodes')
-    # def test_delete(self, rearrange_episodes):
+    # @mock.patch('radioco.apps.schedules.utils.rearrange_programme_episodes')
+    # def test_delete(self, rearrange_programme_episodes):
     #     def calls():
     #         for programme in Programme.objects.all():
     #             yield mock.call(programme, mock_now())
     # 
     #     post_delete.send(Calendar, instance=self.calendar)
-    #     rearrange_episodes.assert_has_calls(calls(), any_order=True)
+    #     rearrange_programme_episodes.assert_has_calls(calls(), any_order=True)
 
 
 @override_settings(TIME_ZONE='UTC')
@@ -415,7 +415,7 @@ class ScheduleUtilsTests(TestDataMixin, TestCase):
                 season=1,
                 number_in_season=number,
             )
-        rearrange_episodes(programme, pytz.utc.localize(datetime.datetime(1970, 1, 1)))
+        programme.rearrange_episodes(pytz.utc.localize(datetime.datetime(1970, 1, 1)), Calendar.get_active())
 
     def test_available_dates_after(self):
         Schedule.objects.create(
@@ -426,18 +426,18 @@ class ScheduleUtilsTests(TestDataMixin, TestCase):
             recurrences=recurrence.Recurrence(
                 rrules=[recurrence.Rule(recurrence.WEEKLY)]))
 
-        dates = next_dates(self.programme, utc.localize(datetime.datetime(2015, 1, 5)))
+        dates = next_dates(self.calendar, self.programme, utc.localize(datetime.datetime(2015, 1, 5)))
         self.assertEqual(dates.next(), utc.localize(datetime.datetime(2015, 1, 5, 14, 0)))
         self.assertEqual(dates.next(), utc.localize(datetime.datetime(2015, 1, 6, 14, 0)))
         self.assertEqual(dates.next(), utc.localize(datetime.datetime(2015, 1, 6, 16, 0)))
 
     def test_available_dates_none(self):
-        dates = next_dates(Programme(), timezone.now())
+        dates = next_dates(self.calendar, Programme(), timezone.now())
         with self.assertRaises(StopIteration):
             dates.next()
 
     def test_rearrange_episodes(self):
-        rearrange_episodes(self.programme, utc.localize(datetime.datetime(2015, 1, 1)))
+        self.programme.rearrange_episodes(pytz.utc.localize(datetime.datetime(2015, 1, 1)), Calendar.get_active())
         self.assertListEqual(
             map(lambda e: e.issue_date, self.programme.episode_set.all().order_by('issue_date')[:5]),
             [
@@ -451,24 +451,32 @@ class ScheduleUtilsTests(TestDataMixin, TestCase):
 
     @mock.patch('django.utils.timezone.now', partial(mock_now, dt=utc.localize(datetime.datetime(2015, 1, 1))))
     def test_rearrange_episodes_new_schedule(self):
+        # Next calendar shouldn't appear due to doesn't belong to the active calendar
         Schedule.objects.create(
             programme=self.programme,
             calendar=Calendar.objects.create(),
             type="L",
             start_dt=utc.localize(datetime.datetime(2015, 1, 3, 16, 0, 0)),
-            recurrences=recurrence.Recurrence(
-                rrules=[recurrence.Rule(
-                    recurrence.WEEKLY, until=utc.localize(datetime.datetime(2015, 1, 31, 16, 0, 0)))]))
+            recurrences=recurrence.Recurrence(rrules=[recurrence.Rule(recurrence.WEEKLY)]))
+
+        Schedule.objects.create(
+            programme=self.programme,
+            calendar=self.calendar,
+            type="L",
+            start_dt=utc.localize(datetime.datetime(2015, 1, 3, 17, 0, 0)),
+            recurrences=recurrence.Recurrence(rrules=[recurrence.Rule(recurrence.WEEKLY)]))
         # save should call rearrange
-        # rearrange_episodes(self.programme, pytz.utc.localize(datetime.datetime(2015, 1, 1)))
+        # rearrange_programme_episodes(self.programme, pytz.utc.localize(datetime.datetime(2015, 1, 1)))
         self.assertListEqual(
             map(lambda e: e.issue_date, self.programme.episode_set.all().order_by('issue_date')[:5]),
             [
                 utc.localize(datetime.datetime(2015, 1, 1, 14, 0)),
                 utc.localize(datetime.datetime(2015, 1, 2, 14, 0)),
                 utc.localize(datetime.datetime(2015, 1, 3, 14, 0)),
-                utc.localize(datetime.datetime(2015, 1, 3, 16, 0)),
-                utc.localize(datetime.datetime(2015, 1, 4, 14, 0))
+                # The next schedule doesn't belong to the active_calendar
+                # utc.localize(datetime.datetime(2015, 1, 3, 16, 0)),
+                utc.localize(datetime.datetime(2015, 1, 3, 17, 0)),
+                utc.localize(datetime.datetime(2015, 1, 4, 14, 0)),
             ]
         )
 
