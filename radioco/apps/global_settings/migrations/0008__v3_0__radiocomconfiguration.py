@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('global_settings', '0007_dev_calendarconfiguration_tweaks'),
+        ('global_settings', '0007__v3_0__calendarconfiguration_tweaks'),
     ]
 
     operations = [

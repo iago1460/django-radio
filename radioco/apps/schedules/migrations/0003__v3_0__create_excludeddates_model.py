@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('schedules', '0002_dev_renaming_calendar'),
+        ('schedules', '0002__v3_0__renaming_calendar_model'),
     ]
 
     operations = [

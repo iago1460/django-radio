@@ -22,7 +22,7 @@ def migrate_daily_recurrences(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('schedules', '0003_dev_create_excludeddates'),
+        ('schedules', '0003__v3_0__create_excludeddates_model'),
     ]
 
     operations = [

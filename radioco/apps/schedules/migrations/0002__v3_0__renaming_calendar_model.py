@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('schedules', '0001_initial'),
-        ('radioco', '0001_mysql_timezone'),
+        ('radioco', '0001__v3_0__mysql_timezone'),
     ]
 
     operations = [

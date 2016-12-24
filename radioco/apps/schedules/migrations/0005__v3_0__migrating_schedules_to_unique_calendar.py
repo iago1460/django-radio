@@ -191,12 +191,9 @@ def migrate_schedules(apps, schema_editor):
         Schedule.objects.all().exclude(type='L').select_related('programme').iterator()
     )
 
-    # schedule_iterator = list(
-    #     Schedule.objects.filter(type='L').select_related('programme')
-    # ) + list(
-    #     Schedule.objects.all().exclude(type='L').select_related('programme')
-    # )
-    
+    if Schedule.objects.all().exists():
+        print(' ')  # Display warnings in a new line
+
     for schedule in schedule_iterator:
         calendar = calendars[schedule.calendar.id]
         # programme = programmes[schedule.programme.id]
@@ -212,9 +209,6 @@ def migrate_schedules(apps, schema_editor):
                 continue
 
             assert not calendar.end_date or calendar.end_date >= schedule.start_dt.date(), "_generate_schedule_start_date doesn't work"
-            # if not(not calendar.end_date or calendar.end_date >= schedule.start_dt.date()):
-            #     import pdb; pdb.set_trace()
-            #     pass
 
             # Create a copy, keeping previous schedule
             schedule.id = schedule.pk = None
@@ -238,10 +232,6 @@ def migrate_schedules(apps, schema_editor):
 
             schedule.save()
 
-            # Add the lower start_date to the programme
-            # if programme.start_date is not None and (programme.start_date == MIN_DATE or programme.start_date > calendar.start_date):
-            #     programmes[programme.id] = ProgrammeTuple(programme.id, calendar.start_date, programme.end_date)
-
             # Add the bigger end_date to the programme
             if calendar.end_date:
                 # Add end_date to rrule until
@@ -249,26 +239,12 @@ def migrate_schedules(apps, schema_editor):
                     datetime.datetime.combine(calendar.end_date, datetime.time(23, 59, 59))
                 )
                 schedule.save()
-
-                # if programme.end_date is not None and (programme.end_date == MIN_DATE or programme.end_date < calendar.end_date):
-                #     programmes[programme.id] = ProgrammeTuple(programme.id, programme.start_date, calendar.end_date)
-            else:
-                # No end_date programme restriction
-                # programmes[programme.id] = ProgrammeTuple(programme.id, programme.start_date, None)
-                pass
         else:
             # case when start_date and end_date doesn't exist
             # this schedules are disable, we don't need to migrate them but at least we fix the weekday
             date = datetime.date(2016, 1, 4) + datetime.timedelta(days=schedule.day)
             schedule.start_dt = tz.localize(datetime.datetime.combine(date, schedule.start_hour))
             schedule.save()
-
-    # Updating programme constraint dates
-    # for _programme in programmes.values():
-    #     db_programme = Programme.objects.get(id=_programme.id)
-    #     db_programme.start_date = None if _programme.start_date == MIN_DATE else _programme.start_date
-    #     db_programme.end_date = None if _programme.end_date == MIN_DATE else _programme.end_date
-    #     db_programme.save()
 
     # Updating all effective schedules dates
     for schedule in Schedule.objects.all().select_related('programme'):
@@ -281,8 +257,8 @@ def migrate_schedules(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('schedules', '0004_dev_schedules'),
-        ('programmes', '0009_dev_auto_20160820_1634'),
+        ('schedules', '0004__v3_0__adding_rrules'),
+        ('programmes', '0009__v3_0__small_tweaks'),
     ]
 
     operations = [

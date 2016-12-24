@@ -151,7 +151,6 @@ class Schedule(models.Model):
         self._update_recurrence_dates()
 
         # Do this every time to avoid users to delete/add exdates manually
-        # if field_has_changed(self, 'start_dt'):
         self._update_excluded_dates()
 
         self._update_effective_dates()
@@ -233,7 +232,7 @@ class Schedule(models.Model):
             yield date_before  # Date was already fixed
 
         for date in recurrence_dates_between:
-            yield fix_recurrence_dst(date) # Truncate date
+            yield fix_recurrence_dst(date)  # Fixing date
 
     def date_before(self, before):
         before_date = transform_dt_to_default_tz(self._merge_before(before))
@@ -315,9 +314,6 @@ def calculate_effective_schedule_end_dt(schedule):
 
     # If we have a programme restriction
     if programme_end_dt:
-        # last_effective_start_date = schedule.recurrences.before(
-        #     transform_dt_to_default_tz(programme_end_dt), dtstart=transform_dt_to_default_tz(schedule.start_dt))
-        # FIXME: without inc=true?
         last_effective_start_date = fix_recurrence_dst(recurrence_before(
             schedule.recurrences, transform_dt_to_default_tz(programme_end_dt), transform_dt_to_default_tz(schedule.start_dt)))
         if last_effective_start_date:

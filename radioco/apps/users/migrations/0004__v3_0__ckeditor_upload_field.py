@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('users', '0003_auto_20160104_2029'),
-        ('radioco', '0001_mysql_timezone'),
+        ('radioco', '0001__v3_0__mysql_timezone'),
     ]
 
     operations = [
