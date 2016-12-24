@@ -53,3 +53,10 @@ Documentation
 
 Please head over to our `documentation <http://django-radio.readthedocs.org/>`_ for all
 the details on how to install, extend and use RadioCo.
+
+
+Help us to translate
+====================
+
+We have a `Transifex account <https://www.transifex.com/projects/p/django-radio/>`_ where 
+you can translate RadioCo.
