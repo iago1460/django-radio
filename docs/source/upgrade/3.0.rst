@@ -95,7 +95,7 @@ You have to install `bower <https://bower.io/>`_ before running the following co
     python manage.py migrate
 
 After the migration process you will find that there is a new calendar set to active that contains all your schedules
-and your other calendars have been renamed with the prefix "legacy". Feel free of delete these, they are not require
+and your other calendars have been renamed with the prefix "Legacy - ". Feel free of delete these, they are not require
 anymore.
 
 .. note::
