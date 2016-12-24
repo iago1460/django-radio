@@ -3,6 +3,9 @@ radioco/media/_versions/
 radioco/components/
 radioco/static/
 
+# source locale
+radioco/locale/en/*
+
 # bower
 node_modules/
 radioco/apps/radioco/static/bower/
