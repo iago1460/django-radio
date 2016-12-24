@@ -1,35 +1,21 @@
-# Radioco - Broadcasting Radio Recording Scheduling system.
-# Copyright (C) 2014  Iago Veloso Abalo
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
+# Translators:
+# RadioCo.org <communications@radioco.org>, 2016
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: django-radio\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-24 17:06+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2016-12-24 17:08+0100\n"
+"PO-Revision-Date: 2016-12-24 16:19+0000\n"
+"Last-Translator: RadioCo.org <communications@radioco.org>\n"
+"Language-Team: Spanish (http://www.transifex.com/radioco/django-radio/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: es\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: radioco/apps/api/recorder_views.py:53
@@ -92,9 +78,7 @@ msgstr "Dirección URL"
 msgid ""
 "The source url where the recordings will be available after the upload. For "
 "example: \"http://RadioCo.org/recordings/\""
-msgstr ""
-"Dirección url fuente donde las grabaciones estarán disponibles tras la "
-"subida. Por ejemplo: \"http://RadioCo.org/recordings/\""
+msgstr "Dirección url fuente donde las grabaciones estarán disponibles tras la subida. Por ejemplo: \"http://RadioCo.org/recordings/\""
 
 #: radioco/apps/global_settings/models.py:86
 msgid "start delay"
@@ -122,9 +106,7 @@ msgstr "En horas. Los próximos eventos proporcionados al programa grabador"
 
 #: radioco/apps/global_settings/models.py:106
 msgid "Variable USERNAME_RADIOCO_RECORDER doesn't exist in your settings file"
-msgstr ""
-"La variable USERNAME_RADIOCO_RECORDER no existe en su fichero de "
-"configuración"
+msgstr "La variable USERNAME_RADIOCO_RECORDER no existe en su fichero de configuración"
 
 #: radioco/apps/global_settings/models.py:114
 #: radioco/apps/global_settings/models.py:115
@@ -260,7 +242,7 @@ msgstr "Este usuario ya tiene un papel en este programa"
 
 #: radioco/apps/programmes/admin.py:103 radioco/apps/schedules/admin.py:95
 msgid "Advanced options"
-msgstr ""
+msgstr "Opciones avanzadas"
 
 #: radioco/apps/programmes/admin.py:152
 msgid "This user has already a role in this episode."
@@ -583,6 +565,7 @@ msgid "Our Address"
 msgstr "Nuestra dirección"
 
 #: radioco/apps/radioco/templates/radioco/base.html:158
+#, python-format
 msgid "This website is running %(url)s"
 msgstr "Esta página web funciona con %(url)s"
 
@@ -825,7 +808,7 @@ msgstr "Cancelar"
 
 #: radioco/apps/schedules/templates/admin/schedules/calendar.html:377
 msgid "I am sure"
-msgstr ""
+msgstr "Estoy seguro"
 
 #: radioco/apps/schedules/templates/admin/schedules/delete_modal.html:6
 msgid ""
@@ -848,8 +831,7 @@ msgstr "nombre de usuario"
 #: radioco/apps/users/admin.py:62
 msgid ""
 "Required. 30 characters or fewer. Letters, numbers and @/./+/-/_ characters"
-msgstr ""
-"Necesario, 30 caracteres o menos. Letras, números y @/./+/-/_ caracteres."
+msgstr "Necesario, 30 caracteres o menos. Letras, números y @/./+/-/_ caracteres."
 
 #: radioco/apps/users/admin.py:65
 msgid "Enter a valid username."
@@ -922,318 +904,3 @@ msgstr "Administración de RadioCo"
 #: radioco/configs/base/urls.py:30
 msgid "RadioCo site admin"
 msgstr "RadioCo zona de administración"
-
-#~ msgid "Without reference"
-#~ msgstr "Sin referencias"
-
-#~ msgid "Schedule Editor"
-#~ msgstr "Editor de horarios"
-
-#~ msgid "Loading"
-#~ msgstr "Cargando"
-
-#~ msgid "All changes saved"
-#~ msgstr "Todos los cambios guardados"
-
-#~ msgid "Close"
-#~ msgstr "Cerrar"
-
-#~ msgid "Save changes"
-#~ msgstr "Guardar cambios"
-
-#~ msgid "Changes saved"
-#~ msgstr "Cambios guardados"
-
-#~ msgid ""
-#~ "Sorry, you don't have enough permissions. Please contact your "
-#~ "administrator."
-#~ msgstr "No tienes suficientes permisos. Contacta con tu administrador. "
-
-#~ msgid "Calendar Configuration not found. Please contact your administrator."
-#~ msgstr ""
-#~ "No se encontró la configuración para el calendario. Contacta con tu "
-#~ "administrador."
-
-#~ msgid "scroll time"
-#~ msgstr "tiempo de desplazamiento"
-
-#~ msgid "Determines how far down the scroll pane is initially scrolled down."
-#~ msgstr "Determina el desplazamiento inicial de la parrilla"
-
-#~ msgid "This field can be null."
-#~ msgstr "Este campo puede ser null."
-
-#~ msgid "Duration must be greater than 0."
-#~ msgstr "La duración debe ser mayor que 0"
-
-#~ msgid "end date must be greater than or equal to start date."
-#~ msgstr "la fecha fin debe ser mayor o igual que la fecha inicio"
-
-#~ msgid "password"
-#~ msgstr "contraseña"
-
-#~ msgid "there is another object between this dates."
-#~ msgstr "hay otro objeto entre esas fechas"
-
-#~ msgid "there is another object without end_date"
-#~ msgstr "hay otro objeto sin fecha de fin"
-
-#~ msgid "start date cannot be null if end date exists"
-#~ msgstr "la fecha inicio no puede ser null si existe la fecha de fin"
-
-#~ msgid "schedule board"
-#~ msgstr "parrilla"
-
-#~ msgid "start time"
-#~ msgstr "hora de inicio"
-
-#~ msgid ""
-#~ "This settings collides with: %(name)s [%(start_date)s %(start_day)s/"
-#~ "%(start_month)s/%(start_year)s - %(end_date)s %(end_day)s/%(end_month)s/"
-#~ "%(end_year)s ]"
-#~ msgstr ""
-#~ "Esta configuración colisiona con: %(name)s [%(start_date)s %(start_day)s/"
-#~ "%(start_month)s/%(start_year)s - %(end_date)s %(end_day)s/%(end_month)s/"
-#~ "%(end_year)s ]"
-
-#~ msgid "OUR PROGRAMMES"
-#~ msgstr "NUESTROS PROGRAMAS"
-
-#~ msgid "Tags"
-#~ msgstr "Etiquetas"
-
-#~ msgid "Share on Twitter"
-#~ msgstr "Compartir en Twitter"
-
-#~ msgid "Share on Facebook"
-#~ msgstr "Compartir en Facebok"
-
-#, fuzzy
-#~| msgid "Recent episodes"
-#~ msgid "Recent Posts"
-#~ msgstr "Episodios recientes"
-
-#, fuzzy
-#~| msgid "category"
-#~ msgid "Categories"
-#~ msgstr "categoría"
-
-#, fuzzy
-#~| msgid "current season"
-#~ msgid "Current rating"
-#~ msgstr "temporada actual"
-
-#~ msgid "Log out"
-#~ msgstr "Cerrar sesión"
-
-#, fuzzy
-#~| msgid "Recent episodes"
-#~ msgid "Recent Tweets"
-#~ msgstr "Episodios recientes"
-
-#~ msgid "Sorry, HTML5 audio not supported."
-#~ msgstr "Lo sentimos, audio HTML5 no soportado."
-
-#~ msgid "Staff"
-#~ msgstr "Plantilla"
-
-#~ msgid "Without episodes."
-#~ msgstr "Sin episodios"
-
-#~ msgid "This programme ended in %(end_date)s"
-#~ msgstr "Este programa terminó el %(end_date)s"
-
-#~ msgid "This programme has been active since %(start_date)s"
-#~ msgstr "Este programa lleva emitiendo desde el %(start_date)s"
-
-#~ msgid "Language"
-#~ msgstr "Idioma"
-
-#~ msgid "Sorry! Access denied."
-#~ msgstr "Acceso denegado."
-
-#~ msgid "Sorry, this page doesn't exist."
-#~ msgstr "Esta página no existe."
-
-#~ msgid "Log in"
-#~ msgstr "Iniciar sesión"
-
-#~ msgid "now playing"
-#~ msgstr "está sonando"
-
-#~ msgid "Coming soon"
-#~ msgstr "Próximamente"
-
-#~ msgid "Please sign in"
-#~ msgstr "Por favor identifíquese"
-
-#~ msgid "Wrong Username and password combination."
-#~ msgstr "Combinación de usuario y contraseña incorrecta"
-
-#~ msgid "No user information available"
-#~ msgstr "No hay información del usuario disponible"
-
-#~ msgid "Sorry, you have to create a calendar first."
-#~ msgstr "Tienes que crear una parrilla primero."
-
-#~ msgid "User %(username)s doesn't exist"
-#~ msgstr "El usuario %(username)s no existe"
-
-#~ msgid "display next weeks"
-#~ msgstr "número de próximas semanas a mostrar"
-
-#~ msgid "Password"
-#~ msgstr "Contraseña"
-
-#~ msgid "Password confirmation"
-#~ msgstr "Confirmación de la contraseña"
-
-#~ msgid "Enter the same password as above, for verification."
-#~ msgstr "Introduzca la misma contraseña que arriba, por verificación."
-
-#~ msgid "The two password fields didn't match."
-#~ msgstr "Los dos campos de contraseñas no coinciden."
-
-#~ msgid "Welcome,"
-#~ msgstr "Bienvenido,"
-
-#~ msgid "Documentation"
-#~ msgstr "Documentación"
-
-#~ msgid "announcers list"
-#~ msgstr "lista de locutores"
-
-#~ msgid "about"
-#~ msgstr "acerca de"
-
-#~ msgid "collaborations"
-#~ msgstr "Colaboradores"
-
-#~ msgid "Without people."
-#~ msgstr "Sin gente"
-
-#~ msgid "Without information."
-#~ msgstr "Sin información"
-
-#~ msgid "Episode list"
-#~ msgstr "Lista de episodios"
-
-#~ msgid "Dashboard: "
-#~ msgstr "Panel de control: "
-
-#~ msgid "Profile"
-#~ msgstr "Perfil"
-
-#~ msgid "Overview"
-#~ msgstr "Resumen"
-
-#~ msgid "My programmes"
-#~ msgstr "Mis programas"
-
-#~ msgid "Roles"
-#~ msgstr "Papeles"
-
-#~ msgid "My roles"
-#~ msgstr "Mis papeles"
-
-#~ msgid "User profile"
-#~ msgstr "Perfil de usuario"
-
-#~ msgid "Role in "
-#~ msgstr "Papel en "
-
-#~ msgid "My programme list"
-#~ msgstr "Lista de programas"
-
-#~ msgid "My role list"
-#~ msgstr "Mi lista de papeles"
-
-#~ msgid "You aren't participating in any programmes"
-#~ msgstr "No estas participando en ningún programa"
-
-#~ msgid "Create"
-#~ msgstr "Crear"
-
-#~ msgid "Role list"
-#~ msgstr "Lista de papeles"
-
-#~ msgid "No roles are available"
-#~ msgstr "No hay papeles disponibles"
-
-#~ msgid "participant"
-#~ msgstr "participante"
-
-#~ msgid "user profiles"
-#~ msgstr "perfiles de usuario"
-
-#~ msgid "Already exist"
-#~ msgstr "Ya existe"
-
-#~ msgid "save"
-#~ msgstr "guardar"
-
-#~ msgid "Out of programme date range"
-#~ msgstr "Fuera del rango de fechas del programa"
-
-#~ msgid "schedule can't be null"
-#~ msgstr "Horario no puede ser null"
-
-#~ msgid "This schedule doesn't belong to the same programme"
-#~ msgstr "Este horario no pertenece al mismo programa"
-
-#~ msgid "Django Home"
-#~ msgstr "Django Inicio"
-
-#~ msgid "published"
-#~ msgstr "publicado"
-
-#~ msgid "Announcers"
-#~ msgstr "Locutores"
-
-#~ msgid "Role"
-#~ msgstr "Papel"
-
-#~ msgid "active"
-#~ msgstr "activo"
-
-#~ msgid "The end time must be later than the start time."
-#~ msgstr "La fecha fin debe ser posterior a la de inicio"
-
-#~ msgid "Repeat?"
-#~ msgstr "¿Repetir?"
-
-#~ msgid "frequency end date"
-#~ msgstr "fecha final"
-
-#~ msgid "from"
-#~ msgstr "desde"
-
-#~ msgid "to"
-#~ msgstr "hasta"
-
-#~ msgid ""
-#~ "This settings collides with: %(name)s [ %(start_date)s - %(end_date)s ]"
-#~ msgstr ""
-#~ "Esta configuración colisiona con: %(name)s [ %(start_date)s - "
-#~ "%(end_date)s ]"
-
-#~ msgid "emission"
-#~ msgstr "emisión"
-
-#~ msgid "will it be recorded?"
-#~ msgstr "será grabado?"
-
-#~ msgid "broadcasts"
-#~ msgstr "retransmisiones"
-
-#~ msgid "broadcast syndications"
-#~ msgstr "redifusiones"
-
-#~ msgid "lives"
-#~ msgstr "directos"
-
-#~ msgid "show"
-#~ msgstr "programa"
-
-#~ msgid "shows"
-#~ msgstr "programas"
