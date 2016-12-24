@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-24 16:30+0100\n"
+"POT-Creation-Date: 2016-12-24 17:06+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -132,10 +132,8 @@ msgid "Podcast Configuration"
 msgstr "Configuración del podcast"
 
 #: radioco/apps/global_settings/models.py:120
-#, fuzzy
-#| msgid "Education"
 msgid "slot duration"
-msgstr "Educación"
+msgstr "duración del intervalo"
 
 #: radioco/apps/global_settings/models.py:121
 msgid "The frequency for displaying time slots. Format hh:mm:ss"
@@ -175,10 +173,8 @@ msgid "Calendar Configuration"
 msgstr "Configuración del calendario"
 
 #: radioco/apps/global_settings/models.py:152
-#, fuzzy
-#| msgid "last name"
 msgid "station name"
-msgstr "apellidos"
+msgstr "nombre de la emisora"
 
 #: radioco/apps/global_settings/models.py:153
 msgid "The name of radio station"
@@ -198,10 +194,8 @@ msgid "icon url"
 msgstr ""
 
 #: radioco/apps/global_settings/models.py:164
-#, fuzzy
-#| msgid "History"
 msgid "history"
-msgstr "Histórico"
+msgstr "Historia"
 
 #: radioco/apps/global_settings/models.py:165
 msgid "The history of the station"
@@ -241,10 +235,8 @@ msgstr ""
 
 #: radioco/apps/global_settings/models.py:187
 #: radioco/apps/global_settings/models.py:188
-#, fuzzy
-#| msgid "Podcast Configuration"
 msgid "Radiocom Configuration"
-msgstr "Configuración del podcast"
+msgstr "Configuración de Radiocom"
 
 #: radioco/apps/global_settings/templates/global_settings/admin_change_form.html:8
 #: radioco/apps/global_settings/templates/global_settings/admin_object_history.html:7
@@ -571,16 +563,12 @@ msgid "admin"
 msgstr ""
 
 #: radioco/apps/radioco/templates/radioco/base.html:79
-#, fuzzy
-#| msgid "Logout"
 msgid "logout"
 msgstr "Cerrar sesión"
 
 #: radioco/apps/radioco/templates/radioco/base.html:83
-#, fuzzy
-#| msgid "Login"
 msgid "login"
-msgstr "Entrar"
+msgstr "entrar"
 
 #: radioco/apps/radioco/templates/radioco/base.html:121
 msgid "About"
@@ -595,9 +583,7 @@ msgid "Our Address"
 msgstr "Nuestra dirección"
 
 #: radioco/apps/radioco/templates/radioco/base.html:158
-#, fuzzy, python-format
-#| msgid "This website is running %(url)s"
-msgid "This website running %(url)s"
+msgid "This website is running %(url)s"
 msgstr "Esta página web funciona con %(url)s"
 
 #: radioco/apps/radioco/templates/radioco/errors/404.html:6
@@ -689,16 +675,13 @@ msgid "Copy of "
 msgstr "Copia de "
 
 #: radioco/apps/schedules/admin.py:63
-#, fuzzy, python-format
-#| msgid "User with this Username already exists."
+#, python-format
 msgid "A calendar with the name %(obj)s already exists"
-msgstr "Ya existe un usuario con este nombre de usuario."
+msgstr "Un calendario con este nombre %(obj)s ya existe."
 
 #: radioco/apps/schedules/admin.py:86
-#, fuzzy
-#| msgid "Make a Copy of calendar"
 msgid "Make a Clone of the selected calendar"
-msgstr "Hacer una copia de la parrilla"
+msgstr "Hacer una copia del calendario selecionado"
 
 #: radioco/apps/schedules/models.py:33
 #: radioco/apps/schedules/templates/admin/schedules/calendar.html:339
@@ -757,10 +740,8 @@ msgid "type"
 msgstr "tipo"
 
 #: radioco/apps/schedules/models.py:125
-#, fuzzy
-#| msgid "recurrence"
 msgid "recurrences"
-msgstr "repetitividad"
+msgstr "recurrencias"
 
 #: radioco/apps/schedules/models.py:130
 msgid "first effective start date"
@@ -783,30 +764,24 @@ msgid "source"
 msgstr "referencia"
 
 #: radioco/apps/schedules/models.py:146
-#, fuzzy
-#| msgid "It is used when is a broadcast."
 msgid "Main schedule when (if this is a broadcast)."
-msgstr "Es usado cuando es una retransmisión"
+msgstr ""
 
 #: radioco/apps/schedules/templates/admin/schedules/calendar.html:74
 msgid "Transmission deleted"
 msgstr ""
 
 #: radioco/apps/schedules/templates/admin/schedules/calendar.html:119
-#, fuzzy
-#| msgid "There was an error while fetching programmes"
 msgid "There was an error while fetching transmissions"
-msgstr "Ocurrió un error mientras se recuperaban los eventos"
+msgstr "Ocurrió un error mientras se pedian transmisiones"
 
 #: radioco/apps/schedules/templates/admin/schedules/calendar.html:158
 msgid "Transmission created"
 msgstr ""
 
 #: radioco/apps/schedules/templates/admin/schedules/calendar.html:161
-#, fuzzy
-#| msgid "There was an error while creating schedule"
 msgid "There was an error while creating schedule: "
-msgstr "Ocurrió un error mientras se creaba el horario"
+msgstr "Ocurrió un error mientras se creaba el horario: "
 
 #: radioco/apps/schedules/templates/admin/schedules/calendar.html:201
 msgid "Transmission moved successfully"
@@ -817,28 +792,20 @@ msgid "There was an error in the request"
 msgstr "Ocurrió un error en la petición"
 
 #: radioco/apps/schedules/templates/admin/schedules/calendar.html:249
-#, fuzzy
-#| msgid "There was an error while fetching programmes"
 msgid "There was an error while reloading programmes"
-msgstr "Ocurrió un error mientras se recuperaban los eventos"
+msgstr "Ocurrió un error mientras se actualizaban los programas"
 
 #: radioco/apps/schedules/templates/admin/schedules/calendar.html:287
-#, fuzzy
-#| msgid "programme"
 msgid "Updated programme"
-msgstr "programa"
+msgstr "Actualizado programa"
 
 #: radioco/apps/schedules/templates/admin/schedules/calendar.html:290
-#, fuzzy
-#| msgid "programme"
 msgid "Added programme"
-msgstr "programa"
+msgstr "Añadido programa"
 
 #: radioco/apps/schedules/templates/admin/schedules/calendar.html:293
-#, fuzzy
-#| msgid "schedule"
 msgid "Updated schedule"
-msgstr "horario"
+msgstr "Actualizado horario"
 
 #: radioco/apps/schedules/templates/admin/schedules/calendar.html:327
 msgid "Programmes"
@@ -853,10 +820,8 @@ msgid "Delete transmission?"
 msgstr ""
 
 #: radioco/apps/schedules/templates/admin/schedules/calendar.html:376
-#, fuzzy
-#| msgid "cancel"
 msgid "Cancel"
-msgstr "cancelar"
+msgstr "Cancelar"
 
 #: radioco/apps/schedules/templates/admin/schedules/calendar.html:377
 msgid "I am sure"
