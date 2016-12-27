@@ -1,10 +1,6 @@
 from invoke import Collection
 
-import heroku
-import radioco
-import docker
-import docs
-import locale
+from . import heroku, radioco, docker, docs, locale
 
 
 ns = Collection()

@@ -4,7 +4,7 @@ from functools import wraps
 from invoke import task
 
 import os
-from utils import chdir, HOME_DIR, BASE_DIR, parse_requirements
+from .utils import chdir, HOME_DIR, BASE_DIR, parse_requirements
 
 
 @contextmanager

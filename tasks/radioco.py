@@ -1,5 +1,5 @@
 from invoke import task, call
-from docker import build, setup, run, manage
+from .docker import build, setup, run, manage
 
 
 @task(
