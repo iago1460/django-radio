@@ -5,9 +5,12 @@ Installing web application
 This tutorial is written for Python 2.7 and Ubuntu 12.04 or later.
 
 
-********************
-Installing on Ubuntu
-********************
+******************
+Installing locally
+******************
+
+Ubuntu
+======
 
 The easiest way of installing the app is using `Docker engine <https://docs.docker.com/engine/>`_
 
@@ -50,7 +53,7 @@ Execute the next command to deploy the app in docker, this step take some time:
 
 
 Testing
-=======
+-------
 
 Let’s verify your installation
 
@@ -68,6 +71,9 @@ Using RadioCo on production
 The Internet is a hostile environment.
 Before deploying this project, you should take some time to review your settings, with security, performance, and operations in mind.
 Keep in mind `this critical settings <https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/#critical-settings>`_.
+
+Locally
+=======
 
 RadioCo provides a staging environment, safer than the previous one but still insecure, **use at your own risk**.
 
@@ -89,3 +95,31 @@ To create a superuser you still can use management commands:
 .. code-block:: bash
 
     inv docker.manage -e staging -c "createsuperuser"
+
+
+Openshift
+=========
+`OpenShift <https://www.openshift.com/>`_ is Red Hat's Platform-as-a-Service (PaaS) that allows developers to quickly develop, 
+host, and scale applications in a cloud environment.
+
+Prerequisites: An Openshift account
+
+.. code-block:: bash
+
+    inv --echo openshift.install_requirements
+    inv --echo openshift.setup
+
+.. note::
+
+    Due to openshift old library versions Bower is required locally.
+    The directive "--echo" will display shell commands as they are executed.
+
+
+To create a superuser you can shell into the server using the following commands:
+
+.. code-block:: bash
+
+    inv openshift.ssh
+    cd ${OPENSHIFT_REPO_DIR}
+    python radioco/configs/openshift/manage.py createsuperuser
+

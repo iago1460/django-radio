@@ -1,0 +1,4 @@
+# Openshift seems to ignore this file
+#RewriteEngine On
+#RewriteRule ^application/media/(.+)$ /static/media/$1 [L]
+#RewriteRule ^application/static/(.+)$ /static/static/$1 [L]
