@@ -1,3 +1,4 @@
+import tempfile
 from contextlib import contextmanager
 from invoke import UnexpectedExit
 import os
@@ -24,6 +25,21 @@ def chdir(dirname=None):
     yield
     os.chdir(current_dir)
 
+@contextmanager
+def use_tmp_dir(ctx):
+    """
+    Not safe running concurrence tasks
+    """
+    tmp_path = tempfile.mkdtemp()
+    ctx.run('cp -R {repo_path} {tmp_path}'.format(
+        repo_path=os.path.join(BASE_DIR, '.'),
+        tmp_path=tmp_path)
+    )
+    current_dir = os.getcwd()
+    os.chdir(tmp_path)
+    yield tmp_path
+    os.chdir(current_dir)
+
 
 def commit_settings(ctx, message, dir_name=None, environment='base'):
     with chdir(dir_name or BASE_DIR):
@@ -31,6 +47,10 @@ def commit_settings(ctx, message, dir_name=None, environment='base'):
         if environment != 'base':
             run_ignoring_failure(ctx.run, 'git add -f radioco/configs/{}/local_settings.py'.format(environment))
         run_ignoring_failure(ctx.run, 'git commit -am "{}"'.format(message))
+
+
+def get_current_branch(ctx):
+    return ctx.run('git rev-parse --abbrev-ref HEAD').stdout
 
 
 # @contextmanager

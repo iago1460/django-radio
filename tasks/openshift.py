@@ -1,9 +1,8 @@
 import os
 import re
-import tempfile
-
 from invoke import task, UnexpectedExit
-from .utils import BASE_DIR, commit_settings, run_ignoring_failure, chdir
+
+from .utils import commit_settings, run_ignoring_failure, get_current_branch, use_tmp_dir
 
 PYTHON = 'python-2.7'
 POSTGRES = 'postgresql-9.2'
@@ -36,12 +35,7 @@ def setup(ctx, project_name='radioco'):
     ctx.run('rhc app create {name} {python} --no-git'.format(name=project_name, python=PYTHON))
     ctx.run('rhc cartridge add {postgres} -a {name}'.format(name=project_name, postgres=POSTGRES))
     # Working in a temporal directory
-    tmp_path = tempfile.mkdtemp()
-    ctx.run('cp -R {repo_path} {tmp_path}'.format(
-        repo_path=os.path.join(BASE_DIR, '.'),
-        tmp_path=tmp_path)
-    )
-    with chdir(tmp_path):
+    with use_tmp_dir(ctx) as tmp_path:
         # Copying required files to project root
         ctx.run('cp -Rf {source_path} {tmp_path}'.format(
             source_path=os.path.join(tmp_path, OPENSHIFT_CONFIG_PATH, 'root/.'),
@@ -63,7 +57,7 @@ def setup(ctx, project_name='radioco'):
         except UnexpectedExit:
             ctx.run('git remote set-url openshift {}'.format(git_url))
         # Sending content to server
-        ctx.run('git push -f openshift openshift:master')
+        ctx.run('git push -f openshift {current_branch}:master'.format(current_branch=get_current_branch(ctx)))
 
 
 @task
