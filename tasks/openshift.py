@@ -22,18 +22,34 @@ def install_requirements(ctx):
     run_ignoring_failure(ctx.sudo, 'apt-get install nodejs-legacy')
     ctx.sudo('apt-get install npm')
     ctx.run('npm install bower')
+    print('Openshift requirements were installed correctly')
 
 
 @task()
 def setup(ctx, project_name='radioco'):
     """
     This method will setup the repo in a new branch called openshift
-    Requirements: cp, git, rhc, bower
     """
     # Setting up project
     ctx.run('rhc setup', pty=True)
     ctx.run('rhc app create {name} {python} --no-git'.format(name=project_name, python=PYTHON))
     ctx.run('rhc cartridge add {postgres} -a {name}'.format(name=project_name, postgres=POSTGRES))
+    # Getting the remote git url
+    openshift_info = ctx.run('rhc app-show -v -a {}'.format(project_name))
+    try:
+        git_url = re.search(r'Git URL:(.+)', openshift_info.stdout).group(1).strip()
+    except AttributeError:
+        raise RuntimeError('Failed to get git url')
+    # Setting remote branch
+    try:
+        ctx.run('git remote add openshift {}'.format(git_url))
+    except UnexpectedExit:
+        ctx.run('git remote set-url openshift {}'.format(git_url))
+    print('Openshift was setup correctly')
+
+
+@task
+def deploy(ctx):
     # Working in a temporal directory
     with use_tmp_dir(ctx) as tmp_path:
         # Copying required files to project root
@@ -43,21 +59,11 @@ def setup(ctx, project_name='radioco'):
         )
         # Downloading bower dependencies
         ctx.run('node_modules/bower/bin/bower install')
-        ctx.run('git add -f .openshift wsgi requirements.txt radioco/apps/radioco/static/bower')
+        ctx.run('git add -f manage.py .openshift wsgi requirements.txt radioco/apps/radioco/static/bower')
         commit_settings(ctx, 'Autocommit: Openshift setup', dir_name=tmp_path, environment='openshift')
-        # Getting remote git url
-        openshift_info = ctx.run('rhc app-show -v -a {}'.format(project_name))
-        try:
-            git_url = re.search(r'Git URL:(.+)', openshift_info.stdout).group(1).strip()
-        except AttributeError:
-            raise RuntimeError('Failed to get git url')
-        # Setting remote branch
-        try:
-            ctx.run('git remote add openshift {}'.format(git_url))
-        except UnexpectedExit:
-            ctx.run('git remote set-url openshift {}'.format(git_url))
         # Sending content to server
         ctx.run('git push -f openshift {current_branch}:master'.format(current_branch=get_current_branch(ctx)))
+    print('Openshift was deployed correctly')
 
 
 @task
@@ -78,9 +84,3 @@ def start(ctx, project_name='radioco'):
 @task
 def stop(ctx, project_name='radioco'):
     ctx.run('rhc app stop -a {}'.format(project_name))
-
-
-@task
-def restart(ctx, project_name='radioco'):
-    ctx.run('rhc app stop -a {}'.format(project_name))
-    ctx.run('rhc app start -a {}'.format(project_name))

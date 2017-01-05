@@ -50,7 +50,7 @@ def commit_settings(ctx, message, dir_name=None, environment='base'):
 
 
 def get_current_branch(ctx):
-    return ctx.run('git rev-parse --abbrev-ref HEAD').stdout
+    return ctx.run('git rev-parse --abbrev-ref HEAD').stdout.strip()
 
 
 # @contextmanager

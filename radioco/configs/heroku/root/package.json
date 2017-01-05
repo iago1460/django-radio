@@ -1,0 +1,6 @@
+{
+  "name": "python-bower",
+  "dependencies": {
+    "bower": "1.8.0"
+  }
+}

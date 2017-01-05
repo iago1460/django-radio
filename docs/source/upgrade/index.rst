@@ -17,3 +17,4 @@ on any process that makes changes to your database.
     1.2
     2.1
     3.0
+    3.1

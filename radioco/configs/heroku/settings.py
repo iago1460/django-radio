@@ -20,16 +20,19 @@ import dj_database_url
 from radioco.configs.base.settings import *
 
 DEBUG = False
-
-# Parse database configuration from $DATABASE_URL
+ALLOWED_HOSTS = ['*']  # FIXME: SECURITY ISSUE
+SECRET_KEY = '(h_$1pj(&usx%kw^m6$7*x9pnar+t_136g!3)g#+eje5r^3(!!'  # FIXME: SECURITY ISSUE
 
 DATABASES['default'] = dj_database_url.config()
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# Allow all host headers
-ALLOWED_HOSTS = ['*']
+MIDDLEWARE_CLASSES += (
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+)
+
+# STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'  # FIXME: crash
 
 # Import local settings
 try:

@@ -4,8 +4,8 @@
 # up again.  This script gets executed directly, so it could be python, php,
 # ruby, etc.
 
-echo "Executing 'python $OPENSHIFT_REPO_DIRradioco/configs/openshift/manage.py migrate --noinput'"
-python "$OPENSHIFT_REPO_DIR"radioco/configs/openshift/manage.py migrate --noinput
+echo "Executing 'python $OPENSHIFT_REPO_DIRmanage.py migrate --noinput'"
+python "$OPENSHIFT_REPO_DIR"manage.py migrate --noinput
 
-echo "Executing 'python $OPENSHIFT_REPO_DIRradioco/configs/openshift/manage.py collectstatic --noinput'"
-python "$OPENSHIFT_REPO_DIR"radioco/configs/openshift/manage.py collectstatic --noinput
+echo "Executing 'python $OPENSHIFT_REPO_DIRmanage.py collectstatic --noinput'"
+python "$OPENSHIFT_REPO_DIR"manage.py collectstatic --noinput
