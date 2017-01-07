@@ -51,6 +51,14 @@ Execute the next command to deploy the app in docker, this step take some time:
     inv quickstart
 
 
+.. warning::
+
+    If you have faced the error "ValueError: unknown locale: UTF-8" on MacOS X, execute:
+
+    export LC_ALL=en_US.UTF-8
+    export LANG=en_US.UTF-8
+
+
 Testing
 -------
 
