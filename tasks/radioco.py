@@ -4,7 +4,7 @@ from .docker import setup, manage
 
 @task(
     pre=[setup],
-    post=[call(manage, management_command='create_example_data')]
+    post=[call(manage, command='create_example_data')]
 )
 def quickstart(ctx):
     print('RadioCo should be running')
