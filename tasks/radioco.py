@@ -1,9 +1,9 @@
 from invoke import task, call
-from .docker import build, setup, run, manage
+from .docker import setup, manage
 
 
 @task(
-    pre=[build, call(run, background=True), setup],
+    pre=[setup],
     post=[call(manage, management_command='create_example_data')]
 )
 def quickstart(ctx):

@@ -28,26 +28,6 @@ def _ssh_support(ctx):
     ctx.run('rm {env_path}/id_rsa.pub'.format(**ctx))
 
 
-# def _setup_environment(ctx):
-#     ctx['env_path'] = os.path.join(BASE_DIR, 'radioco/configs/{environment}'.format(**ctx))
-#     ctx.run('chmod -R +x {env_path}/docker/scripts'.format(**ctx))
-# 
-#     env_file_path = os.path.join(ctx['env_path'], 'docker/env')
-#     local_env_file_path = os.path.join(ctx['env_path'], 'docker/local_env')
-#     if not os.path.exists(local_env_file_path):
-#         open(local_env_file_path, 'w').close()
-# 
-#     env_vars = {}
-#     with open(env_file_path, 'r') as file:
-#         for line in file:
-#             cleaned_line = line.replace('\t', ' ').strip('\n ')
-#             if cleaned_line and not cleaned_line.startswith('#'):
-#                 spliter_index = cleaned_line.find('=')
-#                 env_vars[cleaned_line[:spliter_index]] = cleaned_line[spliter_index+1:]
-# 
-#     return env_vars
-
-
 def _set_env(ctx, environment):
     ctx['environment'] = ctx.get('environment', environment) or 'base'
     ctx['env_path'] = os.path.join(BASE_DIR, 'radioco/configs/{environment}'.format(**ctx))
@@ -71,11 +51,10 @@ def set_env(func):
     return func_wrapper
 
 
-# Tasks
-
 @task
 @set_env
-def build(ctx):
+def setup(ctx):
+    # Build images
     with _generate_requirements_file(ctx):
         if ctx['environment'] == 'development':
             # Copying ssh key to allow remote debugging
@@ -84,10 +63,9 @@ def build(ctx):
         else:
             ctx.run('docker-compose build')
 
+    # Start containers
+    ctx.run('docker-compose up -d --no-recreate --no-build')
 
-@task
-@set_env
-def setup(ctx):
     # Adding executable permissions to docker scripts
     ctx.run('chmod -R +x {env_path}/docker/scripts'.format(**ctx))
 
@@ -101,14 +79,20 @@ def setup(ctx):
 
 
 @task
-def run(ctx, environment=None, daemon=True):
+def start(ctx, environment=None, daemon=True):
     """
-    This command require to execute build first
+    This command will start the containers
     """
     ctx = _set_env(ctx, environment)
     with chdir(ctx['env_path']):
-        # calling docker with --no-recreate --no-build to avoid rebuild or build the image
+        # --no-recreate --no-build avoid rebuilding or building the image
         ctx.run('docker-compose up {} --no-recreate --no-build'.format('-d' if daemon else ''))
+
+
+@task
+@set_env
+def stop(ctx):
+    ctx.run('docker-compose stop')
 
 
 @task
@@ -117,7 +101,6 @@ def manage(ctx, environment=None, command='help'):
     Run manage.py management_command inside docker
     Args:
         command: management command
-
     """
     ctx = _set_env(ctx, environment)
     with chdir(ctx['env_path']):
@@ -135,12 +118,11 @@ def manage(ctx, environment=None, command='help'):
 
 @task
 @set_env
-def shell(ctx):
-    # FIXME: Control+C is not being handle properly
+def ssh(ctx):
+    # WARNING: Control+C is not being handle properly? looks fixed on version 0.14.0
     ctx.run(
         'docker-compose exec {image} {command}'.format(
-            image='{environment}_django'.format(**ctx),
-            # command='cat /srv/docker-dev/docker/scripts_container/_shell_environment.sh && /bin/bash'), pty=True)
+            image=_get_service_name(ctx),
             command='bash -c "cd /radioco/{path} && bash"'.format(path=ctx['env_path'].replace(BASE_DIR, ''))
         ), pty=True
     )
@@ -154,7 +136,7 @@ def attach(ctx, environment=None, service_name=None):
     with chdir(ctx['env_path']):
         ctx.run(
             'docker attach $(docker-compose ps -q {service})'.format(
-                service=_get_service_name(ctx, service_name) # service is always required
+                service=_get_service_name(ctx, service_name)  # service is always required
             )
         )
 
@@ -171,18 +153,20 @@ def logs(ctx, environment=None, service_name=None):
 
 @task
 @set_env
-def stop(ctx):
-    ctx.run('docker-compose stop')
-
-
-@task
-@set_env
 def clean(ctx):
+    """
+    Use this command to remove the containers.
+    The data stored in the database will survive.
+    """
     ctx.run('docker-compose down')
 
 
 @task
 @set_env
 def destroy(ctx):
+    """
+    Use this command to remove the containers, the volumes and the images
+    WARNING: This command will remove all your data
+    """
     ctx.run('docker-compose down --rmi all')
     ctx.run('docker-compose down --volumes')
