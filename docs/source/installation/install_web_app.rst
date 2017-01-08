@@ -90,10 +90,6 @@ RadioCo provides a staging environment, safer than the previous one but still in
 
     inv docker.setup -e staging
 
-.. note::
-
-    If you see an error related with postgre sql wait a minute and just run the command again
-
 
 Now that the server’s running, visit http://127.0.0.1/
 
