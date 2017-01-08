@@ -326,7 +326,7 @@ a:focus {
 
 /* Testimonials Wrap */
 #twrap {
-	background: url(../img/t-back.jpg) no-repeat center top;
+	background: url(../images/t-back.jpg) no-repeat center top;
 	margin-top: 0px;
 	padding-top:60px;
 	text-align:center;
@@ -439,7 +439,7 @@ csmall2 {
 
 /* Contact Page */
 #contactwrap {
-	background: url(../img/contact.jpg) no-repeat center top;
+	background: url(../images/contact.jpg) no-repeat center top;
 	margin-top: -60px;
 	padding-top:0px;
 	text-align:center;
