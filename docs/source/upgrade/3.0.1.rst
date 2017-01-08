@@ -1,0 +1,24 @@
+###################
+3.0.1 release notes
+###################
+
+*******************
+What's new in 3.0.1
+*******************
+
+*   Fixing invoke commands.
+*   Simplified docker setup.
+
+Take a look to our installation section.
+
+********************
+How this affects you
+********************
+
+If you’re starting with a new installation, you don’t need to worry about this. 
+Don’t even bother reading this section; it’s for upgraders.
+
+You need to replace your current source with the content of https://github.com/iago1460/django-radio.
+To setup your settings please read the configuration section.
+
+This update doesn't require any further steps.

@@ -9,6 +9,19 @@ To allow RadioCo to generate correct dates it's necessary to set the timezone va
 3. Add to the local settings the variable timezone, for example: TIME_ZONE = "Europe/Madrid"
 
 
+******************
+Installing locally
+******************
+
+This tutorial is written for Python 2.7 and Ubuntu 12.04 or later.
+
+Ubuntu
+======
+
+The easiest way of installing the app is using `Docker engine <https://docs.docker.com/engine/>`_, 
+follow the `installation steps <https://docs.docker.com/engine/installation/>`_ to install Docker.
+
+
 Open a terminal and introduce the following commands:
 
 .. code-block:: bash
@@ -47,7 +60,7 @@ Execute the next command to deploy the app in docker, this step take some time:
 
 
 Testing
-=======
+-------
 
 Let’s verify your installation
 
@@ -66,6 +79,9 @@ Using RadioCo on production
 The Internet is a hostile environment.
 Before deploying this project, you should take some time to review your settings, with security, performance, and operations in mind.
 Keep in mind `this critical settings <https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/#critical-settings>`_.
+
+Locally
+=======
 
 RadioCo provides a staging environment, safer than the previous one but still insecure, **use at your own risk**.
 

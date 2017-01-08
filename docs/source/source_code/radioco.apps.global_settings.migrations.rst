@@ -52,18 +52,18 @@ radioco.apps.global_settings.migrations.0006_auto_20160116_1509 module
     :undoc-members:
     :show-inheritance:
 
-radioco.apps.global_settings.migrations.0007_dev_calendarconfiguration_tweaks module
-------------------------------------------------------------------------------------
+radioco.apps.global_settings.migrations.0007__v3_0__calendarconfiguration_tweaks module
+---------------------------------------------------------------------------------------
 
-.. automodule:: radioco.apps.global_settings.migrations.0007_dev_calendarconfiguration_tweaks
+.. automodule:: radioco.apps.global_settings.migrations.0007__v3_0__calendarconfiguration_tweaks
     :members:
     :undoc-members:
     :show-inheritance:
 
-radioco.apps.global_settings.migrations.0008_dev_radiocomconfiguration module
------------------------------------------------------------------------------
+radioco.apps.global_settings.migrations.0008__v3_0__radiocomconfiguration module
+--------------------------------------------------------------------------------
 
-.. automodule:: radioco.apps.global_settings.migrations.0008_dev_radiocomconfiguration
+.. automodule:: radioco.apps.global_settings.migrations.0008__v3_0__radiocomconfiguration
     :members:
     :undoc-members:
     :show-inheritance:
