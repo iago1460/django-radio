@@ -60,3 +60,29 @@ Help us to translate
 
 We have a `Transifex account <https://www.transifex.com/projects/p/django-radio/>`_ where 
 you can translate RadioCo.
+
+
+*******
+LICENSE
+*******
+
+Unless otherwise specified, all the project files are licensed under GNU General Public License.
+The exceptions to this license are as follows:
+
+* Bootstrap (http://getbootstrap.com):
+    Licensed under MIT
+
+* Jquery (https://jquery.com/):
+    Licensed under MIT
+
+* Query UI (https://jqueryui.com/):
+    Licensed under MIT
+
+* Font Awesome (http://fontawesome.io/):
+	Licensed under SIL OFL 1.1
+
+* FullCalendar (https://fullcalendar.io/license/):
+    Licensed under MIT
+
+* SOLID - Bootstrap 3 Theme (http://alvarez.is)
+    Creative Commons Attribution 3.0 License
