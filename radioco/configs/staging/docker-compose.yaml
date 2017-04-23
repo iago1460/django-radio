@@ -22,7 +22,7 @@ services:
     image: nginx:1.11-alpine
     restart: always
     ports:
-      - "${PORT_NGINX}:80"
+      - "${PORT_NGINX}:${PORT_NGINX}"
     volumes:
       - ./docker/nginx.conf:/tmp/nginx.conf:ro
       - ../../static:/static:ro
