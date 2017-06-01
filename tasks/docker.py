@@ -123,9 +123,22 @@ def ssh(ctx):
     ctx.run(
         'docker-compose exec {image} {command}'.format(
             image=_get_service_name(ctx),
-            command='bash -c "cd /radioco/{path} && bash"'.format(path=ctx['env_path'].replace(BASE_DIR, ''))
+            command='bash -c "cd /radioco{path} && bash"'.format(path=ctx['env_path'].replace(BASE_DIR, ''))
         ), pty=True
     )
+
+
+@task(name='exec')
+def execute(ctx, command, environment=None):
+    ctx = _set_env(ctx, environment)
+    relative_path = ctx['env_path'].replace(BASE_DIR, '')
+    with chdir(ctx['env_path']):
+        ctx.run(
+            'docker-compose exec {image} {command}'.format(
+                image=_get_service_name(ctx),
+                command='/bin/sh -c "cd /radioco{path}; {command}"'.format(path=relative_path, command=command)
+            ), pty=True
+        )
 
 
 @task
@@ -149,6 +162,12 @@ def logs(ctx, environment=None, service_name=None):
         ctx.run('docker-compose logs {service}'.format(
             service=_get_service_name(ctx, service_name) if service_name else '')
         )
+
+
+@task
+def run_coverage(ctx, environment):
+    coverage_command = 'COVERAGE_FILE=.coverage.docker_{environment}.xml coverage run --source="radioco" radioco/configs/{environment}/manage.py test'.format(environment=environment)
+    ctx.run('inv docker.exec -e {environment} -c "cd /radioco; pip install coverage; {command}"'.format(environment=environment, command=coverage_command))
 
 
 @task
