@@ -34,6 +34,7 @@ SITE_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__f
 SECRET_KEY = '(h_$1pj(&usx%kw^m6$7*x9pnar+t_136g!3)g#+eje5r^3(!+'
 
 DEBUG = True
+TESTING_MODE = False
 
 # Application definition
 INSTALLED_APPS = (
@@ -102,6 +103,7 @@ TEMPLATES = [
 ]
 
 ROOT_URLCONF = 'radioco.configs.base.urls'
+TEST_RUNNER = 'radioco.configs.base.test_runner.MyTestSuiteRunner'
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases

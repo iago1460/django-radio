@@ -86,7 +86,7 @@ urlpatterns = [
     url(r'^api/2/', include('radioco.apps.api.urls', namespace="api"))
 ]
 
-if settings.DEBUG and 'debug_toolbar' in settings.INSTALLED_APPS:
+if (settings.TESTING_MODE or settings.DEBUG) and 'debug_toolbar' in settings.INSTALLED_APPS:
     import debug_toolbar
     urlpatterns += [url(r'^__debug__/', include(debug_toolbar.urls))]
 
