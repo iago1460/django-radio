@@ -25,7 +25,7 @@ script:
   - inv --echo docker.setup -e staging
   - inv --echo docker.run_coverage -e staging
   - inv --echo docker.destroy -e staging
-  - inv --echo docker.setup -e development
+  - PORT_POSTGRES=9999 inv --echo docker.setup -e development
   - inv --echo docker.run_coverage -e development
   - inv --echo docker.destroy -e development
   - coverage combine
