@@ -1,24 +1,34 @@
 import datetime
 
 import pytz
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 
 from radioco.apps.api import serializers
 from radioco.apps.radioco.test_utils import TestDataMixin
 from radioco.apps.schedules.models import Transmission
 
 
+MOCK_CONTEXT = {'request': RequestFactory().get('')}
+
+
 class TestSerializers(TestDataMixin, TestCase):
     def test_programme(self):
-        serializer = serializers.ProgrammeSerializer(self.programme)
+        serializer = serializers.ProgrammeSerializer(
+            self.programme,
+            context=MOCK_CONTEXT
+        )
         self.assertListEqual(
             serializer.data.keys(),
-            ['id', 'slug', 'name', 'synopsis', 'runtime', 'photo', 'language', 'category'])
+            ['id', 'slug', 'name', 'synopsis', 'runtime', 'photo_url', 'rss_url', 'language', 'category'])
 
     def test_programme_photo_url(self):
-        serializer = serializers.ProgrammeSerializer(self.programme)
+        serializer = serializers.ProgrammeSerializer(
+            self.programme,
+            context=MOCK_CONTEXT
+        )
         self.assertEqual(
-            serializer.data['photo'], "/media/defaults/example/radio_5.jpg")
+            serializer.data['photo_url'], "http://testserver/media/defaults/example/radio_5.jpg"
+        )
 
     def test_episode(self):
         serializer = serializers.EpisodeSerializer(self.episode)
@@ -46,7 +56,8 @@ class TestSerializers(TestDataMixin, TestCase):
 
     def test_transmission(self):
         serializer = serializers.TransmissionSerializer(
-            Transmission(self.schedule, pytz.utc.localize(datetime.datetime(2015, 1, 6, 14, 0, 0)))
+            Transmission(self.schedule, pytz.utc.localize(datetime.datetime(2015, 1, 6, 14, 0, 0))),
+            context=MOCK_CONTEXT
         )
         schedule_id = self.schedule.id
         self.assertDictEqual(
@@ -60,7 +71,7 @@ class TestSerializers(TestDataMixin, TestCase):
                 'end': '2015-01-06T15:00:00Z',
                 'name': u'Classic hits',
                 'slug': u'classic-hits',
-                'programme_url': u'/programmes/classic-hits/',
+                'programme_url': u'http://testserver/programmes/classic-hits/',
                 'episode_url': None,
             }
         )
