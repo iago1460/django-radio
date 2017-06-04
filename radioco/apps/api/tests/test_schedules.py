@@ -68,7 +68,7 @@ class TestTransmissionAPI(TestDataMixin, APITestCase):
             })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            {_key: response.data[0][_key] for _key in response.data[0] if _key not in ['schedule', 'id']},
+            {_key: response.data[0][_key] for _key in response.data[0] if _key not in ['schedule', 'programme', 'id']},
             {
                 'end': '2015-02-01T09:00:00Z', 'name': 'Morning News',
                 'programme_url': 'http://testserver/programmes/morning-news/', 'episode_url': None,
@@ -87,7 +87,7 @@ class TestTransmissionAPI(TestDataMixin, APITestCase):
             })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            {_key: response.data[0][_key] for _key in response.data[0] if _key not in ['schedule', 'id']},
+            {_key: response.data[0][_key] for _key in response.data[0] if _key not in ['schedule', 'programme', 'id']},
             {
                 'end': '2015-02-01T10:00:00+01:00', 'name': u'Morning News',
                 'programme_url': u'http://testserver/programmes/morning-news/', 'episode_url': None,

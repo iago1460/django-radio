@@ -71,6 +71,7 @@ class TransmissionSerializer(serializers.Serializer):
     start = DateTimeFieldTz()
     end = DateTimeFieldTz()
     schedule = serializers.IntegerField(source='schedule.id')
+    programme = serializers.IntegerField(source='schedule.programme.id')
     programme_url = serializers.SerializerMethodField()
     episode_url = serializers.SerializerMethodField()
     type = serializers.CharField(max_length=1, source='schedule.type')

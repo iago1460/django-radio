@@ -59,12 +59,12 @@ class TestSerializers(TestDataMixin, TestCase):
             Transmission(self.schedule, pytz.utc.localize(datetime.datetime(2015, 1, 6, 14, 0, 0))),
             context=MOCK_CONTEXT
         )
-        schedule_id = self.schedule.id
         self.assertDictEqual(
             serializer.data,
             {
-                'id': schedule_id,
-                'schedule': schedule_id,
+                'id': self.schedule.id,
+                'schedule': self.schedule.id,
+                'programme': self.schedule.programme.id,
                 'source': None,
                 'type': u'L',
                 'start': '2015-01-06T14:00:00Z',
