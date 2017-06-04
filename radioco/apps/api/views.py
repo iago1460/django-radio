@@ -95,11 +95,20 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ScheduleSerializer
 
 
-class TransmissionForm(forms.Form):
+class TimezoneForm(forms.Form):
+    timezone = forms.ChoiceField(required=False, choices=[(x, x) for x in pytz.all_timezones])
+
+    def clean_timezone(self):
+        timezone = self.cleaned_data.get('timezone')
+        if timezone:
+            return pytz.timezone(timezone)
+        return timezone
+
+
+class TransmissionForm(TimezoneForm):
     after = forms.DateField()
     before = forms.DateField()
     calendar = forms.CharField(required=False)
-    timezone = forms.ChoiceField(required=False, choices=[(x, x) for x in pytz.all_timezones])
 
     def clean(self):
         cleaned_data = super(TransmissionForm, self).clean()
@@ -107,12 +116,6 @@ class TransmissionForm(forms.Form):
             if cleaned_data['after'] > cleaned_data['before']:
                 raise ValidationError('after date has to be greater or equals than before date.')
         return cleaned_data
-
-    def clean_timezone(self):
-        timezone = self.cleaned_data.get('timezone')
-        if timezone:
-            return pytz.timezone(timezone)
-        return timezone
 
 
 class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
@@ -151,7 +154,12 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
 
     @list_route()
     def now(self, request):
-        tz = None or pytz.utc  # TODO check for a tz?
+        data = TimezoneForm(request.query_params)
+        if not data.is_valid():
+            raise DRFValidationError(data.errors)
+        requested_timezone = data.cleaned_data.get('timezone')
+
+        tz = requested_timezone or pytz.utc
         now = utils.timezone.now()
         transmissions = Transmission.at(now)
         serializer = self.get_serializer(transmissions, many=True)
