@@ -1,3 +1,5 @@
+from django.core.urlresolvers import reverse
+
 from radioco.apps.radioco.tz_utils import transform_datetime_tz, get_active_timezone
 from radioco.apps.programmes.models import Programme, Episode
 from radioco.apps.schedules.models import Schedule
@@ -15,11 +17,18 @@ class DateTimeFieldTz(serializers.DateTimeField):
 
 class ProgrammeSerializer(serializers.ModelSerializer):
     runtime = serializers.DurationField()
-    photo = serializers.ImageField()
+    photo_url = serializers.SerializerMethodField()
+    rss_url = serializers.SerializerMethodField()
+
+    def get_photo_url(self, obj):
+        return self.context['request'].build_absolute_uri(obj.photo.url)
+
+    def get_rss_url(self, obj):
+        return self.context['request'].build_absolute_uri(reverse('programmes:rss', args=[obj.slug]))
 
     class Meta:
         model = Programme
-        fields = ('id', 'slug', 'name', 'synopsis', 'runtime', 'photo', 'language', 'category')
+        fields = ('id', 'slug', 'name', 'synopsis', 'runtime', 'photo_url', 'rss_url', 'language', 'category')
 
 
 class EpisodeSerializer(serializers.ModelSerializer):
@@ -62,10 +71,16 @@ class TransmissionSerializer(serializers.Serializer):
     start = DateTimeFieldTz()
     end = DateTimeFieldTz()
     schedule = serializers.IntegerField(source='schedule.id')
-    programme_url = serializers.URLField()
-    episode_url = serializers.URLField()
+    programme_url = serializers.SerializerMethodField()
+    episode_url = serializers.SerializerMethodField()
     type = serializers.CharField(max_length=1, source='schedule.type')
     source = serializers.IntegerField(source='schedule.source.id')
+
+    def get_programme_url(self, obj):
+        return self.context['request'].build_absolute_uri(obj.programme_url) if obj.programme_url else None
+
+    def get_episode_url(self, obj):
+        return self.context['request'].build_absolute_uri(obj.episode_url) if obj.episode_url else None
 
 
 class TransmissionSerializerLight(serializers.Serializer):  # WARNING: Hack to save changes

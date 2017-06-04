@@ -60,7 +60,7 @@ class ProgrammeViewSet(viewsets.ModelViewSet):
         if before:
             programmes = programmes.filter(Q(start_date__lte=before) | Q(start_date__isnull=True))
 
-        serializer = self.serializer_class(programmes, many=True)
+        serializer = self.get_serializer(programmes, many=True)
         return Response(serializer.data)
 
 
@@ -145,7 +145,7 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
             before_date,
             schedules=schedules
         )
-        serializer = self.serializer_class(transmissions, many=True)
+        serializer = self.get_serializer(transmissions, many=True)
         with override(timezone=tz):
             return Response(serializer.data)
 
@@ -154,8 +154,7 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
         tz = None or pytz.utc  # TODO check for a tz?
         now = utils.timezone.now()
         transmissions = Transmission.at(now)
-        serializer = self.serializer_class(
-            transmissions, many=True)
+        serializer = self.get_serializer(transmissions, many=True)
         with override(timezone=tz):
             return Response(serializer.data)
 
