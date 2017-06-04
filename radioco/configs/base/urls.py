@@ -82,6 +82,7 @@ urlpatterns = [
 
     url(r'^api/1/radiocom/programmes/$', 'radioco.apps.api.radiocom_views.programmes_json', name='radiocom_programmes'),
     url(r'^api/1/radiocom/radiostation/$', 'radioco.apps.api.radiocom_views.station_json', name='radiocom_station'),
+    url(r'^api/1/radiocom/', include('radioco.apps.api.radiocom_urls', namespace="api")),
 
     url(r'^api/2/', include('radioco.apps.api.urls', namespace="api"))
 ]

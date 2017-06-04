@@ -431,5 +431,23 @@ class Transmission(object):
             yield cls(schedule, sorted_transmission_date, episodes.get(sorted_transmission_date))
 
 
+# Transmission to use in Radiocom
+class Transmission_Radiocom(Transmission):
+    def __init__(self, schedule, date, episode=None):
+        Transmission. __init__(self, schedule, date, episode=None)
+
+    @property
+    def logo_url(self):
+        return self.programme.photo
+
+    @property
+    def description(self):
+        return self.programme.synopsis
+
+    @property
+    def rss_url(self):
+        return reverse('programmes:detail', args=[self.programme.slug]) + "rss"
+
+
 def _return_tuple(item1, item2):
     return item1, item2
