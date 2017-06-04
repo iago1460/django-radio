@@ -16,34 +16,10 @@
 
 
 import json
-import re
 
-from radioco.apps.programmes.models import Programme
 from radioco.apps.global_settings.models import RadiocomConfiguration
 from radioco.apps.global_settings.models import SiteConfiguration
 from django.http import HttpResponse
-
-
-def programmes_json(request):
-    url = re.sub(request.get_full_path(), '', request.build_absolute_uri())
-
-    programme_list = Programme.objects.order_by('end_date', 'name')
-    json_list = []
-
-    for programme in programme_list:
-        json_entry = {
-            'id': programme.id,
-            'genre': programme.get_category_display(),
-            'title': programme.name,
-            'description': programme.synopsis,
-            'logo_url': url + programme.photo.url,
-            'rss_url': url + "/programmes/" + programme.slug + '/rss/'
-        }
-        json_list.append(json_entry)
-
-    data = {'data': json_list}
-
-    return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 def station_json(request):
