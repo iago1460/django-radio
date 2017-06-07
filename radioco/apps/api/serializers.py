@@ -100,7 +100,7 @@ class TransmissionSerializer(serializers.Serializer):
     end = DateTimeFieldTz()
     schedule = serializers.IntegerField(source='schedule.id')
     episode = serializers.IntegerField(source='episode.id')
-    programme = serializers.IntegerField(source='schedule.programme.id')
+    programme = serializers.IntegerField(source='programme.id')
     programme_url = AbsoluteURLField()
     episode_url = AbsoluteURLField()
     type = serializers.CharField(max_length=1, source='schedule.type')
@@ -113,6 +113,7 @@ class RadiocomTransmissionSerializer(serializers.Serializer):
     start = DateTimeFieldTz()
     end = DateTimeFieldTz()
     programme_url = AbsoluteURLField()
+    logo_url = AbsoluteURLField(source='programme.photo.url', read_only=True)
     type = serializers.CharField(max_length=1, source='schedule.type')
     rss_url = AbsoluteURLField(source='slug', reverse_url='programmes:rss')
 
