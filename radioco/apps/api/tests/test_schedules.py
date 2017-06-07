@@ -158,9 +158,9 @@ class TestTransmissionAPI(TestDataMixin, APITestCase):
     def test_transmission_now(self):
         response = self.client.get('/api/2/transmissions/now')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertListEqual(
-            map(lambda t: (t['slug'], t['start']), response.data),
-            [('classic-hits', '2015-01-06T14:00:00Z')])
+        self.assertEqual(
+            (response.data['slug'], response.data['start']),
+            ('classic-hits', '2015-01-06T14:00:00Z'))
 
     def test_transmissions_filter_calendar_nonexistend(self):
         response = self.client.get(
