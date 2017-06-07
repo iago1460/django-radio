@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse
 
-from radioco.apps.global_settings.models import SiteConfiguration
+from radioco.apps.global_settings.models import SiteConfiguration, RadiocomConfiguration
 from radioco.apps.radioco.tz_utils import transform_datetime_tz, get_active_timezone
 from radioco.apps.programmes.models import Programme, Episode
 from radioco.apps.schedules.models import Schedule
@@ -133,7 +133,7 @@ class TransmissionSerializerLight(serializers.Serializer):  # WARNING: Hack to s
         return attrs
 
 
-class RadiocomConfigurationSerializer(serializers.Serializer):
+class RadiocomConfigurationSerializer(serializers.ModelSerializer):
     icon_url = serializers.CharField(source='big_icon_url')
     big_icon_url = serializers.CharField()
     station_photos = serializers.SerializerMethodField()
@@ -150,5 +150,8 @@ class RadiocomConfigurationSerializer(serializers.Serializer):
         return SiteConfiguration.objects.get().twitter_address
 
     class Meta:
-        model = Episode
-        fields = ('station_name', 'big_icon_url', 'history', 'latitude', 'longitude', 'news_rss', 'stream_url')
+        model = RadiocomConfiguration
+        fields = (
+            'station_name', 'icon_url', 'big_icon_url', 'station_photos', 'history', 'latitude', 'longitude',
+            'news_rss', 'stream_url', 'facebook_url', 'twitter_url'
+        )
