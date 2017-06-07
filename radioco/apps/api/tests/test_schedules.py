@@ -71,7 +71,8 @@ class TestTransmissionAPI(TestDataMixin, APITestCase):
             {_key: response.data[0][_key] for _key in response.data[0] if _key not in ['schedule', 'programme', 'id']},
             {
                 'end': '2015-02-01T09:00:00Z', 'name': 'Morning News',
-                'programme_url': 'http://testserver/programmes/morning-news/', 'episode_url': None,
+                'programme_url': 'http://testserver/programmes/morning-news/',
+                'episode_url': None, 'episode': None,
                 'start': '2015-02-01T08:00:00Z', 'source': None,
                 'type': 'L', 'slug': 'morning-news'
             }
@@ -90,7 +91,8 @@ class TestTransmissionAPI(TestDataMixin, APITestCase):
             {_key: response.data[0][_key] for _key in response.data[0] if _key not in ['schedule', 'programme', 'id']},
             {
                 'end': '2015-02-01T10:00:00+01:00', 'name': u'Morning News',
-                'programme_url': u'http://testserver/programmes/morning-news/', 'episode_url': None,
+                'programme_url': u'http://testserver/programmes/morning-news/',
+                'episode_url': None, 'episode': None,
                 'start': '2015-02-01T09:00:00+01:00', 'source': None,
                 'type': u'L', 'slug': u'morning-news'
             }

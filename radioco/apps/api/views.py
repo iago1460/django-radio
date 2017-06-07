@@ -15,6 +15,7 @@ from rest_framework.response import Response
 
 import serializers
 from radioco.apps.api.viewsets import UpdateOnlyModelViewSet
+from radioco.apps.global_settings.models import RadiocomConfiguration
 from radioco.apps.programmes.models import Programme, Episode
 from radioco.apps.schedules.models import Schedule, Transmission
 
@@ -62,6 +63,10 @@ class ProgrammeViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(programmes, many=True)
         return Response(serializer.data)
+
+
+class RadiocomProgrammeViewSet(ProgrammeViewSet):
+    serializer_class = serializers.RadiocomProgrammeSerializer
 
 
 class EpisodeFilter(filters.FilterSet):
@@ -162,9 +167,18 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
         tz = requested_timezone or pytz.utc
         now = utils.timezone.now()
         transmissions = Transmission.at(now)
-        serializer = self.get_serializer(transmissions, many=True)
-        with override(timezone=tz):
-            return Response(serializer.data)
+        try:
+            transmission = transmissions.next()
+        except StopIteration:
+            return Response(None)
+        else:
+            serializer = self.get_serializer(transmission, many=False)
+            with override(timezone=tz):
+                return Response(serializer.data)
+
+
+class RadiocomTransmissionViewSet(TransmissionViewSet):
+    serializer_class = serializers.RadiocomTransmissionSerializer
 
 
 class TransmissionOperationViewSet(UpdateOnlyModelViewSet):
@@ -218,3 +232,11 @@ class TransmissionOperationViewSet(UpdateOnlyModelViewSet):
             else:
                 schedule.start_dt = new_start
                 schedule.save()
+
+
+class RadiocomStation(viewsets.ReadOnlyModelViewSet):
+    serializer_class = serializers.RadiocomConfigurationSerializer
+
+    def list(self, request, *args, **kwargs):
+        serializer = self.get_serializer(RadiocomConfiguration.objects.get(), many=False)
+        return Response(serializer.data)

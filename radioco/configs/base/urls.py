@@ -80,8 +80,6 @@ urlpatterns = [
     url(r'^api/1/recording_schedules/$', 'radioco.apps.api.recorder_views.recording_schedules', name="recording_schedules"),
     url(r'^api/1/submit_recorder/$', 'radioco.apps.api.recorder_views.submit_recorder', name="submit_recorder"),
 
-    url(r'^api/1/radiocom/radiostation/$', 'radioco.apps.api.radiocom_views.station_json', name='radiocom_station'),
-
     url(r'^api/2/', include('radioco.apps.api.urls', namespace="api"))
 ]
 

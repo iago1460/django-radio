@@ -65,6 +65,7 @@ class TestSerializers(TestDataMixin, TestCase):
                 'id': self.schedule.id,
                 'schedule': self.schedule.id,
                 'programme': self.schedule.programme.id,
+                'episode': None,
                 'source': None,
                 'type': u'L',
                 'start': '2015-01-06T14:00:00Z',
