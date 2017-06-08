@@ -1,11 +1,11 @@
-Django==1.8.17
+Django==1.8.18
 Pillow==3.4.2
 python-dateutil==2.6.0
-pytz==2016.4
+pytz==2017.2
 django-grappelli==2.7.3
 django-filebrowser==3.7.2
-djangorestframework==3.3.3
+djangorestframework==3.6.3
+django-filter==1.0.4
 django-ckeditor==5.1.1
 django-disqus==0.5
-django-filter==1.0.0
 git+git://github.com/iago1460/django-recurrence.git@v3.0

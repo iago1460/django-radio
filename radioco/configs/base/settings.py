@@ -55,6 +55,7 @@ INSTALLED_APPS = (
     'ckeditor',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_filters',
     'disqus',
     'recurrence',
 
