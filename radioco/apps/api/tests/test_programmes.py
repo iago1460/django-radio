@@ -19,13 +19,22 @@ class TestProgrammesAPI(TestDataMixin, APITestCase):
             end_date=datetime.date(2015, 8, 31),
         )
 
-    def test_api(self):
-        response = self.client.get('/api/2/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
     def test_programmes_get_all(self):
         response = self.client.get('/api/2/programmes')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn(
+            {
+                'category': None,
+                'id': self.summer_programme.id,
+                'language': 'en',
+                'name': 'Summer Programme',
+                'photo_url': u'http://testserver/media/defaults/default-programme-photo.jpg',
+                'rss_url': u'http://testserver/programmes/summer-programme/rss/',
+                'runtime': '01:00:00',
+                'slug': 'summer-programme',
+                'synopsis': ''
+            },
+            response.data)
 
     def test_programmes_before(self):
         response = self.client.get(

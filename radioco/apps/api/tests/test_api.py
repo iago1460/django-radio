@@ -2,6 +2,7 @@ import datetime
 
 import pytz
 from django.test import TestCase, RequestFactory
+from rest_framework import status
 
 from radioco.apps.api import serializers
 from radioco.apps.radioco.test_utils import TestDataMixin
@@ -9,6 +10,13 @@ from radioco.apps.schedules.models import Transmission
 
 
 MOCK_CONTEXT = {'request': RequestFactory().get('')}
+
+
+class TestApi(TestDataMixin):
+
+    def test_api(self):
+        response = self.client.get('/api/2/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 class TestSerializers(TestDataMixin, TestCase):
