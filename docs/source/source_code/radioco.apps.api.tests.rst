@@ -28,6 +28,14 @@ radioco.apps.api.tests.test_programmes module
     :undoc-members:
     :show-inheritance:
 
+radioco.apps.api.tests.test_radiocom_api module
+-----------------------------------------------
+
+.. automodule:: radioco.apps.api.tests.test_radiocom_api
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 radioco.apps.api.tests.test_recorder module
 -------------------------------------------
 

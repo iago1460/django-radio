@@ -51,3 +51,18 @@ Finally, there is a endpoint to get the current transmission:
 
     http://127.0.0.1:8000/api/2/transmissions/now
 
+
+************
+Radiocom API
+************
+*New in version 3.1*
+
+`Radiocom <https://github.com/ficiverson/radiocom-android>`_ is an Android application for Community Media Stations.
+RadioCo has the `Radiocom API <https://github.com/ficiverson/radiocom-android>`_ under the following urls:
+
+.. code-block:: bash
+
+    http://127.0.0.1:8000/api/2/radiocom/programmes
+    http://127.0.0.1:8000/api/2/radiocom/radiostation
+    http://127.0.0.1:8000/api/2/radiocom/transmissions
+    http://127.0.0.1:8000/api/2/radiocom/transmissions/now

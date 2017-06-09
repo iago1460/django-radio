@@ -135,7 +135,7 @@ def recurrence_after(recurrence, after_dt, start_dt):
 def recurrence_before(recurrence, before_dt, start_dt):
     """
     Fix for django-recurrence 1.3
-    Avoid outputting a non impossible dt
+    Avoid outputting a impossible dt
     """
     dt = recurrence.before(before_dt, True, dtstart=start_dt)
     if dt == start_dt:

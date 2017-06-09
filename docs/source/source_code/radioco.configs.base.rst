@@ -20,6 +20,14 @@ radioco.configs.base.settings module
     :undoc-members:
     :show-inheritance:
 
+radioco.configs.base.test_runner module
+---------------------------------------
+
+.. automodule:: radioco.configs.base.test_runner
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 radioco.configs.base.urls module
 --------------------------------
 

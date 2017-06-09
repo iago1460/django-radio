@@ -18,3 +18,4 @@ on any process that makes changes to your database.
     2.1
     3.0
     3.0.1
+    3.1
