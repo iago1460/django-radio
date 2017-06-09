@@ -104,7 +104,6 @@ class TestFullCalendarApi(TestDataMixin, APITestCase):
         self.assertEquals(new_schedule.start_dt, SPAIN_TZ.localize(datetime.datetime(2015, 1, 1, 20, 30, 0)))
 
     @override_settings(TIME_ZONE='UTC')
-    @mock.patch('recurrence.base.localtz', pytz.utc)  # Patching global variable!  : (
     def test_move_schedule_with_schedules(self):
         schedule = self._create_schedule_with_daily_recurrence()
         self._login()
@@ -154,7 +153,6 @@ class TestFullCalendarApi(TestDataMixin, APITestCase):
             ExcludedDates.objects.get(schedule=schedule, datetime=start_dt)
 
     @override_settings(TIME_ZONE='Europe/Madrid')
-    @mock.patch('recurrence.base.localtz', SPAIN_TZ)  # Patching global variable!  : (
     def test_move_schedule_with_schedules_in_tz(self):
         schedule = self._create_schedule_with_daily_recurrence()
         self._login()
