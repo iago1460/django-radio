@@ -122,7 +122,10 @@ class Schedule(models.Model):
     programme = models.ForeignKey(Programme, verbose_name=_("programme"))
     type = models.CharField(verbose_name=_("type"), choices=EMISSION_TYPE, max_length=1)
     calendar = models.ForeignKey(Calendar, verbose_name=_("calendar"))
-    recurrences = RecurrenceField(verbose_name=_("recurrences"))
+    recurrences = RecurrenceField(
+        verbose_name=_("recurrences"),
+        help_text=_("Excluded dates will appear in this list as result of dragging and dropping.")
+    )
 
     start_dt = models.DateTimeField(verbose_name=_('start date'))
 

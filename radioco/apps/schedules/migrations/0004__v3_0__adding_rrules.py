@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='schedule',
             name='recurrences',
-            field=recurrence.fields.RecurrenceField(default=recurrence.Recurrence(rrules=[recurrence.Rule(recurrence.WEEKLY)]), verbose_name='recurrences'),
+            field=recurrence.fields.RecurrenceField(default=recurrence.Recurrence(rrules=[recurrence.Rule(recurrence.WEEKLY)]), help_text='Excluded dates will appear in this list as result of dragging and dropping.', verbose_name='recurrences'),
             preserve_default=False,
         ),
         migrations.RunPython(migrate_daily_recurrences),
