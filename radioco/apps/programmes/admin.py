@@ -96,22 +96,29 @@ class NonStaffProgrammeAdmin(admin.ModelAdmin):
     search_fields = ['name']
     list_filter = ['_runtime', 'category']
     inlines = [NonStaffRoleInline]
-    fieldsets = (
-        (None, {
-            'fields': ('name', 'slug', 'synopsis', 'category', 'current_season', 'photo', 'language', '_runtime')
-        }),
-        (_('Advanced options'), {
-            'fields': ('start_date', 'end_date'),
-        }),
-    )
 
-    def get_form(self, request, obj=None, **kwargs):
-        if not obj or request.user.has_perm('programmes.add_programme'):
-            self.exclude = []
-            self.prepopulated_fields = {"slug": ("name",)}
+    def get_prepopulated_fields(self, request, obj=None):
+        if request.user.has_perm('programmes.add_programme'):
+            self.prepopulated_fields = {"slug": ("name",)}  # FIXME: DJANGO BUG?
+            return self.prepopulated_fields
+        return {}
+
+    def get_fieldsets(self, request, obj=None):
+        if request.user.has_perm('programmes.add_programme'):
+            return (
+                (None, {
+                    'fields': ('name', 'slug', 'synopsis', 'category', 'current_season', 'photo', 'language', '_runtime')
+                }),
+                (_('Advanced options'), {
+                    'fields': ('start_date', 'end_date'),
+                }),
+            )
         else:
-            self.exclude = ['slug', '_runtime']
-        return super(NonStaffProgrammeAdmin, self).get_form(request, obj, **kwargs)
+            return (
+                (None, {
+                    'fields': ('name', 'synopsis', 'category', 'current_season', 'photo', 'language')
+                }),
+            )
 
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)
