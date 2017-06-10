@@ -6,7 +6,7 @@
 What's new in 3.1
 *****************
 
-*   Fixing staging docker port issue. (Thanks to `@mmontes11 <https://github.com/mmontes11>` for report)
+*   Fixing staging docker port issue. (Thanks to `@mmontes11 <https://github.com/mmontes11>`_ for report)
 *   Adding stable `Radiocom API <https://github.com/ficiverson/radiocom-android>`_
 *   Solving ticket `#43 <https://github.com/iago1460/django-radio/issues/43>`_
 *   Upgrading libraries to last version
