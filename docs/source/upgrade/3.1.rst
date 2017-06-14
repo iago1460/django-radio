@@ -30,22 +30,28 @@ You should be able to keep your current database but make sure to create a backu
 
     pip install -r radioco/configs/base/requirements.txt
     python manage.py collectstatic
-    python manage.py migrate --fake-initial
-    python manage.py migrate
+    python manage.py migrate  # check the following note in case of error
+
+
+.. note::
+
+    When migrating from version 3.0 to version 3.1 the following error will appear during the migration
+    process `django.db.utils.ProgrammingError: relation "recurrence_date" already exists` to solve this please
+    run the following command:
+
+    ``python manage.py migrate --fake-initial``
+
 
 Or if you are using our docker setup:
 
 .. code-block:: bash
 
     inv docker.clean -e staging
-    inv docker.setup -e staging
-    inv docker.manage -e staging -c "migrate --fake-initial"
-    inv docker.setup -e staging
+    inv docker.setup -e staging  # check the following note in case of error
 
 
 .. note::
 
-    On the docker stack the error `django.db.utils.ProgrammingError: relation "recurrence_date" already exists`
-    will be fix faking the django-recurrence initial migration. You should see the following output:
+    If a migration error appear during the setup please run:
 
-    Applying recurrence.0001_initial... FAKED
+    ``inv docker.manage -e staging -c "migrate --fake-initial"``
