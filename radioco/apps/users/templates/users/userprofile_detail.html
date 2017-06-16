@@ -37,8 +37,9 @@
                     <h2>{% trans "Contributions"|upper %}</h2>
                     <dl id="tabulate">
                         {% for role in role_list %}
-                            <dt><a href="{% url 'programmes:detail' role.programme.slug %}">{{ role.programme }}
-                                {% if unspecified != role.role %}({{ role.get_role_display }}){% endif %}
+                            <dt><a href="{% url 'programmes:detail' role.programme.slug %}">
+                                {{ role.programme }}
+                                ({{ role.role }})
                             </a></dt>
                             <dd>{% if role.description %}{{ role.description }}{% else %}.{% endif %} </dd>
                         {% endfor %}

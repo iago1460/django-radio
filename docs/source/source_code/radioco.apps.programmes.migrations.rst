@@ -76,6 +76,22 @@ radioco.apps.programmes.migrations.0009__v3_0__small_tweaks module
     :undoc-members:
     :show-inheritance:
 
+radioco.apps.programmes.migrations.0010__dev__convert_role module
+-----------------------------------------------------------------
+
+.. automodule:: radioco.apps.programmes.migrations.0010__dev__convert_role
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+radioco.apps.programmes.migrations.0011__dev__ensure_one_user_role module
+-------------------------------------------------------------------------
+
+.. automodule:: radioco.apps.programmes.migrations.0011__dev__ensure_one_user_role
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------

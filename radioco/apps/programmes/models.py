@@ -36,18 +36,6 @@ if hasattr(settings, 'PROGRAMME_LANGUAGES'):
 else:
     PROGRAMME_LANGUAGES = settings.LANGUAGES
 
-PRESENTER = 'PR'
-INFORMER = 'IN'
-CONTRIBUTOR = 'CO'
-NOT_SPECIFIED = 'NO'
-
-ROLES = (
-    (NOT_SPECIFIED, _("Not specified")),
-    (PRESENTER, _("Presenter")),
-    (INFORMER, _("Informer")),
-    (CONTRIBUTOR, _("Contributor"))
-)
-
 
 class Programme(models.Model):
     class Meta:
@@ -258,11 +246,11 @@ class Episode(models.Model):
 class Participant(models.Model):
     person = models.ForeignKey(User, verbose_name=_("person"))
     episode = models.ForeignKey(Episode, verbose_name=_("episode"))
-    role = models.CharField(default=NOT_SPECIFIED, verbose_name=_("role"), choices=ROLES, max_length=2)
+    role = models.CharField(max_length=60, blank=True, null=True, verbose_name=_("role"))
     description = models.TextField(blank=True, verbose_name=_("description"))
 
     class Meta:
-        unique_together = ('person', 'episode', 'role')
+        unique_together = ('person', 'episode')
         verbose_name = _('contributor')
         verbose_name_plural = _('contributors')
         permissions = (
@@ -276,12 +264,12 @@ class Participant(models.Model):
 class Role(models.Model):
     person = models.ForeignKey(User, verbose_name=_("person"))
     programme = models.ForeignKey(Programme, verbose_name=_("programme"))
-    role = models.CharField(default=NOT_SPECIFIED, verbose_name=_("role"), choices=ROLES, max_length=2)
+    role = models.CharField(max_length=60, blank=True, null=True, verbose_name=_("role"))
     description = models.TextField(blank=True, verbose_name=_("description"))
     date_joined = models.DateField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('person', 'programme', 'role')
+        unique_together = ('person', 'programme')
         verbose_name = _('role')
         verbose_name_plural = _('roles')
         permissions = (

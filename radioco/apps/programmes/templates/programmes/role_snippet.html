@@ -12,13 +12,13 @@
                         <i class="fa fa-search"></i>
                     </a>
                 {% endif %}
-                <h5 class="a1" data-animate="fadeInDown">{{ role.get_role_display }}</h5>
+                <h5 class="a1" data-animate="fadeInDown">{{ role.role }}</h5>
             </div><!-- he bg -->
         </div><!-- he view -->
     </div><!-- he wrap -->
     <h4>{% firstof role.person.get_full_name role.person %}</h4>
-    {% if unspecified != role.role %}
-        <h5 class="ctitle">{{ role.get_role_display }}</h5>
+    {% if role.role %}
+        <h5 class="ctitle">{{ role.role }}</h5>
     {% endif %}
     <p>{{ role.description|truncatewords_html:20|safe }}</p>
     <div class="hline"></div>

@@ -60,6 +60,16 @@ This specifies who is the user of the recorder program::
     It's a good idea change this value for security reasons.
 
 
+LANGUAGE_CODE
+=============
+
+A string representing the language code for this installation. It provides a fallback language in case
+the user’s preferred language can’t be determined or is not supported by the website.
+`More info <https://docs.djangoproject.com/en/1.11/ref/settings/#language-code>`_::
+
+    LANGUAGE_CODE = 'en'
+
+
 PROGRAMME_LANGUAGES
 ===================
 *New in version 1.1*

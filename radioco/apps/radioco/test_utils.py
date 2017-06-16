@@ -25,7 +25,7 @@ from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
 from django.test import TransactionTestCase
 
-from radioco.apps.programmes.models import Programme, Episode, Podcast, Role, CONTRIBUTOR
+from radioco.apps.programmes.models import Programme, Episode, Podcast, Role
 from radioco.apps.schedules.models import Calendar, Schedule
 
 
@@ -103,7 +103,7 @@ def create_test_data():
             person=user,
             programme=programme,
             defaults={
-                'role': CONTRIBUTOR,
+                'role': 'Contributor',
                 'description': synopsis,
             }
         )

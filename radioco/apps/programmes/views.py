@@ -20,13 +20,13 @@ import datetime
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
-from radioco.apps.programmes.models import Episode, Programme, Role, Participant, NOT_SPECIFIED
+from radioco.apps.programmes.models import Episode, Programme, Role, Participant
 
 
 def programme_detail(request, slug):
     programme = get_object_or_404(Programme, slug=slug)
     context = {
-        'programme': programme, 'unspecified': NOT_SPECIFIED, 'language': programme.get_language_display(),
+        'programme': programme, 'language': programme.get_language_display(),
         'role_list': Role.objects.filter(programme=programme).select_related('person__userprofile', 'programme'),
         'episode_list': Episode.objects.filter(
             programme=programme
@@ -50,7 +50,6 @@ def episode_detail(request, slug, season_number, episode_number):
     context = {
         'episode': episode, 'programme': programme, 'now': timezone.now(),
         'episode_end_date': episode_end_date,
-        'role_list': Participant.objects.filter(episode=episode).select_related('person__userprofile'),
-        'unspecified': NOT_SPECIFIED
+        'role_list': Participant.objects.filter(episode=episode).select_related('person__userprofile')
     }
     return render(request, 'programmes/episode_detail.html', context)

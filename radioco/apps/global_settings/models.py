@@ -59,7 +59,7 @@ class SiteConfiguration(SingletonModel):
     google_analytics_id = models.CharField(
         max_length=255, blank=True, default="",
         verbose_name=_("Google Analytics ID"),
-        help_text=_('Example "%(value)s"') % {'value': 'UA-00000-0'}
+        help_text=_('Example "{value}"').format(value='UA-00000-0')
     )
     address = models.TextField(blank=True, default="", verbose_name=_("Address"), help_text=_('Can contain raw HTML.'))
 
