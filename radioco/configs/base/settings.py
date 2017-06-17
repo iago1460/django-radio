@@ -165,6 +165,8 @@ FILEBROWSER_VERSIONS = {
     'item_overlap': {'verbose_name': 'Big (6 col)', 'width': 600, 'height': 450, 'opts': 'crop upscale'},
     'programme_preview': {'verbose_name': 'Big (6 col)', 'width': 800, 'height': 600, 'opts': 'crop upscale'},
     'person_preview': {'verbose_name': 'Big (6 col)', 'width': 600, 'height': 600, 'opts': 'crop upscale'},
+    'rss_image': {'verbose_name': 'Big (6 col)', 'width': 144, 'height': 144, 'opts': 'crop'},
+    'itunes_image': {'verbose_name': 'Big (6 col)', 'width': 1400, 'height': 1400, 'opts': 'crop upscale'},
 }
 FILEBROWSER_ADMIN_VERSIONS = [
     'thumb', 'small', 'medium', 'large',

@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import pytz
+from bs4 import BeautifulSoup
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -90,6 +91,10 @@ class Programme(models.Model):
 
     start_date = models.DateField(blank=True, null=True, verbose_name=_('start date'))
     end_date = models.DateField(blank=True, null=True, verbose_name=_('end date'))
+
+    @property
+    def synopsis_text(self):
+        return BeautifulSoup(self.synopsis, "html.parser").text
 
     @property
     def runtime(self):
@@ -228,6 +233,10 @@ class Episode(models.Model):
     issue_date = models.DateTimeField(blank=True, null=True, db_index=True, verbose_name=_('issue date'))
     season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("season"))
     number_in_season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("No. in season"))
+
+    @property
+    def summary_text(self):
+        return BeautifulSoup(self.summary, "html.parser").text
 
     # FIXME: this is not true for archived episodes
     @property

@@ -6,7 +6,9 @@
 What's new in 3.2
 *****************
 
-*   Solving half of the ticket `#11 <https://github.com/iago1460/django-radio/issues/11>`_
+*   Solving ticket `#11 <https://github.com/iago1460/django-radio/issues/11>`_
+*   Improving rss (fixed itunes encoding and added images)
+*   Added rss autodiscovery
 
 
 ********************
@@ -29,6 +31,12 @@ You should be able to keep your current database but make sure to create a backu
     `the role field <https://github.com/iago1460/django-radio/issues/11>`_ into a editable CharField
     using your preferred language. Note you can change this value temporally to run this migration.
     `More info <https://docs.djangoproject.com/en/1.11/ref/settings/#language-code>`_.
+
+
+.. warning::
+
+    You must ensure your episodes and programmes only have one role per user. A database constraint
+    has been put in place as part of this migration.
 
 
 .. code-block:: bash

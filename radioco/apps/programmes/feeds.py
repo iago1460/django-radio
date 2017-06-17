@@ -20,8 +20,17 @@ import datetime
 from django.contrib.syndication.views import Feed
 from django.shortcuts import get_object_or_404
 from django.utils import feedgenerator
+from filebrowser.base import FileObject
+from filebrowser.sites import get_default_site
 
 from radioco.apps.programmes.models import Programme, Podcast
+
+# TODO:
+# Tag values are limited to 255 characters, except for <itunes:summary>, which can be up to 4000 characters.
+# Don't add leading or trailing spaces to your values.
+# Enclose all portions of your XML that contain embedded links in a CDATA section to prevent formatting issues,
+# and to ensure proper link functionality.
+# For example: <itunes:summary><![CDATA[<a href="http://www.apple.com">Apple</a>]]></itunes:summary>
 
 
 class iTunesFeed(feedgenerator.Rss201rev2Feed):
@@ -29,6 +38,7 @@ class iTunesFeed(feedgenerator.Rss201rev2Feed):
                  author_name=None, author_link=None, subtitle=None, categories=None,
                  feed_url=None, feed_copyright=None, feed_guid=None, ttl=None, **kwargs):
         self.programme = kwargs['programme']
+        self.request = kwargs['request']
         feedgenerator.Rss201rev2Feed.__init__(
             self, title, link, description, self.programme.language.lower(), author_email, author_name,
             author_link, subtitle, categories, feed_url, feed_copyright, feed_guid, ttl
@@ -41,17 +51,30 @@ class iTunesFeed(feedgenerator.Rss201rev2Feed):
 
     def add_root_elements(self, handler):
         super(iTunesFeed, self).add_root_elements(handler)
+        image_file = FileObject(self.programme.photo.name, site=get_default_site())
+        image_url = self.request.build_absolute_uri(image_file.version_generate('rss_image').url)
+        itunes_image_url = self.request.build_absolute_uri(image_file.version_generate('itunes_image').url)
         handler.addQuickElement('itunes:explicit', 'clean')
-        handler.addQuickElement('itunes:summary', self.programme.synopsis)
+        handler.addQuickElement('itunes:summary', self.programme.synopsis_text)
+        handler.addQuickElement('itunes:image', itunes_image_url)
         if self.programme.category:
             handler.addQuickElement('itunes:category', self.programme.category)
+        handler.addQuickElement(
+            'image',
+            '',
+            {
+                 'url': image_url,
+                 'title': self.programme.name,
+                 'link': self.programme.get_absolute_url(),
+            }
+        )
 
     def add_item_elements(self, handler, item):
         super(iTunesFeed, self).add_item_elements(handler, item)
 
         podcast = item["podcast"]
         handler.addQuickElement("itunes:subtitle", podcast.episode.title)
-        handler.addQuickElement("itunes:summary", podcast.episode.summary)
+        handler.addQuickElement("itunes:summary", podcast.episode.summary_text)
         handler.addQuickElement("itunes:duration", str(datetime.timedelta(seconds=podcast.duration)))
 
 
@@ -60,6 +83,7 @@ class ProgrammeFeed(Feed):
         return programme.name
 
     def get_object(self, request, slug):
+        self.request = request
         self.programme = get_object_or_404(Programme, slug=slug)
         return self.programme
 
@@ -72,7 +96,7 @@ class ProgrammeFeed(Feed):
     # feed_copyright = podcast_config.copyright
 
     def feed_extra_kwargs(self, programme):
-        return {'programme': programme}
+        return {'programme': programme, 'request': self.request}
 
     def items(self, programme):
         return Podcast.objects.filter(
@@ -113,4 +137,4 @@ class RssProgrammeFeed(ProgrammeFeed):
         return None
 
     def description(self, programme):
-        return programme.synopsis
+        return programme.synopsis_text  # text version

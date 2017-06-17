@@ -2,6 +2,10 @@
 {% load staticfiles i18n disqus_tags %}
 
 
+{% block extra_head %}
+    <link rel="alternate" type="application/atom+xml" title="RSS Feed for {{ episode.programme.name }}" href="{% url 'programmes:rss' episode.programme.slug %}" />
+{% endblock %}
+
 {% block page_title %}{{ episode }}{% endblock %}
 
 {% block programmes_class %}class="active"{% endblock %}
@@ -58,7 +62,7 @@
                 </p>
                 <p>
                     <b>{% trans 'RSS:' %}</b>
-                    <a href="{% url 'programmes:rss' programme.slug %}">
+                    <a rel="alternate" type="application/atom+xml" href="{% url 'programmes:rss' programme.slug %}">
                         <i class="fa fa-rss-square fa-2x"></i>
                     </a>
                 </p>
