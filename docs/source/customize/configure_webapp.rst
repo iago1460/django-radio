@@ -25,6 +25,10 @@ Podcast Configuration
 Settings related with the recorder, change here recording delays and get the Recorder token necessary 
 for the recorder programme to work
 
+Site
+====
+Change ``example.com`` with the fully qualified domain name associated with the website. Note that some RSS
+feed attributes will be incorrect if this value is not properly set up.
 
 *********
 Templates

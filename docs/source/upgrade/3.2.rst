@@ -7,8 +7,9 @@ What's new in 3.2
 *****************
 
 *   Solving ticket `#11 <https://github.com/iago1460/django-radio/issues/11>`_
-*   Improving rss (fixed itunes encoding and added images)
+*   Improving rss (adding images and fixing itunes encoding)
 *   Added rss autodiscovery
+*   Documenting `django.contrib.sites <https://docs.djangoproject.com/en/1.11/ref/contrib/sites/>`_
 
 
 ********************

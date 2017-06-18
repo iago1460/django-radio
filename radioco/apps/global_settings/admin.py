@@ -17,6 +17,7 @@
 
 from django.conf.urls import url, patterns
 from django.contrib import admin
+from django.contrib.sites.models import Site
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 
@@ -91,3 +92,8 @@ admin.site.register(SiteConfiguration, SingletonModelAdmin)
 admin.site.register(CalendarConfiguration, SingletonModelAdmin)
 admin.site.register(RadiocomConfiguration, SingletonModelAdmin)
 admin.site.register(PodcastConfiguration, PodcastConfigurationAdmin)
+
+# TODO: improve way to move Site model position
+admin.site.unregister(Site)
+Site._meta.app_label = 'global_settings'
+admin.site.register(Site)
