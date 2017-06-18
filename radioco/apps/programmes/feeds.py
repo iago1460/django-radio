@@ -56,16 +56,16 @@ class iTunesFeed(feedgenerator.Rss201rev2Feed):
         itunes_image_url = self.request.build_absolute_uri(image_file.version_generate('itunes_image').url)
         handler.addQuickElement('itunes:explicit', 'clean')
         handler.addQuickElement('itunes:summary', self.programme.synopsis_text)
-        handler.addQuickElement('itunes:image', itunes_image_url)
+        handler.addQuickElement('itunes:image', '', {'href': itunes_image_url})
         if self.programme.category:
-            handler.addQuickElement('itunes:category', self.programme.category)
+            handler.addQuickElement('itunes:category', '', {'text': self.programme.category})
         handler.addQuickElement(
             'image',
             '',
             {
                  'url': image_url,
                  'title': self.programme.name,
-                 'link': self.programme.get_absolute_url(),
+                 'link': self.request.build_absolute_uri(self.programme.get_absolute_url()),
             }
         )
 
@@ -133,8 +133,5 @@ class ProgrammeFeed(Feed):
 class RssProgrammeFeed(ProgrammeFeed):
     feed_type = iTunesFeed
 
-    def item_guid(self, episode):
+    def item_guid(self, podcast):
         return None
-
-    def description(self, programme):
-        return programme.synopsis_text  # text version
