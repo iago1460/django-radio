@@ -93,7 +93,7 @@ admin.site.register(CalendarConfiguration, SingletonModelAdmin)
 admin.site.register(RadiocomConfiguration, SingletonModelAdmin)
 admin.site.register(PodcastConfiguration, PodcastConfigurationAdmin)
 
-# TODO: improve way to move Site model position
-admin.site.unregister(Site)
-Site._meta.app_label = 'global_settings'
-admin.site.register(Site)
+# TODO: Move Site model position
+# admin.site.unregister(Site)
+# Site._meta.app_label = 'global_settings' # really weird issues
+# admin.site.register(Site)
