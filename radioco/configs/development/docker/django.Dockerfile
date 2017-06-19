@@ -29,5 +29,5 @@ RUN cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys \
 
 RUN pip install --upgrade pip setuptools virtualenv
 
-COPY tmp_requirements.txt requirements.txt
+ADD tmp_requirements.txt requirements.txt
 RUN pip install -r requirements.txt

@@ -18,5 +18,5 @@ RUN npm install -g bower
 
 RUN pip install --upgrade pip setuptools virtualenv
 
-COPY tmp_requirements.txt requirements.txt
+ADD tmp_requirements.txt requirements.txt
 RUN pip install -r requirements.txt
