@@ -16,10 +16,10 @@ services:
       - .env
     expose:
       - ${PORT_BACKEND}
-    command: /bin/sh -c "cd /radioco && gunicorn radioco.configs.staging.wsgi -b 0.0.0.0:${PORT_BACKEND}"
+    command: /bin/sh -c "cd /radioco && uwsgi --socket 0.0.0.0:${PORT_BACKEND} --module radioco.configs.staging.wsgi --master --processes 2 --threads 1"
 
   staging_nginx:
-    image: nginx:1.11-alpine
+    image: nginx:1.13.1-alpine
     restart: always
     ports:
       - "${PORT_NGINX}:${PORT_NGINX}"
@@ -32,6 +32,12 @@ services:
     command: /bin/sh -c "envsubst '$$PORT_NGINX $$PORT_BACKEND' < /tmp/nginx.conf > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
     links:
       - staging_django
+
+  staging_memcached:
+    image: memcached:1.4.37-alpine
+    expose:
+      - 11211
+    command: memcached -m 512m
 
 
   # Datastore Containers -------------------------------------------------------

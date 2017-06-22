@@ -8,7 +8,7 @@ Api documentation.
 *************
 Browsable API
 *************
-*New in version 3.0*
+*Experimental in version 3.0*
 
 RadioCo has a Web browsable API, go to http://127.0.0.1:8000/api/2/ in your browser to explore it.
 

@@ -30,8 +30,21 @@ DATABASES = {
         'USER': os.environ.get('POSTGRES_USER', 'radioco'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'radioco'),
         'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
+        'CONN_MAX_AGE': 600
     }
 }
+
+# Enabling cache
+TEMPLATES[0]['OPTIONS']['loaders'] = [('django.template.loaders.cached.Loader', TEMPLATES[0]['OPTIONS']['loaders'])]
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '{}:11211'.format(os.environ['MEMCACHED_HOST']),
+    }
+}
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 
 # Import local settings

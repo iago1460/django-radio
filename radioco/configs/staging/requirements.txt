@@ -1,3 +1,4 @@
 -r ../base/requirements.txt
 psycopg2==2.7.1
-gunicorn==19.7.1
+python-memcached==1.58
+uwsgi==2.0.15

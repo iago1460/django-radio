@@ -40,6 +40,7 @@
                 droppable: false,
                 events: {
                     url: '{% url "api:transmission-list" %}',
+                    cache: true,
                     contentType: 'application/json',
                     startParam: 'after',
                     endParam: 'before',

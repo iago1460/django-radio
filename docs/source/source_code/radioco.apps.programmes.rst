@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
 
     radioco.apps.programmes.migrations
+    radioco.apps.programmes.tests
 
 Submodules
 ----------
@@ -31,14 +32,6 @@ radioco.apps.programmes.models module
 -------------------------------------
 
 .. automodule:: radioco.apps.programmes.models
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-radioco.apps.programmes.tests module
-------------------------------------
-
-.. automodule:: radioco.apps.programmes.tests
     :members:
     :undoc-members:
     :show-inheritance:
