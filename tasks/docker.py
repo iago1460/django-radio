@@ -117,32 +117,32 @@ def manage(ctx, environment=None, command='help'):
 
 
 @task
-@set_env
-def ssh(ctx):
+def ssh(ctx, environment=None, service_name=None):
+    ctx = _set_env(ctx, environment)
     # WARNING: Control+C is not being handle properly? looks fixed on version 0.14.0
-    ctx.run(
-        'docker-compose exec {image} {command}'.format(
-            image=_get_service_name(ctx),
-            command='bash -c "cd /radioco{path} && bash"'.format(path=ctx['env_path'].replace(BASE_DIR, ''))
-        ), pty=True
-    )
+    with chdir(ctx['env_path']):
+        ctx.run(
+            'docker-compose exec {image} {command}'.format(
+                image=_get_service_name(ctx, service_name),
+                command='bash -c "cd /radioco{path} && bash"'.format(path=ctx['env_path'].replace(BASE_DIR, ''))
+            ), pty=True
+        )
 
 
 @task(name='exec')
-def execute(ctx, command, environment=None):
+def execute(ctx, command, environment=None, service_name=None):
     ctx = _set_env(ctx, environment)
     relative_path = ctx['env_path'].replace(BASE_DIR, '')
     with chdir(ctx['env_path']):
         ctx.run(
             'docker-compose exec {image} {command}'.format(
-                image=_get_service_name(ctx),
+                image=_get_service_name(ctx, service_name),
                 command='/bin/sh -c "cd /radioco{path}; {command}"'.format(path=relative_path, command=command)
             ), pty=True
         )
 
 
 @task
-@set_env
 def attach(ctx, environment=None, service_name=None):
     ctx = _set_env(ctx, environment)
 
