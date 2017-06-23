@@ -352,12 +352,9 @@ class Transmission(object):
     """
     def __init__(self, schedule, date, episode=None):
         self.schedule = schedule
+        self.programme = schedule.programme
         self.start = date
         self.episode = episode
-
-    @property
-    def programme(self):
-        return self.schedule.programme
 
     @property
     def name(self):
@@ -369,7 +366,7 @@ class Transmission(object):
 
     @property
     def end(self):
-        return self.start + self.schedule.runtime
+        return self.start + self.programme.runtime
 
     @property
     def programme_url(self):
@@ -391,7 +388,7 @@ class Transmission(object):
         ).filter(
             Q(effective_end_dt__gt=at) |
             Q(effective_end_dt__isnull=True)
-        )
+        ).select_related('programme')
         for schedule in schedules:
             date = schedule.date_before(at)
             if date and date <= at < date + schedule.runtime:
@@ -416,7 +413,7 @@ class Transmission(object):
         ).filter(
             Q(effective_end_dt__gt=after) |
             Q(effective_end_dt__isnull=True)
-        )
+        ).select_related('programme')
 
         # Querying episodes episodes in that period of time
         episodes = Episode.objects.filter(

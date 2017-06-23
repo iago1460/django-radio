@@ -38,5 +38,11 @@ services:
     ports:
       - "${PORT_POSTGRES}:5432"
 
+  development_memcached:
+    image: memcached:1.4.37-alpine
+    expose:
+      - 11211
+    command: memcached -m 512m
+
 volumes:
     data_development_postgres:

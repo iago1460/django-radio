@@ -10,7 +10,9 @@ What's new in 3.2
 *   Improving rss (adding images and fixing itunes encoding)
 *   Added rss autodiscovery
 *   Documenting `django.contrib.sites <https://docs.djangoproject.com/en/1.11/ref/contrib/sites/>`_
-*   Improve performance `(using nginx cache, uwsgi, memcached) <https://github.com/iago1460/django-radio/tree/master/radioco/configs/staging>`_
+*   Improving ORM queries
+*   Adding cache to singleton models using memcached
+*   Improve performance `in staging config <https://github.com/iago1460/django-radio/tree/master/radioco/configs/staging>`_ using nginx cache and uwsgi
 
 
 ********************

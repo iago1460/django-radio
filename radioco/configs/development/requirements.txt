@@ -1,6 +1,7 @@
 -r ../base/requirements.txt
 pygraphviz
 django-debug-toolbar==1.6
+python-memcached==1.58
 coverage
 mock
 psycopg2

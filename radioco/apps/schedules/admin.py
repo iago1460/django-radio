@@ -101,7 +101,7 @@ class ScheduleAdmin(admin.ModelAdmin):
     change_list_template = "admin/schedules/calendar.html"
 
     def changelist_view(self, request, extra_context=None):
-        calendar_configuration = CalendarConfiguration.objects.get()
+        calendar_configuration = CalendarConfiguration.get_global()
         extra_context = extra_context or {}
         extra_context['calendars'] = Calendar.objects.all()
         extra_context['slot_duration'] = unicode(calendar_configuration.slot_duration)

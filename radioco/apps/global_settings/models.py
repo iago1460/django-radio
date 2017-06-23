@@ -19,6 +19,7 @@ import datetime
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.db import models
 from django.utils.translation import ugettext as _u
 from django.utils.translation import ugettext_lazy as _
@@ -39,14 +40,26 @@ class SingletonModel(models.Model):
     def save(self, *args, **kwargs):
         self.pk = 1
         super(SingletonModel, self).save(*args, **kwargs)
+        self._set_cache(self)
 
     def delete(self, *args, **kwargs):
         pass
 
     @classmethod
     def get_global(cls):
-        obj, created = cls.objects.get_or_create(pk=1)
+        obj = cls._get_cache()
+        if not obj:
+            obj, created = cls.objects.get_or_create(pk=1)
+            cls._set_cache(obj)
         return obj
+
+    @classmethod
+    def _get_cache(cls):
+        return cache.get(cls.__name__)
+
+    @classmethod
+    def _set_cache(cls, obj):
+        cache.set(cls.__name__, obj)
 
     class Meta:
         abstract = True

@@ -144,10 +144,10 @@ class RadiocomConfigurationSerializer(serializers.ModelSerializer):
         return filter(lambda x: bool(x), [image_url.strip() for image_url in obj.station_photos.split(',')])
 
     def get_facebook_url(self, obj):
-        return SiteConfiguration.objects.get().facebook_address
+        return SiteConfiguration.get_global().facebook_address
 
     def get_twitter_url(self, obj):
-        return SiteConfiguration.objects.get().twitter_address
+        return SiteConfiguration.get_global().twitter_address
 
     class Meta:
         model = RadiocomConfiguration

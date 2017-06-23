@@ -71,18 +71,9 @@
                     <a href="{% url 'users:list' %}">{% trans "people"|title %}</a>
                 </li>
                 <li class="separator"></li>
-                {% if user.is_authenticated %}
-                    <li>
-                        <a href="{% url 'admin:index' %}">{% trans "admin"|title %}</a>
-                    </li>
-                    <li>
-                        <a href="{% url 'logout' %}">{% trans "logout"|title %}</a>
-                    </li>
-                {% else %}
-                    <li>
-                        <a href="{% url 'admin:index' %}">{% trans "login"|title %}</a>
-                    </li>
-                {% endif %}
+                <li>
+                    <a href="{% url 'admin:index' %}">{% trans "admin area"|title %}</a>
+                </li>
             </ul>
         </div>
     </div>

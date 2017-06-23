@@ -26,7 +26,7 @@ def check_recorder_program(user):
 @permission_classes((IsAuthenticated,))
 @user_passes_test(check_recorder_program)
 def recording_schedules(request):
-    podcast_config = PodcastConfiguration.objects.get()
+    podcast_config = PodcastConfiguration.get_global()
     default_tz = timezone.get_default_timezone()
     start = default_tz.localize(datetime.datetime.strptime(request.GET.get('start'), '%Y-%m-%d %H:%M:%S'))
     next_hours = int(request.GET.get("next_hours") or podcast_config.next_events)
@@ -63,7 +63,7 @@ def recording_schedules(request):
 @permission_classes((IsAuthenticated,))
 @user_passes_test(check_recorder_program)
 def submit_recorder(request):
-    podcast_config = PodcastConfiguration.objects.get()
+    podcast_config = PodcastConfiguration.get_global()
     default_tz = timezone.get_default_timezone()
 
     programme_id = int(request.GET.get('programme_id'))

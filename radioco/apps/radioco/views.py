@@ -56,7 +56,7 @@ def index(request):
         pass
 
     other_programmes = Programme.objects.order_by('?').all()[:10]
-    latest_episodes = Episode.objects.filter(podcast__isnull=False).order_by('-issue_date')[:5]
+    latest_episodes = Episode.objects.filter(podcast__isnull=False).select_related('programme').order_by('-issue_date')[:5]
 
     context = {
         'now': now, 'percentage': percentage,

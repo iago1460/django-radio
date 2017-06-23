@@ -75,14 +75,14 @@
                         {% endif %}
 
                         {% for transmission in next_transmissions %}
-                            {% with schedule=transmission.schedule date=transmission.start %}
+                            {% with programme=transmission.programme date=transmission.start %}
                                 <li class="list-group-item">
                                     <h4>
                                         <span class="label label-success">{{ date|date:"G:i" }}</span>
                                         {% if episode %}
-                                            <a href="{% url 'programmes:episode_detail' schedule.programme.slug episode.season episode.number_in_season %}">{{ schedule.programme.name }}</a>
+                                            <a href="{% url 'programmes:episode_detail' programme.slug episode.season episode.number_in_season %}">{{ programme.name }}</a>
                                         {% else %}
-                                            <a href="{% url 'programmes:detail' schedule.programme.slug %}">{{ schedule.programme.name }}</a>
+                                            <a href="{% url 'programmes:detail' programme.slug %}">{{ programme.name }}</a>
                                         {% endif %}
                                     </h4>
                                 </li>

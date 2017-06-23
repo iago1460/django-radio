@@ -17,13 +17,6 @@
 
 from radioco.configs.base.settings import *
 
-INSTALLED_APPS += (
-    'debug_toolbar',
-)
-
-MIDDLEWARE_CLASSES += (
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-)
 
 DATABASES = {
     'default': {
@@ -37,12 +30,32 @@ DATABASES = {
 
 
 # Django Debug Toolbar
+INSTALLED_APPS += (
+    'debug_toolbar',
+)
+
+MIDDLEWARE_CLASSES += (
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+)
+
+
 def show_toolbar(request):
     return True
 
 DEBUG_TOOLBAR_CONFIG = {
     "SHOW_TOOLBAR_CALLBACK": show_toolbar,
 }
+
+
+# Test cache
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '{}:11211'.format(os.environ['MEMCACHED_HOST']),
+    }
+}
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 
 # Import local settings

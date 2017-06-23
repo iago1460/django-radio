@@ -34,7 +34,7 @@ from radioco.apps.schedules.models import Schedule
 
 
 def schedule_list(request):
-    calendar_configuration = CalendarConfiguration.objects.get()
+    calendar_configuration = CalendarConfiguration.get_global()
     context = {
         'min_time': calendar_configuration.min_time.strftime('%H:%M:%S'),
         'max_time': calendar_configuration.max_time.strftime('%H:%M:%S'),

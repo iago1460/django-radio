@@ -14,13 +14,15 @@ from radioco.apps.programmes.models import Programme, Episode
 from radioco.apps.schedules.models import Schedule, Calendar
 
 
-def _get_podcast_config_mock():
-    podcast_config = PodcastConfiguration()
-    podcast_config.url_source = u''
-    podcast_config.start_delay = 20
-    podcast_config.end_delay = 10
-    podcast_config.next_events = 48
-    return podcast_config
+class PodcastMock():
+    @classmethod
+    def _get_podcast_config_mock(cls):
+        podcast_config = PodcastConfiguration()
+        podcast_config.url_source = u''
+        podcast_config.start_delay = 20
+        podcast_config.end_delay = 10
+        podcast_config.next_events = 48
+        return podcast_config
 
 
 @override_settings(TIME_ZONE='Europe/Madrid')
@@ -70,7 +72,7 @@ class TestProgrammesAPI(APITestCase):
     def _login(self):
         self.client.login(username="iago", password="1234")
 
-    @mock.patch('radioco.apps.global_settings.models.PodcastConfiguration.objects.get', _get_podcast_config_mock)
+    @mock.patch('radioco.apps.global_settings.models.PodcastConfiguration.get_global', PodcastMock._get_podcast_config_mock)
     def test_recording_schedules(self):
         self._login()
         self.assertEquals(Episode.objects.count(), 1)
@@ -80,7 +82,7 @@ class TestProgrammesAPI(APITestCase):
                 u'start': u'2015-01-01 00:00:00',
                 u'next_hours': 24 + 15
             },
-            HTTP_AUTHORIZATION='Token {token}'.format(token=PodcastConfiguration.objects.get().recorder_token)
+            HTTP_AUTHORIZATION='Token {token}'.format(token=PodcastConfiguration.get_global().recorder_token)
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEquals(Episode.objects.count(), 2)
@@ -102,8 +104,7 @@ class TestProgrammesAPI(APITestCase):
             ]
         )
 
-
-    @mock.patch('radioco.apps.global_settings.models.PodcastConfiguration.objects.get', _get_podcast_config_mock)
+    @mock.patch('radioco.apps.global_settings.models.PodcastConfiguration.get_global', PodcastMock._get_podcast_config_mock)
     def test_submit_recorder(self):
         self._login()
         podcast_data = {
@@ -117,7 +118,7 @@ class TestProgrammesAPI(APITestCase):
         response = self.client.get(
             u'/api/1/submit_recorder/',
             podcast_data,
-            HTTP_AUTHORIZATION='Token {token}'.format(token=PodcastConfiguration.objects.get().recorder_token)
+            HTTP_AUTHORIZATION='Token {token}'.format(token=PodcastConfiguration.get_global().recorder_token)
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -126,7 +127,7 @@ class TestProgrammesAPI(APITestCase):
             programme=self.recorder_programme
         )
         expected_info = {
-            'url': PodcastConfiguration.objects.get().url_source + podcast_data['file_name'],
+            'url': PodcastConfiguration.get_global().url_source + podcast_data['file_name'],
             'duration': self.recorder_programme._runtime,
             'mime_type': u'audio/mp3',
             'length': 0,

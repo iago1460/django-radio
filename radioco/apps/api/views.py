@@ -78,7 +78,7 @@ class EpisodeFilter(filters.FilterSet):
 
 
 class EpisodeViewSet(viewsets.ReadOnlyModelViewSet):  # FIXME: allowing creation breaks the view
-    queryset = Episode.objects.all()
+    queryset = Episode.objects.all().select_related('programme')
     filter_backends = (filters.DjangoFilterBackend, filters.OrderingFilter)
     filter_class = EpisodeFilter
     serializer_class = serializers.EpisodeSerializer
@@ -238,5 +238,5 @@ class RadiocomStation(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.RadiocomConfigurationSerializer
 
     def list(self, request, *args, **kwargs):
-        serializer = self.get_serializer(RadiocomConfiguration.objects.get(), many=False)
+        serializer = self.get_serializer(RadiocomConfiguration.get_global(), many=False)
         return Response(serializer.data)

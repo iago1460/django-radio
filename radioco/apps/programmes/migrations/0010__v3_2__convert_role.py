@@ -9,6 +9,14 @@ from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
 
+# We need to keep a reference for the following translations
+LEGACY_TRANSLATIONS = (
+    _("Not specified"),
+    _("Presenter"),
+    _("Informer"),
+    _("Contributor")
+)
+
 LANGUAGE = settings.LANGUAGE_CODE
 
 ROLES = dict((
@@ -17,14 +25,6 @@ ROLES = dict((
     ('IN', "Informer"),
     ('CO', "Contributor")
 ))
-
-# We need to keep a reference for the following translations
-LEGACY_TRANSLATIONS = (
-    _("Not specified"),
-    _("Presenter"),
-    _("Informer"),
-    _("Contributor")
-)
 
 
 def convert_role_choice_to_value(apps, schema_editor):
