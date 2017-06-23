@@ -101,7 +101,7 @@ class ProgrammeFeed(Feed):
     def items(self, programme):
         return Podcast.objects.filter(
             episode__programme=programme
-        ).order_by('-episode__issue_date').select_related('episode')
+        ).order_by('-episode__issue_date').select_related('episode__programme')
 
     def item_title(self, podcast):
         return podcast.episode

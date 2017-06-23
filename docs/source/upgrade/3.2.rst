@@ -12,7 +12,7 @@ What's new in 3.2
 *   Documenting `django.contrib.sites <https://docs.djangoproject.com/en/1.11/ref/contrib/sites/>`_
 *   Improving ORM queries
 *   Adding cache to singleton models using memcached
-*   Improve performance `in staging config <https://github.com/iago1460/django-radio/tree/master/radioco/configs/staging>`_ using nginx cache and uwsgi
+*   Improve performance `in staging config <https://github.com/iago1460/django-radio/tree/master/radioco/configs/staging>`_ using nginx cache, uwsgi and caching templates
 
 
 ********************
@@ -49,7 +49,7 @@ You should be able to keep your current database but make sure to create a backu
 
 .. note::
 
-    If you have a custom production enviroment please consider our
+    If you have a custom production environment please consider our
     `staging setup <https://github.com/iago1460/django-radio/tree/master/radioco/configs/staging>`_ to improve performance.
 
 
