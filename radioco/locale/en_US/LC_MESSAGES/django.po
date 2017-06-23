@@ -1,0 +1,905 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: django-radio\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-12-24 17:08+0100\n"
+"PO-Revision-Date: 2015-03-08 19:05+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: English (United States) (http://www.transifex.com/radioco/django-radio/language/en_US/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en_US\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: radioco/apps/api/recorder_views.py:53
+#: radioco/apps/programmes/templates/programmes/programme_detail.html:56
+msgid "Season"
+msgstr ""
+
+#: radioco/apps/global_settings/admin.py:66 radioco/apps/users/admin.py:138
+#, python-format
+msgid "%(obj)s was changed successfully."
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:56
+msgid "Site Name"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:57
+msgid "Footer"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:58
+msgid "More info"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:61
+msgid "Google Analytics ID"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:62
+#, python-format
+msgid "Example \"%(value)s\""
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:64
+msgid "Address"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:64
+msgid "Can contain raw HTML."
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:66
+msgid "Twitter address"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:67
+msgid "facebook address"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:74
+#: radioco/apps/global_settings/models.py:75
+msgid "Global Configuration"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:80
+msgid "URL Source"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:82
+msgid ""
+"The source url where the recordings will be available after the upload. For "
+"example: \"http://RadioCo.org/recordings/\""
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:86
+msgid "start delay"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:87
+msgid "In seconds. Initial delay of recordings"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:89
+msgid "end delay"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:89
+msgid "In seconds."
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:91
+msgid "next events"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:92
+msgid "In hours. The next events supplied to the recorder program"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:106
+msgid "Variable USERNAME_RADIOCO_RECORDER doesn't exist in your settings file"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:114
+#: radioco/apps/global_settings/models.py:115
+msgid "Podcast Configuration"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:120
+msgid "slot duration"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:121
+msgid "The frequency for displaying time slots. Format hh:mm:ss"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:124
+msgid "first day"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:125
+msgid "The day that the calendar begins"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:128
+msgid "min time"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:130
+msgid ""
+"Determines the starting time that will be displayed, even when the "
+"scrollbars have been scrolled all the way up."
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:134
+msgid "max time"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:136
+msgid ""
+"Determines the end time (exclusively) that will be displayed, even when the "
+"scrollbars have been scrolled all the way down."
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:145
+#: radioco/apps/global_settings/models.py:146
+msgid "Calendar Configuration"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:152
+msgid "station name"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:153
+msgid "The name of radio station"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:156
+msgid "big icon url"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:157
+#: radioco/apps/global_settings/models.py:161
+msgid "The icon url where the store icon is."
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:160
+msgid "icon url"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:164
+msgid "history"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:165
+msgid "The history of the station"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:167
+msgid "latitude"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:168
+msgid "longitude"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:170
+msgid "news_rss"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:171
+msgid "The news rss url where the recordings news rss"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:174
+msgid "station photos"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:175
+msgid "A list of urls to the station photos"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:178
+msgid "stream url"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:179
+msgid "The stream url where its hear actual program"
+msgstr ""
+
+#: radioco/apps/global_settings/models.py:187
+#: radioco/apps/global_settings/models.py:188
+msgid "Radiocom Configuration"
+msgstr ""
+
+#: radioco/apps/global_settings/templates/global_settings/admin_change_form.html:8
+#: radioco/apps/global_settings/templates/global_settings/admin_object_history.html:7
+#: radioco/apps/radioco/templates/radioco/index.html:7
+#: radioco/apps/radioco/templates/radioco/logged_out.html:6
+msgid "Home"
+msgstr ""
+
+#: radioco/apps/global_settings/templates/global_settings/admin_change_form.html:15
+#: radioco/apps/global_settings/templates/global_settings/admin_object_history.html:10
+msgid "History"
+msgstr ""
+
+#: radioco/apps/global_settings/templates/global_settings/admin_change_form.html:19
+msgid "View on site"
+msgstr ""
+
+#: radioco/apps/programmes/admin.py:60
+msgid "This user has already a role in this programme."
+msgstr ""
+
+#: radioco/apps/programmes/admin.py:103 radioco/apps/schedules/admin.py:95
+msgid "Advanced options"
+msgstr ""
+
+#: radioco/apps/programmes/admin.py:152
+msgid "This user has already a role in this episode."
+msgstr ""
+
+#: radioco/apps/programmes/admin.py:205 radioco/apps/programmes/admin.py:212
+msgid "There are no available schedules."
+msgstr ""
+
+#: radioco/apps/programmes/admin.py:220 radioco/apps/programmes/models.py:55
+#: radioco/apps/radioco/templates/radioco/base.html:68
+msgid "programmes"
+msgstr ""
+
+#: radioco/apps/programmes/admin.py:236 radioco/apps/programmes/models.py:240
+msgid "issue date"
+msgstr ""
+
+#: radioco/apps/programmes/admin.py:241
+msgid "Next episodes"
+msgstr ""
+
+#: radioco/apps/programmes/admin.py:242
+msgid "Until now"
+msgstr ""
+
+#: radioco/apps/programmes/admin.py:243
+msgid "Last week"
+msgstr ""
+
+#: radioco/apps/programmes/admin.py:244
+msgid "Since two weeks ago"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:45
+msgid "Not specified"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:46
+msgid "Presenter"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:47
+msgid "Informer"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:48
+msgid "Contributor"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:54 radioco/apps/programmes/models.py:238
+#: radioco/apps/programmes/models.py:278 radioco/apps/schedules/models.py:122
+msgid "programme"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:59
+msgid "Arts"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:60
+msgid "Business"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:61
+msgid "Comedy"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:62
+msgid "Education"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:63
+msgid "Games & Hobbies"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:64
+msgid "Government & Organizations"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:65
+msgid "Health"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:66
+msgid "Kids & Family"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:67
+msgid "Music"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:68
+msgid "News & Politics"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:69
+msgid "Religion & Spirituality"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:70
+msgid "Science & Medicine"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:71
+msgid "Society & Culture"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:72
+msgid "Sports & Recreation"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:73
+msgid "Technology"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:74
+msgid "TV & Film"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:78 radioco/apps/schedules/models.py:68
+msgid "name"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:81
+msgid "announcers"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:83
+msgid "synopsis"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:85
+msgid "photo"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:88
+msgid "language"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:93
+msgid "current season"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:96
+msgid "category"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:99
+msgid "Please DON'T change this value. It's used to build URL's."
+msgstr ""
+
+#: radioco/apps/programmes/models.py:101
+msgid "runtime"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:101
+msgid "In minutes."
+msgstr ""
+
+#: radioco/apps/programmes/models.py:103 radioco/apps/schedules/models.py:127
+msgid "start date"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:104
+msgid "end date"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:109
+msgid "Runtime not set"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:230 radioco/apps/programmes/models.py:260
+msgid "episode"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:231
+msgid "episodes"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:236
+msgid "title"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:237
+#: radioco/apps/radioco/templates/radioco/base.html:71
+msgid "people"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:239
+msgid "summary"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:241
+msgid "season"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:242
+msgid "No. in season"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:259 radioco/apps/programmes/models.py:277
+msgid "person"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:261 radioco/apps/programmes/models.py:279
+#: radioco/apps/programmes/models.py:285
+msgid "role"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:262 radioco/apps/programmes/models.py:280
+msgid "description"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:266
+msgid "contributor"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:267
+msgid "contributors"
+msgstr ""
+
+#: radioco/apps/programmes/models.py:286
+msgid "roles"
+msgstr ""
+
+#: radioco/apps/programmes/templates/programmes/episode_detail.html:21
+msgid "Podcast"
+msgstr ""
+
+#: radioco/apps/programmes/templates/programmes/episode_detail.html:25
+msgid "Your browser does not support the audio element."
+msgstr ""
+
+#: radioco/apps/programmes/templates/programmes/episode_detail.html:32
+msgid "Sorry, this podcast isn't available yet"
+msgstr ""
+
+#: radioco/apps/programmes/templates/programmes/episode_detail.html:34
+msgid "The podcast will be available in"
+msgstr ""
+
+#: radioco/apps/programmes/templates/programmes/episode_detail.html:41
+#: radioco/apps/programmes/templates/programmes/programme_detail.html:22
+#: radioco/apps/users/templates/users/userprofile_detail.html:25
+msgid "Programme Details"
+msgstr ""
+
+#: radioco/apps/programmes/templates/programmes/episode_detail.html:44
+msgid "Date:"
+msgstr ""
+
+#: radioco/apps/programmes/templates/programmes/episode_detail.html:48
+msgid "Schedule pending"
+msgstr ""
+
+#: radioco/apps/programmes/templates/programmes/episode_detail.html:52
+msgid "Programme:"
+msgstr ""
+
+#: radioco/apps/programmes/templates/programmes/episode_detail.html:56
+msgid "Category:"
+msgstr ""
+
+#: radioco/apps/programmes/templates/programmes/episode_detail.html:60
+msgid "RSS:"
+msgstr ""
+
+#: radioco/apps/programmes/templates/programmes/episode_detail.html:84
+msgid "Participants"
+msgstr ""
+
+#: radioco/apps/programmes/templates/programmes/programme_detail.html:50
+msgid "Episodes"
+msgstr ""
+
+#: radioco/apps/programmes/templates/programmes/programme_list.html:5
+msgid "Programme list"
+msgstr ""
+
+#: radioco/apps/programmes/templates/programmes/programme_list.html:24
+msgid "More Info"
+msgstr ""
+
+#: radioco/apps/programmes/templates/programmes/programme_list.html:30
+msgid "No programmes are available"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/base.html:62
+#: radioco/apps/radioco/templates/radioco/logged_out.html:13
+msgid "home"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/base.html:65
+#: radioco/apps/schedules/models.py:120
+msgid "schedules"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/base.html:76
+msgid "admin"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/base.html:79
+msgid "logout"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/base.html:83
+msgid "login"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/base.html:121
+msgid "About"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/base.html:130
+msgid "Social Links"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/base.html:148
+msgid "Our Address"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/base.html:158
+#, python-format
+msgid "This website is running %(url)s"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/errors/404.html:6
+#: radioco/apps/radioco/templates/radioco/errors/404.html:10
+#: radioco/apps/radioco/templates/radioco/errors/404.html:15
+msgid "Page not found"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/errors/404.html:16
+msgid "The page you requested does not exist."
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/errors/500.html:6
+#: radioco/apps/radioco/templates/radioco/errors/500.html:10
+#: radioco/apps/radioco/templates/radioco/errors/500.html:15
+msgid "Error"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/errors/500.html:16
+msgid "Sorry, an error occurred."
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/index.html:21
+msgid "On air"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/index.html:46
+msgid "There are currently no programmes on air"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/index.html:47
+msgid "Check all our programmes"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/index.html:48
+msgid "See all"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/index.html:63
+msgid "playlist"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/index.html:69
+msgid "Now"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/index.html:92
+msgid "There are currently no programmes"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/index.html:105
+msgid "Our programmes"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/index.html:144
+msgid "More About Us."
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/index.html:149
+msgid "Latest Episodes"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/index.html:156
+msgid "There are currently no podcast"
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/logged_out.html:10
+msgid "Thanks for spending some quality time with the Web site today."
+msgstr ""
+
+#: radioco/apps/radioco/templates/radioco/logged_out.html:12
+msgid "Log in again"
+msgstr ""
+
+#: radioco/apps/schedules/admin.py:46
+msgid "Calendar marked as active"
+msgstr ""
+
+#: radioco/apps/schedules/admin.py:48
+msgid "You cannot mark more than 1 schedule as active"
+msgstr ""
+
+#: radioco/apps/schedules/admin.py:49
+msgid "Set a calendar active"
+msgstr ""
+
+#: radioco/apps/schedules/admin.py:56
+msgid "Copy of "
+msgstr ""
+
+#: radioco/apps/schedules/admin.py:63
+#, python-format
+msgid "A calendar with the name %(obj)s already exists"
+msgstr ""
+
+#: radioco/apps/schedules/admin.py:86
+msgid "Make a Clone of the selected calendar"
+msgstr ""
+
+#: radioco/apps/schedules/models.py:33
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:339
+msgid "live"
+msgstr ""
+
+#: radioco/apps/schedules/models.py:34
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:345
+msgid "broadcast"
+msgstr ""
+
+#: radioco/apps/schedules/models.py:35
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:351
+msgid "broadcast syndication"
+msgstr ""
+
+#: radioco/apps/schedules/models.py:47
+msgid "Monday"
+msgstr ""
+
+#: radioco/apps/schedules/models.py:48
+msgid "Tuesday"
+msgstr ""
+
+#: radioco/apps/schedules/models.py:49
+msgid "Wednesday"
+msgstr ""
+
+#: radioco/apps/schedules/models.py:50
+msgid "Thursday"
+msgstr ""
+
+#: radioco/apps/schedules/models.py:51
+msgid "Friday"
+msgstr ""
+
+#: radioco/apps/schedules/models.py:52
+msgid "Saturday"
+msgstr ""
+
+#: radioco/apps/schedules/models.py:53
+msgid "Sunday"
+msgstr ""
+
+#: radioco/apps/schedules/models.py:65 radioco/apps/schedules/models.py:66
+#: radioco/apps/schedules/models.py:124
+msgid "calendar"
+msgstr ""
+
+#: radioco/apps/schedules/models.py:119
+msgid "schedule"
+msgstr ""
+
+#: radioco/apps/schedules/models.py:123
+msgid "type"
+msgstr ""
+
+#: radioco/apps/schedules/models.py:125
+msgid "recurrences"
+msgstr ""
+
+#: radioco/apps/schedules/models.py:130
+msgid "first effective start date"
+msgstr ""
+
+#: radioco/apps/schedules/models.py:131 radioco/apps/schedules/models.py:136
+msgid "This field is dynamically generated to improve performance"
+msgstr ""
+
+#: radioco/apps/schedules/models.py:135
+msgid "last effective end date"
+msgstr ""
+
+#: radioco/apps/schedules/models.py:141
+msgid "Parent schedule (only happens when it is changed from recurrence."
+msgstr ""
+
+#: radioco/apps/schedules/models.py:145
+msgid "source"
+msgstr ""
+
+#: radioco/apps/schedules/models.py:146
+msgid "Main schedule when (if this is a broadcast)."
+msgstr ""
+
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:74
+msgid "Transmission deleted"
+msgstr ""
+
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:119
+msgid "There was an error while fetching transmissions"
+msgstr ""
+
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:158
+msgid "Transmission created"
+msgstr ""
+
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:161
+msgid "There was an error while creating schedule: "
+msgstr ""
+
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:201
+msgid "Transmission moved successfully"
+msgstr ""
+
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:205
+msgid "There was an error in the request"
+msgstr ""
+
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:249
+msgid "There was an error while reloading programmes"
+msgstr ""
+
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:287
+msgid "Updated programme"
+msgstr ""
+
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:290
+msgid "Added programme"
+msgstr ""
+
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:293
+msgid "Updated schedule"
+msgstr ""
+
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:327
+msgid "Programmes"
+msgstr ""
+
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:335
+msgid "Programme type"
+msgstr ""
+
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:370
+msgid "Delete transmission?"
+msgstr ""
+
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:376
+msgid "Cancel"
+msgstr ""
+
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:377
+msgid "I am sure"
+msgstr ""
+
+#: radioco/apps/schedules/templates/admin/schedules/delete_modal.html:6
+msgid ""
+"Would you like to delete only this transmission, all transmissions in the "
+"series or this and all future transmissions in the series?"
+msgstr ""
+
+#: radioco/apps/schedules/templates/admin/schedules/delete_modal.html:10
+msgid "Would you like to delete this transmission?"
+msgstr ""
+
+#: radioco/apps/schedules/templates/schedules/schedules_list.html:8
+msgid "Schedule"
+msgstr ""
+
+#: radioco/apps/users/admin.py:61
+msgid "username"
+msgstr ""
+
+#: radioco/apps/users/admin.py:62
+msgid ""
+"Required. 30 characters or fewer. Letters, numbers and @/./+/-/_ characters"
+msgstr ""
+
+#: radioco/apps/users/admin.py:65
+msgid "Enter a valid username."
+msgstr ""
+
+#: radioco/apps/users/admin.py:68
+msgid "first name"
+msgstr ""
+
+#: radioco/apps/users/admin.py:69
+msgid "last name"
+msgstr ""
+
+#: radioco/apps/users/admin.py:70
+msgid "email address"
+msgstr ""
+
+#: radioco/apps/users/admin.py:96
+msgid "User with this Username already exists."
+msgstr ""
+
+#: radioco/apps/users/models.py:29
+msgid "biography"
+msgstr ""
+
+#: radioco/apps/users/models.py:31
+msgid "avatar"
+msgstr ""
+
+#: radioco/apps/users/models.py:33
+msgid "display personal page"
+msgstr ""
+
+#: radioco/apps/users/models.py:51 radioco/apps/users/models.py:52
+msgid "user profile"
+msgstr ""
+
+#: radioco/apps/users/templates/users/userprofile_detail.html:37
+msgid "Contributions"
+msgstr ""
+
+#: radioco/apps/users/templates/users/userprofile_list.html:5
+msgid "People"
+msgstr ""
+
+#: radioco/apps/users/templates/users/userprofile_list.html:14
+msgid "The people who made this possible"
+msgstr ""
+
+#: radioco/apps/users/templates/users/userprofile_list.html:51
+msgid "No userprofiles are available"
+msgstr ""
+
+#: radioco/configs/base/settings.py:182
+msgid "Spanish"
+msgstr ""
+
+#: radioco/configs/base/settings.py:183
+msgid "English"
+msgstr ""
+
+#: radioco/configs/base/settings.py:184
+msgid "Galician"
+msgstr ""
+
+#: radioco/configs/base/urls.py:29
+msgid "RadioCo administration"
+msgstr ""
+
+#: radioco/configs/base/urls.py:30
+msgid "RadioCo site admin"
+msgstr ""
