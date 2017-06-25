@@ -50,7 +50,7 @@ You should be able to keep your current database but make sure to create a backu
 
 .. note::
 
-    If you have a custom production environment please consider our
+    If you have a custom production environment please consider to apply our
     `staging setup <https://github.com/iago1460/django-radio/tree/master/radioco/configs/staging>`_ to improve performance.
 
 
