@@ -37,9 +37,9 @@ def index(request):
     try:
         live_transmission = transmissions_between.next()
         if live_transmission.start <= now < live_transmission.end:
-            percentage = round(
+            percentage = int(round(
                 (now - live_transmission.start).total_seconds() /
-                (live_transmission.end - live_transmission.start).total_seconds() * 100)
+                (live_transmission.end - live_transmission.start).total_seconds() * 100))
         else:
             next_transmissions.append(live_transmission)
             live_transmission = None

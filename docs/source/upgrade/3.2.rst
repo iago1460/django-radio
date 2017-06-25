@@ -14,6 +14,7 @@ What's new in 3.2
 *   Adding cache to singleton models using memcached
 *   Improve performance `in staging config <https://github.com/iago1460/django-radio/tree/master/radioco/configs/staging>`_ using nginx cache, uwsgi and caching templates
 *   Updating Spanish and Galician translations
+*   Fixing progress bar in the main page
 
 
 ********************
@@ -45,6 +46,7 @@ You should be able to keep your current database but make sure to create a backu
 
 .. code-block:: bash
 
+    python manage.py collectstatic
     python manage.py migrate
 
 
