@@ -29,7 +29,7 @@
                 <p><b>Category:</b> {{ programme.get_category_display }}</p>
                 <p>
                     <b>RSS:</b>
-                    <a rel="alternate" type="application/atom+xml" href="{% url 'programmes:rss' programme.slug %}">
+                    <a rel="alternate" type="application/atom+xml" href="pcast://{{ request.get_host }}{% url 'programmes:rss' programme.slug %}">
                         <i class="fa fa-rss-square fa-2x"></i>
                     </a>
                 </p>

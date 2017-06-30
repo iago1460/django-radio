@@ -118,7 +118,7 @@
                                         <a href="{{ programme.get_absolute_url }}" class="dmbutton a2" data-animate="fadeInLeft">
                                             <i class="fa fa-search"></i>
                                         </a>
-                                        <a href="{% url 'programmes:rss' programme.slug %}" class="dmbutton a2" data-animate="fadeInRight">
+                                        <a href="pcast://{{ request.get_host }}{% url 'programmes:rss' programme.slug %}" class="dmbutton a2" data-animate="fadeInRight">
                                             <i class="fa fa-rss"></i>
                                         </a>
                                         <h5 class="a1" data-animate="fadeInUp">{{ programme.get_category_display }}</h5>
