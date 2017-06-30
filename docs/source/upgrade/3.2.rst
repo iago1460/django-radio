@@ -46,6 +46,7 @@ You should be able to keep your current database but make sure to create a backu
 
 .. code-block:: bash
 
+    pip install -r radioco/configs/base/requirements.txt
     python manage.py collectstatic
     python manage.py migrate
 
