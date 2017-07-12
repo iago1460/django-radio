@@ -122,6 +122,8 @@ class NonStaffProgrammeAdmin(admin.ModelAdmin):
 
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)
+        for obj in formset.deleted_objects:
+            obj.delete()
         for instance in instances:
             # if no person field is displayed
             if not instance.pk and not request.user.has_perm('programmes.see_all_roles'):
@@ -316,6 +318,8 @@ class NonStaffEpisodeAdmin(admin.ModelAdmin):
         # if formset.model != InlineModel:
         #   return super(NonStaffProgrammeAdmin, self).save_formset(request, form, formset, change)
         instances = formset.save(commit=False)
+        for obj in formset.deleted_objects:
+            obj.delete()
         for instance in instances:
             if not instance.pk and not request.user.has_perm('programmes.see_all_participants'):
                 instance.person = request.user
