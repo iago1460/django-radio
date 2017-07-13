@@ -72,9 +72,14 @@
 	margin: 10px 0;
 	padding: 2px 4px;
 	background: #3366CC;
-	color: #fff;
+	color: #000;
+	border: 1px solid #000;
 	font-size: .85em;
 	cursor: pointer;
+}
+
+.external-event:hover{
+	color: #01b2fe;
 }
 	
 #external-events p {
@@ -86,6 +91,14 @@
 #external-events p input {
 	margin: 0;
 	vertical-align: middle;
+}
+
+.fc-event{
+	color: #000;
+}
+
+.fc-event:hover{
+	color: #01b2fe;
 }
 /*
 #calendar {  disabled 
