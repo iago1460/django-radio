@@ -197,7 +197,6 @@ DISQUS_WEBSITE_SHORTNAME = ''
 # Admin
 GRAPPELLI_ADMIN_HEADLINE = 'RadioCo'
 GRAPPELLI_ADMIN_TITLE = 'RadioCo'
-GRAPPELLI_SWITCH_USER = True
 
 # Import local settings
 try:
