@@ -20,6 +20,7 @@ import datetime
 from django.contrib.auth import (
     logout,
 )
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils import timezone
@@ -55,7 +56,7 @@ def index(request):
     except StopIteration:
         pass
 
-    other_programmes = Programme.objects.order_by('?').all()[:10]
+    other_programmes = Programme.objects.filter(Q(end_date__gte=now) | Q(end_date__isnull=True)).order_by('?').all()[:10]
     latest_episodes = Episode.objects.filter(podcast__isnull=False).select_related('programme').order_by('-issue_date')[:5]
 
     context = {
