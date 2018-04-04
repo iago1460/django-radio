@@ -1,3 +1,0 @@
-# heroku production dependencies. Must be in root path.
--r radioco/configs/base/requirements.txt
-django-toolbelt

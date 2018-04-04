@@ -14,20 +14,12 @@ branches:
     - develop
 
 install:
-  - pip install -r radioco/configs/base/requirements.txt
   - pip install coverage coveralls invoke
 
 script:
-  - COVERAGE_FILE=.coverage.base.xml coverage run --source="radioco" manage.py test
   - inv --echo docker.setup -e base
   - inv --echo docker.run_coverage -e base
   - inv --echo docker.destroy -e base
-  - inv --echo docker.setup -e staging
-  - inv --echo docker.run_coverage -e staging
-  - inv --echo docker.destroy -e staging
-  - PORT_POSTGRES=9999 inv --echo docker.setup -e development
-  - inv --echo docker.run_coverage -e development
-  - inv --echo docker.destroy -e development
   - coverage combine
 
 after_success:

@@ -66,6 +66,8 @@ Let’s verify your installation
 
 Now that the server’s running, visit http://127.0.0.1:8000/
 
+Also if you want to access the admin area the default credentials are `admin/1234`
+
 .. warning::
 
     Don’t use this server in anything resembling a production environment. 
@@ -79,23 +81,3 @@ Using RadioCo on production
 The Internet is a hostile environment.
 Before deploying this project, you should take some time to review your settings, with security, performance, and operations in mind.
 Keep in mind `this critical settings <https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/#critical-settings>`_.
-
-Locally
-=======
-
-RadioCo provides a staging environment, safer than the previous one but still insecure, **use at your own risk**.
-
-
-.. code-block:: bash
-
-    inv docker.setup -e staging
-
-
-Now that the server’s running, visit http://127.0.0.1/
-
-
-To create a superuser you still can use management commands:
-
-.. code-block:: bash
-
-    inv docker.manage -e staging -c "createsuperuser"

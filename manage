@@ -1,2 +1,0 @@
-#!/bin/sh
-python ./radioco/configs/${DEPLOYMENT_TARGET:="development"}/manage.py $*
