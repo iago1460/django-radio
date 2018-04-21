@@ -1,0 +1,49 @@
+#!/bin/bash
+
+
+function help() {
+cat << EOF
+Task runner
+
+Usage:
+    run [COMMAND] [ARGS...]
+
+Commands:
+    start               Setup and run the environment
+    manage              Run a django command
+    shell               Shell into the container
+
+If an unknown command is specified, it will be passed to docker-compose. e.g:
+    run up -d
+    run logs
+    run exec django bash
+
+EOF
+}
+
+function start(){
+     docker-compose down
+     docker-compose build
+     docker-compose run --rm django sh /radioco/docker/scripts/setup.sh
+     docker-compose up -d
+}
+
+function shell(){
+     docker-compose run --rm django /bin/bash
+}
+
+
+function manage(){
+    docker-compose run --rm --no-deps django python manage.py "$@"
+}
+
+
+if [ $# -eq 0 ]; then
+    help
+elif [ "$(type -t $1)" == 'function' ]; then
+    func=$1
+    shift
+    $func "$@"
+else
+    docker-compose "$@"
+fi

@@ -18,5 +18,7 @@ RUN npm install -g bower
 
 RUN pip install --upgrade pip setuptools virtualenv
 
-ADD tmp_requirements.txt requirements.txt
+COPY requirements.txt requirements.txt
+RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
+WORKDIR /radioco/

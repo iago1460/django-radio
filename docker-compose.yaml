@@ -4,18 +4,19 @@ services:
 
   # Backend server -------------------------------------------------------------
 
-  base_django:
+  django:
     build:
       context: .
       dockerfile: docker/django.Dockerfile
+    environment:
+      - DJANGO_LOG_LEVEL=ERROR
+      - MANAGE_PY
     volumes:
-      - ../../../:/radioco
-    env_file:
-      - .env
+      - ./:/radioco
     expose:
       - ${PORT_BACKEND}
     ports:
       - ${PORT_BACKEND}:8000
-    command: /radioco/radioco/configs/${ENVIRONMENT}/docker/scripts/launch_server.sh
+    command: /radioco/docker/scripts/launch_server.sh
     stdin_open: true
     #tty: true  # ERROR: An HTTP request took too long to complete. https://github.com/docker/compose/issues/3633
