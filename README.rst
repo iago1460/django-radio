@@ -37,10 +37,11 @@ Install `Docker engine <https://docs.docker.com/engine/installation/>`_.
 
 Open a terminal and introduce the following commands::
 
-    pip install invoke==0.14.0
     git clone https://github.com/iago1460/django-radio
     cd django-radio
-    inv quickstart
+    chmod +x ./run
+    ./run start
+    ./run manage create_example_data
 
 
 Now that the server’s running (don't close the terminal), visit http://127.0.0.1:8000/

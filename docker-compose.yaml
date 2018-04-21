@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
 
 
@@ -10,7 +10,7 @@ services:
       dockerfile: docker/django.Dockerfile
     environment:
       - DJANGO_LOG_LEVEL=ERROR
-      - MANAGE_PY
+      - MANAGE_PY=${MANAGE_PY:-python manage.py}
     volumes:
       - ./:/radioco
     expose:
