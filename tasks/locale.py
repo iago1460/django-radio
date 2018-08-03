@@ -1,14 +1,14 @@
 from invoke import task
 
 
-@task(default=True)
+@task
 def make(ctx):
     ctx.run('python manage.py makemessages -l en --ignore=venv/*')
     ctx.run('python manage.py makemessages --ignore=venv/* --all')
 
 
-@task
-def compile(ctx):
+@task(make, default=True)
+def update(ctx):
     ctx.run('python manage.py compilemessages')
 
 

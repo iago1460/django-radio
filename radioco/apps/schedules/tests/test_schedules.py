@@ -45,10 +45,8 @@ class ScheduleValidationTests(TestDataMixin, TestCase):
         schedule = Schedule()
         with self.assertRaisesMessage(
             ValidationError,
-            "{'calendar': [u'This field cannot be null.'], "
-            "'start_dt': [u'This field cannot be null.'], "
-            "'type': [u'This field cannot be blank.'], "
-            "'programme': [u'This field cannot be null.']}"):
+            "{'programme': ['This field cannot be null.'], 'type': ['This field cannot be blank.'], 'calendar': ['This field cannot be null.'], 'start_dt': ['This field cannot be null.']}"
+        ):
             schedule.clean_fields()
 
 
@@ -132,7 +130,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
             utc.localize(datetime.datetime(2014, 1, 13, 14, 0)))
 
     def test_dates_between(self):
-        self.assertItemsEqual(
+        self.assertCountEqual(
             self.schedule.dates_between(
                 utc.localize(datetime.datetime(2014, 1, 1)), utc.localize(datetime.datetime(2014, 1, 14))),
             [utc.localize(datetime.datetime(2014, 1, 6, 14, 0)),
@@ -142,7 +140,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
         self.programme.start_date = datetime.date(2014, 1, 7)
         self.programme.save()
         self.schedule.refresh_from_db()
-        self.assertItemsEqual(
+        self.assertCountEqual(
             self.schedule.dates_between(
                 utc.localize(datetime.datetime(2014, 1, 1)), utc.localize(datetime.datetime(2014, 1, 14))),
             [utc.localize(datetime.datetime(2014, 1, 13, 14, 0))])
@@ -151,7 +149,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
         self.programme.end_date = datetime.date(2014, 1, 7)
         self.programme.save()
         self.schedule.refresh_from_db()
-        self.assertItemsEqual(
+        self.assertCountEqual(
             self.schedule.dates_between(
                 utc.localize(datetime.datetime(2014, 1, 1)), utc.localize(datetime.datetime(2014, 1, 14))),
             [utc.localize(datetime.datetime(2014, 1, 6, 14, 0))])
@@ -167,7 +165,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
                 exrules=[recurrence.Rule(
                     recurrence.WEEKLY, byday=[recurrence.MO, recurrence.TU])]))
 
-        self.assertItemsEqual(
+        self.assertCountEqual(
             schedule.dates_between(
                 utc.localize(datetime.datetime(2014, 1, 1)), utc.localize(datetime.datetime(2014, 1, 9))),
             [utc.localize(datetime.datetime(2014, 1, 2, 14, 0)),
@@ -175,7 +173,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
              utc.localize(datetime.datetime(2014, 1, 8, 14, 0))])
 
     def test_unicode(self):
-        self.assertEqual(unicode(self.schedule), 'Monday - 14:00:00')
+        self.assertEqual(str(self.schedule), 'Monday - 14:00:00')
 
     @mock.patch('django.utils.timezone.now', mock_now)
     def test_save_rearrange_episodes(self):
@@ -206,7 +204,7 @@ class ScheduleBetweenTests(TestDataMixin, TestCase):
             calendar=self.calendar)
 
     def test_dates_between_includes_started_episode(self):
-        self.assertItemsEqual(
+        self.assertCountEqual(
             self.schedule.dates_between(
                 utc.localize(datetime.datetime(2014, 1, 2, 0, 0, 0)),
                 utc.localize(datetime.datetime(2014, 1, 3, 23, 59, 59))
@@ -224,11 +222,11 @@ class ScheduleBetweenTests(TestDataMixin, TestCase):
             utc.localize(datetime.datetime(2014, 1, 3, 23, 59, 59))
         )
         self.assertListEqual(
-            map(lambda t: (t.slug, t.start), list(between)),
-            [(u'classic-hits',  utc.localize(datetime.datetime(2014, 1, 1, 23, 30, 0))),  # Not finished yet
-             (u'classic-hits',  utc.localize(datetime.datetime(2014, 1, 2, 0, 30, 0))),
-             (u'classic-hits',  utc.localize(datetime.datetime(2014, 1, 2, 23, 30, 0))),
-             (u'classic-hits',  utc.localize(datetime.datetime(2014, 1, 3, 23, 30, 0)))])
+            [(t.slug, t.start) for t in list(between)],
+            [('classic-hits',  utc.localize(datetime.datetime(2014, 1, 1, 23, 30, 0))),  # Not finished yet
+             ('classic-hits',  utc.localize(datetime.datetime(2014, 1, 2, 0, 30, 0))),
+             ('classic-hits',  utc.localize(datetime.datetime(2014, 1, 2, 23, 30, 0))),
+             ('classic-hits',  utc.localize(datetime.datetime(2014, 1, 3, 23, 30, 0)))])
 
 
 class CalendarManagerTests(TestDataMixin, TestCase):
@@ -247,11 +245,11 @@ class CalendarValidationTests(TestCase):
         self.CalendarForm = modelform_factory(Calendar, fields=("name",))
 
     def test_only_one_calendar_active(self):
-        self.assertEquals(len(Calendar.objects.filter(is_active=True)), 1)
+        self.assertEqual(len(Calendar.objects.filter(is_active=True)), 1)
 
         new_active_calendar = Calendar.objects.create(name="test", is_active=True)
 
-        self.assertEquals(Calendar.objects.get(is_active=True), new_active_calendar)
+        self.assertEqual(Calendar.objects.get(is_active=True), new_active_calendar)
 
 # XXX there is something fishy with form validation, check!
 #    def test_name_required(self):
@@ -293,13 +291,10 @@ class CalendarAdminTests(TestDataMixin, TestCase):
         self.assertEqual(num_of_schedules, cloned_calendar.schedule_set.count())
         self.assertFalse(
             any(
-                map(
-                    lambda x: x in schedule_ids,
-                    [_schedule.id for _schedule in cloned_calendar.schedule_set.all()]
-                )
+                [x in schedule_ids for x in [_schedule.id for _schedule in cloned_calendar.schedule_set.all()]]
             )
         )
-        self.assertNotEquals(
+        self.assertNotEqual(
             frozenset([_schedule.id for _schedule in self.calendar.schedule_set.all()]),
             frozenset([_schedule.id for _schedule in cloned_calendar.schedule_set.all()]),
         )
@@ -351,18 +346,18 @@ class TransmissionModelTests(TestDataMixin, TestCase):
     def test_at(self):
         now = Transmission.at(utc.localize(datetime.datetime(2015, 1, 6, 11, 59, 59)))
         self.assertListEqual(
-            map(lambda t: (t.slug, t.start), list(now)),
-            [(u'the-best-wine', utc.localize(datetime.datetime(2015, 1, 6, 11, 0, 0)))])
+            [(t.slug, t.start) for t in list(now)],
+            [('the-best-wine', utc.localize(datetime.datetime(2015, 1, 6, 11, 0, 0)))])
 
         now = Transmission.at(utc.localize(datetime.datetime(2015, 1, 6, 12, 0, 0)))
         self.assertListEqual(
-            map(lambda t: (t.slug, t.start), list(now)),
-            [(u'local-gossips', utc.localize(datetime.datetime(2015, 1, 6, 12, 0, 0)))])
+            [(t.slug, t.start) for t in list(now)],
+            [('local-gossips', utc.localize(datetime.datetime(2015, 1, 6, 12, 0, 0)))])
 
         now = Transmission.at(utc.localize(datetime.datetime(2015, 1, 6, 12, 59, 59)))
         self.assertListEqual(
-            map(lambda t: (t.slug, t.start), list(now)),
-            [(u'local-gossips', utc.localize(datetime.datetime(2015, 1, 6, 12, 0, 0)))])
+            [(t.slug, t.start) for t in list(now)],
+            [('local-gossips', utc.localize(datetime.datetime(2015, 1, 6, 12, 0, 0)))])
 
         now = Transmission.at(utc.localize(datetime.datetime(2015, 1, 6, 13, 0, 0)))
         self.assertListEqual(list(now), [])
@@ -372,10 +367,10 @@ class TransmissionModelTests(TestDataMixin, TestCase):
             utc.localize(datetime.datetime(2015, 1, 6, 11, 0, 0)),
             utc.localize(datetime.datetime(2015, 1, 6, 17, 0, 0)))
         self.assertListEqual(
-            map(lambda t: (t.slug, t.start), list(between)),
-            [(u'the-best-wine', utc.localize(datetime.datetime(2015, 1, 6, 11, 0))),
-             (u'local-gossips', utc.localize(datetime.datetime(2015, 1, 6, 12, 0))),
-             (u'classic-hits', utc.localize(datetime.datetime(2015, 1, 6, 14, 0)))])
+            [(t.slug, t.start) for t in list(between)],
+            [('the-best-wine', utc.localize(datetime.datetime(2015, 1, 6, 11, 0))),
+             ('local-gossips', utc.localize(datetime.datetime(2015, 1, 6, 12, 0))),
+             ('classic-hits', utc.localize(datetime.datetime(2015, 1, 6, 14, 0)))])
 
     def test_between_by_queryset(self):
         between = Transmission.between(
@@ -384,8 +379,8 @@ class TransmissionModelTests(TestDataMixin, TestCase):
             schedules=Schedule.objects.filter(
                 calendar=self.another_calendar).all())
         self.assertListEqual(
-            map(lambda t: (t.slug, t.start), list(between)),
-            [(u'classic-hits', utc.localize(datetime.datetime(2015, 1, 6, 16, 30, 0)))])
+            [(t.slug, t.start) for t in list(between)],
+            [('classic-hits', utc.localize(datetime.datetime(2015, 1, 6, 16, 30, 0)))])
 
 
 @override_settings(TIME_ZONE='UTC')
@@ -427,19 +422,19 @@ class ScheduleUtilsTests(TestDataMixin, TestCase):
                 rrules=[recurrence.Rule(recurrence.WEEKLY)]))
 
         dates = next_dates(self.calendar, self.programme, utc.localize(datetime.datetime(2015, 1, 5)))
-        self.assertEqual(dates.next(), utc.localize(datetime.datetime(2015, 1, 5, 14, 0)))
-        self.assertEqual(dates.next(), utc.localize(datetime.datetime(2015, 1, 6, 14, 0)))
-        self.assertEqual(dates.next(), utc.localize(datetime.datetime(2015, 1, 6, 16, 0)))
+        self.assertEqual(next(dates), utc.localize(datetime.datetime(2015, 1, 5, 14, 0)))
+        self.assertEqual(next(dates), utc.localize(datetime.datetime(2015, 1, 6, 14, 0)))
+        self.assertEqual(next(dates), utc.localize(datetime.datetime(2015, 1, 6, 16, 0)))
 
     def test_available_dates_none(self):
         dates = next_dates(self.calendar, Programme(), timezone.now())
         with self.assertRaises(StopIteration):
-            dates.next()
+            next(dates)
 
     def test_rearrange_episodes(self):
         self.programme.rearrange_episodes(pytz.utc.localize(datetime.datetime(2015, 1, 1)), Calendar.get_active())
         self.assertListEqual(
-            map(lambda e: e.issue_date, self.programme.episode_set.all().order_by('issue_date')[:5]),
+            [e.issue_date for e in self.programme.episode_set.all().order_by('issue_date')[:5]],
             [
                 utc.localize(datetime.datetime(2015, 1, 1, 14, 0)),
                 utc.localize(datetime.datetime(2015, 1, 2, 14, 0)),
@@ -468,7 +463,7 @@ class ScheduleUtilsTests(TestDataMixin, TestCase):
         # save should call rearrange
         # rearrange_programme_episodes(self.programme, pytz.utc.localize(datetime.datetime(2015, 1, 1)))
         self.assertListEqual(
-            map(lambda e: e.issue_date, self.programme.episode_set.all().order_by('issue_date')[:5]),
+            [e.issue_date for e in self.programme.episode_set.all().order_by('issue_date')[:5]],
             [
                 utc.localize(datetime.datetime(2015, 1, 1, 14, 0)),
                 utc.localize(datetime.datetime(2015, 1, 2, 14, 0)),
@@ -492,7 +487,7 @@ class ScheduleUtilsTests(TestDataMixin, TestCase):
                     recurrence.WEEKLY, until=utc.localize(datetime.datetime(2015, 1, 31, 16, 0, 0)))]))
         # save should call rearrange
         self.assertListEqual(
-            map(lambda e: e.issue_date, self.programme.episode_set.all().order_by('issue_date')[:5]),
+            [e.issue_date for e in self.programme.episode_set.all().order_by('issue_date')[:5]],
             [
                 utc.localize(datetime.datetime(2015, 1, 1, 14, 0)),
                 utc.localize(datetime.datetime(2015, 1, 2, 14, 0)),

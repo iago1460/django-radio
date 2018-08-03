@@ -1,7 +1,8 @@
 # django collectstatic files
-radioco/media/_versions/
-radioco/components/
-radioco/static/
+/radioco/media/_versions/
+/radioco/components/
+/radioco/static/
+/radioco/media/
 
 # source locale
 radioco/locale/en/*
@@ -52,6 +53,7 @@ pip-log.txt
 pip-delete-this-directory.txt
 
 # Unit test / coverage reports
+reports/
 htmlcov/
 nosetests.xml
 coverage.xml
@@ -65,7 +67,3 @@ docs/_build/
 
 # Files ending in ~
 *~
-
-# Docker tmp files (just in case)
-id_rsa.pub
-tmp_requirements.txt

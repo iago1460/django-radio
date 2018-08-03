@@ -1,24 +1,30 @@
-FROM python:2.7
+FROM python:3.6-jessie
 
+RUN apt-get update && apt-get install -yq --fix-missing --no-install-recommends \
+    libmysqlclient-dev \
+    mysql-client \
+    python3-setuptools \
+    python3-pip \
+    git-core \
+    netcat \
+    nodejs-legacy \
+    npm \
+    gettext \
+&& apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Installing libraries
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python-setuptools \
-    python-pip \
-    git-core \
-    nodejs-legacy \
-    npm \
-&& apt-get clean && rm -rf /var/lib/apt/lists/*
-
 RUN npm install -g bower
 
-
 # Install pip dependencies
+RUN pip3 install --upgrade pip setuptools virtualenv
 
-RUN pip install --upgrade pip setuptools virtualenv
+COPY .bowerrc bower.json /
+RUN bower install
 
-COPY requirements.txt requirements.txt
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+COPY requirements.txt /
+RUN pip3 install -r requirements.txt
+
+COPY ./ /radioco/
+
 WORKDIR /radioco/

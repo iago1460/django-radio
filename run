@@ -21,21 +21,63 @@ If an unknown command is specified, it will be passed to docker-compose. e.g:
 EOF
 }
 
+STAGING_COMPOSE_FILES="-f docker-compose.yaml -f docker-compose.staging.yaml"
+COMPOSE_FILES=""
+
+function start_dev(){
+     if [ ! -f ".env" ]; then
+         cp -v .sample.env .env
+         echo "Creating .env file. Update your environment variables and try again."
+         exit 0
+     fi
+     docker-compose $COMPOSE_FILES down --remove-orphans
+     docker-compose $COMPOSE_FILES build
+     export_file_vars .env
+     docker-compose $COMPOSE_FILES up -d
+     echo "RadioCo is running at http://127.0.0.1:${PORT_BACKEND}"
+}
+
 function start(){
-     docker-compose down
-     docker-compose build
-     docker-compose run --rm django sh /radioco/docker/scripts/setup.sh
-     docker-compose up -d
+     COMPOSE_FILES=$STAGING_COMPOSE_FILES
+     start_dev
 }
 
 function shell(){
-     docker-compose run --rm django /bin/bash
+     docker-compose run --rm django /bin/bash "$@"
 }
 
 
 function manage(){
-    docker-compose run --rm --no-deps django python manage.py "$@"
+    docker-compose run --rm --no-deps django python3 manage.py "$@"
 }
+
+
+function test(){
+    manage test radioco "$@"
+}
+
+
+function coverage(){
+    docker-compose run -e COVERAGE_FILE=reports/.coverage.docker.xml --rm --volume "$(pwd)/reports:/radioco/reports" django coverage run manage.py test radioco
+}
+
+
+function export_file_vars() {
+    # Exports values from .env files, but without clobbering existing variables
+    filename=$1
+    while read -r line; do
+         if [[ $line =~ ^([^=#]+)=(.*)$ ]]; then
+            key=${BASH_REMATCH[1]}
+            value=${BASH_REMATCH[2]}
+            existing_value=${!key}
+            if [ -z $existing_value ]; then
+                export $key="$value"
+            fi
+         fi
+    done < $filename
+}
+
+export_file_vars .env
 
 
 if [ $# -eq 0 ]; then

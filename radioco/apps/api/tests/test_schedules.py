@@ -90,11 +90,11 @@ class TestTransmissionAPI(TestDataMixin, APITestCase):
         self.assertEqual(
             {_key: response.data[0][_key] for _key in response.data[0] if _key not in ['schedule', 'programme', 'id']},
             {
-                'end': '2015-02-01T10:00:00+01:00', 'name': u'Morning News',
-                'programme_url': u'http://testserver/programmes/morning-news/',
+                'end': '2015-02-01T10:00:00+01:00', 'name': 'Morning News',
+                'programme_url': 'http://testserver/programmes/morning-news/',
                 'episode_url': None, 'episode': None,
                 'start': '2015-02-01T09:00:00+01:00', 'source': None,
-                'type': u'L', 'slug': u'morning-news'
+                'type': 'L', 'slug': 'morning-news'
             }
         )
 
@@ -129,7 +129,7 @@ class TestTransmissionAPI(TestDataMixin, APITestCase):
             })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertListEqual(
-            map(lambda t: (t['slug'], t['start']), response.data),
+            [(t['slug'], t['start']) for t in response.data],
             [('classic-hits', '2015-01-06T16:30:00Z')])
 
     def test_transmission_same_day(self):

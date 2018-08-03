@@ -4,14 +4,6 @@ radioco.configs.base package
 Submodules
 ----------
 
-radioco.configs.base.manage module
-----------------------------------
-
-.. automodule:: radioco.configs.base.manage
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 radioco.configs.base.settings module
 ------------------------------------
 
@@ -20,8 +12,8 @@ radioco.configs.base.settings module
     :undoc-members:
     :show-inheritance:
 
-radioco.configs.base.test_runner module
----------------------------------------
+radioco.configs.base.test\_runner module
+----------------------------------------
 
 .. automodule:: radioco.configs.base.test_runner
     :members:
@@ -32,6 +24,14 @@ radioco.configs.base.urls module
 --------------------------------
 
 .. automodule:: radioco.configs.base.urls
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+radioco.configs.base.wsgi module
+--------------------------------
+
+.. automodule:: radioco.configs.base.wsgi
     :members:
     :undoc-members:
     :show-inheritance:

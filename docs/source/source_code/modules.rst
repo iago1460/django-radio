@@ -1,5 +1,5 @@
-django-radio
-============
+radioco
+=======
 
 .. toctree::
    :maxdepth: 4

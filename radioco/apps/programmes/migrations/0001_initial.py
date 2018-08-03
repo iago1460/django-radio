@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 from django.conf import settings
@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
             name='Participant',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('role', models.CharField(default=b'NO', max_length=2, verbose_name='role', choices=[(b'NO', 'Not specified'), (b'PR', 'Presenter'), (b'IN', 'Informer'), (b'CO', 'Contributor')])),
+                ('role', models.CharField(default='NO', max_length=2, verbose_name='role', choices=[('NO', 'Not specified'), ('PR', 'Presenter'), ('IN', 'Informer'), ('CO', 'Contributor')])),
                 ('description', models.TextField(verbose_name='description', blank=True)),
             ],
             options={
@@ -65,10 +65,10 @@ class Migration(migrations.Migration):
                 ('start_date', models.DateField(verbose_name='start date')),
                 ('end_date', models.DateField(help_text='This field can be null.', null=True, verbose_name='end date', blank=True)),
                 ('synopsis', models.TextField(verbose_name='synopsis', blank=True)),
-                ('photo', models.ImageField(default=b'/static/radio/images/default-programme-photo.jpg', upload_to=b'photos/', verbose_name='photo')),
-                ('language', models.CharField(default=b'ES', max_length=2, verbose_name='language', choices=[(b'ES', 'Spanish'), (b'GA', 'Galician')])),
+                ('photo', models.ImageField(default='/static/radio/images/default-programme-photo.jpg', upload_to='photos/', verbose_name='photo')),
+                ('language', models.CharField(default='ES', max_length=2, verbose_name='language', choices=[('ES', 'Spanish'), ('GA', 'Galician')])),
                 ('current_season', models.PositiveIntegerField(verbose_name='current season', validators=[django.core.validators.MinValueValidator(1)])),
-                ('category', models.CharField(blank=True, max_length=50, null=True, verbose_name='category', choices=[(b'Arts', 'Arts'), (b'Business', 'Business'), (b'Comedy', 'Comedy'), (b'Education', 'Education'), (b'Games & Hobbies', 'Games & Hobbies'), (b'Government & Organizations', 'Government & Organizations'), (b'Health', 'Health'), (b'Kids & Family', 'Kids & Family'), (b'Music', 'Music'), (b'News & Politics', 'News & Politics'), (b'Religion & Spirituality', 'Religion & Spirituality'), (b'Science & Medicine', 'Science & Medicine'), (b'Society & Culture', 'Society & Culture'), (b'Sports & Recreation', 'Sports & Recreation'), (b'Technology', 'Technology'), (b'TV & Film', 'TV & Film')])),
+                ('category', models.CharField(blank=True, max_length=50, null=True, verbose_name='category', choices=[('Arts', 'Arts'), ('Business', 'Business'), ('Comedy', 'Comedy'), ('Education', 'Education'), ('Games & Hobbies', 'Games & Hobbies'), ('Government & Organizations', 'Government & Organizations'), ('Health', 'Health'), ('Kids & Family', 'Kids & Family'), ('Music', 'Music'), ('News & Politics', 'News & Politics'), ('Religion & Spirituality', 'Religion & Spirituality'), ('Science & Medicine', 'Science & Medicine'), ('Society & Culture', 'Society & Culture'), ('Sports & Recreation', 'Sports & Recreation'), ('Technology', 'Technology'), ('TV & Film', 'TV & Film')])),
                 ('slug', models.SlugField(unique=True, max_length=100)),
                 ('_runtime', models.PositiveIntegerField(help_text='In minutes.', verbose_name='runtime', validators=[django.core.validators.MinValueValidator(1)])),
             ],
@@ -83,7 +83,7 @@ class Migration(migrations.Migration):
             name='Role',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('role', models.CharField(default=b'NO', max_length=2, verbose_name='role', choices=[(b'NO', 'Not specified'), (b'PR', 'Presenter'), (b'IN', 'Informer'), (b'CO', 'Contributor')])),
+                ('role', models.CharField(default='NO', max_length=2, verbose_name='role', choices=[('NO', 'Not specified'), ('PR', 'Presenter'), ('IN', 'Informer'), ('CO', 'Contributor')])),
                 ('description', models.TextField(verbose_name='description', blank=True)),
                 ('date_joined', models.DateField(auto_now_add=True)),
                 ('person', models.ForeignKey(verbose_name='person', to=settings.AUTH_USER_MODEL)),

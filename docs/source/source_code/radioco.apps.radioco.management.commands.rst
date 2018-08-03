@@ -4,8 +4,8 @@ radioco.apps.radioco.management.commands package
 Submodules
 ----------
 
-radioco.apps.radioco.management.commands.create_example_data module
--------------------------------------------------------------------
+radioco.apps.radioco.management.commands.create\_example\_data module
+---------------------------------------------------------------------
 
 .. automodule:: radioco.apps.radioco.management.commands.create_example_data
     :members:

@@ -141,7 +141,7 @@ class RadiocomConfigurationSerializer(serializers.ModelSerializer):
     twitter_url = serializers.SerializerMethodField()
 
     def get_station_photos(self, obj):
-        return filter(lambda x: bool(x), [image_url.strip() for image_url in obj.station_photos.split(',')])
+        return [x for x in [image_url.strip() for image_url in obj.station_photos.split(',')] if bool(x)]
 
     def get_facebook_url(self, obj):
         return SiteConfiguration.get_global().facebook_address

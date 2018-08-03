@@ -51,7 +51,7 @@ class UserProfile(models.Model):
         verbose_name = _('user profile')
         verbose_name_plural = _('user profile')
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s's profile" % self.user
 
 

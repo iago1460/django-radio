@@ -40,7 +40,7 @@ Open a terminal and introduce the following commands::
     git clone https://github.com/iago1460/django-radio
     cd django-radio
     chmod +x ./run
-    ./run start
+    ./run start_dev
     ./run manage create_example_data
 
 

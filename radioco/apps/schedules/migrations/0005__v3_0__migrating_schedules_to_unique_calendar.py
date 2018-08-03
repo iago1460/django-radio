@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 import datetime
 from collections import namedtuple
@@ -122,7 +122,7 @@ def calculate_effective_schedule_end_dt(schedule):
     rrules_until_dates = [_rrule.until for _rrule in schedule.recurrences.rrules]
 
     # If we have a rrule without a until date we don't know the last date
-    if any(map(lambda x: x is None, rrules_until_dates)):
+    if any([x is None for x in rrules_until_dates]):
         return None
 
     possible_limit_dates = schedule.recurrences.rdates + rrules_until_dates
@@ -205,7 +205,7 @@ def migrate_schedules(apps, schema_editor):
 
             if not can_be_migrated:
                 # We cannot copy that schedule (it hasn't effective dates)
-                print("WARNING Migration: schedule {id} cannot be migrated (doesn't have a effective date)".format(id=schedule.id))
+                print(("WARNING Migration: schedule {id} cannot be migrated (doesn't have a effective date)".format(id=schedule.id)))
                 continue
 
             assert not calendar.end_date or calendar.end_date >= schedule.start_dt.date(), "_generate_schedule_start_date doesn't work"
@@ -224,7 +224,7 @@ def migrate_schedules(apps, schema_editor):
                 )
                 if sources:
                     if len(sources) > 1:
-                        print('WARNING Migration: schedule.source has more than one candidate "{objects}"'.format(objects=[_obj.id for _obj in sources]))
+                        print(('WARNING Migration: schedule.source has more than one candidate "{objects}"'.format(objects=[_obj.id for _obj in sources])))
                     schedule.source = sources.last()
                 else:
                     print('WARNING Migration: schedule.source was not found in the new calendar')

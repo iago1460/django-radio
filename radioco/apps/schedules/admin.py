@@ -104,7 +104,7 @@ class ScheduleAdmin(admin.ModelAdmin):
         calendar_configuration = CalendarConfiguration.get_global()
         extra_context = extra_context or {}
         extra_context['calendars'] = Calendar.objects.all()
-        extra_context['slot_duration'] = unicode(calendar_configuration.slot_duration)
+        extra_context['slot_duration'] = str(calendar_configuration.slot_duration)
         return super(ScheduleAdmin, self).changelist_view(request, extra_context=extra_context)
 
     def has_add_permission(self, request):

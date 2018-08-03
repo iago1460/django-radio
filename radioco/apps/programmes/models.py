@@ -75,7 +75,7 @@ class Programme(models.Model):
     )
     language = models.CharField(
         default=PROGRAMME_LANGUAGES[0][0], verbose_name=_("language"),
-        choices=map(lambda (k, v): (k, _(v)), PROGRAMME_LANGUAGES), max_length=7
+        choices=[(k_v[0], _(k_v[1])) for k_v in PROGRAMME_LANGUAGES], max_length=7
     )
     # XXX ensure not decreasing
     current_season = models.PositiveIntegerField(
@@ -135,8 +135,8 @@ class Programme(models.Model):
         # Further dates and episodes available -> re-order
         while True:
             try:
-                date = dates.next()
-                episode = episodes.next()
+                date = next(dates)
+                episode = next(episodes)
             except StopIteration:
                 break
             else:
@@ -146,7 +146,7 @@ class Programme(models.Model):
         # No further dates available -> unschedule
         while True:
             try:
-                episode = episodes.next()
+                episode = next(episodes)
             except StopIteration:
                 break
             else:
@@ -156,8 +156,8 @@ class Programme(models.Model):
     def get_absolute_url(self):
         return reverse('programmes:detail', args=[self.slug])
 
-    def __unicode__(self):
-        return u"%s" % (self.name)
+    def __str__(self):
+        return "%s" % (self.name)
 
 
 def update_schedule_performance(programme):
@@ -246,10 +246,10 @@ class Episode(models.Model):
     def get_absolute_url(self):
         return reverse('programmes:episode_detail', args=[self.programme.slug, self.season, self.number_in_season])
 
-    def __unicode__(self):
+    def __str__(self):
         if self.title:
-            return u"%sx%s %s" % (self.season, self.number_in_season, self.title)
-        return u"%sx%s %s" % (self.season, self.number_in_season, self.programme)
+            return "%sx%s %s" % (self.season, self.number_in_season, self.title)
+        return "%sx%s %s" % (self.season, self.number_in_season, self.programme)
 
 
 class Participant(models.Model):
@@ -266,8 +266,8 @@ class Participant(models.Model):
             ("see_all_participants", "Can see all participants"),
         )
 
-    def __unicode__(self):
-        return u"%s: %s" % (self.episode, self.person.username)
+    def __str__(self):
+        return "%s: %s" % (self.episode, self.person.username)
 
 
 class Role(models.Model):
@@ -285,8 +285,8 @@ class Role(models.Model):
             ("see_all_roles", "Can see all roles"),
         )
 
-    def __unicode__(self):
-        return u"%s: %s" % (self.programme.name, self.person.username)
+    def __str__(self):
+        return "%s: %s" % (self.programme.name, self.person.username)
 
 
 class Podcast(models.Model):

@@ -36,7 +36,7 @@ def index(request):
     next_transmissions = []
 
     try:
-        live_transmission = transmissions_between.next()
+        live_transmission = next(transmissions_between)
         if live_transmission.start <= now < live_transmission.end:
             percentage = int(round(
                 (now - live_transmission.start).total_seconds() /
@@ -52,7 +52,7 @@ def index(request):
     try:
         max_num_of_next_transmissions = 6 - len(next_transmissions)
         for num in range(max_num_of_next_transmissions):
-            next_transmissions.append(transmissions_between.next())
+            next_transmissions.append(next(transmissions_between))
     except StopIteration:
         pass
 

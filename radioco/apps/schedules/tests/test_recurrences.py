@@ -36,7 +36,7 @@ class RecurrenceTests(TestDataMixin, TestCase):
         start_dt = after_dt
         dts = self.monthly_recurrence.between(after_dt, before_dt, inc=True, dtstart=start_dt)
 
-        self.assertEquals(10, len(dts), dts)
+        self.assertEqual(10, len(dts), dts)
 
         # assert datetime.datetime(2014, 2, 29, 14, 0, 0) not in dts, day is out of range for month
         assert datetime.datetime(2014, 12, 29, 14, 0, 0) not in dts
@@ -48,7 +48,7 @@ class RecurrenceTests(TestDataMixin, TestCase):
 
         dts = self.monthly_recurrence.between(after_dt, before_dt, inc=True, dtstart=start_dt)
 
-        self.assertEquals(2, len(dts), dts)
+        self.assertEqual(2, len(dts), dts)
         assert datetime.datetime(2014, 2, 20, 14, 0, 0) in dts
 
     def test_start_date_is_before_start_limit(self):
@@ -58,30 +58,30 @@ class RecurrenceTests(TestDataMixin, TestCase):
 
         dts = self.monthly_recurrence.between(after_dt, before_dt, inc=True, dtstart=start_dt)
 
-        self.assertEquals(1, len(dts), dts)
+        self.assertEqual(1, len(dts), dts)
         assert datetime.datetime(2014, 2, 19, 14, 0, 0) in dts
 
     def test_after(self):
         start_dt = datetime.datetime(2014, 1, 20, 14, 0, 0)
         after = datetime.datetime(2014, 1, 1, 13, 59, 59)
         dt = self.monthly_recurrence.after(after, dtstart=start_dt)
-        self.assertEquals(datetime.datetime(2014, 1, 20, 14, 0, 0), dt)
+        self.assertEqual(datetime.datetime(2014, 1, 20, 14, 0, 0), dt)
 
         after = start_dt
         dt = self.monthly_recurrence.after(after, dtstart=start_dt)
-        self.assertEquals(datetime.datetime(2014, 2, 20, 14, 0, 0), dt)
+        self.assertEqual(datetime.datetime(2014, 2, 20, 14, 0, 0), dt)
 
     def test_after_inclusive(self):
         start_dt = datetime.datetime(2014, 1, 20, 14, 0, 0)
         after = start_dt
         dt = self.monthly_recurrence.after(after, True, dtstart=start_dt)
-        self.assertEquals(datetime.datetime(2014, 1, 20, 14, 0, 0), dt)
+        self.assertEqual(datetime.datetime(2014, 1, 20, 14, 0, 0), dt)
 
     def test_before_dt(self):
         start_dt = datetime.datetime(2014, 1, 20, 14, 0, 0)
         before = datetime.datetime(2014, 1, 20, 14, 0, 1)
         dt = self.monthly_recurrence.before(before, dtstart=start_dt)
-        self.assertEquals(datetime.datetime(2014, 1, 20, 14, 0, 0), dt)
+        self.assertEqual(datetime.datetime(2014, 1, 20, 14, 0, 0), dt)
 
         before = start_dt
         assert self.monthly_recurrence.before(before, dtstart=start_dt) is None
@@ -90,7 +90,7 @@ class RecurrenceTests(TestDataMixin, TestCase):
         start_dt = datetime.datetime(2014, 1, 20, 14, 0, 0)
         before = start_dt
         dt = self.monthly_recurrence.before(before, True, dtstart=start_dt)
-        self.assertEquals(datetime.datetime(2014, 1, 20, 14, 0, 0), dt)
+        self.assertEqual(datetime.datetime(2014, 1, 20, 14, 0, 0), dt)
 
     def test_impossible_recurrence_after(self):
         """
@@ -102,7 +102,7 @@ class RecurrenceTests(TestDataMixin, TestCase):
             rrules=[recurrence.Rule(recurrence.DAILY, until=until_dt)])
 
         dt = daily_recurrence.after(start_dt, True, dtstart=start_dt)
-        self.assertEquals(start_dt, dt)  # wrong!
+        self.assertEqual(start_dt, dt)  # wrong!
 
         self.assertIsNone(recurrence_after(daily_recurrence, start_dt, start_dt))
 
@@ -116,7 +116,7 @@ class RecurrenceTests(TestDataMixin, TestCase):
             rrules=[recurrence.Rule(recurrence.MONTHLY, until=until_dt)])
 
         dt = daily_recurrence.before(start_dt + datetime.timedelta(seconds=1), dtstart=start_dt)
-        self.assertEquals(start_dt, dt)  # wrong!
+        self.assertEqual(start_dt, dt)  # wrong!
 
         self.assertIsNone(recurrence_before(daily_recurrence, start_dt + datetime.timedelta(seconds=1), start_dt))
 
@@ -135,7 +135,7 @@ class EmptyRecurrenceTests(TestDataMixin, TestCase):
         start_dt = datetime.datetime(2014, 1, 1, 14, 0, 0)
         after = datetime.datetime(2014, 1, 1, 13, 59, 59)
         dt = self.empty_recurrence.after(after, dtstart=start_dt)
-        self.assertEquals(datetime.datetime(2014, 1, 1, 14, 0, 0), dt)
+        self.assertEqual(datetime.datetime(2014, 1, 1, 14, 0, 0), dt)
 
         after = start_dt
         self.assertIsNone(self.empty_recurrence.after(after, dtstart=start_dt))
@@ -147,11 +147,11 @@ class EmptyRecurrenceTests(TestDataMixin, TestCase):
         start_dt = datetime.datetime(2014, 1, 1, 14, 0, 0)
         after = datetime.datetime(2014, 1, 1, 13, 59, 59)
         dt = self.empty_recurrence.after(after, True, dtstart=start_dt)
-        self.assertEquals(datetime.datetime(2014, 1, 1, 14, 0, 0), dt)
+        self.assertEqual(datetime.datetime(2014, 1, 1, 14, 0, 0), dt)
 
         after = start_dt
         dt = self.empty_recurrence.after(after, True, dtstart=start_dt)
-        self.assertEquals(datetime.datetime(2014, 1, 1, 14, 0, 0), dt)
+        self.assertEqual(datetime.datetime(2014, 1, 1, 14, 0, 0), dt)
 
         after = datetime.datetime(2014, 1, 1, 14, 0, 1)
         self.assertIsNone(self.empty_recurrence.after(after, True, dtstart=start_dt))
@@ -160,7 +160,7 @@ class EmptyRecurrenceTests(TestDataMixin, TestCase):
         start_dt = datetime.datetime(2014, 1, 1, 14, 0, 0)
         before = datetime.datetime(2014, 1, 1, 14, 0, 1)
         dt = self.empty_recurrence.before(before, dtstart=start_dt)
-        self.assertEquals(datetime.datetime(2014, 1, 1, 14, 0, 0), dt)
+        self.assertEqual(datetime.datetime(2014, 1, 1, 14, 0, 0), dt)
 
         before = start_dt
         self.assertIsNone(self.empty_recurrence.before(before, dtstart=start_dt))
@@ -172,11 +172,11 @@ class EmptyRecurrenceTests(TestDataMixin, TestCase):
         start_dt = datetime.datetime(2014, 1, 1, 14, 0, 0)
         before = datetime.datetime(2014, 1, 1, 14, 0, 1)
         dt = self.empty_recurrence.before(before, True, dtstart=start_dt)
-        self.assertEquals(datetime.datetime(2014, 1, 1, 14, 0, 0), dt)
+        self.assertEqual(datetime.datetime(2014, 1, 1, 14, 0, 0), dt)
 
         before = start_dt
         dt = self.empty_recurrence.before(before, True, dtstart=start_dt)
-        self.assertEquals(datetime.datetime(2014, 1, 1, 14, 0, 0), dt)
+        self.assertEqual(datetime.datetime(2014, 1, 1, 14, 0, 0), dt)
 
         before = datetime.datetime(2014, 1, 1, 13, 59, 59)
         self.assertIsNone(self.empty_recurrence.before(before, True, dtstart=start_dt))

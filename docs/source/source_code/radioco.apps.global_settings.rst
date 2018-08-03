@@ -1,5 +1,5 @@
-radioco.apps.global_settings package
-====================================
+radioco.apps.global\_settings package
+=====================================
 
 Subpackages
 -----------
@@ -12,16 +12,16 @@ Subpackages
 Submodules
 ----------
 
-radioco.apps.global_settings.admin module
------------------------------------------
+radioco.apps.global\_settings.admin module
+------------------------------------------
 
 .. automodule:: radioco.apps.global_settings.admin
     :members:
     :undoc-members:
     :show-inheritance:
 
-radioco.apps.global_settings.models module
-------------------------------------------
+radioco.apps.global\_settings.models module
+-------------------------------------------
 
 .. automodule:: radioco.apps.global_settings.models
     :members:

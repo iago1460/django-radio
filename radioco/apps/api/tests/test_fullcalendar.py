@@ -49,12 +49,12 @@ class TestFullCalendarApi(TestDataMixin, APITestCase):
         response = self.client.post('/api/2/schedules', data=self._get_schedule_data())
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEquals(
+        self.assertEqual(
             {key: response.data[key] for key in response.data if key not in ['id']},
             {
                 'start': '2016-11-17T01:00:00Z',
-                'title': u'Classic hits', 'source': None, 'calendar': self.calendar.id,
-                'runtime': datetime.timedelta(0, 3600), 'type': 'L', 'programme': u'classic-hits'
+                'title': 'Classic hits', 'source': None, 'calendar': self.calendar.id,
+                'runtime': datetime.timedelta(0, 3600), 'type': 'L', 'programme': 'classic-hits'
             })
 
     @override_settings(TIME_ZONE='Europe/Madrid')
@@ -63,12 +63,12 @@ class TestFullCalendarApi(TestDataMixin, APITestCase):
         response = self.client.post('/api/2/schedules', data=self._get_schedule_data())
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEquals(
+        self.assertEqual(
             {key: response.data[key] for key in response.data if key not in ['id']},
             {
                 'start': '2016-11-17T01:00:00+01:00',  # Returns the date in the default tz
-                'title': u'Classic hits', 'source': None, 'calendar': self.calendar.id,
-                'runtime': datetime.timedelta(0, 3600), 'type': 'L', 'programme': u'classic-hits'
+                'title': 'Classic hits', 'source': None, 'calendar': self.calendar.id,
+                'runtime': datetime.timedelta(0, 3600), 'type': 'L', 'programme': 'classic-hits'
             })
 
     @override_settings(TIME_ZONE='UTC')
@@ -85,7 +85,7 @@ class TestFullCalendarApi(TestDataMixin, APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         new_schedule.refresh_from_db()
-        self.assertEquals(new_schedule.start_dt, pytz.utc.localize(datetime.datetime(2015, 1, 1, 20, 30, 0)))
+        self.assertEqual(new_schedule.start_dt, pytz.utc.localize(datetime.datetime(2015, 1, 1, 20, 30, 0)))
 
     @override_settings(TIME_ZONE='Europe/Madrid')
     def test_move_schedule_in_tz(self):
@@ -101,7 +101,7 @@ class TestFullCalendarApi(TestDataMixin, APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         new_schedule.refresh_from_db()
-        self.assertEquals(new_schedule.start_dt, SPAIN_TZ.localize(datetime.datetime(2015, 1, 1, 20, 30, 0)))
+        self.assertEqual(new_schedule.start_dt, SPAIN_TZ.localize(datetime.datetime(2015, 1, 1, 20, 30, 0)))
 
     @override_settings(TIME_ZONE='UTC')
     def test_move_schedule_with_schedules(self):
@@ -121,8 +121,8 @@ class TestFullCalendarApi(TestDataMixin, APITestCase):
         start_dt = pytz.utc.localize(datetime.datetime(2015, 1, 1, 18, 30, 0))
         new_start_dt = pytz.utc.localize(datetime.datetime(2015, 1, 1, 20, 30, 0))
 
-        self.assertEquals(schedule.start_dt, start_dt)  # Original shouldn't change
-        self.assertEquals(schedule.recurrences.exdates[0], start_dt)  # But should be excluded
+        self.assertEqual(schedule.start_dt, start_dt)  # Original shouldn't change
+        self.assertEqual(schedule.recurrences.exdates[0], start_dt)  # But should be excluded
         self.assertIsNotNone(ExcludedDates.objects.get(schedule=schedule, datetime=start_dt))  # Exclude that date
 
         new_schedule = Schedule.objects.get(programme=schedule.programme, start_dt=new_start_dt)
@@ -170,8 +170,8 @@ class TestFullCalendarApi(TestDataMixin, APITestCase):
         start_dt = pytz.utc.localize(datetime.datetime(2015, 1, 1, 18, 30, 0))
         new_start_dt = SPAIN_TZ.localize(datetime.datetime(2015, 1, 1, 20, 30, 0))
 
-        self.assertEquals(schedule.start_dt, start_dt)  # Original shouldn't change
-        self.assertEquals(schedule.recurrences.exdates[0], start_dt)  # But should be excluded
+        self.assertEqual(schedule.start_dt, start_dt)  # Original shouldn't change
+        self.assertEqual(schedule.recurrences.exdates[0], start_dt)  # But should be excluded
         self.assertIsNotNone(ExcludedDates.objects.get(schedule=schedule, datetime=start_dt))  # Exclude that date
 
         new_schedule = Schedule.objects.get(programme=schedule.programme, start_dt=new_start_dt)

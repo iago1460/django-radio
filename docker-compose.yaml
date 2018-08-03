@@ -1,4 +1,4 @@
-version: '3'
+version: '3.4'
 services:
 
 
@@ -9,14 +9,28 @@ services:
       context: .
       dockerfile: docker/django.Dockerfile
     environment:
-      - DJANGO_LOG_LEVEL=ERROR
-      - MANAGE_PY=${MANAGE_PY:-python manage.py}
+      - SECRET_KEY=$SECRET_KEY
+      - DJANGO_LOG_LEVEL=$DJANGO_LOG_LEVEL
+      - TIME_ZONE=$TIME_ZONE
+      - DISQUS_API_KEY=$DISQUS_API_KEY
+      - DISQUS_WEBSITE_SHORTNAME=$DISQUS_WEBSITE_SHORTNAME
     volumes:
-      - ./:/radioco
-    expose:
-      - ${PORT_BACKEND}
-    ports:
-      - ${PORT_BACKEND}:8000
-    command: /radioco/docker/scripts/launch_server.sh
-    stdin_open: true
-    #tty: true  # ERROR: An HTTP request took too long to complete. https://github.com/docker/compose/issues/3633
+      - ./radioco/media/:/radioco/radioco/media/
+    links:
+      - postgres
+
+  postgres:
+    image: postgres:11.0
+    restart: always
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    volumes:
+      - database_data:/var/lib/postgresql/data
+
+# Volumes ---------------------------------------------------------------------
+
+volumes:
+  database_data:
+    name: database_data

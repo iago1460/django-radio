@@ -7,9 +7,6 @@ Subpackages
 .. toctree::
 
     radioco.configs.base
-    radioco.configs.development
-    radioco.configs.heroku
-    radioco.configs.staging
 
 Module contents
 ---------------

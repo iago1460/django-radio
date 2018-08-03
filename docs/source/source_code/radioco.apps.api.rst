@@ -11,8 +11,8 @@ Subpackages
 Submodules
 ----------
 
-radioco.apps.api.recorder_views module
---------------------------------------
+radioco.apps.api.recorder\_views module
+---------------------------------------
 
 .. automodule:: radioco.apps.api.recorder_views
     :members:

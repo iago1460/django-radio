@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 
@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='siteconfiguration',
             name='more_about_us',
-            field=models.TextField(default=b'', verbose_name='More info', blank=True),
+            field=models.TextField(default='', verbose_name='More info', blank=True),
             preserve_default=True,
         ),
     ]

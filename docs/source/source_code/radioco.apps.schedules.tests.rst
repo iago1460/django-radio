@@ -4,24 +4,24 @@ radioco.apps.schedules.tests package
 Submodules
 ----------
 
-radioco.apps.schedules.tests.test_recurrences module
-----------------------------------------------------
+radioco.apps.schedules.tests.test\_recurrences module
+-----------------------------------------------------
 
 .. automodule:: radioco.apps.schedules.tests.test_recurrences
     :members:
     :undoc-members:
     :show-inheritance:
 
-radioco.apps.schedules.tests.test_schedules module
---------------------------------------------------
+radioco.apps.schedules.tests.test\_schedules module
+---------------------------------------------------
 
 .. automodule:: radioco.apps.schedules.tests.test_schedules
     :members:
     :undoc-members:
     :show-inheritance:
 
-radioco.apps.schedules.tests.test_timezone module
--------------------------------------------------
+radioco.apps.schedules.tests.test\_timezone module
+--------------------------------------------------
 
 .. automodule:: radioco.apps.schedules.tests.test_timezone
     :members:

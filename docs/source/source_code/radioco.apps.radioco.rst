@@ -13,24 +13,24 @@ Subpackages
 Submodules
 ----------
 
-radioco.apps.radioco.context_processors module
-----------------------------------------------
+radioco.apps.radioco.context\_processors module
+-----------------------------------------------
 
 .. automodule:: radioco.apps.radioco.context_processors
     :members:
     :undoc-members:
     :show-inheritance:
 
-radioco.apps.radioco.test_utils module
---------------------------------------
+radioco.apps.radioco.test\_utils module
+---------------------------------------
 
 .. automodule:: radioco.apps.radioco.test_utils
     :members:
     :undoc-members:
     :show-inheritance:
 
-radioco.apps.radioco.tz_utils module
-------------------------------------
+radioco.apps.radioco.tz\_utils module
+-------------------------------------
 
 .. automodule:: radioco.apps.radioco.tz_utils
     :members:

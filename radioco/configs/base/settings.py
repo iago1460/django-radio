@@ -17,6 +17,11 @@
 
 import os
 
+
+def str_to_bool(text):
+    return str(text).lower() not in ('none', 'false', 'no', '0')
+
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SITE_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
@@ -30,11 +35,11 @@ SITE_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__f
 ##################################################################################
 
 
-# SECURITY WARNING: override this variable and keep the secret key used in production secret!
-SECRET_KEY = '(h_$1pj(&usx%kw^m6$7*x9pnar+t_136g!3)g#+eje5r^3(!+'
+SECRET_KEY = os.environ['SECRET_KEY']
 
-DEBUG = True
+DEBUG = str_to_bool(os.environ.get('DEBUG'))
 TESTING_MODE = False
+ALLOWED_HOSTS = '*'
 
 # Application definition
 INSTALLED_APPS = (
@@ -53,6 +58,7 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
 
     'ckeditor',
+    'ckeditor_uploader',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
@@ -111,8 +117,12 @@ TEST_RUNNER = 'radioco.configs.base.test_runner.MyTestSuiteRunner'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'postgres',
+        'PORT': 5432,
     }
 }
 
@@ -121,7 +131,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en'
 
-TIME_ZONE = 'Europe/Madrid'
+TIME_ZONE = os.environ['TIME_ZONE']
 
 USE_I18N = True
 
@@ -190,9 +200,9 @@ PROGRAMME_LANGUAGES = (
 )
 
 # Disqus
-DISQUS_ENABLE = False
-DISQUS_API_KEY = ''
-DISQUS_WEBSITE_SHORTNAME = ''
+DISQUS_ENABLE = bool(os.environ['DISQUS_API_KEY'])
+DISQUS_API_KEY = os.environ['DISQUS_API_KEY']
+DISQUS_WEBSITE_SHORTNAME = os.environ['DISQUS_WEBSITE_SHORTNAME']
 
 # Admin
 GRAPPELLI_ADMIN_HEADLINE = 'RadioCo'
@@ -203,3 +213,26 @@ try:
     from local_settings import *
 except ImportError:
     pass
+
+
+if DEBUG:
+    # Django Debug Toolbar
+    INSTALLED_APPS += (
+        'debug_toolbar',
+    )
+    MIDDLEWARE_CLASSES += (
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    )
+    DEBUG_TOOLBAR_CONFIG = {
+        'SHOW_TOOLBAR_CALLBACK': lambda request: True,
+    }
+else:
+    # Enabling cache
+    TEMPLATES[0]['OPTIONS']['loaders'] = [('django.template.loaders.cached.Loader', TEMPLATES[0]['OPTIONS']['loaders'])]
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+            'LOCATION': 'memcached:11211',
+        }
+    }
+    SESSION_ENGINE = 'django.contrib.sessions.backends.cache'

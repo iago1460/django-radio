@@ -6,7 +6,7 @@ services:
   - docker
 
 python:
-  - "2.7"
+  - "3.6"
 
 branches:
   only:
@@ -14,13 +14,11 @@ branches:
     - develop
 
 install:
-  - pip install coverage coveralls invoke
+  - pip install coverage coveralls
 
 script:
-  - inv --echo docker.setup -e base
-  - inv --echo docker.run_coverage -e base
-  - inv --echo docker.destroy -e base
-  - coverage combine
+  - sh -x run coverage
+  - cd reports && coverage combine
 
 after_success:
-  coveralls
+  cd reports && coveralls

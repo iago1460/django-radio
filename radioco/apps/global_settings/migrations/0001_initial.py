@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 import datetime
@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
             name='PodcastConfiguration',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('url_source', models.CharField(default=b'', help_text='The source url where the recordings will be available after the upload. For example: "http://RadioCo.org/recordings/"', max_length=500, verbose_name='URL Source', blank=True)),
+                ('url_source', models.CharField(default='', help_text='The source url where the recordings will be available after the upload. For example: "http://RadioCo.org/recordings/"', max_length=500, verbose_name='URL Source', blank=True)),
                 ('start_delay', models.PositiveIntegerField(default=0, help_text='In seconds. Initial delay of recordings', verbose_name='start delay')),
                 ('end_delay', models.PositiveIntegerField(default=0, help_text='In seconds.', verbose_name='end delay')),
                 ('next_events', models.PositiveIntegerField(default=32, help_text='In hours. The next events supplied to the recorder program', verbose_name='next events')),
@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
             name='SiteConfiguration',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('site_name', models.CharField(default=b'RadioCo', max_length=255, verbose_name='Site Name')),
+                ('site_name', models.CharField(default='RadioCo', max_length=255, verbose_name='Site Name')),
             ],
             options={
                 'default_permissions': ('change',),

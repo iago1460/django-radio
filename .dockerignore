@@ -1,0 +1,13 @@
+**/node_modules
+**/__pycache__
+**/.cache
+test_reports/
+venv/
+env/
+**/.pyc
+**/.kdbx
+**/.ipynb
+**/db.sqlite3
+**/.vscode
+radioco/static/
+radioco/apps/radioco/static/bower/

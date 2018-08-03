@@ -1,4 +1,4 @@
 {
   "allow_root": true,
-  "directory" : "radioco/apps/radioco/static/bower"
+  "directory" : "tmp_bower"
 }

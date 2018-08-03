@@ -40,8 +40,8 @@ class UtilsTest(TestCase):
 
         utc_dict = {utc_dt: 'Created using utc dt'}
         spain_dict = {spanish_dt: 'Created using spanish dt'}
-        self.assertEquals(utc_dict.get(utc_dt), utc_dict.get(utc_dt.astimezone(SPAIN_TZ)))
-        self.assertEquals(spain_dict.get(spanish_dt), spain_dict.get(spanish_dt.astimezone(pytz.utc)))
+        self.assertEqual(utc_dict.get(utc_dt), utc_dict.get(utc_dt.astimezone(SPAIN_TZ)))
+        self.assertEqual(spain_dict.get(spanish_dt), spain_dict.get(spanish_dt.astimezone(pytz.utc)))
 
 
 class RadioIntegrationTests(TestDataMixin, TestCase):

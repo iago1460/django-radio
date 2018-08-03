@@ -13,7 +13,7 @@ from rest_framework.decorators import list_route
 from rest_framework.exceptions import ValidationError as DRFValidationError
 from rest_framework.response import Response
 
-import serializers
+from . import serializers
 from radioco.apps.api.viewsets import UpdateOnlyModelViewSet
 from radioco.apps.global_settings.models import RadiocomConfiguration
 from radioco.apps.programmes.models import Programme, Episode
@@ -168,7 +168,7 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
         now = utils.timezone.now()
         transmissions = Transmission.at(now)
         try:
-            transmission = transmissions.next()
+            transmission = next(transmissions)
         except StopIteration:
             return Response(None)
         else:

@@ -16,7 +16,7 @@
 import datetime
 import heapq
 from functools import partial
-from itertools import imap
+
 
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -87,8 +87,8 @@ class Calendar(models.Model):
         except Calendar.DoesNotExist:
             return None
 
-    def __unicode__(self):
-        return u"%s" % (self.name)
+    def __str__(self):
+        return "%s" % (self.name)
 
 # We are not rearranging episodes during deletion
 
@@ -269,7 +269,7 @@ class Schedule(models.Model):
             return before
         return min(before, self.effective_end_dt)
 
-    def __unicode__(self):
+    def __str__(self):
         return ' - '.join([self.start_dt.strftime('%A'), self.start_dt.strftime('%X')])
 
 
@@ -327,7 +327,7 @@ def calculate_effective_schedule_end_dt(schedule):
     rrules_until_dates = [_rrule.until for _rrule in schedule.recurrences.rrules]
 
     # If we have a rrule without a until date we don't know the last date
-    if any(map(lambda x: x is None, rrules_until_dates)):
+    if any([x is None for x in rrules_until_dates]):
         return None
 
     possible_limit_dates = schedule.recurrences.rdates + rrules_until_dates
@@ -422,7 +422,7 @@ class Transmission(object):
         episodes = {_episode.issue_date: _episode for _episode in episodes}
 
         transmission_dates = [
-            imap(partial(_return_tuple, item2=schedule), schedule.dates_between(after, before))
+            map(partial(_return_tuple, item2=schedule), schedule.dates_between(after, before))
             for schedule in schedules
         ]
         sorted_transmission_dates = heapq.merge(*transmission_dates)

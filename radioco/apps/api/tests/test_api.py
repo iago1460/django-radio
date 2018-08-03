@@ -26,7 +26,7 @@ class TestSerializers(TestDataMixin, TestCase):
             context=MOCK_CONTEXT
         )
         self.assertListEqual(
-            serializer.data.keys(),
+            list(serializer.data.keys()),
             ['id', 'slug', 'name', 'synopsis', 'runtime', 'photo_url', 'rss_url', 'language', 'category'])
 
     def test_programme_photo_url(self):
@@ -41,7 +41,7 @@ class TestSerializers(TestDataMixin, TestCase):
     def test_episode(self):
         serializer = serializers.EpisodeSerializer(self.episode)
         self.assertListEqual(
-            serializer.data.keys(),
+            list(serializer.data.keys()),
             ['title', 'programme', 'summary', 'issue_date', 'season', 'number_in_season'])
 
     def test_episode_programme(self):
@@ -53,14 +53,14 @@ class TestSerializers(TestDataMixin, TestCase):
         schedule_id = self.schedule.id
         calendar_id = self.calendar.id
         self.assertDictEqual(serializer.data, {
-            'title': u'Classic hits',
+            'title': 'Classic hits',
             'source': None,
             'start': '2015-01-01T14:00:00Z',
             'calendar': calendar_id,
             'runtime': datetime.timedelta(minutes=60),
             'type': 'L',
             'id': schedule_id,
-            'programme': u'classic-hits'})
+            'programme': 'classic-hits'})
 
     def test_transmission(self):
         serializer = serializers.TransmissionSerializer(
@@ -75,12 +75,12 @@ class TestSerializers(TestDataMixin, TestCase):
                 'programme': self.schedule.programme.id,
                 'episode': None,
                 'source': None,
-                'type': u'L',
+                'type': 'L',
                 'start': '2015-01-06T14:00:00Z',
                 'end': '2015-01-06T15:00:00Z',
-                'name': u'Classic hits',
-                'slug': u'classic-hits',
-                'programme_url': u'http://testserver/programmes/classic-hits/',
+                'name': 'Classic hits',
+                'slug': 'classic-hits',
+                'programme_url': 'http://testserver/programmes/classic-hits/',
                 'episode_url': None,
             }
         )

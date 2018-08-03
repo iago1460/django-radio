@@ -37,18 +37,13 @@ Next, download the project and cd into it:
     cd django-radio
 
 
-Install the python invoke library:
+Execute the following commands to deploy the app in docker, this step take some time:
 
 .. code-block:: bash
 
-    pip install invoke==0.14.0
-
-
-Execute the next command to deploy the app in docker, this step take some time:
-
-.. code-block:: bash
-
-    inv quickstart
+    chmod +x ./run
+    ./run start_dev
+    ./run manage create_example_data
 
 
 .. warning::
@@ -81,3 +76,16 @@ Using RadioCo on production
 The Internet is a hostile environment.
 Before deploying this project, you should take some time to review your settings, with security, performance, and operations in mind.
 Keep in mind `this critical settings <https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/#critical-settings>`_.
+
+Locally
+=======
+
+RadioCo provides a staging environment, safer than the previous one but still insecure, **use at your own risk**.
+
+
+.. code-block:: bash
+
+    ./run start
+
+
+Now that the server’s running, visit http://127.0.0.1:8000/

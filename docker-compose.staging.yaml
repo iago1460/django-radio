@@ -1,0 +1,31 @@
+version: '3.4'
+services:
+
+
+  # Backend server -------------------------------------------------------------
+
+  django:
+    environment:
+      - DEBUG=False
+    volumes:
+      - ./radioco/static/:/radioco/radioco/static/
+    command: /bin/sh -c "cd /radioco && ./docker/scripts/launch_server.sh"
+
+  nginx:
+    image: nginx:1.13.1-alpine
+    restart: always
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./radioco/static:/static:ro
+      - ./radioco/media:/media:ro
+    ports:
+      - ${PORT_BACKEND}:8000
+    env_file:
+      - .env
+    command: /bin/sh -c "nginx -g 'daemon off;'"
+    links:
+      - django
+
+  memcached:
+    image: memcached:1.4.37-alpine
+    command: memcached -m 512m

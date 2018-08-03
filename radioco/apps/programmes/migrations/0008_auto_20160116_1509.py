@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import migrations, models
 
@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='programme',
             name='language',
-            field=models.CharField(default=b'es', max_length=7, verbose_name='language', choices=[(b'es', 'Spanish'), (b'en', 'English'), (b'gl', 'Galician')]),
+            field=models.CharField(default='es', max_length=7, verbose_name='language', choices=[('es', 'Spanish'), ('en', 'English'), ('gl', 'Galician')]),
         ),
     ]

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 import django.db.models.deletion
@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('day', models.IntegerField(choices=[(0, 'Monday'), (1, 'Tuesday'), (2, 'Wednesday'), (3, 'Thursday'), (4, 'Friday'), (5, 'Saturday'), (6, 'Sunday')])),
                 ('start_hour', models.TimeField(verbose_name='start time')),
-                ('type', models.CharField(max_length=1, verbose_name='type', choices=[(b'L', 'live'), (b'B', 'broadcast'), (b'S', 'broadcast syndication')])),
+                ('type', models.CharField(max_length=1, verbose_name='type', choices=[('L', 'live'), ('B', 'broadcast'), ('S', 'broadcast syndication')])),
                 ('programme', models.ForeignKey(verbose_name='programme', to='programmes.Programme')),
             ],
             options={

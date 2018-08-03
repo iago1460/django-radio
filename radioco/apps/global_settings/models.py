@@ -79,7 +79,7 @@ class SiteConfiguration(SingletonModel):
     twitter_address = models.CharField(max_length=255, verbose_name=_('Twitter address'), blank=True, null=True)
     facebook_address = models.CharField(max_length=255, verbose_name=_('facebook address'), blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return _u('Global Configuration')
 
     class Meta:
@@ -118,7 +118,7 @@ class PodcastConfiguration(SingletonModel):
         else:
             return _('Variable USERNAME_RADIOCO_RECORDER doesn\'t exist in your settings file')
 
-    def __unicode__(self):
+    def __str__(self):
         # In django 1.7 we can't use lazy
         return _u('Podcast Configuration')
 
@@ -150,7 +150,7 @@ class CalendarConfiguration(SingletonModel):
         )
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return _u('Calendar Configuration')
 
     class Meta:
@@ -192,7 +192,7 @@ class RadiocomConfiguration(SingletonModel):
         help_text=_('The stream url where its hear actual program'),
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return _u('Radiocom Configuration')
 
     class Meta:

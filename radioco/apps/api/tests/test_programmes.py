@@ -28,8 +28,8 @@ class TestProgrammesAPI(TestDataMixin, APITestCase):
                 'id': self.summer_programme.id,
                 'language': 'en',
                 'name': 'Summer Programme',
-                'photo_url': u'http://testserver/media/defaults/default-programme-photo.jpg',
-                'rss_url': u'http://testserver/programmes/summer-programme/rss/',
+                'photo_url': 'http://testserver/media/defaults/default-programme-photo.jpg',
+                'rss_url': 'http://testserver/programmes/summer-programme/rss/',
                 'runtime': '01:00:00',
                 'slug': 'summer-programme',
                 'synopsis': ''
@@ -42,14 +42,14 @@ class TestProgrammesAPI(TestDataMixin, APITestCase):
             {
                 'before': datetime.date(2015, 6, 1),
             })
-        self.assertIn(u'summer-programme', map(lambda t: t['slug'], response.data))
+        self.assertIn('summer-programme', [t['slug'] for t in response.data])
 
         response = self.client.get(
             '/api/2/programmes',
             {
                 'before': datetime.date(2015, 5, 30),
             })
-        self.assertNotIn(u'summer-programme', map(lambda t: t['slug'], response.data))
+        self.assertNotIn('summer-programme', [t['slug'] for t in response.data])
 
     def test_programmes_after(self):
         response = self.client.get(
@@ -57,14 +57,14 @@ class TestProgrammesAPI(TestDataMixin, APITestCase):
             {
                 'after': datetime.date(2015, 8, 31),
             })
-        self.assertIn(u'summer-programme', map(lambda t: t['slug'], response.data))
+        self.assertIn('summer-programme', [t['slug'] for t in response.data])
 
         response = self.client.get(
             '/api/2/programmes',
             {
                 'after': datetime.date(2015, 9, 1),
             })
-        self.assertNotIn(u'summer-programme', map(lambda t: t['slug'], response.data))
+        self.assertNotIn('summer-programme', [t['slug'] for t in response.data])
 
     def test_programmes_between(self):
         response = self.client.get(
@@ -73,7 +73,7 @@ class TestProgrammesAPI(TestDataMixin, APITestCase):
                 'after': datetime.date(2015, 1, 1),
                 'before': datetime.date(2015, 12, 31),
             })
-        self.assertIn(u'summer-programme', map(lambda t: t['slug'], response.data))
+        self.assertIn('summer-programme', [t['slug'] for t in response.data])
 
         response = self.client.get(
             '/api/2/programmes',
@@ -81,7 +81,7 @@ class TestProgrammesAPI(TestDataMixin, APITestCase):
                 'after': datetime.date(2015, 1, 1),
                 'before': datetime.date(2015, 5, 30),
             })
-        self.assertNotIn(u'summer-programme', map(lambda t: t['slug'], response.data))
+        self.assertNotIn('summer-programme', [t['slug'] for t in response.data])
 
     def test_episodes_get_all(self):
         response = self.client.get('/api/2/episodes')

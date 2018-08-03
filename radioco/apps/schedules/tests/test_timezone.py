@@ -70,11 +70,11 @@ class ScheduleModelTests(TestDataMixin, TestCase):
     def test_transform_dt_to_default_tz(self):
         utc_dt = pytz.utc.localize(datetime.datetime(2017, 1, 1, 0, 00, 00))
         spain_dt = transform_dt_to_default_tz(utc_dt)
-        self.assertEquals(spain_dt.tzinfo.zone, 'Europe/Madrid')
-        self.assertEquals(spain_dt, SPAIN_TZ.localize(datetime.datetime(2017, 1, 1, 1, 0, 0)))
+        self.assertEqual(spain_dt.tzinfo.zone, 'Europe/Madrid')
+        self.assertEqual(spain_dt, SPAIN_TZ.localize(datetime.datetime(2017, 1, 1, 1, 0, 0)))
 
     def test_cleaned_internal_recurrence_dates(self):
-        self.assertEquals(
+        self.assertEqual(
             self.cest_schedule.recurrences.rrules[0].until,
             SPAIN_TZ.localize(datetime.datetime(2017, 3, 27, 23, 59, 59)))
 
@@ -89,7 +89,7 @@ class ScheduleModelTests(TestDataMixin, TestCase):
             SPAIN_TZ.localize(datetime.datetime(2017, 3, 26, 10, 0, 0)),
             SPAIN_TZ.localize(datetime.datetime(2017, 3, 27, 10, 0, 0)),
         )
-        self.assertItemsEqual(expected_dates, dates_between)
+        self.assertCountEqual(expected_dates, dates_between)
 
     def test_CET_transition(self):
         after = SPAIN_TZ.localize(datetime.datetime(2017, 10, 28, 14, 0, 0))
@@ -102,4 +102,4 @@ class ScheduleModelTests(TestDataMixin, TestCase):
             SPAIN_TZ.localize(datetime.datetime(2017, 10, 29, 14, 0, 0)),
             SPAIN_TZ.localize(datetime.datetime(2017, 10, 30, 14, 0, 0)),
         )
-        self.assertItemsEqual(expected_dates, dates_between)
+        self.assertCountEqual(expected_dates, dates_between)

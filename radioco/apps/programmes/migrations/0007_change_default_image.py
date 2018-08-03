@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import migrations
 from django.templatetags.static import static
@@ -9,7 +9,7 @@ def change_programmes(apps, schema_editor):
     # version than this migration expects. We use the historical version.
     Programme = apps.get_model("programmes", "Programme")
     for programme in Programme.objects.all():
-        print programme.photo.name
+        print(programme.photo.name)
         if programme.photo.name == static('radio/images/default-programme-photo.jpg'):
             programme.photo = 'defaults/default-programme-photo.jpg'
             programme.save()

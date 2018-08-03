@@ -216,7 +216,7 @@ class NonStaffEpisodeAdminForm(forms.ModelForm):
                 after = now
 
             try:
-                next_dates(Calendar.get_active(), programme, after).next()
+                next(next_dates(Calendar.get_active(), programme, after))
             except StopIteration:
                 raise forms.ValidationError(_('There are no available schedules.'))
         return programme
@@ -274,7 +274,7 @@ class PodcastInline(admin.StackedInline):
 
 
 class NonStaffEpisodeAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'season', 'number_in_season', 'issue_date', 'programme')
+    list_display = ('__str__', 'season', 'number_in_season', 'issue_date', 'programme')
     list_select_related = True
     ordering = ['-season', '-number_in_season']
     list_filter = ['issue_date', OwnEpisodeProgrammeListFilter, OwnEpisodeIssueDateListFilter]
@@ -294,7 +294,7 @@ class NonStaffEpisodeAdmin(admin.ModelAdmin):
                     after = now
             else:
                 after = now
-            date = next_dates(Calendar.get_active(), programme, after).next()
+            date = next(next_dates(Calendar.get_active(), programme, after))
             Episode.objects.create_episode(
                 episode=obj, last_episode=last_episode,
                 date=date, programme=programme)

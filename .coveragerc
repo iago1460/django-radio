@@ -2,3 +2,6 @@
 source =
     radioco/
     /radioco/radioco/
+[run]
+source =
+    radioco

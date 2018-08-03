@@ -128,12 +128,12 @@ class EpisodeManagerTests(TestDataMixin, TestCase):
         episodes = self.manager.unfinished(
             self.programme, pytz.utc.localize(datetime.datetime(2015, 1, 1)))
         self.assertEqual(
-            episodes.next().issue_date, pytz.utc.localize(datetime.datetime(2015, 1, 1, 14, 0)))
+            next(episodes).issue_date, pytz.utc.localize(datetime.datetime(2015, 1, 1, 14, 0)))
 
     def test_unfinished_none(self):
         episodes = self.manager.unfinished(Programme())
         with self.assertRaises(StopIteration):
-            episodes.next()
+            next(episodes)
 
 
 class EpisodeModelTests(TestCase):
