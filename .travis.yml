@@ -14,11 +14,11 @@ branches:
     - develop
 
 install:
-  - pip install coverage coveralls
+  - pip install coveralls
 
 script:
-  - sh -x run coverage
-  - cd reports && coverage combine
+  - cp -v .sample.env .env
+  - docker-compose run -e COVERAGE_FILE=reports/coverage.xml --rm --volume "$(pwd)/reports:/radioco/reports" django coverage run manage.py test radioco
 
 after_success:
   cd reports && coveralls

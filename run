@@ -30,9 +30,9 @@ function start_dev(){
          echo "Creating .env file. Update your environment variables and try again."
          exit 0
      fi
+     export_file_vars .env
      docker-compose $COMPOSE_FILES down --remove-orphans
      docker-compose $COMPOSE_FILES build
-     export_file_vars .env
      docker-compose $COMPOSE_FILES up -d
      echo "RadioCo is running at http://127.0.0.1:${PORT_BACKEND}"
 }
