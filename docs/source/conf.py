@@ -23,13 +23,13 @@ sys.path.insert(0, os.path.abspath('.'))
 path = os.path.split(os.path.dirname(__file__))[0]
 path = os.path.split(path)[0]
 sys.path.insert(0, path)
-import django
+# import django
 import radioco
 
 # sys.path.insert(0, '{0}/radioco'.format(path))
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'radioco.configs.base.settings'
-django.setup()
+# os.environ['DJANGO_SETTINGS_MODULE'] = 'radioco.configs.base.settings'
+# django.setup()
 
 # -- General configuration ------------------------------------------------
 
@@ -40,7 +40,7 @@ django.setup()
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
+    # 'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.viewcode',
 ]
