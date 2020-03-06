@@ -267,10 +267,17 @@ class OwnEpisodeIssueDateListFilter(admin.SimpleListFilter):
             return queryset
 
 
+class PodcastAdminForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(PodcastAdminForm, self).__init__(*args, **kwargs)
+        self.fields['url'].required = False
+
+
 class PodcastInline(admin.StackedInline):
     inline_classes = ('grp-collapse grp-open',)
     extra = 0
     model = Podcast
+    form = PodcastAdminForm
 
 
 class NonStaffEpisodeAdmin(admin.ModelAdmin):

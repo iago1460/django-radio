@@ -295,6 +295,14 @@ class Podcast(models.Model):
     mime_type = models.CharField(max_length=20)
     length = models.PositiveIntegerField()  # bytes
     duration = models.PositiveIntegerField(validators=[MinValueValidator(1)])
+    podcast_file = models.FileField(upload_to='podcasts/', blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.url and self.podcast_file:
+            from radioco.apps.global_settings.models import PodcastConfiguration
+            podcast_config = PodcastConfiguration.get_global()
+            self.url = podcast_config.url_source.rstrip('/') + self.podcast_file.url
+        super(Podcast, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return self.episode.get_absolute_url()

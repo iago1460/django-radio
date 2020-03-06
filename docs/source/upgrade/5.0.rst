@@ -9,6 +9,7 @@ What's new in 5.0
 *   Upgrading docker image to python:3.6.10-buster
 *   Upgrading requirements (Django 1.11.29 / grappelli 2.10.4 among others)
 *   Dropping mysql support.
+*   Adding Podcast file field to upload audio files manually.
 
 ********************
 How this affects you
