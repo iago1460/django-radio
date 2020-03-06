@@ -13,7 +13,9 @@ To allow RadioCo to generate correct dates it's necessary to set the timezone va
 Installing locally
 ******************
 
-This tutorial is written for Python 2.7 and Ubuntu 12.04 or later.
+This tutorial requires a terminal with
+`Git <https://git-scm.com/>`_, `Bash <https://www.gnu.org/software/bash/>`_ and `Docker <https://docs.docker.com/>`_ installed.
+
 
 Ubuntu
 ======
@@ -24,12 +26,7 @@ follow the `installation steps <https://docs.docker.com/engine/installation/>`_ 
 
 Open a terminal and introduce the following commands:
 
-.. code-block:: bash
-
-    sudo apt-get install git-core python-dev python-pip
-
-
-Next, download the project and cd into it:
+Download the project and cd into it:
 
 .. code-block:: bash
 
@@ -75,7 +72,7 @@ Using RadioCo on production
 
 The Internet is a hostile environment.
 Before deploying this project, you should take some time to review your settings, with security, performance, and operations in mind.
-Keep in mind `this critical settings <https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/#critical-settings>`_.
+Keep in mind `this critical settings <https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/#critical-settings>`_.
 
 Locally
 =======

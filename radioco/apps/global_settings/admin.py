@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from django.conf.urls import url, patterns
+from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.sites.models import Site
 from django.http import HttpResponseRedirect
@@ -46,7 +46,7 @@ class SingletonModelAdmin(admin.ModelAdmin):
             'app_name': self.model._meta.app_label,
             'model_name': self.model._meta.model_name,
         }
-        custom_urls = patterns('',
+        custom_urls = [
             url(
                 r'^history/$',
                 self.admin_site.admin_view(self.history_view),
@@ -59,7 +59,7 @@ class SingletonModelAdmin(admin.ModelAdmin):
                 {'object_id': '1'},
                 name='%s_change' % url_name_prefix
             ),
-        )
+        ]
         # By inserting the custom URLs first, we overwrite the standard URLs.
         return custom_urls + urls
 

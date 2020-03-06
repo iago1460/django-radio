@@ -1,24 +1,24 @@
-Django==1.8.19
-psycopg2-binary==2.7.5
-Pillow==3.4.2
-python-dateutil==2.6.0
-pytz==2018.6
-django-grappelli==2.7.3
-django-filebrowser==3.6.4
-djangorestframework==3.6.3
-django-filter==1.0.4
-django-ckeditor==5.3.1
+Django==1.11.29
+psycopg2-binary==2.8.4
+Pillow==7.0.0
+python-dateutil==2.8.1
+pytz==2019.3
+django-grappelli==2.10.4
+django-filebrowser==3.9.2
+djangorestframework==3.6.4
+django-filter==2.2.0
+django-ckeditor==5.9.0
 django-disqus==0.5
-beautifulsoup4==4.6.0
+beautifulsoup4==4.8.2
 git+git://github.com/iago1460/django-recurrence.git@v3.1
 
 # Prod
 python-memcached==1.59
-uwsgi==2.0.17.1
+uwsgi==2.0.18
 
 # Dev
 invoke==0.14.0
-django-debug-toolbar==1.6
+django-debug-toolbar==1.11
 transifex-client==0.13.5
 coverage==4.5.1
 sphinx==1.8.1

@@ -1,13 +1,11 @@
-FROM python:3.6-jessie
+FROM python:3.6.10-buster
 
 RUN apt-get update && apt-get install -yq --fix-missing --no-install-recommends \
-    libmysqlclient-dev \
-    mysql-client \
     python3-setuptools \
     python3-pip \
     git-core \
     netcat \
-    nodejs-legacy \
+    nodejs \
     npm \
     gettext \
 && apt-get clean && rm -rf /var/lib/apt/lists/*

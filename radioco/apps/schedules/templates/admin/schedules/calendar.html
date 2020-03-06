@@ -276,18 +276,16 @@
             });
             return BackgroundColor[type];
         }
-        
-        function dismissAddRelatedObjectPopup(win, newId, newRepr) {
-            // Refreshing related information depending on the object type 
+
+        function dismissChangeRelatedObjectPopup(win, objId, newRepr, newId) {
+            // admin/js/admin/RelatedObjectLookups.js
+            // Refreshing related information depending on the object type
             var name = windowname_to_id(win.name);
             var view = $('#calendar').fullCalendar('getView');
             if (name === 'change_programme') {
                 reloadProgrammes(view.start.format('YYYY-MM-DD'), moment(view.end).subtract(1, "days").format('YYYY-MM-DD'));
                 $('#calendar').fullCalendar('refetchEvents');
                 success('{% trans "Updated programme" %}');
-            } else if (name === 'add_programme') {
-                reloadProgrammes(view.start.format('YYYY-MM-DD'), moment(view.end).subtract(1, "days").format('YYYY-MM-DD'));
-                success('{% trans "Added programme" %}');
             } else if (name === 'change_schedule') {
                 $('#calendar').fullCalendar('refetchEvents');
                 success('{% trans "Updated schedule" %}');
@@ -295,6 +293,19 @@
             win.close();
         }
         
+        function dismissAddRelatedObjectPopup(win, newId, newRepr) {
+            // admin/js/admin/RelatedObjectLookups.js
+            // Refreshing related information depending on the object type 
+            var name = windowname_to_id(win.name);
+            var view = $('#calendar').fullCalendar('getView');
+            if (name === 'add_programme') {
+                reloadProgrammes(view.start.format('YYYY-MM-DD'), moment(view.end).subtract(1, "days").format('YYYY-MM-DD'));
+                success('{% trans "Added programme" %}');
+            }
+            win.close();
+        }
+
+        dismissChangeRelatedObjectPopup = dismissChangeRelatedObjectPopup;
         dismissAddAnotherPopup = dismissAddRelatedObjectPopup;
     </script>
 {% endblock %}

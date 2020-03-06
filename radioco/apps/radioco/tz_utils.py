@@ -14,13 +14,13 @@ class GMT(tzoffset):
     GMT implementation, it has a fixed offset
     """
 
-    def __init__(self, seconds):
-        hours = int(seconds / 3600)
+    def __init__(self, name, offset):
+        hours = int(offset / 3600)
         if hours < 0:
-            self._name = 'GMT-%s' % abs(hours)
+            name = 'GMT-%s' % abs(hours)
         else:
-            self._name = 'GMT+%s' % hours
-        self._offset = datetime.timedelta(seconds=seconds)
+            name = 'GMT+%s' % hours
+        super(GMT, self).__init__(name=name, offset=offset)
 
     def localize(self, dt, is_dst=False):
         '''Convert naive time to local time'''
@@ -45,7 +45,7 @@ class GMT(tzoffset):
 
 @memorize
 def get_timezone_offset(tz):
-    return GMT((tz.utcoffset(timestamp) - tz.dst(timestamp)).total_seconds())
+    return GMT(None, (tz.utcoffset(timestamp) - tz.dst(timestamp)).total_seconds())
 
 
 def get_active_timezone():
@@ -81,8 +81,7 @@ def fix_recurrence_date(start_dt, dt):
     """
     current_dt = transform_dt_to_default_tz(dt)
     current_start_dt = transform_dt_to_default_tz(start_dt)
-
-    tz = GMT(current_start_dt.utcoffset().total_seconds())  # tz without DST
+    tz = GMT(None, current_start_dt.utcoffset().total_seconds())  # tz without DST
     # We are localising a new dt in the DST naive tz
     fixed_dt = transform_dt_to_default_tz(
         tz.localize(datetime.datetime.combine(current_dt.date(), current_start_dt.time())))

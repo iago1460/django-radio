@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from radioco.apps.schedules.views import schedule_list, DeleteScheduleView
 

@@ -58,10 +58,13 @@ js_info_dict = {
     'packages': ('recurrence',),
 }
 
+from radioco.apps.radioco.views import index, user_logout
+from radioco.apps.api.recorder_views import recording_schedules, submit_recorder
+
 urlpatterns = [
-    url(r'^$', 'radioco.apps.radioco.views.index', name="home"),
+    url(r'^$', index, name="home"),
     url(r'^jsi18n/$', javascript_catalog, js_info_dict, name='javascript-catalog'),
-    url(r'^logout/$', 'radioco.apps.radioco.views.user_logout', name="logout"),
+    url(r'^logout/$', user_logout, name="logout"),
     url(r'^admin/filebrowser/', include(site.urls)),
     url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
@@ -77,8 +80,8 @@ urlpatterns = [
 
     url(r'^ckeditor/', include('ckeditor_uploader.urls')),
 
-    url(r'^api/1/recording_schedules/$', 'radioco.apps.api.recorder_views.recording_schedules', name="recording_schedules"),
-    url(r'^api/1/submit_recorder/$', 'radioco.apps.api.recorder_views.submit_recorder', name="submit_recorder"),
+    url(r'^api/1/recording_schedules/$', recording_schedules, name="recording_schedules"),
+    url(r'^api/1/submit_recorder/$', submit_recorder, name="submit_recorder"),
 
     url(r'^api/2/', include('radioco.apps.api.urls', namespace="api"))
 ]

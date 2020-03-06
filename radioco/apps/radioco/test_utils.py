@@ -184,7 +184,9 @@ class TestDataMixin(object):
         cls.calendar = cls.schedule.calendar
         cls.episode = cls.programme.episode_set.first()
         cls.another_calendar = Calendar.objects.create(name="Another")
-        cls.another_calendar.schedule_set.add(Schedule(
+
+        schedule, created = Schedule.objects.get_or_create(
             programme=cls.programme,
+            calendar=cls.another_calendar,
             type='S',
-            start_dt=pytz.utc.localize(datetime.datetime(2015, 1, 6, 16, 30, 0))))
+            start_dt=pytz.utc.localize(datetime.datetime(2015, 1, 6, 16, 30, 0)))

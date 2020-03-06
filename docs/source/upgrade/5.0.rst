@@ -1,0 +1,34 @@
+#################
+5.0 release notes
+#################
+
+*****************
+What's new in 5.0
+*****************
+
+*   Upgrading docker image to python:3.6.10-buster
+*   Upgrading requirements (Django 1.11.29 / grappelli 2.10.4 among others)
+*   Dropping mysql support.
+
+********************
+How this affects you
+********************
+
+If you’re starting with a new installation, you don’t need to worry about this. 
+Don’t even bother reading this section; it’s for upgraders.
+
+You need to replace your current source with the content of https://github.com/iago1460/django-radio.
+To setup your settings please read the configuration section.
+
+You should be able to keep your current database but make sure to create a backup before start.
+
+.. warning::
+
+    Required PostgreSQL 9.3 or higher.
+
+
+if you are using our docker setup:
+
+.. code-block:: bash
+
+    ./run start

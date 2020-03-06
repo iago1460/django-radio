@@ -72,9 +72,9 @@ class RadiocomProgrammeViewSet(ProgrammeViewSet):
 class EpisodeFilter(filters.FilterSet):
     class Meta:
         model = Episode
-        fields = ('programme',)
+        fields = ('programme', )
 
-    programme = django_filters.CharFilter(name="programme__slug")
+    programme = django_filters.CharFilter(field_name="programme__slug")
 
 
 class EpisodeViewSet(viewsets.ReadOnlyModelViewSet):  # FIXME: allowing creation breaks the view
@@ -89,7 +89,7 @@ class ScheduleFilter(filters.FilterSet):
         model = Schedule
         fields = ('programme', 'calendar', 'type')
 
-    programme = django_filters.CharFilter(name="programme__slug")
+    programme = django_filters.CharFilter(field_name="programme__slug")
 
 
 class ScheduleViewSet(viewsets.ModelViewSet):

@@ -52,7 +52,7 @@ To access administrator site visit http://127.0.0.1:8000/admin/ using "admin/123
 Documentation
 *************
 
-Please head over to our `documentation <http://django-radio.readthedocs.org/>`_ for all
+Please head over to our `documentation <https://django-radio.readthedocs.io/>`_ for all
 the details on how to install, extend and use RadioCo.
 
 

@@ -228,7 +228,7 @@ class Episode(models.Model):
 
     title = models.CharField(max_length=100, blank=True, null=True, verbose_name=_("title"))
     people = models.ManyToManyField(User, blank=True, through='Participant', verbose_name=_("people"))
-    programme = models.ForeignKey(Programme, verbose_name=_("programme"))
+    programme = models.ForeignKey(Programme, verbose_name=_("programme"), on_delete=models.CASCADE)
     summary = RichTextUploadingField(blank=True, verbose_name=_("summary"))
     issue_date = models.DateTimeField(blank=True, null=True, db_index=True, verbose_name=_('issue date'))
     season = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("season"))
@@ -253,8 +253,8 @@ class Episode(models.Model):
 
 
 class Participant(models.Model):
-    person = models.ForeignKey(User, verbose_name=_("person"))
-    episode = models.ForeignKey(Episode, verbose_name=_("episode"))
+    person = models.ForeignKey(User, verbose_name=_("person"), on_delete=models.CASCADE)
+    episode = models.ForeignKey(Episode, verbose_name=_("episode"), on_delete=models.CASCADE)
     role = models.CharField(max_length=60, blank=True, null=True, verbose_name=_("role"))
     description = models.TextField(blank=True, verbose_name=_("description"))
 
@@ -271,8 +271,8 @@ class Participant(models.Model):
 
 
 class Role(models.Model):
-    person = models.ForeignKey(User, verbose_name=_("person"))
-    programme = models.ForeignKey(Programme, verbose_name=_("programme"))
+    person = models.ForeignKey(User, verbose_name=_("person"), on_delete=models.CASCADE)
+    programme = models.ForeignKey(Programme, verbose_name=_("programme"), on_delete=models.CASCADE)
     role = models.CharField(max_length=60, blank=True, null=True, verbose_name=_("role"))
     description = models.TextField(blank=True, verbose_name=_("description"))
     date_joined = models.DateField(auto_now_add=True)

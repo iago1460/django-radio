@@ -97,7 +97,7 @@ class ExcludedDates(models.Model):
     """
     Helper to improve performance
     """
-    schedule = models.ForeignKey('Schedule')
+    schedule = models.ForeignKey('Schedule', on_delete=models.CASCADE)
     datetime = models.DateTimeField(db_index=True)
 
     @property
@@ -119,9 +119,9 @@ class Schedule(models.Model):
         verbose_name = _('schedule')
         verbose_name_plural = _('schedules')
 
-    programme = models.ForeignKey(Programme, verbose_name=_("programme"))
+    programme = models.ForeignKey(Programme, verbose_name=_("programme"), on_delete=models.CASCADE)
     type = models.CharField(verbose_name=_("type"), choices=EMISSION_TYPE, max_length=1)
-    calendar = models.ForeignKey(Calendar, verbose_name=_("calendar"))
+    calendar = models.ForeignKey(Calendar, verbose_name=_("calendar"), on_delete=models.CASCADE)
     recurrences = RecurrenceField(
         verbose_name=_("recurrences"),
         help_text=_("Excluded dates will appear in this list as result of dragging and dropping.")

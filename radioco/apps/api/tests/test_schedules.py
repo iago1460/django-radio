@@ -40,9 +40,8 @@ class TestSchedulesAPI(TestDataMixin, APITestCase):
 
     def test_schedules_get_by_nonexisting_calendar(self):
         response = self.client.get(
-            '/api/2/schedules', {'calendar': 'foobar'})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 0)
+            '/api/2/schedules', {'calendar': '111'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_schedules_get_by_type(self):
         response = self.client.get('/api/2/schedules?type=L')
