@@ -1,6 +1,6 @@
 Django==1.11.29
 psycopg2-binary==2.8.4
-Pillow==7.0.0
+Pillow==8.2.0
 python-dateutil==2.8.1
 pytz==2019.3
 django-grappelli==2.10.4
