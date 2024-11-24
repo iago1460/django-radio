@@ -17,7 +17,7 @@
         <div class="container">
             <div class="row">
                 {% if transmission %}
-                    <div class="col-lg-8 col-lg-offset-2">
+                    <div class="col-lg-8 offset-lg-2">
                         <h1>{% trans "On air"|upper %}</h1>
                         <h3>
                             <a href="{% url 'programmes:detail' transmission.slug %}">
@@ -36,13 +36,13 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-8 col-lg-offset-2 himg">
+                    <div class="col-lg-8 offset-lg-2 himg">
                         <a href="{% url 'programmes:detail' transmission.slug %}">
                             <img src="{{ transmission.programme.photo.url }}" class="img-responsive img-thumbnail">
                         </a>
                     </div>
                 {% else %}
-                    <div class="col-lg-8 col-lg-offset-2">
+                    <div class="col-lg-8 offset-lg-2">
                         <h3>{% trans 'There are currently no programmes on air' %}</h3>
                         <h1>{% trans 'Check all our programmes' %}</h1>
                         <h5><a href="{% url 'programmes:list' %}" class="btn btn-theme">{% trans 'See all' %}</a></h5>
@@ -140,12 +140,12 @@
 
     <div class="container mtb">
         <div class="row">
-            <div class="col-lg-4 col-lg-offset-1">
+            <div class="col-lg-4 offset-lg-1">
                 <h4>{% trans 'More About Us.' %}</h4>
                 <p> {{ site_config.more_about_us }}</p>
             </div>
 
-            <div class="col-lg-4 col-lg-offset-1">
+            <div class="col-lg-4 offset-lg-1">
                 <h4>{% trans 'Latest Episodes' %}</h4>
                 <div class="hline"></div>
                 {% for episode in latest_episodes %}
