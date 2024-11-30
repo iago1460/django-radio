@@ -79,7 +79,7 @@ class iTunesFeed(feedgenerator.Rss201rev2Feed):
         handler.addQuickElement("itunes:summary", podcast.episode.summary_text)
         handler.addQuickElement("itunes:duration", str(datetime.timedelta(minutes=podcast.duration)))
         handler.addQuickElement("itunes:season", str(podcast.episode.season))
-        handler.addQuickElement("itunes:epsiode", str(podcast.episode.number_in_season))
+        handler.addQuickElement("itunes:episode", str(podcast.episode.number_in_season))
         handler.addQuickElement("guid", str(podcast.episode.id))
 
 
