@@ -32,7 +32,8 @@ from radioco.apps.schedules.models import Transmission
 def index(request):
     now = timezone.now()
 
-    transmissions_between = Transmission.between(now, now + datetime.timedelta(hours=+16))
+    transmissions_between = Transmission.between(
+        now, now + datetime.timedelta(hours=+16))
     next_transmissions = []
 
     try:
@@ -56,8 +57,12 @@ def index(request):
     except StopIteration:
         pass
 
-    other_programmes = Programme.objects.filter(Q(end_date__gte=now) | Q(end_date__isnull=True)).order_by('?').all()[:10]
-    latest_episodes = Episode.objects.filter(podcast__isnull=False).select_related('programme').order_by('-issue_date')[:5]
+    latest_episodes = Episode.objects.filter(podcast__isnull=False).select_related(
+        'programme').order_by('-issue_date')[:25]
+    # We use sets to prevent duplicates
+    other_programmes = list(
+        {episode.programme for episode in latest_episodes})[:10]
+    latest_episodes = latest_episodes[:5]
 
     context = {
         'now': now, 'percentage': percentage,
