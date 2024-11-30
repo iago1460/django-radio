@@ -173,20 +173,20 @@
                     });
                 },
 
-                viewRender: function (view, element) {
+                viewRender: function ({view, element}) {
                     reloadProgrammes(view.start.format('YYYY-MM-DD'), moment(view.end).subtract(1, "days").format('YYYY-MM-DD'))
                 },
-                eventClick: function (calEvent, jsEvent, view) {
-                    var url = '{% url 'admin:schedules_schedule_change' 0 %}'.replace('/0/', '/' + calEvent.id + '/');
+                eventClick: function ({calEvent, el, jsEvent, view}) {
+                    var url = "{% url 'admin:schedules_schedule_change' 0 %}".replace('/0/', '/' + calEvent.id + '/');
                     showAddAnotherPopup({href : url + '?_popup=1', 'id':'change_change_schedule'});
                     jsEvent.preventDefault();
                 },
-                eventDragStart: function(event) {
+                eventDragStart: function({event, jsEvent}) {
                     previous_date = new Date(event.start);
                 },
-                eventDragStop: function ({event, jsEvent, ui, view}) {
+                eventDragStop: function ({event, jsEvent, view}) {
                     if (isOverElement(jsEvent, $('div.external-events-wrapper'))) {
-                        var url = '{% url 'schedules:delete_transmission' 0 %}'.replace('/0/', '/' + event.id + '/');
+                        var url = "{% url 'schedules:delete_transmission' 0 %}".replace('/0/', '/' + event.id + '/');
                         $("#modal .modal-body").load(
                             url + '?transmission_dt=' + event.start.toISOString(),
                             function (result) {
