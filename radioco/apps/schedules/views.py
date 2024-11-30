@@ -18,7 +18,7 @@
 import datetime
 import json
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
 from django.shortcuts import render

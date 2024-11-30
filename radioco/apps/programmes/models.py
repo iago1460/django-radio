@@ -19,14 +19,14 @@ from ckeditor_uploader.fields import RichTextUploadingField
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import FieldError
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Q
 from django.db.models.signals import post_save, pre_save
 from django.template.defaultfilters import slugify
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 import datetime
 
 from radioco.apps.radioco.utils import field_has_changed
@@ -290,7 +290,7 @@ class Role(models.Model):
 
 
 class Podcast(models.Model):
-    episode = models.OneToOneField(Episode, primary_key=True, related_name='podcast')
+    episode = models.OneToOneField(Episode, primary_key=True, related_name='podcast', on_delete=models.CASCADE)
     url = models.CharField(max_length=2048)
     mime_type = models.CharField(max_length=20)
     length = models.PositiveIntegerField()  # bytes

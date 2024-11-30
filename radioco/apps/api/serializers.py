@@ -1,4 +1,4 @@
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from radioco.apps.global_settings.models import SiteConfiguration, RadiocomConfiguration
 from radioco.apps.radioco.tz_utils import transform_datetime_tz, get_active_timezone
@@ -92,6 +92,21 @@ class ScheduleSerializer(serializers.ModelSerializer):
         return attrs
 
 
+# class TransmissionSerializer(serializers.Serializer):
+#     id = serializers.IntegerField(source='schedule.id')
+#     name = serializers.CharField(max_length=100)
+#     slug = serializers.SlugField(max_length=100)
+#     start = DateTimeFieldTz()
+#     end = DateTimeFieldTz()
+#     schedule = serializers.IntegerField(source='schedule.id')
+#     episode = serializers.IntegerField(source='episode.id')
+#     programme = serializers.IntegerField(source='programme.id')
+#     programme_url = AbsoluteURLField()
+#     episode_url = AbsoluteURLField()
+#     type = serializers.CharField(max_length=1, source='schedule.type')
+#     source = serializers.IntegerField(source='schedule.source.id')
+
+
 class TransmissionSerializer(serializers.Serializer):
     id = serializers.IntegerField(source='schedule.id')
     name = serializers.CharField(max_length=100)
@@ -99,13 +114,18 @@ class TransmissionSerializer(serializers.Serializer):
     start = DateTimeFieldTz()
     end = DateTimeFieldTz()
     schedule = serializers.IntegerField(source='schedule.id')
-    episode = serializers.IntegerField(source='episode.id')
+    episode = serializers.SerializerMethodField()
     programme = serializers.IntegerField(source='programme.id')
     programme_url = AbsoluteURLField()
     episode_url = AbsoluteURLField()
     type = serializers.CharField(max_length=1, source='schedule.type')
-    source = serializers.IntegerField(source='schedule.source.id')
+    source = serializers.SerializerMethodField()
 
+    def get_episode(self, obj):
+        return obj.episode.id if obj.episode else None
+
+    def get_source(self, obj):
+        return obj.schedule.source.id if obj.schedule.source else None
 
 class RadiocomTransmissionSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100)

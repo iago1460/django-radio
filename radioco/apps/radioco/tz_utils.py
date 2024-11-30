@@ -61,7 +61,8 @@ def transform_datetime_tz(dt, tz=None):
     """
     if not tz:
         tz = timezone.get_current_timezone()
-    return tz.normalize(dt.astimezone(tz))
+    # return tz.normalize(dt.astimezone(tz))
+    return dt.astimezone(tz).replace(tzinfo=tz)
 
 
 def transform_dt_to_default_tz(dt):
@@ -69,7 +70,8 @@ def transform_dt_to_default_tz(dt):
     Transform a datetime in other timezone to the current one
     """
     tz = timezone.get_default_timezone()
-    return tz.normalize(dt.astimezone(tz))
+    # return tz.normalize(dt.astimezone(tz))
+    return dt.astimezone(tz).replace(tzinfo=tz)
 
 
 def fix_recurrence_date(start_dt, dt):
@@ -97,7 +99,8 @@ def fix_recurrence_dst(dt):
     """
     if dt:
         tz = dt.tzinfo
-        return tz.localize(datetime.datetime.combine(dt.date(), dt.time()))
+        # return tz.localize(datetime.datetime.combine(dt.date(), dt.time()))
+        return datetime.datetime.combine(dt.date(), dt.time(), tzinfo=tz)
     return None
 
 

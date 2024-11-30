@@ -15,11 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from django.conf.urls import url
+from django.urls import re_path
 from django.contrib import admin
 from django.contrib.sites.models import Site
 from django.http import HttpResponseRedirect
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from radioco.apps.global_settings.models import SiteConfiguration, PodcastConfiguration, CalendarConfiguration, \
     RadiocomConfiguration
@@ -27,7 +27,7 @@ from radioco.apps.global_settings.models import SiteConfiguration, PodcastConfig
 try:
     from django.utils.encoding import force_unicode
 except ImportError:
-    from django.utils.encoding import force_text as force_unicode
+    from django.utils.encoding import force_str as force_unicode
 
 
 class SingletonModelAdmin(admin.ModelAdmin):
@@ -47,13 +47,13 @@ class SingletonModelAdmin(admin.ModelAdmin):
             'model_name': self.model._meta.model_name,
         }
         custom_urls = [
-            url(
+            re_path(
                 r'^history/$',
                 self.admin_site.admin_view(self.history_view),
                 {'object_id': '1'},
                 name='%s_history' % url_name_prefix
             ),
-            url(
+            re_path(
                 r'^$',
                 self.admin_site.admin_view(self.change_view),
                 {'object_id': '1'},

@@ -15,11 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from django.conf.urls import url
+from django.urls import re_path
 
 from radioco.apps.schedules.views import schedule_list, DeleteScheduleView
 
 urlpatterns = [
-    url(r'^$', schedule_list, name='list'),
-    url(r'^delete-transmission/(?P<pk>\d+)/$', DeleteScheduleView.as_view(), name='delete_transmission'),
+    re_path(r'^$', schedule_list, name='list'),
+    re_path(r'^delete-transmission/(?P<pk>\d+)/$', DeleteScheduleView.as_view(), name='delete_transmission'),
 ]

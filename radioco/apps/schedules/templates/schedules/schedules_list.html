@@ -1,10 +1,10 @@
 {% extends "radioco/base.html" %}
 {% load static %}
-{% load staticfiles i18n %}
+{% load static i18n %}
 
 {% block extra_css %}
-    {{ block.super }}
-    <link rel="stylesheet" href="{% static "radioco/css/calendar.css" %}" type="text/css"/>
+{{ block.super }}
+<link rel="stylesheet" href="{% static "radioco/css/calendar.css" %}" type="text/css" />
 {% endblock %}
 
 {% block schedules_class %}class="active"{% endblock %}
@@ -12,78 +12,78 @@
 {% block page_title %}{% trans "Schedule" %}{% endblock %}
 
 {% block javascript %}
-    <script>
-        $(document).ready(function () {
+<script>
+    $(document).ready(function () {
 
-            var calendar = $('#calendar').fullCalendar({
-                timezone: false,
-                height: 'auto',
-                contentHeight: 'auto',
-                aspectRatio: 1.35,
-                lang: '{{language}}',
-                eventDurationEditable: false,
-                eventStartEditable: false,
-                allDaySlot: false,
-                firstDay: {{first_day}},
-                minTime: '{{min_time}}',
-                maxTime: '{{max_time}}',
-                slotDuration: '{{slot_duration}}',
-                axisFormat: 'HH:mm',
+        var calendar = $('#calendar').fullCalendar({
+            timezone: false,
+            height: 'auto',
+            contentHeight: 'auto',
+            aspectRatio: 1.35,
+            lang: '{{language}}',
+            eventDurationEditable: false,
+            eventStartEditable: false,
+            allDaySlot: false,
+            firstDay: {{ first_day }},
+        minTime: '{{min_time}}',
+        maxTime: '{{max_time}}',
+        slotDuration: '{{slot_duration}}',
+        axisFormat: 'HH:mm',
 
-                header: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'agendaWeek,agendaDay'
-                },
-                columnFormat: {
-                    month: 'ddd',    // Mon
-                    week: 'dddd',	 // Monday
-                    day: 'dddd'
-                },
-                defaultView: 'agendaWeek',
-                droppable: false,
-                events: {
-                    url: '{% url "api:transmission-list" %}',
-                    cache: true,
-                    contentType: 'application/json',
-                    startParam: 'after',
-                    endParam: 'before',
-                    data: function() {
-                        return { timezone: '{{ settings.TIME_ZONE }}' }
-                    },
-                    eventDataTransform: function(transmission) {
-                        var event = {
-                            id: transmission.slug,
-                            title: transmission.name,
-                            start: transmission.start,
-                            end: transmission.end,
-                            type: transmission.type,
-                            url: transmission.episode_url || transmission.programme_url,
-                            backgroundColor: function() {
-                                var BackgroundColor = Object.freeze({
-                                    L: "#F9AD81",
-                                    B: "#C4DF9B",
-                                    S: "#8493CA"
-                                });
-                                return BackgroundColor[transmission.type];
-                            }(),
-                        };
-                        return event;
-                    },
-                    editable: false,
-                    allDayDefault: false
-                }
+        header: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'agendaWeek,agendaDay'
+    },
+        columnFormat: {
+        month: 'ddd',    // Mon
+        week: 'dddd',	 // Monday
+        day: 'dddd'
+    },
+        defaultView: 'agendaWeek',
+        droppable: false,
+        events: {
+        url: '{% url "api:transmission-list" %}',
+        cache: true,
+        contentType: 'application/json',
+        startParam: 'after',
+        endParam: 'before',
+        data: function () {
+            return { timezone: '{{ settings.TIME_ZONE }}' }
+        },
+        eventDataTransform: function (transmission) {
+            var event = {
+                id: transmission.slug,
+                title: transmission.name,
+                start: transmission.start,
+                end: transmission.end,
+                type: transmission.type,
+                url: transmission.episode_url || transmission.programme_url,
+                backgroundColor: function () {
+                    var BackgroundColor = Object.freeze({
+                        L: "#F9AD81",
+                        B: "#C4DF9B",
+                        S: "#8493CA"
+                    });
+                    return BackgroundColor[transmission.type];
+                }(),
+            };
+            return event;
+        },
+        editable: false,
+        allDayDefault: false
+    }
             })
 
         });
-    </script>
+</script>
 {% endblock %}
 
 
 {% block content %}
-    <div class="container mb">
-        <div class="row">
-            <div class="col-xs-12" id='calendar'></div>
-        </div>
+<div class="container mb">
+    <div class="row">
+        <div class="col-xs-12" id='calendar'></div>
     </div>
+</div>
 {% endblock %}

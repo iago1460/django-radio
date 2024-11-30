@@ -21,7 +21,7 @@ import pytz
 import recurrence
 from django.contrib.admin import AdminSite
 from django.core.exceptions import ValidationError, FieldError
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.forms import modelform_factory
 from django.test import TestCase
 from django.test import override_settings
@@ -305,7 +305,7 @@ class CalendarAdminTests(TestDataMixin, TestCase):
     #     def calls():
     #         for programme in Programme.objects.all():
     #             yield mock.call(programme, mock_now())
-    # 
+    #
     #     post_delete.send(Calendar, instance=self.calendar)
     #     rearrange_programme_episodes.assert_has_calls(calls(), any_order=True)
 
