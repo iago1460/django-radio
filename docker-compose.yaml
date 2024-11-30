@@ -1,9 +1,5 @@
-version: '3.4'
 services:
-
-
   # Backend server -------------------------------------------------------------
-
   django:
     build:
       context: .
@@ -20,7 +16,7 @@ services:
       - postgres
 
   postgres:
-    image: postgres:11.0
+    image: postgres:13.0
     restart: always
     environment:
       POSTGRES_DB: postgres

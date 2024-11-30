@@ -1,9 +1,5 @@
-version: '3.4'
 services:
-
-
   # Backend server -------------------------------------------------------------
-
   django:
     environment:
       - DEBUG=True
@@ -14,3 +10,7 @@ services:
     command: /bin/sh -c "cd /radioco && ./docker/scripts/launch_dev_server.sh"
     #stdin_open: true
     #tty: true  # ERROR: An HTTP request took too long to complete. https://github.com/docker/compose/issues/3633
+  
+  postgres:
+    ports:
+      - 5432:5432

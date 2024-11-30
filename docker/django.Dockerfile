@@ -1,10 +1,10 @@
-FROM python:3.6.10-buster
+FROM python:3.12.7-bookworm
 
 RUN apt-get update && apt-get install -yq --fix-missing --no-install-recommends \
     python3-setuptools \
     python3-pip \
     git-core \
-    netcat \
+    ncat \
     nodejs \
     npm \
     gettext \
