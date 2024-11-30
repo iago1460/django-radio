@@ -1,5 +1,5 @@
 {% extends "radioco/base.html" %}
-{% load staticfiles i18n disqus_tags %}
+{% load static i18n %}
 
 
 {% block extra_head %}
@@ -70,16 +70,6 @@
 
         </div>
         <! --/row -->
-        {% if settings.DISQUS_ENABLE %}
-            <div class="row">
-                <div class="col-lg-10 col-lg-offset-1 centered">
-                    {% set_disqus_identifier programme.id|stringformat:"i" %}
-                    {% set_disqus_title programme.name %}
-                    {% set_disqus_url episode.get_absolute_url %}
-                    {% disqus_show_comments %}
-                </div>
-            </div>
-        {% endif %}
     </div><! --/container -->
 
     {% if role_list %}
