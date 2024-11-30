@@ -13,69 +13,142 @@
 
 {% block javascript %}
     <script>
-        $(document).ready(function () {
-
-            var calendar = $('#calendar').fullCalendar({
-                timezone: false,
-                height: 'auto',
-                contentHeight: 'auto',
-                aspectRatio: 1.35,
-                lang: '{{language}}',
-                eventDurationEditable: false,
-                eventStartEditable: false,
-                allDaySlot: false,
-                firstDay: {{first_day}},
-                minTime: '{{min_time}}',
-                maxTime: '{{max_time}}',
-                slotDuration: '{{slot_duration}}',
-                axisFormat: 'HH:mm',
-
-                header: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'agendaWeek,agendaDay'
+        
+        document.addEventListener('DOMContentLoaded', function() {
+        const calendarEl = document.getElementById('calendar')
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'timeGridWeek',
+            locale: '{{language}}',
+            dayHeaderFormat: { weekday: 'long' },
+            // timeZone: false,
+            height: 'auto',
+            contentHeight: 'auto',
+            aspectRatio: 1.35,
+            eventDurationEditable: false,
+            eventStartEditable: false,
+            allDaySlot: false,
+            firstDay: '{{first_day}}',
+            slotMinTime: '{{min_time}}',
+            slotMaxTime: '{{max_time}}',
+            slotDuration: '{{slot_duration}}',
+            // slotLabelFormat: 'HH:mm',
+            slotLabelFormat: {
+                hour: 'numeric',
+                minute: '2-digit',
+            },
+            headerToolbar: {
+                left: 'prev,next',
+                center: 'title',
+                right: 'timeGridWeek,timeGridDay' // user can switch between the two
+            },
+            // columnFormat: {
+            //     month: 'ddd',    // Mon
+            //     week: 'dddd',	 // Monday
+            //     day: 'dddd'
+            // },
+            // defaultView: 'agendaWeek',
+            // droppable: false,
+            events: {
+                url: '{% url "api:transmission-list" %}',
+                cache: true,
+                contentType: 'application/json',
+                startParam: 'after',
+                endParam: 'before',
+                data: function() {
+                    return { timezone: '{{ settings.TIME_ZONE }}' }
                 },
-                columnFormat: {
-                    month: 'ddd',    // Mon
-                    week: 'dddd',	 // Monday
-                    day: 'dddd'
+                
+                eventDataTransform: function(transmission) {
+                    
+                    var event = {
+                        id: transmission.slug,
+                        title: transmission.name,
+                        start: transmission.start,
+                        end: transmission.end,
+                        type: transmission.type,
+                        url: transmission.episode_url || transmission.programme_url,
+                        backgroundColor: function() {
+                            var BackgroundColor = Object.freeze({
+                                L: "#F9AD81",
+                                B: "#C4DF9B",
+                                S: "#8493CA"
+                            });
+                            return BackgroundColor[transmission.type];
+                        }(),
+                    };
+                    return event;
                 },
-                defaultView: 'agendaWeek',
-                droppable: false,
-                events: {
-                    url: '{% url "api:transmission-list" %}',
-                    cache: true,
-                    contentType: 'application/json',
-                    startParam: 'after',
-                    endParam: 'before',
-                    data: function() {
-                        return { timezone: '{{ settings.TIME_ZONE }}' }
-                    },
-                    eventDataTransform: function(transmission) {
-                        var event = {
-                            id: transmission.slug,
-                            title: transmission.name,
-                            start: transmission.start,
-                            end: transmission.end,
-                            type: transmission.type,
-                            url: transmission.episode_url || transmission.programme_url,
-                            backgroundColor: function() {
-                                var BackgroundColor = Object.freeze({
-                                    L: "#F9AD81",
-                                    B: "#C4DF9B",
-                                    S: "#8493CA"
-                                });
-                                return BackgroundColor[transmission.type];
-                            }(),
-                        };
-                        return event;
-                    },
-                    editable: false,
-                    allDayDefault: false
-                }
-            })
+                editable: false,
+                allDayDefault: false
+            }
+        })
+        calendar.render()
+      })
 
-        });
+      
+        // $(document).ready(function () {
+
+        //     var calendar = $('#calendar').fullCalendar({
+        //         timezone: false,
+        //         height: 'auto',
+        //         contentHeight: 'auto',
+        //         aspectRatio: 1.35,
+    
+        //         eventDurationEditable: false,
+        //         eventStartEditable: false,
+        //         allDaySlot: false,
+        //         firstDay: {{first_day}},
+        //         minTime: '{{min_time}}',
+        //         maxTime: '{{max_time}}',
+        //         slotDuration: '{{slot_duration}}',
+        //         axisFormat: 'HH:mm',
+
+        //         header: {
+        //             left: 'prev,next today',
+        //             center: 'title',
+        //             right: 'agendaWeek,agendaDay'
+        //         },
+        //         columnFormat: {
+        //             month: 'ddd',    // Mon
+        //             week: 'dddd',	 // Monday
+        //             day: 'dddd'
+        //         },
+        //         defaultView: 'agendaWeek',
+        //         droppable: false,
+        //         events: {
+        //             url: '{% url "api:transmission-list" %}',
+        //             cache: true,
+        //             contentType: 'application/json',
+        //             startParam: 'after',
+        //             endParam: 'before',
+        //             data: function() {
+        //                 return { timezone: '{{ settings.TIME_ZONE }}' }
+        //             },
+        //             eventDataTransform: function(transmission) {
+        //                 var event = {
+        //                     id: transmission.slug,
+        //                     title: transmission.name,
+        //                     start: transmission.start,
+        //                     end: transmission.end,
+        //                     type: transmission.type,
+        //                     url: transmission.episode_url || transmission.programme_url,
+        //                     backgroundColor: function() {
+        //                         var BackgroundColor = Object.freeze({
+        //                             L: "#F9AD81",
+        //                             B: "#C4DF9B",
+        //                             S: "#8493CA"
+        //                         });
+        //                         return BackgroundColor[transmission.type];
+        //                     }(),
+        //                 };
+        //                 return event;
+        //             },
+        //             editable: false,
+        //             allDayDefault: false
+        //         }
+        //     })
+
+        // });
     </script>
 {% endblock %}
 
