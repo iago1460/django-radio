@@ -1,12 +1,65 @@
 {% extends "radioco/base.html" %}
 {% load staticfiles i18n fb_versions %}
-
+{% load i18n %}
 
 {% block page_title %}{% trans "Programme list" %}{% endblock %}
 
 {% block programmes_class %}active{% endblock %}
 
 {% block content %}
+    <div class="container mb">
+
+        <div class="mb">
+            <form method="post">
+                {% csrf_token %}
+                <div class="input-group mb-3">
+                    <input
+                        name="name"
+                        type="text"
+                        class="form-control col-md-6 mr-4"
+                        placeholder="{% trans 'Type to search' %}"
+                        aria-label="Search"
+                        value="{{ name }}"
+                    />
+                    <select
+                        name="category"
+                        class="custom-select col-md-3 mr-4"
+                        value="{{ category }}"
+                    >
+                        <option value>{% trans 'Select a category...' %}</option>
+                        {% for opt in categories %}
+                            {% if category == "{{ opt.0 }}" %}
+                                <option selected value="{{ opt.0 }}">{{ opt.0 }}</option>
+                            {% else %}
+                                <option value="{{ opt.0 }}">{{ opt.0 }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <div class="custom-control custom-switch mr-3" style="margin: auto;">
+                        {% if isActiveParam == "on" %}
+                            <input
+                                name="isActiveParam"
+                                type="checkbox"
+                                class="custom-control-input"
+                                id="isActiveSwitch"
+                                checked
+                            />
+                        {% else %}
+                            <input
+                                name="isActiveParam"
+                                type="checkbox"
+                                class="custom-control-input"
+                                id="isActiveSwitch"
+                            />
+                        {% endif %}
+                        <label class="custom-control-label" for="isActiveSwitch">{% trans 'Active programmes' %}</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     {% for programme in programme_list %}
         <div class="container mb">
             <div class="row">
