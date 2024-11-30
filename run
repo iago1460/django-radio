@@ -37,9 +37,18 @@ function start_dev(){
      echo "RadioCo is running at http://127.0.0.1:${PORT_BACKEND}"
 }
 
+function stop_dev(){
+    docker compose $COMPOSE_FILES down
+}
+
 function start(){
      COMPOSE_FILES=$STAGING_COMPOSE_FILES
      start_dev
+}
+
+function stop(){
+    COMPOSE_FILES=$STAGING_COMPOSE_FILES
+    stop_dev
 }
 
 function shell(){
