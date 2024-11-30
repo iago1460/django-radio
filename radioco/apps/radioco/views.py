@@ -27,6 +27,7 @@ from django.utils import timezone
 
 from radioco.apps.programmes.models import Programme, Episode
 from radioco.apps.schedules.models import Transmission
+from radioco.apps.global_settings.models import SiteConfiguration
 
 
 def index(request):
@@ -64,10 +65,13 @@ def index(request):
         {episode.programme for episode in latest_episodes})[:10]
     latest_episodes = latest_episodes[:5]
 
+    site_color = SiteConfiguration.get_global().site_color
+
     context = {
         'now': now, 'percentage': percentage,
         'transmission': live_transmission, 'next_transmissions': next_transmissions,
-        'other_programmes': other_programmes, 'latest_episodes': latest_episodes
+        'other_programmes': other_programmes, 'latest_episodes': latest_episodes,
+        'site_color': site_color
     }
     return render(request, 'radioco/index.html', context)
 
