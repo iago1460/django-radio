@@ -28,11 +28,11 @@
                             <strong>{{ transmission.start|date:"G:i" }} - {{ transmission.end|date:"G:i" }}</strong>
                         </h5>
 
-                        <div class="progress">
-                            <div class="progress-bar progress-bar-success" role="progressbar"
+                        <div class="progress mb-3">
+                            <div class="progress-bar bg-success" role="progressbar"
                                  aria-valuenow="{{ percentage }}" aria-valuemin="0" aria-valuemax="100"
                                  style="width: {{ percentage }}%">
-                                <span class="sr-only">{{ percentage }}% Complete (success)</span>
+                                <span class="visually-hidden">{{ percentage }}% Complete (success)</span>
                             </div>
                         </div>
                     </div>
