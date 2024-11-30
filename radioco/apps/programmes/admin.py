@@ -24,7 +24,7 @@ from django import forms
 from django.contrib import admin
 from django.forms import ValidationError
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from radioco.apps.programmes.models import Programme, Podcast, Episode, Role, Participant
 from radioco.apps.schedules.models import Calendar

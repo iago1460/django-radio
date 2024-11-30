@@ -8,9 +8,11 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.utils.timezone import override
 from recurrence import Recurrence
-from rest_framework import filters, permissions, viewsets
-from rest_framework.decorators import list_route
+from django_filters.rest_framework import FilterSet, DjangoFilterBackend
+from rest_framework import permissions, viewsets
+from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError as DRFValidationError
+from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
 
 from . import serializers
@@ -20,7 +22,7 @@ from radioco.apps.programmes.models import Programme, Episode
 from radioco.apps.schedules.models import Schedule, Transmission
 
 
-class ProgrammeFilter(filters.FilterSet):
+class ProgrammeFilter(FilterSet):
     class Meta:
         model = Programme
         fields = ('name', 'category')
@@ -41,7 +43,7 @@ class ProgrammeFilterForm(forms.Form):
 class ProgrammeViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
     queryset = Programme.objects.all()
-    filter_backends = (filters.DjangoFilterBackend, filters.OrderingFilter)
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
     filter_class = ProgrammeFilter
     serializer_class = serializers.ProgrammeSerializer
     lookup_field = 'slug'
@@ -69,7 +71,7 @@ class RadiocomProgrammeViewSet(ProgrammeViewSet):
     serializer_class = serializers.RadiocomProgrammeSerializer
 
 
-class EpisodeFilter(filters.FilterSet):
+class EpisodeFilter(FilterSet):
     class Meta:
         model = Episode
         fields = ('programme', )
@@ -79,12 +81,12 @@ class EpisodeFilter(filters.FilterSet):
 
 class EpisodeViewSet(viewsets.ReadOnlyModelViewSet):  # FIXME: allowing creation breaks the view
     queryset = Episode.objects.all().select_related('programme')
-    filter_backends = (filters.DjangoFilterBackend, filters.OrderingFilter)
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
     filter_class = EpisodeFilter
     serializer_class = serializers.EpisodeSerializer
 
 
-class ScheduleFilter(filters.FilterSet):
+class ScheduleFilter(FilterSet):
     class Meta:
         model = Schedule
         fields = ('programme', 'calendar', 'type')
@@ -95,7 +97,7 @@ class ScheduleFilter(filters.FilterSet):
 class ScheduleViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
     queryset = Schedule.objects.all()
-    filter_backends = (filters.DjangoFilterBackend, filters.OrderingFilter)
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
     filter_class = ScheduleFilter
     serializer_class = serializers.ScheduleSerializer
 
@@ -125,7 +127,7 @@ class TransmissionForm(TimezoneForm):
 
 class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Schedule.objects.all()
-    filter_backends = (filters.DjangoFilterBackend,)  # Transmissions are always order by date
+    filter_backends = (DjangoFilterBackend,)  # Transmissions are always order by date
     filter_class = ScheduleFilter
     serializer_class = serializers.TransmissionSerializer
 
@@ -153,11 +155,12 @@ class TransmissionViewSet(viewsets.ReadOnlyModelViewSet):
             before_date,
             schedules=schedules
         )
+
         serializer = self.get_serializer(transmissions, many=True)
         with override(timezone=tz):
             return Response(serializer.data)
 
-    @list_route()
+    @action(detail=False)
     def now(self, request):
         data = TimezoneForm(request.query_params)
         if not data.is_valid():

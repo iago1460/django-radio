@@ -6,7 +6,7 @@ register = template.Library()
 template_tag_name = 'get_global_model'
 
 
-@register.assignment_tag(name=template_tag_name)
+@register.simple_tag(name=template_tag_name)
 def get_global_model(model_path):
     try:
         app_label, model_name = model_path.rsplit('.', 1)

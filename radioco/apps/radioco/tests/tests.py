@@ -16,7 +16,7 @@
 import datetime
 
 import pytz
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase
 
 from radioco.apps.radioco.utils import create_example_data

@@ -39,7 +39,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 
 DEBUG = str_to_bool(os.environ.get('DEBUG'))
 TESTING_MODE = False
-ALLOWED_HOSTS = '*'
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = (
@@ -57,12 +57,12 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'django.contrib.humanize',
 
-    'ckeditor',
+    'django_ckeditor_5',
     'ckeditor_uploader',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
-    'disqus',
+    # 'disqus',
     'recurrence',
 
     # Local Project Apps
@@ -74,7 +74,7 @@ INSTALLED_APPS = (
     'radioco.apps.radioco',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -125,6 +125,8 @@ DATABASES = {
         'PORT': 5432,
     }
 }
+
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
@@ -220,7 +222,7 @@ if DEBUG:
     INSTALLED_APPS += (
         'debug_toolbar',
     )
-    MIDDLEWARE_CLASSES += (
+    MIDDLEWARE += (
         'debug_toolbar.middleware.DebugToolbarMiddleware',
     )
     DEBUG_TOOLBAR_CONFIG = {

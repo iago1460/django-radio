@@ -18,20 +18,20 @@
 import re
 
 from django import forms
-from django.conf.urls import url
+from django.urls import re_path
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.core import validators
 from django.http import HttpResponseRedirect
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from radioco.apps.users.models import UserProfile
 
 try:
     from django.utils.encoding import force_unicode
 except ImportError:
-    from django.utils.encoding import force_text as force_unicode
+    from django.utils.encoding import force_str as force_unicode
 
 
 # USER
@@ -120,12 +120,12 @@ class SingletonProfileAdmin(admin.ModelAdmin):
             'model_name': self.model._meta.model_name,
         }
         custom_urls = [
-            url(r'^history/$',
+            re_path(r'^history/$',
                 self.admin_site.admin_view(self.history_view),
                 {'object_id': '-1'},
                 name='%s_history' % url_name_prefix
             ),
-            url(r'^$',
+            re_path(r'^$',
                 self.admin_site.admin_view(self.change_view),
                 {'object_id': '-1'},
                 name='%s_change' % url_name_prefix

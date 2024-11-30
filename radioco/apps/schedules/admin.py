@@ -19,7 +19,7 @@ import copy
 
 from django.contrib import admin
 from django.core.checks import messages
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from radioco.apps.global_settings.models import CalendarConfiguration
 from radioco.apps.schedules.models import Schedule, Calendar
@@ -27,7 +27,7 @@ from radioco.apps.schedules.models import Schedule, Calendar
 try:
     from django.utils.encoding import force_unicode
 except ImportError:
-    from django.utils.encoding import force_text as force_unicode
+    from django.utils.encoding import force_str as force_unicode
 
 
 @admin.register(Calendar)

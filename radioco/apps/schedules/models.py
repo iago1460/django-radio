@@ -18,11 +18,11 @@ import heapq
 from functools import partial
 
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from recurrence.fields import RecurrenceField
 
 from radioco.apps.programmes.models import Programme, Episode
@@ -179,7 +179,8 @@ class Schedule(models.Model):
         We need to update dates inside ExcludedDates and the recurrence library
         """
         exdates = []
-        for excluded in ExcludedDates.objects.filter(schedule=self):
+        # for excluded in ExcludedDates.objects.filter(schedule=self):
+        for excluded in ExcludedDates.objects.filter(schedule=self.pk):
             new_excluded_dt = excluded.get_new_excluded_datetime(self.start_dt)
             excluded.datetime = new_excluded_dt
             excluded.save()

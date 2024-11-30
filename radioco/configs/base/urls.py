@@ -16,13 +16,13 @@
 
 
 from django.conf import settings
-from django.conf.urls import include, url
+from django.urls import include, re_path
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.utils.translation import ugettext_lazy as _
-from django.views.i18n import javascript_catalog
+from django.utils.translation import gettext_lazy as _
+from django.views.i18n import JavaScriptCatalog
 from filebrowser.sites import site
 
 admin.site.logout_template = 'radioco/logged_out.html'
@@ -62,33 +62,35 @@ from radioco.apps.radioco.views import index, user_logout
 from radioco.apps.api.recorder_views import recording_schedules, submit_recorder
 
 urlpatterns = [
-    url(r'^$', index, name="home"),
-    url(r'^jsi18n/$', javascript_catalog, js_info_dict, name='javascript-catalog'),
-    url(r'^logout/$', user_logout, name="logout"),
-    url(r'^admin/filebrowser/', include(site.urls)),
-    url(r'^grappelli/', include('grappelli.urls')),
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^admin/password_reset/$', auth_views.password_reset, name='admin_password_reset'),
-    url(r'^admin/password_reset/done/$', auth_views.password_reset_done, name='password_reset_done'),
-    url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$', auth_views.password_reset_confirm, name='password_reset_confirm'),
-    url(r'^reset/done/$', auth_views.password_reset_complete, name='password_reset_complete'),
+    re_path(r'^$', index, name="home"),
+    re_path(r'^jsi18n/$', JavaScriptCatalog.render_to_response, js_info_dict, name='javascript-catalog'),
+    re_path(r'^logout/$', user_logout, name="logout"),
+    # re_path(r'^admin/filebrowser/', include(site.urls)),
+    re_path(r'^admin/filebrowser/', site.urls),
+    re_path(r'^grappelli/', include('grappelli.urls')),
+    # re_path(r'^admin/', include(admin.site.urls)),
+    re_path(r'^admin/', admin.site.urls),
+    re_path(r'^admin/password_reset/$', auth_views.PasswordResetView.as_view(), name='admin_password_reset'),
+    re_path(r'^admin/password_reset/done/$', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    re_path(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    re_path(r'^reset/done/$', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 
     # url(r'^configuration/schedule_editor/', 'radioco.apps.dashboard.views.full_calendar', name="schedule_editor"),
-    url(r'^schedules/', include('radioco.apps.schedules.urls', namespace="schedules")),
-    url(r'^programmes/', include('radioco.apps.programmes.urls', namespace="programmes")),
-    url(r'^users/', include('radioco.apps.users.urls', namespace="users")),
+    re_path(r'^schedules/', include(('radioco.apps.schedules.urls', 'schedules'), namespace="schedules"), name="schedules"),
+    re_path(r'^programmes/', include(('radioco.apps.programmes.urls', 'programmes'), namespace="programmes"), name="programmes"),
+    re_path(r'^users/', include(('radioco.apps.users.urls', 'users'), namespace="users"), name="users"),
 
-    url(r'^ckeditor/', include('ckeditor_uploader.urls')),
+    re_path(r'^ckeditor/', include('ckeditor_uploader.urls')),
 
-    url(r'^api/1/recording_schedules/$', recording_schedules, name="recording_schedules"),
-    url(r'^api/1/submit_recorder/$', submit_recorder, name="submit_recorder"),
+    re_path(r'^api/1/recording_schedules/$', recording_schedules, name="recording_schedules"),
+    re_path(r'^api/1/submit_recorder/$', submit_recorder, name="submit_recorder"),
 
-    url(r'^api/2/', include('radioco.apps.api.urls', namespace="api"))
+    re_path(r'^api/2/', include(('radioco.apps.api.urls', 'api'), namespace="api"), name="api"),
 ]
 
 if (settings.TESTING_MODE or settings.DEBUG) and 'debug_toolbar' in settings.INSTALLED_APPS:
     import debug_toolbar
-    urlpatterns += [url(r'^__debug__/', include(debug_toolbar.urls))]
+    urlpatterns += [re_path(r'^__debug__/', include(debug_toolbar.urls))]
 
 # Media
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

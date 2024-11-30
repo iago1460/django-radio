@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from django.conf.urls import url
+from django.urls import re_path
 from django.views.generic import ListView
 
 from radioco.apps.programmes import views
@@ -23,7 +23,7 @@ from radioco.apps.programmes.feeds import RssProgrammeFeed
 from radioco.apps.programmes.models import Programme
 
 urlpatterns = [
-    url(
+    re_path(
         r'^$',
         ListView.as_view(
             queryset=Programme.objects.order_by('name'),
@@ -31,11 +31,11 @@ urlpatterns = [
         ),
         name='list'
     ),
-    url(r'^(?P<slug>[-\w]+)/$', views.programme_detail, name='detail'),
-    url(
+    re_path(r'^(?P<slug>[-\w]+)/$', views.programme_detail, name='detail'),
+    re_path(
         r'^(?P<slug>[-\w]+)/(?P<season_number>\d+)x(?P<episode_number>\d+)/$',
         views.episode_detail,
         name='episode_detail'
     ),
-    url(r'^(?P<slug>[-\w]+)/rss/$', RssProgrammeFeed(), name='rss')
+    re_path(r'^(?P<slug>[-\w]+)/rss/$', RssProgrammeFeed(), name='rss')
 ]

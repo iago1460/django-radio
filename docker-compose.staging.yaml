@@ -1,9 +1,5 @@
-version: '3.4'
 services:
-
-
   # Backend server -------------------------------------------------------------
-
   django:
     environment:
       - DEBUG=False
