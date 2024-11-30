@@ -23,6 +23,7 @@ from django.utils import feedgenerator
 from filebrowser.base import FileObject
 from filebrowser.sites import get_default_site
 
+from radioco.apps.global_settings.models import RadiocomConfiguration
 from radioco.apps.programmes.models import Programme, Podcast
 
 # TODO:
@@ -68,6 +69,7 @@ class iTunesFeed(feedgenerator.Rss201rev2Feed):
                  'link': self.request.build_absolute_uri(self.programme.get_absolute_url()),
             }
         )
+        handler.addQuickElement('itunes:author', RadiocomConfiguration.get_global().station_name)
 
     def add_item_elements(self, handler, item):
         super(iTunesFeed, self).add_item_elements(handler, item)
@@ -75,7 +77,10 @@ class iTunesFeed(feedgenerator.Rss201rev2Feed):
         podcast = item["podcast"]
         handler.addQuickElement("itunes:subtitle", podcast.episode.title)
         handler.addQuickElement("itunes:summary", podcast.episode.summary_text)
-        handler.addQuickElement("itunes:duration", str(datetime.timedelta(seconds=podcast.duration)))
+        handler.addQuickElement("itunes:duration", str(datetime.timedelta(minutes=podcast.duration)))
+        handler.addQuickElement("itunes:season", str(podcast.episode.season))
+        handler.addQuickElement("itunes:epsiode", str(podcast.episode.number_in_season))
+        handler.addQuickElement("guid", str(podcast.episode.id))
 
 
 class ProgrammeFeed(Feed):
