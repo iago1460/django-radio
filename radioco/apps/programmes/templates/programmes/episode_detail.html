@@ -8,16 +8,16 @@
 
 {% block page_title %}{{ episode }}{% endblock %}
 
-{% block programmes_class %}class="active"{% endblock %}
+{% block programmes_class %}active{% endblock %}
 
 {% block content %}
     <div class="container mb">
         <div class="row">
-            <div class="col-lg-10 col-lg-offset-1 centered">
+            <div class="col-lg-10 offset-lg-1 centered">
                 <img class="center-block img-responsive" src="{{ programme.photo.url }}" alt="...">
             </div>
 
-            <div class="col-lg-5 col-lg-offset-1 spacing">
+            <div class="col-lg-5 offset-lg-1 spacing">
                 <h4>{{ episode|title }}</h4>
 
                 <p>{% firstof episode.summary|safe episode.programme.synopsis|safe '' %}</p>
@@ -41,7 +41,7 @@
                 </p>
             </div>
 
-            <div class="col-lg-4 col-lg-offset-1 spacing">
+            <div class="col-lg-4 offset-lg-1 spacing">
                 <h4>{% trans 'Programme Details' %}</h4>
                 <div class="hline"></div>
                 <p>
@@ -72,7 +72,7 @@
         <! --/row -->
         {% if settings.DISQUS_ENABLE %}
             <div class="row">
-                <div class="col-lg-10 col-lg-offset-1 centered">
+                <div class="col-lg-10 offset-lg-1 centered">
                     {% set_disqus_identifier programme.id|stringformat:"i" %}
                     {% set_disqus_title programme.name %}
                     {% set_disqus_url episode.get_absolute_url %}

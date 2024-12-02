@@ -111,15 +111,36 @@ class TimezoneForm(forms.Form):
 
 
 class TransmissionForm(TimezoneForm):
-    after = forms.DateField()
-    before = forms.DateField()
+    after = forms.CharField()
+    before = forms.CharField()
     calendar = forms.CharField(required=False)
 
     def clean(self):
-        cleaned_data = super(TransmissionForm, self).clean()
-        if cleaned_data.get('before') and cleaned_data.get('after'):
+        cleaned_data = super().clean()
+
+        # Convierte 'after' a datetime.date si es necesario
+        after = cleaned_data.get('after')
+        if after:
+            try:
+                # Convertir el string 'after' en una fecha con formato 'YYYY-MM-DD'
+                cleaned_data['after'] = datetime.datetime.strptime(after.split("T")[0], "%Y-%m-%d").date()
+            except ValueError:
+                raise ValidationError("El campo 'after' debe tener el formato correcto 'YYYY-MM-DD'.")
+
+        # También puedes validar 'before' de manera similar si es necesario
+        before = cleaned_data.get('before')
+        if before:
+            try:
+                # Convertir el string 'before' en una fecha con formato 'YYYY-MM-DD'
+                cleaned_data['before'] = datetime.datetime.strptime(before.split("T")[0], "%Y-%m-%d").date()
+            except ValueError:
+                raise ValidationError("El campo 'before' debe tener el formato correcto 'YYYY-MM-DD'.")
+
+        # Valida que 'after' no sea posterior a 'before'
+        if cleaned_data.get('after') and cleaned_data.get('before'):
             if cleaned_data['after'] > cleaned_data['before']:
-                raise ValidationError('after date has to be greater or equals than before date.')
+                raise ValidationError("La fecha 'after' debe ser menor o igual que 'before'.")
+
         return cleaned_data
 
 

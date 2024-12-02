@@ -96,17 +96,17 @@ a:focus {
 	font-weight: 900;
 }
 
-.navbar-header .navbar-brand {
+.navbar-light .navbar-brand {
 	color: white;
 }
 
-.navbar-default .navbar-nav > li > a {
+.navbar-light .navbar-nav .nav-link {
 	color: white;
 	font-weight: 700;
 	font-size: 12px;
 }
 
-.navbar-default .navbar-nav > .separator {
+.navbar-light .navbar-nav > .separator {
 	color: white;
 	font-weight: 700;
 	font-size: 12px;
@@ -114,18 +114,31 @@ a:focus {
 	line-height: 20px;
 }
 
-.navbar-default .navbar-nav > li > a:hover {
+.navbar-light .navbar-nav .nav-link:hover {
 	color: #00b3fe;
 }
 
-.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus {
+.navbar-light .navbar-nav > .active > .nav-link, .navbar-light .navbar-nav > .active > .nav-link:hover, .navbar-light .navbar-nav > .active > .nav-link:focus {
 	color: #00b3fe;
 	background-color: transparent;
 }
 
-.navbar-default {
+.navbar-light {
 	background-color: #384452;
 	border-color: transparent;
+}
+
+.custom-toggler .navbar-toggler-icon {
+	background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(136,136,136, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+}
+
+.custom-toggler {
+	border-color: #ddd;
+}
+
+.custom-toggler:focus {
+	box-shadow: initial;
+	background-color: #ddd;
 }
 
 .dropdown-menu {

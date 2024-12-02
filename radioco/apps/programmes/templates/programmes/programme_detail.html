@@ -8,21 +8,21 @@
 
 {% block page_title %}{{ programme.name }}{% endblock %}
 
-{% block programmes_class %}class="active"{% endblock %}
+{% block programmes_class %}active{% endblock %}
 
 {% block content %}
     <div class="container mb">
         <div class="row">
-            <div class="col-lg-10 col-lg-offset-1 centered">
+            <div class="col-lg-10 offset-lg-1 centered">
                 <img class="center-block img-responsive" src="{{ programme.photo.url }}" alt="...">
             </div>
 
-            <div class="col-lg-5 col-lg-offset-1 spacing">
+            <div class="col-lg-5 offset-lg-1 spacing">
                 <h4>{{ programme.name }}</h4>
                 <p>{{ programme.synopsis|safe }}</p>
             </div>
 
-            <div class="col-lg-4 col-lg-offset-1 spacing">
+            <div class="col-lg-4 offset-lg-1 spacing">
                 <h4>{% trans 'Programme Details' %}</h4>
                 <div class="hline"></div>
                 <p><b>Language:</b> {{ language }}</p>
@@ -38,7 +38,7 @@
         </div>
         {% if settings.DISQUS_ENABLE %}
             <div class="row mhb">
-                <div class="col-lg-10 col-lg-offset-1 centered">
+                <div class="col-lg-10 offset-lg-1 centered">
                     {% set_disqus_identifier programme.id|stringformat:"i" %}
                     {% set_disqus_title programme.name %}
                     {% set_disqus_url programme.get_absolute_url %}

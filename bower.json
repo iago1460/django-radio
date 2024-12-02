@@ -1,9 +1,9 @@
 {
   "name": "dependencies",
   "dependencies": {
-    "jquery": "2.2.1",
-    "jqueryui": "1.11.4",
-    "bootstrap": "3.3.6",
-    "fullcalendar": "2.8.0"
+    "jquery": "3.7.1",
+    "jqueryui": "1.12.1",
+    "bootstrap": "5.3.3",
+    "fullcalendar": "6.1.15"
   }
 }
