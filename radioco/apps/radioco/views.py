@@ -27,12 +27,14 @@ from django.utils import timezone
 
 from radioco.apps.programmes.models import Programme, Episode
 from radioco.apps.schedules.models import Transmission
+from radioco.apps.global_settings.models import SiteConfiguration
 
 
 def index(request):
     now = timezone.now()
 
-    transmissions_between = Transmission.between(now, now + datetime.timedelta(hours=+16))
+    transmissions_between = Transmission.between(
+        now, now + datetime.timedelta(hours=+16))
     next_transmissions = []
 
     try:
@@ -56,13 +58,20 @@ def index(request):
     except StopIteration:
         pass
 
-    other_programmes = Programme.objects.filter(Q(end_date__gte=now) | Q(end_date__isnull=True)).order_by('?').all()[:10]
-    latest_episodes = Episode.objects.filter(podcast__isnull=False).select_related('programme').order_by('-issue_date')[:5]
+    latest_episodes = Episode.objects.filter(podcast__isnull=False).select_related(
+        'programme').order_by('-issue_date')[:25]
+    # We use sets to prevent duplicates
+    other_programmes = list(
+        {episode.programme for episode in latest_episodes})[:10]
+    latest_episodes = latest_episodes[:5]
+
+    site_color = SiteConfiguration.get_global().site_color
 
     context = {
         'now': now, 'percentage': percentage,
         'transmission': live_transmission, 'next_transmissions': next_transmissions,
-        'other_programmes': other_programmes, 'latest_episodes': latest_episodes
+        'other_programmes': other_programmes, 'latest_episodes': latest_episodes,
+        'site_color': site_color
     }
     return render(request, 'radioco/index.html', context)
 

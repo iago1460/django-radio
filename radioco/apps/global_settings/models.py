@@ -30,7 +30,8 @@ from radioco.apps.schedules.models import WEEKDAY_CHOICES
 
 class SingletonModelManager(models.Manager):
     def get(self, *args, **kwargs):
-        obj, created = super(SingletonModelManager, self).get_or_create(**kwargs)
+        obj, created = super(SingletonModelManager,
+                             self).get_or_create(**kwargs)
         return obj
 
 
@@ -66,18 +67,26 @@ class SingletonModel(models.Model):
 
 
 class SiteConfiguration(SingletonModel):
-    site_name = models.CharField(max_length=255, default='RadioCo', verbose_name=_("Site Name"))
-    about_footer = models.TextField(blank=True, default="", verbose_name=_("Footer"))
-    more_about_us = models.TextField(blank=True, default="", verbose_name=_("More info"))
+    site_name = models.CharField(
+        max_length=255, default='RadioCo', verbose_name=_("Site Name"))
+    site_color = models.CharField(
+        max_length=6, default='00B3FE', verbose_name=_("Site Color"))
+    about_footer = models.TextField(
+        blank=True, default="", verbose_name=_("Footer"))
+    more_about_us = models.TextField(
+        blank=True, default="", verbose_name=_("More info"))
     google_analytics_id = models.CharField(
         max_length=255, blank=True, default="",
         verbose_name=_("Google Analytics ID"),
         help_text=_('Example "{value}"').format(value='UA-00000-0')
     )
-    address = models.TextField(blank=True, default="", verbose_name=_("Address"), help_text=_('Can contain raw HTML.'))
+    address = models.TextField(blank=True, default="", verbose_name=_(
+        "Address"), help_text=_('Can contain raw HTML.'))
 
-    twitter_address = models.CharField(max_length=255, verbose_name=_('Twitter address'), blank=True, null=True)
-    facebook_address = models.CharField(max_length=255, verbose_name=_('facebook address'), blank=True, null=True)
+    twitter_address = models.CharField(max_length=255, verbose_name=_(
+        'Twitter address'), blank=True, null=True)
+    facebook_address = models.CharField(max_length=255, verbose_name=_(
+        'facebook address'), blank=True, null=True)
 
     def __str__(self):
         return _u('Global Configuration')
@@ -99,10 +108,12 @@ class PodcastConfiguration(SingletonModel):
         default=0, verbose_name=_("start delay"),
         help_text=_("In seconds. Initial delay of recordings")
     )
-    end_delay = models.PositiveIntegerField(default=0, verbose_name=_("end delay"), help_text=_("In seconds."))
+    end_delay = models.PositiveIntegerField(
+        default=0, verbose_name=_("end delay"), help_text=_("In seconds."))
     next_events = models.PositiveIntegerField(
         default=32, verbose_name=_("next events"),
-        help_text=_("In hours. The next events supplied to the recorder program")
+        help_text=_(
+            "In hours. The next events supplied to the recorder program")
     )
 
     @property
@@ -177,8 +188,10 @@ class RadiocomConfiguration(SingletonModel):
         blank=True, default='', verbose_name=_('history'),
         help_text=_('The history of the station')
     )
-    latitude = models.FloatField(blank=True, default=0, verbose_name=_('latitude'))
-    longitude = models.FloatField(blank=True, default=0, verbose_name=_('longitude'))
+    latitude = models.FloatField(
+        blank=True, default=0, verbose_name=_('latitude'))
+    longitude = models.FloatField(
+        blank=True, default=0, verbose_name=_('longitude'))
     news_rss = models.URLField(
         blank=True, max_length=255, verbose_name=_('news_rss'),
         help_text=_('The news rss url where the recordings news rss'),
