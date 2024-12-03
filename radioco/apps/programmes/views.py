@@ -16,11 +16,53 @@
 
 
 import datetime
+from django.db.models import Q
 
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
 from radioco.apps.programmes.models import Episode, Programme, Role, Participant
+
+
+def get_filtered_programmes(name, category, isActiveParam):
+    isActive = True if isActiveParam == 'on' else False
+    today = timezone.now()
+
+    if (isActive):
+        filterParam = (Q(end_date=None) | Q(end_date__gte=today)) & Q(name__icontains=name) & Q(category__icontains=category)
+    else:
+        filterParam = Q(end_date__lt=today) & Q(name__icontains=name) & Q(category__icontains=category)
+
+    filteredPrograms = Programme.objects.order_by('name').filter(filterParam)
+    return filteredPrograms
+
+
+def programme_search(request):
+    if request.method == 'POST':
+        name = request.POST.get('name', '')
+        category = request.POST.get('category', '')
+        isActiveParam = request.POST.get('isActiveParam', 'off')
+
+        context = {
+            'programme_list': get_filtered_programmes(name, category, isActiveParam),
+            'name': name,
+            'category': category,
+            'isActiveParam': isActiveParam,
+            'categories': Programme.CATEGORY_CHOICES,
+        }
+    else:
+        name = request.GET.get('name', '')
+        category = request.GET.get('category', '')
+        isActiveParam = request.GET.get('isActiveParam', 'on')
+
+        context = {
+            'programme_list': get_filtered_programmes(name, category, isActiveParam),
+            'name': name,
+            'category': category,
+            'isActiveParam': isActiveParam,
+            'categories': Programme.CATEGORY_CHOICES,
+        }
+    return render(request, 'programmes/programme_list.html', context)
 
 
 def programme_detail(request, slug):

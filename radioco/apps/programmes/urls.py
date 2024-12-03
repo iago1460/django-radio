@@ -31,6 +31,7 @@ urlpatterns = [
         ),
         name='list'
     ),
+    url(r'^search/$', views.programme_search, name='search'),
     url(r'^(?P<slug>[-\w]+)/$', views.programme_detail, name='detail'),
     url(
         r'^(?P<slug>[-\w]+)/(?P<season_number>\d+)x(?P<episode_number>\d+)/$',

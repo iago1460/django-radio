@@ -4,23 +4,23 @@
 
 {% block page_title %}{% firstof userprofile.user.get_full_name userprofile.user %}{% endblock %}
 
-{% block users_class %}class="active"{% endblock %}
+{% block users_class %}active{% endblock %}
 
 {% block content %}
     <div class="container">
         <div class="row">
-            <div class="col-lg-10 col-lg-offset-1 centered">
+            <div class="col-lg-10 offset-lg-1 centered">
                 <img class="center-block img-responsive" src="{{ userprofile.avatar.url }}" alt="...">
             </div>
 
 
-            <div class="col-lg-5 col-lg-offset-1">
+            <div class="col-lg-5 offset-lg-1">
                 <div class="spacing"></div>
                 <h4>{% firstof userprofile.user.get_full_name|upper userprofile.user|upper %}</h4>
                 <p>{{ userprofile.bio|safe }}</p>
             </div>
 
-            <div class="col-lg-4 col-lg-offset-1">
+            <div class="col-lg-4 offset-lg-1">
                 <div class="spacing"></div>
                 <h4>{% trans 'Programme Details' %}</h4>
                 <div class="hline"></div>
@@ -33,7 +33,7 @@
     {% if role_list %}
         <div class="container mtb">
             <div class="row">
-                <div class="col-lg-10 col-lg-offset-1 centered">
+                <div class="col-lg-10 offset-lg-1 centered">
                     <h2>{% trans "Contributions"|upper %}</h2>
                     <dl id="tabulate">
                         {% for role in role_list %}
