@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-28 11:09+0100\n"
+"POT-Creation-Date: 2024-11-30 13:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -586,6 +586,7 @@ msgid "Sorry, an error occurred."
 msgstr "Ups! Ocorreu un problema"
 
 #: radioco/apps/radioco/templates/radioco/index.html:21
+#: radioco/apps/schedules/templates/schedules/schedules_list.html:87
 msgid "On air"
 msgstr "En directo"
 
@@ -663,17 +664,17 @@ msgid "Make a Clone of the selected calendar"
 msgstr "Facer unha copia da grella"
 
 #: radioco/apps/schedules/models.py:33
-#: radioco/apps/schedules/templates/admin/schedules/calendar.html:339
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:350
 msgid "live"
 msgstr "Directo"
 
 #: radioco/apps/schedules/models.py:34
-#: radioco/apps/schedules/templates/admin/schedules/calendar.html:345
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:356
 msgid "broadcast"
 msgstr "Retransmisión"
 
 #: radioco/apps/schedules/models.py:35
-#: radioco/apps/schedules/templates/admin/schedules/calendar.html:351
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:362
 msgid "broadcast syndication"
 msgstr "Redifusión"
 
@@ -779,35 +780,35 @@ msgstr "Ocorreu un erro na petición"
 msgid "There was an error while reloading programmes"
 msgstr "Ocorreu un erro cando se actualizaban os programas"
 
-#: radioco/apps/schedules/templates/admin/schedules/calendar.html:287
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:288
 msgid "Updated programme"
 msgstr "Actualizouse o programa"
 
-#: radioco/apps/schedules/templates/admin/schedules/calendar.html:290
-msgid "Added programme"
-msgstr "Añadiuse o programa"
-
-#: radioco/apps/schedules/templates/admin/schedules/calendar.html:293
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:291
 msgid "Updated schedule"
 msgstr "Actualizouse o horario"
 
-#: radioco/apps/schedules/templates/admin/schedules/calendar.html:327
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:303
+msgid "Added programme"
+msgstr "Añadiuse o programa"
+
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:338
 msgid "Programmes"
 msgstr "Programas"
 
-#: radioco/apps/schedules/templates/admin/schedules/calendar.html:335
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:346
 msgid "Programme type"
 msgstr "Tipo de programa"
 
-#: radioco/apps/schedules/templates/admin/schedules/calendar.html:370
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:381
 msgid "Delete transmission?"
 msgstr "Borrar transmisión?"
 
-#: radioco/apps/schedules/templates/admin/schedules/calendar.html:376
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:387
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: radioco/apps/schedules/templates/admin/schedules/calendar.html:377
+#: radioco/apps/schedules/templates/admin/schedules/calendar.html:388
 msgid "I am sure"
 msgstr "Estou seguro"
 
@@ -826,6 +827,15 @@ msgstr "Queres borrar esta transmisión?"
 #: radioco/apps/schedules/templates/schedules/schedules_list.html:12
 msgid "Schedule"
 msgstr "Horario"
+
+#: radioco/apps/schedules/templates/schedules/schedules_list.html:89
+#| msgid "broadcast syndication"
+msgid "Broadcast syndication"
+msgstr "Redifusión"
+
+#: radioco/apps/schedules/templates/schedules/schedules_list.html:90
+msgid "External"
+msgstr "Externo"
 
 #: radioco/apps/users/admin.py:61
 msgid "username"
