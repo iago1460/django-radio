@@ -24,3 +24,4 @@ on any process that makes changes to your database.
     3.2.2
     4.0
     5.0
+    6.0

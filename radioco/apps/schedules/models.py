@@ -15,8 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import datetime
 import heapq
-from functools import partial
-
+from functools import partial, total_ordering
 
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -114,6 +113,7 @@ class ExcludedDates(models.Model):
         return default_tz.localize(datetime.datetime.combine(self.date, new_dt_in_default_tz.time()))
 
 
+@total_ordering
 class Schedule(models.Model):
     class Meta:
         verbose_name = _('schedule')
@@ -251,6 +251,16 @@ class Schedule(models.Model):
         start_dt = transform_dt_to_default_tz(self.start_dt)
         date = recurrence_after(self.recurrences, after_date, start_dt)
         return fix_recurrence_dst(date)
+
+    def __lt__(self, other):
+        if not isinstance(other, Schedule):
+            return NotImplemented
+        return self.start_dt < other.start_dt
+
+    def __eq__(self, other):
+        if not isinstance(other, Schedule):
+            return NotImplemented
+        return self.start_dt == other.start_dt
 
     def _merge_after(self, after):
         """
